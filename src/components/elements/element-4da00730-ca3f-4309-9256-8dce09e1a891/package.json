@@ -1,0 +1,1 @@
+{"name":"alert-box","version":"1.0.1","license":"MIT","scripts":{"build":"weweb build","serve":"weweb serve"},"devDependencies":{}}

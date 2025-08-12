@@ -1,0 +1,1287 @@
+
+<template>
+  <div class="schedule-table-container">
+    <!-- DEBUG DISPLAY (optional, for troubleshooting) -->
+    <div v-if="isEditing" style="position: absolute; top: 0; right: 0; background: rgba(0,0,0,0.1); padding: 5px; font-size: 10px; z-index: 1000;">
+      Mode: {{ debugLessonsCount.mode }} | 
+      Lessons: {{ debugLessonsCount.lessonsCount }} | 
+      Active: {{ debugLessonsCount.activeLessonsCount }}
+    </div>
+    <!-- COLOR MODE TOGGLE -->
+    <div class="color-mode-toggle" style="margin-bottom: 10px;">
+      <label>{{ t('colorBy') }}</label>
+      <div class="toggle-switch">
+        <button
+          v-if="viewMode === 'teacher'"
+          :class="{ active: colorMode === 'subject' }"
+          @click="setColorMode('subject')"
+        >{{ t('subject') }}</button>
+        <button
+          v-if="viewMode === 'teacher'"
+          :class="{ active: colorMode === 'class' }"
+          @click="setColorMode('class')"
+        >{{ t('class') }}</button>
+        <button
+          v-if="viewMode === 'class'"
+          :class="{ active: colorMode === 'subject' }"
+          @click="setColorMode('subject')"
+        >{{ t('subject') }}</button>
+        <button
+          v-if="viewMode === 'class'"
+          :class="{ active: colorMode === 'teacher' }"
+          @click="setColorMode('teacher')"
+        >{{ t('teacher') }}</button>
+      </div>
+    </div>
+    
+    <!-- Excel-like Layout with Fixed Positioning -->
+    <div class="excel-scheduler" :style="tableStyles">
+      <!-- Top-left corner (staff header) -->
+      <div class="corner-cell">
+        {{ staffLabel }}
+      </div>
+      
+      <!-- Top header (days and periods) -->
+      <div class="top-header" ref="topHeader">
+        <div class="header-content">
+          <!-- Day headers -->
+          <div class="day-headers">
+            <template v-for="(day, dayIndex) in sortedDays" :key="'day-'+dayIndex">
+              <div class="day-header" :style="{ width: (sortedPeriods.length * 40) + 'px' }">
+                {{ day.displayName }}
+              </div>
+            </template>
+          </div>
+          <!-- Period headers -->
+          <div class="period-headers">
+            <template v-for="(day, dayIndex) in sortedDays" :key="'period-row-'+dayIndex">
+              <template v-for="(period, periodIndex) in sortedPeriods" :key="'period-'+dayIndex+'-'+periodIndex">
+                <div class="period-header" :class="{ 'col-hover': enableCrossHair && hoveredColIndex === dayIndex * sortedPeriods.length + periodIndex }">
+                  {{ period.label ? period.label.charAt(0) : period.block_number }}
+                </div>
+              </template>
+            </template>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Left sidebar (staff column) -->
+      <div class="left-sidebar" ref="leftSidebar">
+        <div class="sidebar-content">
+          <div 
+            v-for="(rowItem, rowIndex) in staff" 
+            :key="'staff-'+rowIndex"
+            class="staff-item"
+            :class="{ 'row-hover': enableCrossHair && hoveredRowIndex === rowIndex }"
+          >
+            <div class="teacher-info">
+              <span 
+                v-if="viewMode === 'teacher'"
+                class="teacher-name clickable"
+                @click="onTeacherNameClick(rowItem)"
+                :title="viewMode === 'teacher' ? 'Click to view teacher profile' : ''"
+              >{{ rowItem }}</span>
+              <span 
+                v-else
+                class="class-name"
+              >{{ rowItem }}</span>
+              <span
+                v-if="viewMode === 'teacher'"
+                class="lesson-count"
+                :class="getTeacherLessonCountClass(rowItem)"
+                :title="getWorkloadTooltip(rowItem)"
+              >
+                <span class="count-icon">{{ getWorkloadIcon(rowItem) }}</span>
+                {{ getTeacherLessonCount(rowItem) }}/{{ getTeacherHoursAccount(rowItem) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main scrollable content -->
+      <div class="main-content" ref="mainContent" @scroll="onMainScroll">
+        <div class="content-grid">
+          <div 
+            v-for="(rowItem, rowIndex) in staff" 
+            :key="'row-'+rowIndex"
+            class="content-row"
+          >
+            <template v-for="(day, dayIndex) in sortedDays" :key="'row-day-'+rowIndex+'-'+dayIndex">
+              <template v-for="(period, periodIndex) in sortedPeriods" :key="'cell-'+rowIndex+'-'+dayIndex+'-'+periodIndex">
+                <div
+                  class="schedule-cell"
+                  :class="{
+                    'selected-cell': selectedCell &&
+                      ((viewMode === 'teacher' && selectedCell.teacher === rowItem) ||
+                      (viewMode === 'class' && selectedCell.class === rowItem)) &&
+                      selectedCell.day === day.name_de &&
+                      selectedCell.period === period.block_number,
+                    'team-teaching': isTeamTaught(rowItem, day.name_de, period.block_number),
+                    'team-highlight': highlightedScheduleId &&
+                      getLesson(rowItem, day.name_de, period.block_number)?.id === highlightedScheduleId,
+                    'draft-lesson': mode === 'planning' && getLesson(rowItem, day.name_de, period.block_number)?.isDraft,
+                    'scheduled-lesson': mode === 'planning' && getLesson(rowItem, day.name_de, period.block_number)?.currentlyScheduled,
+                    'day-separator': periodIndex === 0,
+                    'cell-hover-row': enableCrossHair && hoveredRowIndex === rowIndex,
+                    'cell-hover-col': enableCrossHair && hoveredColIndex === dayIndex * sortedPeriods.length + periodIndex,
+                    'cell-hover-active': enableCrossHair && hoveredRowIndex === rowIndex && hoveredColIndex === dayIndex * sortedPeriods.length + periodIndex
+                  }"
+                  :style="getCellStyle(rowItem, day.name_de, period.block_number, { hovered: highlightedScheduleId && getLesson(rowItem, day.name_de, period.block_number)?.id === highlightedScheduleId })"
+                  :data-day="day.name_de"
+                  :data-period="period.block_number"
+                  @click="onCellClick($event, rowItem, day.name_de, period.block_number)"
+                  @mouseenter="onCellHover(rowItem, day.name_de, period.block_number, rowIndex, dayIndex * sortedPeriods.length + periodIndex)"
+                  @mouseleave="onCellLeave"
+                >
+                  <div class="lesson-block" v-if="getLesson(rowItem, day.name_de, period.block_number)">
+                    <span class="lesson-subject">{{ getSubjectName(getLesson(rowItem, day.name_de, period.block_number)?.subject_id) }}</span>
+                    <span class="lesson-class" v-if="viewMode === 'teacher'">{{ getClassName(getLesson(rowItem, day.name_de, period.block_number)?.class_id) }}</span>
+                    <div class="teacher-abbreviations" v-if="viewMode === 'class'">
+                      <span v-for="abbr in getTeacherAbbreviations(rowItem, day.name_de, period.block_number)" :key="abbr">{{ abbr }}</span>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+      <thead>
+        <tr>
+          <th class="staff-header">{{ staffLabel }}</th>
+          <template v-for="(day, dayIndex) in sortedDays" :key="'day-'+dayIndex">
+            <th :colspan="sortedPeriods.length" class="day-header day-separator">{{ day.displayName }}</th>
+          </template>
+        </tr>
+        <tr>
+          <th></th>
+          <template v-for="(day, dayIndex) in sortedDays" :key="'period-row-'+dayIndex">
+            <template v-for="(period, periodIndex) in sortedPeriods" :key="'period-'+dayIndex+'-'+periodIndex">
+              <th class="period-header" :class="{ 'col-hover': enableCrossHair && hoveredColIndex === dayIndex * sortedPeriods.length + periodIndex }">{{ period.label ? period.label.charAt(0) : period.block_number }}</th>
+            </template>
+          </template>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(rowItem, rowIndex) in staff" :key="'row-'+rowIndex">
+          <td class="staff-cell" :class="{ 'row-hover': enableCrossHair && hoveredRowIndex === rowIndex }">
+            <div class="teacher-info">
+              <span 
+                v-if="viewMode === 'teacher'"
+                class="teacher-name clickable"
+                @click="onTeacherNameClick(rowItem)"
+                :title="viewMode === 'teacher' ? 'Click to view teacher profile' : ''"
+              >{{ rowItem }}</span>
+              <span 
+                v-else
+                class="class-name"
+              >{{ rowItem }}</span>
+              <span
+                v-if="viewMode === 'teacher'"
+                class="lesson-count"
+                :class="getTeacherLessonCountClass(rowItem)"
+                :title="getWorkloadTooltip(rowItem)"
+              >
+                <span class="count-icon">{{ getWorkloadIcon(rowItem) }}</span>
+                {{ getTeacherLessonCount(rowItem) }}/{{ getTeacherHoursAccount(rowItem) }}
+              </span>
+            </div>
+          </td>
+          <template v-for="(day, dayIndex) in sortedDays" :key="'row-day-'+rowIndex+'-'+dayIndex">
+            <template v-for="(period, periodIndex) in sortedPeriods" :key="'cell-'+rowIndex+'-'+dayIndex+'-'+periodIndex">
+              <td
+                class="schedule-cell"
+                :class="{
+                  'selected-cell': selectedCell &&
+                    ((viewMode === 'teacher' && selectedCell.teacher === rowItem) ||
+                    (viewMode === 'class' && selectedCell.class === rowItem)) &&
+                    selectedCell.day === day.name_de &&
+                    selectedCell.period === period.block_number,
+                  'team-teaching': isTeamTaught(rowItem, day.name_de, period.block_number),
+                  'team-highlight': highlightedScheduleId &&
+                    getLesson(rowItem, day.name_de, period.block_number)?.id === highlightedScheduleId,
+                  'draft-lesson': mode === 'planning' && getLesson(rowItem, day.name_de, period.block_number)?.isDraft,
+                  'scheduled-lesson': mode === 'planning' && getLesson(rowItem, day.name_de, period.block_number)?.currentlyScheduled,
+                  'day-separator': periodIndex === 0,
+                  'cell-hover-row': enableCrossHair && hoveredRowIndex === rowIndex,
+                  'cell-hover-col': enableCrossHair && hoveredColIndex === dayIndex * sortedPeriods.length + periodIndex,
+                  'cell-hover-active': enableCrossHair && hoveredRowIndex === rowIndex && hoveredColIndex === dayIndex * sortedPeriods.length + periodIndex
+                }"
+                :style="getCellStyle(rowItem, day.name_de, period.block_number, { hovered: highlightedScheduleId && getLesson(rowItem, day.name_de, period.block_number)?.id === highlightedScheduleId })"
+                :data-day="day.name_de"
+                :data-period="period.block_number"
+                :data-teacher="viewMode === 'teacher' ? rowItem : undefined"
+                :data-class="viewMode === 'class' ? rowItem : undefined"
+                @click="onCellClick($event, rowItem, day.name_de, period.block_number)"
+                @contextmenu.prevent="onCellRightClick($event, rowItem, day.name_de, period.block_number)"
+                @mouseover="onCellHover(rowItem, day.name_de, period.block_number, rowIndex, dayIndex * sortedPeriods.length + periodIndex)"
+                @mouseleave="onCellLeave"
+              >
+                <template v-if="getLesson(rowItem, day.name_de, period.block_number)">
+                  <!-- Termin indicator -->
+                  <template v-if="getLesson(rowItem, day.name_de, period.block_number).subject_name === 'Termin'">
+                    <span class="termin-indicator">T</span>
+                  </template>
+                  <!-- CLASS VIEW: Show teacher abbreviations and subject -->
+                  <template v-else-if="viewMode === 'class'">
+                    <div class="teacher-abbrevs" :class="{ stacked: getLesson(rowItem, day.name_de, period.block_number).teacher_names?.length > 1 }">
+                      <span
+                        v-for="(name, i) in getTeacherAbbreviations(rowItem, day.name_de, period.block_number)"
+                        :key="'abbr-'+i"
+                        class="teacher-abbr"
+                      >{{ name }}</span>
+                    </div>
+                    <div class="lesson-subject" v-if="getLesson(rowItem, day.name_de, period.block_number).subject_name">
+                      {{ getLesson(rowItem, day.name_de, period.block_number).subject_name.slice(0,2) }}
+                    </div>
+                  </template>
+                  <!-- TEACHER VIEW: class + subject abbreviation -->
+                  <template v-else-if="getLesson(rowItem, day.name_de, period.block_number).class_name && getLesson(rowItem, day.name_de, period.block_number).subject_name">
+                    <div class="lesson-block">
+                      <div class="lesson-class">
+                        {{ getLesson(rowItem, day.name_de, period.block_number).class_name }}
+                      </div>
+                      <div class="lesson-subject">
+                        {{ getLesson(rowItem, day.name_de, period.block_number).subject_name.slice(0,2) }}
+                      </div>
+                    </div>
+                  </template>
+                  <!-- Course fallback -->
+                  <template v-else-if="getLesson(rowItem, day.name_de, period.block_number).course_name">
+                    <span>{{ getLesson(rowItem, day.name_de, period.block_number).course_name.slice(0,2) }}</span>
+                  </template>
+                </template>
+              </td>
+            </template>
+          </template>
+        </tr>
+      </tbody>
+    </table>
+
+    <InfoBox
+      :show="showInfoBox"
+      :lesson="selectedLesson"
+      :position="infoBoxPosition"
+      :language="language"
+      @close="closeInfoBox"
+    />
+
+    <InlineLessonForm
+      :show="showLessonModal"
+      :position="lessonFormPosition"
+      :teacher="viewMode === 'teacher' ? modalTeacher.name : ''"
+      :teacherId="viewMode === 'teacher' ? modalTeacher.id : null"
+      :class="viewMode === 'class' ? modalClass.name : ''"
+      :classId="viewMode === 'class' ? modalClass.id : null"
+      :viewMode="viewMode"
+      :day="modalDay"
+      :dayId="modalDayId"
+      :period="modalPeriod"
+      :periodId="modalPeriodId"
+      :subjects="availableSubjects"
+      :classes="availableClasses"
+      :rooms="availableRooms"
+      :days="days"
+      :periods="periods"
+      :teachers="teachers"
+      :selectedTeacherIds="selectedTeacherIds"
+      :existingLesson="modalExistingLesson"
+      :selectedSubjectId="selectedSubject"
+      :selectedClassId="selectedClass"
+      :selectedRoomId="selectedRoom"
+      :language="language"
+      @close="closeLessonModal"
+      @save="saveDraftLesson"
+      @delete="deleteDraftLesson"
+      @teacherIdsChange="onTeacherIdsChange"
+    />
+  </div>
+</template>
+
+<script>
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
+import InfoBox from './components/InfoBox.vue';
+import InlineLessonForm from './components/InlineLessonForm.vue';
+import {
+  calculateBoxPosition,
+  getTeacherByName,
+  getPeriodByNumber,
+  createLessonLookupMaps,
+  getOptimizedLesson,
+  getOptimizedTeacherLessonCount
+} from './utils/scheduleUtils';
+
+export default {
+  components: { InfoBox, InlineLessonForm },
+  props: {
+    content: { type: Object, required: true },
+    uid: { type: String, required: true },
+    wwEditorState: { type: Object, required: true },
+  },
+  emits: ['trigger-event'],
+  setup(props, { emit }) {
+    // Editor state
+    const isEditing = computed(() => props.wwEditorState?.isEditing || false);
+
+    // Mode & source data
+    const mode = computed(() => props.content?.mode || 'live');
+    const teachers = computed(() => props.content?.teachers || []);
+    const classes = computed(() => props.content?.classes || []);
+    const days = computed(() => props.content?.days || []);
+    const periods = computed(() => props.content?.periods || []);
+    const lessons = computed(() => props.content?.lessons || []);
+    const draftLessons = computed(() => props.content?.draftLessons || []);
+    const availableSubjects = computed(() => props.content?.availableSubjects || []);
+    const availableClasses = computed(() => props.content?.availableClasses || []);
+    const availableRooms = computed(() => props.content?.availableRooms || []);
+    const selectedSubject = computed(() => props.content?.selectedSubject || '');
+    const selectedClass = computed(() => props.content?.selectedClass || '');
+    const selectedRoom = computed(() => props.content?.selectedRoom || '');
+    const selectedTeacherIds = computed(() => props.content?.selectedTeacherIds || []);
+    const viewMode = computed(() => props.content?.viewMode || 'teacher');
+    const colorMode = ref('subject');
+    const language = computed(() => props.content?.language || 'de');
+    const enableCrossHair = computed(() => props.content?.enableCrossHair ?? true);
+
+    // Translation utilities
+    const translations = {
+      de: {
+        teacher: 'Lehrer',
+        class: 'Klasse',
+        colorBy: 'Farbe nach:',
+        subject: 'Fach',
+        addLesson: 'Lektion hinzufügen',
+        update: 'Aktualisieren',
+        delete: 'Löschen',
+        cancel: 'Abbrechen',
+        save: 'Speichern',
+        room: 'Raum',
+        meetingTitle: 'Termin Titel',
+        notes: 'Notizen',
+        noTeachersFound: 'Keine Lehrer gefunden',
+        searchTeachers: 'Lehrer suchen...',
+        totalHours: 'Gesamtstunden',
+        deductions: 'Abzüge',
+        ageReduction: 'Altersermäßigung',
+        creditHours: 'Stundenguthaben',
+        availableHours: 'Verfügbare Stunden',
+        assignedHours: 'Zugewiesene Stunden',
+        status: 'Status',
+        fullCapacity: 'Vollauslastung',
+        overCapacity: 'Überbelastung',
+        normal: 'Normal',
+        day: 'Tag',
+        period: 'Periode'
+      },
+      en: {
+        teacher: 'Teacher',
+        class: 'Class',
+        colorBy: 'Color by:',
+        subject: 'Subject',
+        addLesson: 'Add Lesson',
+        update: 'Update',
+        delete: 'Delete',
+        cancel: 'Cancel',
+        save: 'Save',
+        room: 'Room',
+        meetingTitle: 'Meeting Title',
+        notes: 'Notes',
+        noTeachersFound: 'No teachers found',
+        searchTeachers: 'Search teachers...',
+        totalHours: 'Total Hours',
+        deductions: 'Deductions',
+        ageReduction: 'Age Reduction',
+        creditHours: 'Credit Hours',
+        availableHours: 'Available Hours',
+        assignedHours: 'Assigned Hours',
+        status: 'Status',
+        fullCapacity: 'Full Capacity',
+        overCapacity: 'Over Capacity',
+        normal: 'Normal',
+        day: 'Day',
+        period: 'Period'
+      }
+    };
+
+    const t = (key) => translations[language.value]?.[key] || translations.de[key] || key;
+
+    // Table styles
+    const tableStyles = computed(() => ({
+      '--header-bg': props.content?.headerBackgroundColor || '#f0f0f0',
+      '--border-color': props.content?.borderColor || '#dddddd',
+      '--cell-padding': props.content?.cellPadding || '8px'
+    }));
+
+    // STAFF AXIS
+    const staff = computed(() => {
+      if (viewMode.value === 'class') {
+        return classes.value.map(c => c.name);
+      } else {
+        return teachers.value.map(t => `${t.first_name || ''} ${t.last_name || ''}`.trim());
+      }
+    });
+    const staffLabel = computed(() => viewMode.value === 'class' ? t('class') : t('teacher'));
+
+    // SORTED DAYS/PERIODS with language support
+    const sortedDays = computed(() => {
+      return [...days.value]
+        .sort((a, b) => (a.day_number || 0) - (b.day_number || 0))
+        .map(day => ({
+          ...day,
+          displayName: language.value === 'en' && day.name_en ? day.name_en : day.name_de
+        }));
+    });
+    const sortedPeriods = computed(() => [...periods.value].sort((a, b) => (a.block_number || 0) - (b.block_number || 0)));
+
+    // LESSONS ARRAY AND OPTIMIZED LOOKUPS
+    const activeLessons = computed(() => {
+      return mode.value === 'planning'
+        ? [...(draftLessons.value || []).map(l => ({ ...l, isDraft: true }))]
+        : [...(lessons.value || [])];
+    });
+
+    // Pre-computed lookup maps for performance optimization
+    const lessonLookupMaps = computed(() => {
+      return createLessonLookupMaps(activeLessons.value, viewMode.value);
+    });
+
+    // DEBUG PROPERTY
+    const debugLessonsCount = computed(() => ({
+      mode: mode.value,
+      lessonsCount: lessons.value?.length || 0,
+      draftLessonsCount: draftLessons.value?.length || 0,
+      activeLessonsCount: activeLessons.value?.length || 0
+    }));
+
+    // OPTIMIZED GET LESSON LOGIC
+    const getLesson = (rowItem, day, block) => {
+      return getOptimizedLesson(lessonLookupMaps.value, rowItem, day, block);
+    };
+
+    const isTeamTaught = (rowItem, day, block) => {
+      const lesson = getLesson(rowItem, day, block);
+      return lesson && Array.isArray(lesson.teacher_names) && lesson.teacher_names.length >= 2;
+    };
+
+    // OPTIMIZED Teacher lesson count methods
+    const getTeacherLessonCount = (teacherName) => {
+      if (viewMode.value !== 'teacher') return 0;
+      return getOptimizedTeacherLessonCount(lessonLookupMaps.value, teacherName);
+    };
+
+    const getTeacherHoursAccount = (teacherName) => {
+    if (viewMode.value !== 'teacher') return 0;
+    const teacher = teachers.value.find(t =>
+    `${t.first_name || ''} ${t.last_name || ''}`.trim() === teacherName
+    );
+    if (!teacher) return 0;
+
+    const base = teacher.hours_account || 0;
+    const credit = teacher.credit_hours || 0;
+    const reduction = teacher.age_reduction || 0;
+
+    return Math.max(0, base - credit - reduction);
+    };
+
+    const getTeacherLessonCountClass = (teacherName) => {
+      const count = getTeacherLessonCount(teacherName);
+      const total = getTeacherHoursAccount(teacherName);
+      if (count > total) return 'count-over';
+      if (count === total) return 'count-full';
+      return 'count-normal';
+    };
+
+    const getWorkloadTooltip = (teacherName) => {
+      const teacher = teachers.value.find(t =>
+        `${t.first_name || ''} ${t.last_name || ''}`.trim() === teacherName
+      );
+      if (!teacher) return '';
+
+      const totalHours = teacher.hours_account || 0;
+      const ageReduction = teacher.age_reduction || 0;
+      const creditHours = teacher.credit_hours || 0;
+      const assignedLessons = getTeacherLessonCount(teacherName);
+      const availableHours = totalHours - ageReduction - creditHours;
+
+      let status = '';
+      if (assignedLessons === availableHours) {
+        status = t('fullCapacity');
+      } else if (assignedLessons > availableHours) {
+        status = t('overCapacity');
+      } else {
+        status = t('normal');
+      }
+
+      if (language.value === 'de') {
+        let deductionText = '';
+        const deductionParts = [];
+        if (ageReduction > 0) deductionParts.push(`${t('ageReduction')}: ${ageReduction}`);
+        if (creditHours > 0) deductionParts.push(`${t('creditHours')}: ${creditHours}`);
+        if (deductionParts.length > 0) {
+          deductionText = ` (${deductionParts.join(', ')})`;
+        }
+
+        return `${t('totalHours')}: ${totalHours}
+${t('deductions')}: ${ageReduction + creditHours}${deductionText}
+${t('availableHours')}: ${availableHours}
+${t('assignedHours')}: ${assignedLessons}
+${t('status')}: ${status}`;
+      } else {
+        let deductionText = '';
+        const deductionParts = [];
+        if (ageReduction > 0) deductionParts.push(`${t('ageReduction')}: ${ageReduction}`);
+        if (creditHours > 0) deductionParts.push(`${t('creditHours')}: ${creditHours}`);
+        if (deductionParts.length > 0) {
+          deductionText = ` (${deductionParts.join(', ')})`;
+        }
+
+        return `${t('totalHours')}: ${totalHours}
+${t('deductions')}: ${ageReduction + creditHours}${deductionText}
+${t('availableHours')}: ${availableHours}
+${t('assignedHours')}: ${assignedLessons}
+${t('status')}: ${status}`;
+      }
+    };
+
+    // Get workload icon based on status
+    const getWorkloadIcon = (teacherName) => {
+      const count = getTeacherLessonCount(teacherName);
+      const total = getTeacherHoursAccount(teacherName);
+      if (count > total) return '!';
+      if (count === total) return '✓';
+      return '';
+    };
+
+    // Teacher profile click handler
+    const onTeacherNameClick = (teacherName) => {
+      const teacher = teachers.value.find(t =>
+        `${t.first_name || ''} ${t.last_name || ''}`.trim() === teacherName
+      );
+      if (teacher) {
+        emit('trigger-event', {
+          name: 'teacherProfileClicked',
+          event: { value: teacher }
+        });
+      }
+    };
+
+    // InfoBox state (live mode)
+    const showInfoBox = ref(false);
+    const selectedLesson = ref(null);
+    const selectedCell = ref(null);
+    const infoBoxPosition = ref({ top: '0px', left: '0px' });
+    const highlightedScheduleId = ref(null);
+
+    // Cross-hair hover state
+    const hoveredRowIndex = ref(-1);
+    const hoveredColIndex = ref(-1);
+
+    // Inline form state (planning mode)
+    const showLessonModal = ref(false);
+    const modalExistingLesson = ref(null);
+    const modalTeacher = ref({ name: '', id: null });
+    const modalClass = ref({ name: '', id: null });
+    const modalDay = ref('');
+    const modalDayId = ref('');
+    const modalPeriod = ref(0);
+    const modalPeriodId = ref('');
+    const lessonFormPosition = ref({ top: '0px', left: '0px' });
+
+    // Color mode toggle logic
+    const setColorMode = (mode) => {
+      colorMode.value = mode;
+    };
+
+    // Watch for viewMode changes to reset colorMode
+    watch(viewMode, () => {
+      colorMode.value = 'subject';
+    });
+
+    // Helper: teacher abbreviations
+    const getTeacherAbbreviations = (rowItem, day, block) => {
+      const lesson = getLesson(rowItem, day, block);
+      if (!lesson || !Array.isArray(lesson.teacher_names)) return [];
+      return lesson.teacher_names.map(name => {
+        const parts = name.split(' ');
+        if (parts.length >= 2) {
+          // First letter of first name + first two letters of last name
+          return `${parts[0].charAt(0)}${parts[parts.length-1].slice(0,2)}`;
+        }
+        return name.slice(0, 3);
+      });
+    };
+
+    // Helper: cell color and shadow logic
+    const getCellStyle = (rowItem, day, block, { hovered = false } = {}) => {
+      const lesson = getLesson(rowItem, day, block);
+      if (!lesson) return {};
+
+      const style = {};
+
+      // Team teaching shadow (orange)
+      if (isTeamTaught(rowItem, day, block)) {
+        style.boxShadow = hovered
+          ? '0 0 0 3px #e67e00'
+          : '0 0 0 2px #ff9800';
+      }
+
+      // Cell color by mode
+      if (viewMode.value === 'teacher') {
+        if (colorMode.value === 'subject') {
+          const subject = availableSubjects.value.find(s => s.id === lesson.subject_id);
+          style.background = subject?.color || 'white';
+        } else if (colorMode.value === 'class') {
+          const classObj = availableClasses.value.find(c => c.id === lesson.class_id);
+          style.background = classObj?.color || 'white';
+        }
+      } else if (viewMode.value === 'class') {
+        if (colorMode.value === 'subject') {
+          const subject = availableSubjects.value.find(s => s.id === lesson.subject_id);
+          style.background = subject?.color || 'white';
+        } else if (colorMode.value === 'teacher') {
+          if (Array.isArray(lesson.teacher_ids) && lesson.teacher_ids.length > 1) {
+            // Gradient for team teaching
+            const teacherColors = lesson.teacher_ids.map(id => {
+              const teacher = teachers.value.find(t => t.user_id === id || t.profile_id === id || t.id === id);
+              return teacher?.colour || teacher?.color || 'white';
+            });
+            if (teacherColors.length === 2) {
+              style.background = `linear-gradient(to right, ${teacherColors[0]} 50%, ${teacherColors[1]} 50%)`;
+            } else if (teacherColors.length > 2) {
+              // Equal split for more than 2 teachers
+              const segments = teacherColors.map((color, i) => {
+                const percent = (i / teacherColors.length * 100).toFixed(2);
+                const nextPercent = ((i + 1) / teacherColors.length * 100).toFixed(2);
+                return `${color} ${percent}% ${nextPercent}%`;
+              }).join(', ');
+              style.background = `linear-gradient(to right, ${segments})`;
+            }
+          } else if (Array.isArray(lesson.teacher_ids) && lesson.teacher_ids.length === 1) {
+            const teacher = teachers.value.find(t => t.user_id === lesson.teacher_ids[0] || t.profile_id === lesson.teacher_ids[0] || t.id === lesson.teacher_ids[0]);
+            style.background = teacher?.colour || teacher?.color || 'white';
+          }
+        }
+      }
+
+      return style;
+    };
+
+    // Hover logic with cross-hair support
+    const onCellHover = (rowItem, dayName, blockNumber, rowIndex, colIndex) => {
+      if (isEditing.value) return;
+      
+      // Set cross-hair hover indices only if enabled
+      if (enableCrossHair.value) {
+        hoveredRowIndex.value = rowIndex;
+        hoveredColIndex.value = colIndex;
+      }
+      
+      // Existing team teaching highlight logic
+      const lesson = getLesson(rowItem, dayName, blockNumber);
+      if (
+        lesson?.id &&
+        Array.isArray(lesson.teacher_names) &&
+        lesson.teacher_names.length >= 2
+      ) {
+        highlightedScheduleId.value = lesson.id;
+      } else {
+        highlightedScheduleId.value = null;
+      }
+    };
+    
+    const onCellLeave = () => {
+      hoveredRowIndex.value = -1;
+      hoveredColIndex.value = -1;
+      highlightedScheduleId.value = null;
+    };
+
+    // Click handler (live or planning)
+    const onCellClick = (event, rowItem, dayName, blockNumber) => {
+      if (isEditing.value) return;
+      const lesson = getLesson(rowItem, dayName, blockNumber);
+      selectedCell.value = {
+        teacher: viewMode.value === 'teacher' ? rowItem : null,
+        class: viewMode.value === 'class' ? rowItem : null,
+        day: dayName,
+        period: blockNumber
+      };
+      if (mode.value === 'planning') {
+        const teacherObj = viewMode.value === 'teacher'
+          ? getTeacherByName(teachers.value, rowItem)
+          : null;
+        const classObj = viewMode.value === 'class'
+          ? classes.value.find(c => c.name === rowItem)
+          : null;
+        const dayObj = days.value.find(d =>
+          d.name === dayName || d.name_de === dayName || d.day_name === dayName
+        );
+        const periodObj = getPeriodByNumber(periods.value, blockNumber);
+        modalTeacher.value = viewMode.value === 'teacher'
+          ? { name: rowItem, id: teacherObj?.user_id || teacherObj?.profile_id || teacherObj?.id }
+          : { name: '', id: null };
+        modalClass.value = viewMode.value === 'class'
+          ? { name: rowItem, id: classObj?.id }
+          : { name: '', id: null };
+        modalDay.value = dayName;
+        modalDayId.value = dayObj?.day_id;
+        modalPeriod.value = blockNumber;
+        modalPeriodId.value = periodObj?.id;
+        modalExistingLesson.value = lesson;
+        let allFilled = false;
+        if (viewMode.value === 'teacher') {
+          allFilled = selectedSubject.value && selectedClass.value && selectedRoom.value;
+        } else {
+          allFilled = selectedSubject.value &&
+            Array.isArray(selectedTeacherIds.value) &&
+            selectedTeacherIds.value.length &&
+            selectedRoom.value;
+        }
+        if (!lesson && allFilled) {
+          const lessonData = {
+            teacher: viewMode.value === 'teacher' ? rowItem : null,
+            teacherId: viewMode.value === 'teacher' && teacherObj ? (teacherObj.user_id || teacherObj.profile_id || teacherObj.id) : null,
+            teacher_ids: viewMode.value === 'class'
+            ? selectedTeacherIds.value
+            : teacherObj && (teacherObj.user_id || teacherObj.profile_id || teacherObj.id) ? [teacherObj.user_id || teacherObj.profile_id || teacherObj.id] : [],
+            teacher_names: viewMode.value === 'class'
+              ? selectedTeacherIds.value.map(id => {
+                  const t = teachers.value.find(tt => (tt.user_id || tt.id) === id);
+                  return t ? `${t.first_name || ''} ${t.last_name || ''}`.trim() : '';
+                })
+              : teacherObj
+                ? [`${teacherObj.first_name || ''} ${teacherObj.last_name || ''}`.trim()]
+                : [],   
+            class: viewMode.value === 'class' ? rowItem : null,
+            classId: viewMode.value === 'class' ? classObj?.id : selectedClass.value,
+            day: dayName,
+            dayId: dayObj?.day_id,
+            period: blockNumber,
+            periodId: periodObj?.id,
+            subjectId: selectedSubject.value,
+            roomId: selectedRoom.value,
+            id: `draft-${Date.now()}`
+          };
+          emit('trigger-event', { name: 'assignDraftLesson', event: { value: lessonData } });
+        } else if (!lesson) {
+          event.stopPropagation(); // Prevent handleOutsideClick from immediately closing the modal
+          lessonFormPosition.value = calculateBoxPosition(event, 300, 400);
+          showLessonModal.value = true;
+          if (viewMode.value === 'class') {
+            const teacherIds = lesson && Array.isArray(lesson.teacher_ids)
+              ? lesson.teacher_ids
+              : (lesson && lesson.teacher_id ? [lesson.teacher_id] : []);
+            emit('trigger-event', {
+              name: 'selectedTeacherIdsChange',
+              event: { value: teacherIds }
+            });
+          }
+        } else {
+          event.stopPropagation(); // Prevent handleOutsideClick from immediately closing the modal
+          lessonFormPosition.value = calculateBoxPosition(event, 300, 400);
+          showLessonModal.value = true;
+        }
+      } else {
+        if (lesson) {
+          selectedLesson.value = lesson;
+          infoBoxPosition.value = calculateBoxPosition(
+            event,
+            300,
+            lesson.subject_name === 'Termin' ? 250 : 200
+          );
+          showInfoBox.value = true;
+          emit('trigger-event', {
+            name: 'lessonSelected',
+            event: { value: lesson }
+          });
+        } else {
+          selectedLesson.value = null;
+          showInfoBox.value = false;
+          selectedCell.value = null;
+        }
+      }
+    };
+
+    const onCellRightClick = (event, rowItem, dayName, blockNumber) => {
+      if (isEditing.value || mode.value !== 'planning') return;
+      const lesson = getLesson(rowItem, dayName, blockNumber);
+      if (!lesson) return;
+      const teacherObj = viewMode.value === 'teacher'
+      ? teachers.value.find(
+      t =>
+      `${(t.first_name || '').trim()} ${(t.last_name || '').trim()}`.trim() === (rowItem || '').trim()
+      )
+      : null;
+      const classObj = viewMode.value === 'class'
+        ? classes.value.find(c => c.name === rowItem)
+        : null;
+      const dayObj = days.value.find(d =>
+        d.name === dayName || d.name_de === dayName || d.day_name === dayName
+      );
+      const periodObj = getPeriodByNumber(periods.value, blockNumber);
+      modalTeacher.value = viewMode.value === 'teacher'
+        ? { name: rowItem, id: teacherObj?.user_id || teacherObj?.profile_id || teacherObj?.id }
+        : { name: '', id: null };
+      modalClass.value = viewMode.value === 'class'
+        ? { name: rowItem, id: classObj?.id }
+        : { name: '', id: null };
+      modalDay.value = dayName;
+      modalDayId.value = dayObj?.day_id;
+      modalPeriod.value = blockNumber;
+      modalPeriodId.value = periodObj?.id;
+      modalExistingLesson.value = lesson;
+      lessonFormPosition.value = calculateBoxPosition(event, 300, 400);
+      showLessonModal.value = true;
+      selectedCell.value = {
+        teacher: viewMode.value === 'teacher' ? rowItem : null,
+        class: viewMode.value === 'class' ? rowItem : null,
+        day: dayName,
+        period: blockNumber
+      };
+      if (viewMode.value === 'class') {
+        const teacherIds = lesson && Array.isArray(lesson.teacher_ids)
+          ? lesson.teacher_ids
+          : (lesson && lesson.teacher_id ? [lesson.teacher_id] : []);
+        emit('trigger-event', {
+          name: 'selectedTeacherIdsChange',
+          event: { value: teacherIds }
+        });
+      }
+    };
+
+    // InlineLessonForm event handler for teacherIdsChange
+    const onTeacherIdsChange = ids => {
+      emit('trigger-event', {
+        name: 'selectedTeacherIdsChange',
+        event: { value: ids }
+      });
+    };
+
+    // Close info box
+    const closeInfoBox = () => {
+      showInfoBox.value = false;
+      selectedCell.value = null;
+    };
+
+    // Outside‑click handler
+    const handleOutsideClick = (e) => {
+      if (
+        showInfoBox.value &&
+        !e.target.closest('.lesson-info-box') &&
+        !e.target.closest('.schedule-cell')
+      ) {
+        closeInfoBox();
+      }
+      if (
+        showLessonModal.value &&
+        !e.target.closest('.inline-lesson-form') &&
+        !e.target.closest('.schedule-cell')
+      ) {
+        closeLessonModal();
+      }
+    };
+    onMounted(() => document.addEventListener('click', handleOutsideClick));
+    onUnmounted(() => document.removeEventListener('click', handleOutsideClick));
+
+    // Modal controls
+    const closeLessonModal = () => {
+      showLessonModal.value = false;
+      selectedCell.value = null;
+    };
+    const saveDraftLesson = (lessonData, eventName = 'assignDraftLesson') => {
+      if (lessonData.teacherId && !Array.isArray(lessonData.teacher_ids)) {
+        lessonData.teacher_ids = [lessonData.teacherId];
+      }
+      if (lessonData.teacher && !Array.isArray(lessonData.teacher_names)) {
+        lessonData.teacher_names = [lessonData.teacher];
+      }
+      emit('trigger-event', {
+        name: eventName || 'assignDraftLesson',
+        event: { value: lessonData }
+      });
+      closeLessonModal();
+      selectedCell.value = null;
+    };
+    const deleteDraftLesson = lessonId => {
+      emit('trigger-event', {
+        name: 'deleteDraftLesson',
+        event: { value: lessonId }
+      });
+      closeLessonModal();
+      selectedCell.value = null;
+    };
+
+    return {
+      isEditing,
+      staff,
+      staffLabel,
+      sortedDays,
+      sortedPeriods,
+      tableStyles,
+      getLesson,
+      isTeamTaught,
+      showInfoBox,
+      selectedLesson,
+      selectedCell,
+      infoBoxPosition,
+      highlightedScheduleId,
+      hoveredRowIndex,
+      hoveredColIndex,
+      onCellClick,
+      onCellRightClick,
+      onCellHover,
+      onCellLeave,
+      closeInfoBox,
+      mode,
+      viewMode,                   // ✅ GOOD: keeps reactivity in template!
+      colorMode,
+      setColorMode,
+      availableSubjects,
+      availableClasses,
+      availableRooms,
+      teachers,
+      classes,
+      days,
+      periods,
+      showLessonModal,
+      modalExistingLesson,
+      modalTeacher,
+      modalClass,
+      modalDay,
+      modalDayId,
+      modalPeriod,
+      modalPeriodId,
+      lessonFormPosition,
+      closeLessonModal,
+      saveDraftLesson,
+      deleteDraftLesson,
+      selectedSubject,
+      selectedClass,
+      selectedRoom,
+      selectedTeacherIds,
+      onTeacherIdsChange,
+      debugLessonsCount,
+      getTeacherLessonCount,
+      getTeacherHoursAccount,
+      getTeacherLessonCountClass,
+      getWorkloadTooltip,
+      getWorkloadIcon,
+      onTeacherNameClick,
+      getTeacherAbbreviations,
+      getCellStyle,
+      t,
+      language,
+      enableCrossHair
+    };
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.schedule-table-container {
+  width: 100%;
+  overflow: auto;
+  max-height: 80vh; // Allow vertical scrolling
+  max-width: 100%;  // Allow horizontal scrolling
+  position: relative;
+
+  .color-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    label {
+      font-weight: 500;
+      margin-right: 6px;
+    }
+    .toggle-switch {
+      display: inline-flex;
+      gap: 2px;
+      button {
+        border: 1px solid #bbb;
+        background: #fafafa;
+        color: #333;
+        padding: 2px 10px;
+        border-radius: 3px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+        &.active, &:hover {
+          background: #007bff;
+          color: #fff;
+          border-color: #007bff;
+        }
+      }
+    }
+  }
+
+  .schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border-color);
+
+    th,
+    td {
+      border: 1px solid var(--border-color);
+      padding: var(--cell-padding);
+      text-align: center;
+    }
+
+    thead {
+      background-color: var(--header-bg);
+
+      th {
+        font-weight: bold;
+        border: 2px solid var(--border-color); // Stronger borders for better visibility
+        
+        &.day-header,
+        &.period-header {
+          position: sticky;
+          top: 0;
+          z-index: 5;
+          background: var(--header-bg);
+          border: 2px solid var(--border-color);
+        }
+        
+        &.staff-header {
+          position: sticky;
+          left: 0;
+          z-index: 15; // Highest priority - corner cell
+          background: var(--header-bg);
+          border: 3px solid var(--border-color); // Even stronger border for corner
+        }
+      }
+    }
+
+    .staff-header,
+    .staff-cell {
+      text-align: left;
+      white-space: nowrap;
+      min-width: max-content;
+      width: auto;
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      background: white;
+      border-right: 2px solid var(--border-color);
+      
+      // Stronger teacher name styling to ensure black text
+      .teacher-info {
+        span.teacher-name,
+        span:first-child {
+          color: #000000 !important; // Force black text with higher specificity
+          font-weight: normal !important;
+        }
+      }
+      
+      .teacher-name {
+        color: #000000 !important;
+        font-weight: normal !important;
+      }
+      
+      .class-name {
+        color: #000000 !important;
+        font-weight: normal !important;
+      }
+    }
+
+    .day-header {
+      min-width: 80px;
+      border-right: 3px solid #aaa;
+      border: 2px solid var(--border-color) !important; // Ensure borders are visible
+    }
+
+    .period-header {
+      min-width: 40px;
+      border: 2px solid var(--border-color) !important; // Ensure borders are visible
+    }
+
+    .schedule-cell {
+      min-width: 40px;
+      height: 40px;
+      cursor: pointer;
+      transition: box-shadow 0.15s, background 0.15s;
+
+      &.day-separator {
+        border-left: 3px solid #aaa;
+      }
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+    }
+
+    .selected-cell {
+      outline: 2px solid #007bff;
+      background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .draft-lesson {
+      border: 2px dashed #28a745;
+      background-color: rgba(40, 167, 69, 0.1);
+    }
+
+    .scheduled-lesson {
+      color: blue;
+    }
+
+    // No background for team teaching - only shadow will be handled inline
+    .team-teaching {}
+
+    .lesson-block {
+      text-align: center;
+    }
+
+    .lesson-class,
+    .lesson-subject {
+      display: block;
+      line-height: 1.1;
+    }
+
+    .team-highlight {
+      background-color: rgba(255, 193, 7, 0.08);
+    }
+
+    .teacher-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px; // Add some padding for readability
+    }
+
+    .lesson-count {
+      font-size: 0.85em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .count-normal {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .count-full {
+      background-color: #d4edda;
+      color: #155724;
+      .count-icon {
+        color: #28a745;
+        font-weight: bold;
+        margin-right: 4px;
+      }
+    }
+
+    .count-over {
+      background-color: #f8d7da;
+      color: #721c24;
+      .count-icon {
+        color: #dc3545;
+        font-weight: bold;
+        margin-right: 4px;
+      }
+    }
+
+    .teacher-name {
+      color: #000000 !important; // Force black color
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: normal !important;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+      
+      &.clickable {
+        cursor: pointer;
+      }
+    }
+
+    .class-name {
+      color: #000000 !important; // Force black color  
+      font-weight: normal !important;
+    }
+
+    // Cross-hair hover effects - lighter overlay that doesn't interfere with clicking or colors
+    .cell-hover-row {
+      position: relative;
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(128, 128, 128, 0.1);
+        pointer-events: none;
+        z-index: 1;
+      }
+    }
+    
+    .cell-hover-col {
+      position: relative;
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(128, 128, 128, 0.1);
+        pointer-events: none;
+        z-index: 1;
+      }
+    }
+    
+    .cell-hover-active {
+      position: relative;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(128, 128, 128, 0.05); // Very light additional overlay for active cell
+        pointer-events: none;
+        z-index: 2;
+      }
+    }
+
+    .staff-cell.row-hover {
+      background-color: rgba(128, 128, 128, 0.15) !important;
+      border: 2px solid rgba(128, 128, 128, 0.3);
+    }
+
+    .period-header.col-hover {
+      background-color: rgba(128, 128, 128, 0.15) !important;
+      border: 2px solid rgba(128, 128, 128, 0.3);
+    }
+
+    .teacher-abbrevs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .teacher-abbr {
+        font-size: 12px;
+        font-weight: bold;
+        margin: 1px 0;
+      }
+      &.stacked .teacher-abbr {
+        font-size: 11px;
+      }
+    }
+  }
+
+  .termin-indicator {
+    display: inline-block;
+    color: #ffffff;
+    background-color: #ff9800;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    font-weight: bold;
+  }
+}
+</style>

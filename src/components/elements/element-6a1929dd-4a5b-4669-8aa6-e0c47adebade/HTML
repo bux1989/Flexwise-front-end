@@ -1,0 +1,30 @@
+<template>
+  <table>
+    <thead>
+      <tr>
+        <th>Lehrkraft</th>
+        <template v-for="day in sortedDays">
+          <th :colspan="sortedPeriods.length">{{ day.name_de }}</th>
+        </template>
+      </tr>
+      <tr>
+        <th></th>
+        <template v-for="day in sortedDays">
+          <template v-for="period in sortedPeriods">
+            <th>{{ period.block_number }}</th>
+          </template>
+        </template>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="teacher in teachers">
+        <td>{{ teacher.first_name }} {{ teacher.last_name }}</td>
+        <template v-for="day in sortedDays">
+          <template v-for="period in sortedPeriods">
+            <td></td>
+          </template>
+        </template>
+      </tr>
+    </tbody>
+  </table>
+</template>

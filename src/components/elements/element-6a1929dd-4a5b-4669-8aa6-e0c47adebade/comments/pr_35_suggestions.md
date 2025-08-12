@@ -1,0 +1,1 @@
+I suggest redesigning the sticky columns approach to mimic Excel's functionality. This could involve implementing proper separation of concerns, rather than relying on sticky table cells. The current method leads to overlapping issues, such as day numbers bleeding through, which can be quite confusing for users. A more structured approach would enhance usability and clarity.
