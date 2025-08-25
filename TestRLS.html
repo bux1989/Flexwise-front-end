@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Comprehensive RLS Test Dashboard</title>
+    <!--
+    VERSION HISTORY:
+    v4.0 - 2025-01-26 - Comprehensive update to test all Supabase tables and views for Flexwise school management system
+    v3.6 - 2025-01-25 21:15 - Added clarification about superuser vs API testing, updated RLS enablement instructions
+    v3.5 - 2025-01-25 20:30 - Added dependency table security analysis and RLS policy fixes for profile_info_student, user_roles, roles, structure_classes
+    v3.4 - 2025-01-25 20:05 - Added vw_student_profiles view testing and enhanced user display with role information
+    v3.3 - 2025-01-25 19:50 - Added role and policy debugging functionality to analyze RLS permission issues
+    v3.2 - 2025-01-25 19:10 - Added detailed error capture with errorDetails object, expanded error display in UI
+    v3.1 - 2025-01-25 19:06 - Enhanced dependency table testing with visual status indicators (BLOCKED/ACCESSIBLE/EMPTY)
+    v3.0 - 2025-01-25 18:56 - Added comprehensive dependency table testing for course_schedules RLS debugging
+    v2.1 - 2025-01-25 18:45 - Updated console logging format to match user test results with timestamps
+    v2.0 - 2025-01-25 18:30 - Added dependency table testing (family_member_child_links, profile_info_student, etc.)
+    v1.0 - 2025-01-25 18:00 - Initial RLS test dashboard with primary table testing
+    -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .warning {
+            background: #fee;
+            border: 1px solid #fcc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .success {
+            background: #efe;
+            border: 1px solid #cfc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #c00;
+        }
+        .info {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .test-result {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .user-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .config-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .login-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input[type="password"] {
+            font-family: monospace;
+        }
+        .url-input {
+            font-family: monospace;
+            font-size: 12px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .hidden {
+            display: none;
+        }
+        .login-row {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 10px;
+        }
+        .login-row input {
+            flex: 1;
+        }
+        .login-row button {
+            margin: 0;
+            white-space: nowrap;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .console-section {
+            background: #f1f3f4;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .console-log {
+            background: #263238;
+            color: #e8eaf6;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 10px;
+        }
+        .table-category {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .core-tables { background: #e8f5e8; border-left-color: #4CAF50; }
+        .user-tables { background: #fff3e0; border-left-color: #ff9800; }
+        .academic-tables { background: #e3f2fd; border-left-color: #2196f3; }
+        .operational-tables { background: #f3e5f5; border-left-color: #9c27b0; }
+        .views-tables { background: #e0f2f1; border-left-color: #009688; }
+        .system-tables { background: #fce4ec; border-left-color: #e91e63; }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 20px;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .table-selector {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .table-group {
+            margin: 10px 0;
+        }
+        .table-group h4 {
+            margin: 10px 0 5px 0;
+            color: #333;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2196f3;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Comprehensive RLS Test Dashboard <span style="font-size: 0.6em; color: #666; font-weight: normal;">(v4.0)</span></h1>
+        
+        <!-- Version Info & Changelog -->
+        <div class="info">
+            <h3>📋 Instructions for Testing</h3>
+            <ol>
+                <li><strong>Open Browser Console:</strong> Press F12 or Right-click → Inspect → Console tab</li>
+                <li><strong>Configure Supabase</strong> below with your database URL and API key</li>
+                <li><strong>Select tables/views</strong> to test (or use presets)</li>
+                <li><strong>Sign in</strong> as different users (Parent, Teacher, Admin)</li>
+                <li><strong>Copy the console logs</strong> and share them for analysis</li>
+            </ol>
+            <p><strong>💡 Tip:</strong> All test results will be logged to both the page and browser console!</p>
+
+            <details style="margin-top: 15px;">
+                <summary style="font-weight: bold; cursor: pointer;">📝 What's New in v4.0</summary>
+                <div style="margin-top: 10px; font-size: 14px;">
+                    <ul>
+                        <li><strong>Comprehensive Coverage:</strong> Tests all tables and views in the Flexwise database</li>
+                        <li><strong>Organized Categories:</strong> Tables grouped by function (Core, Users, Academic, etc.)</li>
+                        <li><strong>Selective Testing:</strong> Choose which tables to test with checkboxes</li>
+                        <li><strong>Progress Tracking:</strong> Visual progress bar during testing</li>
+                        <li><strong>Summary Statistics:</strong> Quick overview of test results</li>
+                        <li><strong>Enhanced Error Reporting:</strong> Better error details and troubleshooting</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+        
+        <!-- Configuration Section -->
+        <div class="config-section">
+            <h2>⚙️ Configuration</h2>
+            <label>Supabase URL:</label>
+            <input type="text" id="supabaseUrl" class="url-input" placeholder="https://your-project.supabase.co" />
+            
+            <label>Supabase Anon Key:</label>
+            <input type="text" id="supabaseKey" class="url-input" placeholder="Your anon key from Supabase dashboard" />
+            
+            <button onclick="initializeSupabase()">Initialize Supabase</button>
+        </div>
+
+        <div id="warningMessage" class="warning">
+            ⚠️ <strong>Please configure your Supabase URL and API key above</strong>
+        </div>
+
+        <!-- Table Selection -->
+        <div id="tableSelector" class="table-selector hidden">
+            <h2>📊 Select Tables & Views to Test</h2>
+            <div style="margin-bottom: 15px;">
+                <button onclick="selectAllTables()" style="background: #2196f3;">Select All</button>
+                <button onclick="selectNoneTables()" style="background: #f44336;">Select None</button>
+                <button onclick="selectCoreTables()" style="background: #ff9800;">Core Tables Only</button>
+                <button onclick="selectViewsOnly()" style="background: #9c27b0;">Views Only</button>
+            </div>
+            
+            <div class="table-group">
+                <h4 style="color: #4CAF50;">🏗️ Core Infrastructure Tables</h4>
+                <div class="checkbox-group" id="coreTables"></div>
+            </div>
+            
+            <div class="table-group">
+                <h4 style="color: #ff9800;">👥 User & Profile Tables</h4>
+                <div class="checkbox-group" id="userTables"></div>
+            </div>
+            
+            <div class="table-group">
+                <h4 style="color: #2196f3;">🎓 Academic & Schedule Tables</h4>
+                <div class="checkbox-group" id="academicTables"></div>
+            </div>
+            
+            <div class="table-group">
+                <h4 style="color: #9c27b0;">🏃‍♂️ Operational Tables</h4>
+                <div class="checkbox-group" id="operationalTables"></div>
+            </div>
+            
+            <div class="table-group">
+                <h4 style="color: #009688;">👁️ Views & Aggregated Data</h4>
+                <div class="checkbox-group" id="viewsTables"></div>
+            </div>
+            
+            <div class="table-group">
+                <h4 style="color: #e91e63;">⚙️ System & Configuration Tables</h4>
+                <div class="checkbox-group" id="systemTables"></div>
+            </div>
+        </div>
+
+        <!-- Current User -->
+        <div id="userSection" class="hidden">
+            <h2>👤 Current User</h2>
+            <div id="userInfo" class="user-info">
+                Not signed in
+            </div>
+            <button onclick="signOut()">Sign Out</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginSection" class="hidden">
+            <h2>🔑 Sign In to Test RLS</h2>
+            <div class="login-form">
+                <div class="login-row">
+                    <div style="flex: 1;">
+                        <label>Email:</label>
+                        <input type="email" id="loginEmail" placeholder="Enter user email" />
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Password:</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password" />
+                    </div>
+                    <button onclick="signInWithForm()">Sign In</button>
+                </div>
+                
+                <p><strong>Example users to test with:</strong></p>
+                <ul>
+                    <li><strong>Parent:</strong> Should see limited data (only their children + family data)</li>
+                    <li><strong>Teacher:</strong> Should see class-related data for their assigned classes</li>
+                    <li><strong>Admin/Staff:</strong> Should see broader school data</li>
+                </ul>
+            </div>
+
+            <div>
+                <button onclick="testSelectedTables()" id="testButton" disabled>
+                    🧪 Test Selected Tables
+                </button>
+                <button onclick="debugUserRole()" id="debugRoleButton" disabled style="background: #ff9800;">
+                    🔍 Debug User Role & Policies
+                </button>
+                <button onclick="copyConsoleLogs()" id="copyButton">
+                    📋 Copy Console Logs
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progressSection" class="hidden">
+            <h2>⏳ Testing Progress</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0%</div>
+            </div>
+            <p id="currentTest">Preparing to test...</p>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div id="summarySection" class="hidden">
+            <h2>📊 Test Summary</h2>
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTested">0</div>
+                    <div class="stat-label">Tables Tested</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAccessible">0</div>
+                    <div class="stat-label">Accessible</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBlocked">0</div>
+                    <div class="stat-label">Blocked by RLS</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalEmpty">0</div>
+                    <div class="stat-label">Empty Tables</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRecords">0</div>
+                    <div class="stat-label">Total Records</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error -->
+        <div id="errorMessage" class="error hidden"></div>
+
+        <!-- Test Results -->
+        <div id="resultsSection" class="hidden">
+            <h2>🔍 Detailed Test Results</h2>
+            <div id="testResults"></div>
+        </div>
+
+        <!-- Console Logs Display -->
+        <div class="console-section">
+            <h2>📊 Console Logs</h2>
+            <p>All test results and debugging info will appear here:</p>
+            <div id="consoleLogs" class="console-log">Waiting for tests to run...</div>
+            <button onclick="clearLogs()">Clear Logs</button>
+            <button onclick="copyConsoleLogs()">📋 Copy All Logs</button>
+        </div>
+    </div>
+
+    <script>
+        let supabase = null;
+        let currentUser = null;
+        let consoleLogs = [];
+        let testResults = {};
+
+        // Comprehensive list of all tables and views in the Flexwise database
+        const allTables = {
+            core: [
+                'schools',
+                'school_settings', 
+                'structure_classes',
+                'structure_day_types',
+                'structure_periods',
+                'schedule_periods',
+                'roles'
+            ],
+            users: [
+                'user_profiles',
+                'user_roles',
+                'profile_info_student',
+                'profile_info_staff',
+                'family_members',
+                'family_member_child_links'
+            ],
+            academic: [
+                'course_schedules',
+                'course_registrations',
+                'subjects',
+                'classes_subjects',
+                'teacher_assignments'
+            ],
+            operational: [
+                'student_daily_log',
+                'student_check_ins',
+                'attendance_daily_overview',
+                'attendance_class_stats',
+                'pickup_arrangements',
+                'announcements',
+                'bulletin_posts'
+            ],
+            views: [
+                'vw_student_profiles',
+                'vw_course_schedules_detailed',
+                'vw_daily_attendance',
+                'vw_class_rosters',
+                'vw_teacher_schedules',
+                'vw_parent_children',
+                'vw_school_overview'
+            ],
+            system: [
+                'api_logs',
+                'system_settings',
+                'notification_preferences',
+                'user_sessions',
+                'audit_logs'
+            ]
+        };
+
+        // Enhanced logging function
+        function logMessage(message, type = 'info', data = null) {
+            const timestamp = new Date().toISOString();
+            const logEntry = {
+                timestamp,
+                type,
+                message,
+                data
+            };
+            
+            consoleLogs.push(logEntry);
+            
+            // Log to browser console
+            console.log(`[${timestamp}] ${type.toUpperCase()}: ${message}`, data || '');
+            
+            // Display in page
+            updateConsoleDisplay();
+            
+            return logEntry;
+        }
+
+        function updateConsoleDisplay() {
+            const consoleDiv = document.getElementById('consoleLogs');
+            const logsText = consoleLogs.map(log => {
+                let text = `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`;
+                if (log.data) {
+                    text += '\n' + JSON.stringify(log.data, null, 2);
+                }
+                return text;
+            }).join('\n\n');
+            
+            consoleDiv.textContent = logsText;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        function clearLogs() {
+            consoleLogs = [];
+            updateConsoleDisplay();
+            console.clear();
+            logMessage('Console logs cleared');
+        }
+
+        function copyConsoleLogs() {
+            const logsText = consoleLogs.map(log => {
+                let text = `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`;
+                if (log.data) {
+                    text += '\n' + JSON.stringify(log.data, null, 2);
+                }
+                return text;
+            }).join('\n\n');
+            
+            navigator.clipboard.writeText(logsText).then(() => {
+                showSuccess('Console logs copied to clipboard!');
+            }).catch(err => {
+                showError('Failed to copy logs: ' + err.message);
+            });
+        }
+
+        function initializeSupabase() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+            
+            logMessage('Initializing Supabase', 'info', { url: url.substring(0, 30) + '...', keyLength: key.length });
+            
+            if (!url || !key) {
+                logMessage('Missing configuration', 'error', { hasUrl: !!url, hasKey: !!key });
+                showError('Please enter both Supabase URL and API key');
+                return;
+            }
+
+            try {
+                supabase = window.supabase.createClient(url, key);
+                document.getElementById('warningMessage').classList.add('hidden');
+                document.getElementById('tableSelector').classList.remove('hidden');
+                document.getElementById('loginSection').classList.remove('hidden');
+                
+                // Initialize table checkboxes
+                initializeTableSelector();
+                
+                logMessage('Supabase initialized successfully', 'success');
+                showSuccess('Supabase initialized successfully!');
+                
+                // Check for existing session
+                checkCurrentSession();
+            } catch (error) {
+                logMessage('Supabase initialization failed', 'error', { error: error.message });
+                showError('Failed to initialize Supabase: ' + error.message);
+            }
+        }
+
+        function initializeTableSelector() {
+            const categories = [
+                { id: 'coreTables', tables: allTables.core },
+                { id: 'userTables', tables: allTables.users },
+                { id: 'academicTables', tables: allTables.academic },
+                { id: 'operationalTables', tables: allTables.operational },
+                { id: 'viewsTables', tables: allTables.views },
+                { id: 'systemTables', tables: allTables.system }
+            ];
+
+            categories.forEach(category => {
+                const container = document.getElementById(category.id);
+                container.innerHTML = category.tables.map(table => `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="table_${table}" value="${table}" checked>
+                        <label for="table_${table}">${table}</label>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function selectAllTables() {
+            document.querySelectorAll('input[type="checkbox"][id^="table_"]').forEach(cb => cb.checked = true);
+        }
+
+        function selectNoneTables() {
+            document.querySelectorAll('input[type="checkbox"][id^="table_"]').forEach(cb => cb.checked = false);
+        }
+
+        function selectCoreTables() {
+            selectNoneTables();
+            allTables.core.forEach(table => {
+                const checkbox = document.getElementById(`table_${table}`);
+                if (checkbox) checkbox.checked = true;
+            });
+        }
+
+        function selectViewsOnly() {
+            selectNoneTables();
+            allTables.views.forEach(table => {
+                const checkbox = document.getElementById(`table_${table}`);
+                if (checkbox) checkbox.checked = true;
+            });
+        }
+
+        function getSelectedTables() {
+            return Array.from(document.querySelectorAll('input[type="checkbox"][id^="table_"]:checked'))
+                .map(cb => cb.value);
+        }
+
+        async function checkCurrentSession() {
+            if (!supabase) return;
+
+            logMessage('Checking current session');
+
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                logMessage('Session check result', 'info', { hasSession: !!session, user: session?.user?.email });
+
+                if (session?.user) {
+                    currentUser = session.user;
+                    await updateUserDisplayWithRole();
+                }
+            } catch (error) {
+                logMessage('Session check error', 'error', { error: error.message });
+                console.error('Session check error:', error);
+            }
+        }
+
+        async function updateUserDisplayWithRole() {
+            const userInfo = document.getElementById('userInfo');
+            const userSection = document.getElementById('userSection');
+            const testButton = document.getElementById('testButton');
+            const debugRoleButton = document.getElementById('debugRoleButton');
+
+            if (currentUser) {
+                logMessage('User display updated', 'info', {
+                    email: currentUser.email,
+                    id: currentUser.id,
+                    metadata: currentUser.user_metadata
+                });
+
+                // Fetch user role information
+                let roleInfo = 'Loading...';
+                try {
+                    const profileId = currentUser.user_metadata?.profile_id;
+                    if (profileId) {
+                        const { data: userRoles, error } = await supabase
+                            .from('user_roles')
+                            .select(`
+                                *,
+                                roles(name)
+                            `)
+                            .eq('user_profile_id', profileId);
+
+                        if (!error && userRoles && userRoles.length > 0) {
+                            const roleNames = userRoles.map(ur => ur.roles?.name).filter(Boolean);
+                            roleInfo = roleNames.join(', ') || 'No roles found';
+                        } else {
+                            roleInfo = 'Unable to fetch role';
+                        }
+                    } else {
+                        roleInfo = 'No profile_id in metadata';
+                    }
+                } catch (error) {
+                    roleInfo = 'Error fetching role';
+                    logMessage('Role fetch error', 'error', { error: error.message });
+                }
+
+                userInfo.innerHTML = `
+                    <p><strong>Email:</strong> ${currentUser.email}</p>
+                    <p><strong>Name:</strong> ${currentUser.user_metadata?.first_name || ''} ${currentUser.user_metadata?.last_name || ''}</p>
+                    <p><strong>Role:</strong> <span style="background: #e3f2fd; padding: 2px 8px; border-radius: 3px; font-weight: bold;">${roleInfo}</span></p>
+                    <p><strong>Profile ID:</strong> <code>${currentUser.user_metadata?.profile_id || 'Not set'}</code></p>
+                    <p><strong>User ID:</strong> <code>${currentUser.id}</code></p>
+                    <details style="margin-top: 10px;">
+                        <summary style="cursor: pointer; font-weight: bold;">Full Metadata</summary>
+                        <pre style="margin-top: 5px; font-size: 11px;">${JSON.stringify(currentUser.user_metadata, null, 2)}</pre>
+                    </details>
+                `;
+                userSection.classList.remove('hidden');
+                testButton.disabled = false;
+                debugRoleButton.disabled = false;
+            } else {
+                userInfo.innerHTML = 'Not signed in';
+                userSection.classList.add('hidden');
+                testButton.disabled = true;
+                debugRoleButton.disabled = true;
+            }
+        }
+
+        async function signInWithForm() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                logMessage('Missing login credentials', 'error');
+                showError('Please enter both email and password');
+                return;
+            }
+            
+            await signInUser(email, password);
+        }
+
+        async function signInUser(email, password) {
+            if (!supabase) {
+                logMessage('Supabase not initialized for sign in', 'error');
+                showError('Please initialize Supabase first');
+                return;
+            }
+
+            logMessage('Attempting to sign in', 'info', { email });
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw error;
+                
+                currentUser = data.user;
+                logMessage('Sign in successful', 'success', {
+                    email: data.user.email,
+                    userId: data.user.id,
+                    metadata: data.user.user_metadata
+                });
+
+                await updateUserDisplayWithRole();
+                showSuccess(`Signed in as ${email}`);
+                
+                // Clear the password field for security
+                document.getElementById('loginPassword').value = '';
+                
+            } catch (error) {
+                logMessage('Sign in failed', 'error', { email, error: error.message });
+                showError(`Sign in failed: ${error.message}`);
+                console.error('Sign in error:', error);
+            }
+        }
+
+        async function signOut() {
+            if (!supabase) return;
+            
+            logMessage('Signing out');
+            
+            try {
+                await supabase.auth.signOut();
+                currentUser = null;
+                updateUserDisplayWithRole();
+                document.getElementById('resultsSection').classList.add('hidden');
+                document.getElementById('summarySection').classList.add('hidden');
+                document.getElementById('progressSection').classList.add('hidden');
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                
+                logMessage('Sign out successful', 'success');
+                showSuccess('Signed out successfully');
+            } catch (error) {
+                logMessage('Sign out failed', 'error', { error: error.message });
+                showError('Sign out failed: ' + error.message);
+            }
+        }
+
+        async function testSelectedTables() {
+            if (!supabase || !currentUser) {
+                logMessage('Cannot test RLS - not signed in', 'error');
+                showError('Please sign in first');
+                return;
+            }
+
+            const selectedTables = getSelectedTables();
+            if (selectedTables.length === 0) {
+                showError('Please select at least one table to test');
+                return;
+            }
+
+            logMessage('Starting comprehensive RLS test', 'info', { 
+                userEmail: currentUser.email, 
+                userId: currentUser.id,
+                tablesSelected: selectedTables.length,
+                tables: selectedTables
+            });
+
+            // Show progress section
+            document.getElementById('progressSection').classList.remove('hidden');
+            document.getElementById('summarySection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            
+            testResults = {};
+            let completed = 0;
+            let totalRecords = 0;
+            let accessible = 0;
+            let blocked = 0;
+            let empty = 0;
+
+            try {
+                for (const tableName of selectedTables) {
+                    // Update progress
+                    const progress = (completed / selectedTables.length) * 100;
+                    document.getElementById('progressBar').style.width = `${progress}%`;
+                    document.getElementById('progressBar').textContent = `${Math.round(progress)}%`;
+                    document.getElementById('currentTest').textContent = `Testing: ${tableName}`;
+
+                    logMessage(`Testing table: ${tableName}`, 'info');
+
+                    try {
+                        const { data, error } = await supabase
+                            .from(tableName)
+                            .select('*');
+
+                        const result = {
+                            count: data?.length || 0,
+                            hasError: !!error,
+                            error: error?.message,
+                            errorDetails: error ? {
+                                message: error.message,
+                                details: error.details,
+                                hint: error.hint,
+                                code: error.code
+                            } : null,
+                            sampleData: data?.slice(0, 3) // First 3 records
+                        };
+
+                        testResults[tableName] = result;
+
+                        // Update statistics
+                        if (error) {
+                            blocked++;
+                        } else if (result.count === 0) {
+                            empty++;
+                        } else {
+                            accessible++;
+                            totalRecords += result.count;
+                        }
+
+                        logMessage(`Table ${tableName} result`, 'info', {
+                            count: result.count,
+                            hasError: result.hasError,
+                            errorDetails: result.errorDetails,
+                            sampleData: result.sampleData
+                        });
+
+                    } catch (error) {
+                        const result = {
+                            count: 0,
+                            hasError: true,
+                            error: error.message,
+                            errorDetails: {
+                                message: error.message,
+                                details: error.details || 'Unknown error',
+                                hint: error.hint || '',
+                                code: error.code || 'UNKNOWN'
+                            },
+                            sampleData: null
+                        };
+
+                        testResults[tableName] = result;
+                        blocked++;
+
+                        logMessage(`Table ${tableName} error`, 'error', {
+                            error: error.message,
+                            errorDetails: result.errorDetails
+                        });
+                    }
+
+                    completed++;
+                    
+                    // Small delay to allow UI to update
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+
+                // Final progress update
+                document.getElementById('progressBar').style.width = '100%';
+                document.getElementById('progressBar').textContent = '100%';
+                document.getElementById('currentTest').textContent = 'Testing complete!';
+
+                // Update summary statistics
+                document.getElementById('totalTested').textContent = selectedTables.length;
+                document.getElementById('totalAccessible').textContent = accessible;
+                document.getElementById('totalBlocked').textContent = blocked;
+                document.getElementById('totalEmpty').textContent = empty;
+                document.getElementById('totalRecords').textContent = totalRecords.toLocaleString();
+
+                logMessage('Comprehensive RLS test completed', 'success', {
+                    userEmail: currentUser.email,
+                    totalTested: selectedTables.length,
+                    accessible,
+                    blocked,
+                    empty,
+                    totalRecords,
+                    summary: Object.fromEntries(
+                        Object.entries(testResults).map(([table, result]) => [
+                            table,
+                            { count: result.count, hasError: !!result.error }
+                        ])
+                    )
+                });
+
+                // Show results
+                document.getElementById('summarySection').classList.remove('hidden');
+                displayComprehensiveResults();
+
+            } catch (error) {
+                logMessage('Comprehensive RLS test failed', 'error', { error: error.message });
+                showError('Test failed: ' + error.message);
+                console.error('Test error:', error);
+            }
+        }
+
+        function displayComprehensiveResults() {
+            const resultsDiv = document.getElementById('testResults');
+            const resultsSection = document.getElementById('resultsSection');
+
+            let html = `
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                    <h3>👤 Test Context</h3>
+                    <p><strong>User:</strong> ${currentUser.email}</p>
+                    <p><strong>Profile ID:</strong> ${currentUser.user_metadata?.profile_id || 'Not set'}</p>
+                    <p><strong>Tables Tested:</strong> ${Object.keys(testResults).length}</p>
+                </div>
+            `;
+
+            // Group results by category
+            const categories = [
+                { name: '🏗️ Core Infrastructure', tables: allTables.core, style: 'core-tables' },
+                { name: '👥 User & Profile', tables: allTables.users, style: 'user-tables' },
+                { name: '🎓 Academic & Schedule', tables: allTables.academic, style: 'academic-tables' },
+                { name: '🏃‍♂️ Operational', tables: allTables.operational, style: 'operational-tables' },
+                { name: '👁️ Views & Aggregated', tables: allTables.views, style: 'views-tables' },
+                { name: '⚙️ System & Configuration', tables: allTables.system, style: 'system-tables' }
+            ];
+
+            categories.forEach(category => {
+                const categoryTables = category.tables.filter(table => testResults[table]);
+                if (categoryTables.length === 0) return;
+
+                html += `<div class="table-category ${category.style}">`;
+                html += `<h3>${category.name}</h3>`;
+
+                categoryTables.forEach(tableName => {
+                    const result = testResults[tableName];
+                    const hasError = !!result.error;
+                    const isEmpty = !hasError && result.count === 0;
+                    
+                    let statusColor = hasError ? '#f44336' : (isEmpty ? '#ff9800' : '#4CAF50');
+                    let statusIcon = hasError ? '❌' : (isEmpty ? '⚠️' : '✅');
+                    let statusText = hasError ? 'BLOCKED' : (isEmpty ? 'EMPTY' : 'ACCESSIBLE');
+
+                    html += `
+                        <div class="test-result" style="border-left: 4px solid ${statusColor};">
+                            <h4>${tableName} ${statusIcon} <span style="color: ${statusColor}; font-size: 0.8em;">${statusText}</span></h4>
+                            <p><strong>Records visible:</strong> ${result.count.toLocaleString()}</p>
+                    `;
+
+                    if (hasError && result.errorDetails) {
+                        html += `
+                            <details style="margin-top: 10px;">
+                                <summary style="color: red; font-weight: bold;">❌ Error Details</summary>
+                                <div style="background: #ffebee; padding: 10px; border-radius: 5px; margin-top: 5px; font-family: monospace; font-size: 12px;">
+                                    <p><strong>Message:</strong> ${result.errorDetails.message || 'Unknown error'}</p>
+                                    ${result.errorDetails.details ? `<p><strong>Details:</strong> ${result.errorDetails.details}</p>` : ''}
+                                    ${result.errorDetails.hint ? `<p><strong>Hint:</strong> ${result.errorDetails.hint}</p>` : ''}
+                                    ${result.errorDetails.code ? `<p><strong>Code:</strong> ${result.errorDetails.code}</p>` : ''}
+                                </div>
+                            </details>
+                        `;
+                    }
+
+                    if (result.sampleData && result.sampleData.length > 0) {
+                        html += `
+                            <details style="margin-top: 10px;">
+                                <summary style="color: #666; cursor: pointer;">📄 Sample Data (first 3 records)</summary>
+                                <pre style="margin-top: 5px; max-height: 200px; overflow-y: auto;">${JSON.stringify(result.sampleData, null, 2)}</pre>
+                            </details>
+                        `;
+                    }
+
+                    html += '</div>';
+                });
+
+                html += '</div>';
+            });
+
+            resultsDiv.innerHTML = html;
+            resultsSection.classList.remove('hidden');
+        }
+
+        async function debugUserRole() {
+            if (!supabase || !currentUser) {
+                logMessage('Cannot debug role - not signed in', 'error');
+                showError('Please sign in first');
+                return;
+            }
+
+            logMessage('Starting role and policy debugging', 'info', { userEmail: currentUser.email });
+
+            try {
+                const debugResults = {};
+                const profileId = currentUser.user_metadata?.profile_id;
+
+                // Check user's role(s)
+                logMessage('Checking user roles...', 'info');
+                const { data: userRoles, error: rolesError } = await supabase
+                    .from('user_roles')
+                    .select(`
+                        *,
+                        roles(name)
+                    `)
+                    .eq('user_profile_id', profileId);
+
+                debugResults.userRoles = {
+                    data: userRoles,
+                    error: rolesError,
+                    count: userRoles?.length || 0
+                };
+
+                logMessage('User roles result', rolesError ? 'error' : 'info', {
+                    profileId,
+                    roles: userRoles?.map(ur => ur.roles?.name),
+                    error: rolesError?.message
+                });
+
+                // Check family links
+                logMessage('Checking family member child links...', 'info');
+                const { data: familyLinks, error: familyError } = await supabase
+                    .from('family_member_child_links')
+                    .select('*')
+                    .eq('adult_profile_id', profileId);
+
+                debugResults.familyLinks = {
+                    data: familyLinks,
+                    error: familyError,
+                    count: familyLinks?.length || 0
+                };
+
+                logMessage('Family links result', familyError ? 'error' : 'info', {
+                    count: familyLinks?.length,
+                    childrenIds: familyLinks?.map(fl => fl.child_profile_id),
+                    error: familyError?.message
+                });
+
+                displayDebugResults(debugResults);
+
+            } catch (error) {
+                logMessage('Debug failed', 'error', { error: error.message });
+                showError('Debug failed: ' + error.message);
+            }
+        }
+
+        function displayDebugResults(results) {
+            const resultsDiv = document.getElementById('testResults');
+            const resultsSection = document.getElementById('resultsSection');
+
+            let html = `
+                <h3>🔍 Role & Policy Debug Results</h3>
+                <p><strong>User:</strong> ${currentUser.email} (${currentUser.user_metadata?.profile_id})</p>
+            `;
+
+            // User Roles
+            html += `<div class="test-result" style="border: 2px solid #0066cc;">
+                <h4>👤 User Roles</h4>
+                <p><strong>Count:</strong> ${results.userRoles?.count || 0}</p>`;
+
+            if (results.userRoles?.error) {
+                html += `<p style="color: red;"><strong>Error:</strong> ${results.userRoles.error.message}</p>`;
+            } else if (results.userRoles?.data) {
+                const roleNames = results.userRoles.data.map(ur => ur.roles?.name).filter(Boolean);
+                html += `<p><strong>Roles:</strong> ${roleNames.join(', ') || 'None found'}</p>`;
+                html += `<details><summary>Raw Data</summary><pre>${JSON.stringify(results.userRoles.data, null, 2)}</pre></details>`;
+            }
+            html += `</div>`;
+
+            // Family Links
+            html += `<div class="test-result" style="border: 2px solid #009900;">
+                <h4>👨‍👧‍👦 Family Member Child Links</h4>
+                <p><strong>Count:</strong> ${results.familyLinks?.count || 0}</p>`;
+
+            if (results.familyLinks?.error) {
+                html += `<p style="color: red;"><strong>Error:</strong> ${results.familyLinks.error.message}</p>`;
+            } else if (results.familyLinks?.data) {
+                const childIds = results.familyLinks.data.map(fl => fl.child_profile_id);
+                html += `<p><strong>Children IDs:</strong> ${childIds.join(', ') || 'None'}</p>`;
+                html += `<details><summary>Raw Data</summary><pre>${JSON.stringify(results.familyLinks.data, null, 2)}</pre></details>`;
+            }
+            html += `</div>`;
+
+            resultsDiv.innerHTML = html;
+            resultsSection.classList.remove('hidden');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            document.querySelector('.container').insertBefore(successDiv, document.querySelector('.container').firstChild);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        // Allow Enter key to submit login form
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginPassword')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    signInWithForm();
+                }
+            });
+        });
+
+        // Initialize logging
+        logMessage('Comprehensive RLS Test Dashboard loaded (v4.0)', 'info');
+    </script>
+</body>
+</html>
