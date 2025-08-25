@@ -306,6 +306,7 @@
                 <button onclick="selectNoneTables()" style="background: #f44336;">Select None</button>
                 <button onclick="selectCoreTables()" style="background: #ff9800;">Core Tables Only</button>
                 <button onclick="selectViewsOnly()" style="background: #9c27b0;">Views Only</button>
+                <button onclick="selectParentPageTables()" style="background: #4CAF50;">👨‍👩‍👧‍👦 Parent Page Tables</button>
             </div>
             
             <div class="table-group">
@@ -629,6 +630,30 @@
         function selectViewsOnly() {
             selectNoneTables();
             allTables.views.forEach(table => {
+                const checkbox = document.getElementById(`table_${table}`);
+                if (checkbox) checkbox.checked = true;
+            });
+        }
+
+        function selectParentPageTables() {
+            selectNoneTables();
+            // Tables that parents typically access based on the Flexwise parent dashboard analysis
+            const parentTables = [
+                // Core data parents need to see
+                'schools', 'structure_classes', 'schedule_periods', 'roles',
+                // User and family data
+                'user_profiles', 'profile_info_student', 'family_members', 'family_member_child_links',
+                // Daily tracking and attendance (including the daily log collection bc58fbf4-7a59-489e-9323-72fe54c88fdb)
+                'student_daily_log', 'student_check_ins', 'attendance_daily_overview',
+                // Academic information for their children
+                'course_schedules', 'course_registrations', 'subjects',
+                // Communication and logistics
+                'announcements', 'pickup_arrangements',
+                // Key views parents use
+                'vw_student_profiles', 'vw_daily_attendance', 'vw_parent_children', 'vw_course_schedules_detailed'
+            ];
+            
+            parentTables.forEach(table => {
                 const checkbox = document.getElementById(`table_${table}`);
                 if (checkbox) checkbox.checked = true;
             });
