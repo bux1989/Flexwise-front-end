@@ -875,7 +875,7 @@
                                 hint: error.hint,
                                 code: error.code
                             } : null,
-                            sampleData: data?.slice(0, 3) // First 3 records
+                            sampleData: data // All records
                         };
 
                         testResults[tableName] = result;
@@ -1026,8 +1026,8 @@
                     if (result.sampleData && result.sampleData.length > 0) {
                         html += `
                             <details style="margin-top: 10px;">
-                                <summary style="color: #666; cursor: pointer;">📄 Sample Data (first 3 records)</summary>
-                                <pre style="margin-top: 5px; max-height: 200px; overflow-y: auto;">${JSON.stringify(result.sampleData, null, 2)}</pre>
+                                <summary style="color: #666; cursor: pointer;">📄 Sample Data (${result.sampleData.length} records)</summary>
+                                <pre style="margin-top: 5px; max-height: 400px; overflow-y: auto;">${JSON.stringify(result.sampleData, null, 2)}</pre>
                             </details>
                         `;
                     }
