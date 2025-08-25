@@ -409,13 +409,19 @@ export default {
         data.updates.forEach(update => {
           const lessonData = {
             id: update.lesson.id,
-            teacherId: update.lesson.staff_ids && update.lesson.staff_ids.length > 0 ? update.lesson.staff_ids[0] : null,
             teacher_ids: update.lesson.staff_ids || [],
-            classId: update.lesson.class_id,
-            subjectId: update.lesson.subject_id,
-            roomId: update.lesson.room_id,
-            dayId: update.lesson.day_id,
-            periodId: update.lesson.period_id,
+            staff_ids: update.lesson.staff_ids || [],
+            teacher_names: update.lesson.teacher_names || [],
+            class_id: update.lesson.class_id || '',
+            class_name: update.lesson.class_name || '',
+            day_id: update.lesson.day_id,
+            day_name_de: update.lesson.day_name_de || '',
+            block_number: update.lesson.block_number || 0,
+            period_id: update.lesson.period_id,
+            subject_id: update.lesson.subject_id || '',
+            room_id: update.lesson.room_id || '',
+            meeting_name: update.lesson.meeting_name || '',
+            notes: update.lesson.notes || '',
             isDraft: true
           };
           saveDraftLesson(lessonData, 'updateLesson');
@@ -466,23 +472,20 @@ export default {
         
         const lessonData = {
           id: data.lesson.id,
-          teacher: null, // Keep null like inline form
-          teacherId: null, // Keep null like inline form for consistency 
           teacher_ids: teacherIds,
           staff_ids: teacherIds, // For compatibility - exact copy
           teacher_names: teacherNames,
-          class: classObj ? classObj.name : null,
-          classId: data.lesson.classId,
-          day: dayName,
-          dayId: data.lesson.dayId,
-          period: periodObj ? periodObj.block_number : null,
-          periodId: data.lesson.periodId,
-          subjectId: data.lesson.subjectId,
-          roomId: data.lesson.roomId,
+          class_id: data.lesson.classId,
+          class_name: classObj ? classObj.name : '',
+          day_id: data.lesson.dayId,
+          day_name_de: dayName || '',
+          block_number: periodObj ? periodObj.block_number : 0,
+          period_id: data.lesson.periodId,
+          subject_id: data.lesson.subjectId || '',
+          room_id: data.lesson.roomId || '',
           meeting_name: originalLesson.meeting_name || '',
           notes: originalLesson.notes || '',
-          isDraft: true,
-          isUpdate: true
+          isDraft: true
         };
         
         saveDraftLesson(lessonData, 'updateLesson');
@@ -971,29 +974,40 @@ ${t('status')}: ${status}`;
 
         if (!lesson && allFilled) {
           // Create draft directly when all fields are filled and cell is empty
-          const lessonData = {
-            teacher: viewMode.value === 'teacher' ? rowItem : null,
-            teacherId: viewMode.value === 'teacher' && teacherObj ? (teacherObj.user_id || teacherObj.profile_id || teacherObj.id) : null,
-            teacher_ids: viewMode.value === 'class'
+          const teacherIds = viewMode.value === 'class'
             ? selectedTeacherIds.value
-            : teacherObj && (teacherObj.user_id || teacherObj.profile_id || teacherObj.id) ? [teacherObj.user_id || teacherObj.profile_id || teacherObj.id] : [],
-            teacher_names: viewMode.value === 'class'
-              ? selectedTeacherIds.value.map(id => {
-                  const t = teachers.value.find(tt => (tt.user_id || tt.id) === id);
-                  return t ? `${t.first_name || ''} ${t.last_name || ''}`.trim() : '';
-                })
-              : teacherObj
-                ? [`${teacherObj.first_name || ''} ${teacherObj.last_name || ''}`.trim()]
-                : [],   
-            class: viewMode.value === 'class' ? rowItem : null,
-            classId: viewMode.value === 'class' ? classObj?.id : selectedClass.value,
-            day: dayName,
-            dayId: dayObj?.day_id,
-            period: blockNumber,
-            periodId: periodObj?.id,
-            subjectId: selectedSubject.value,
-            roomId: selectedRoom.value,
-            id: `draft-${Date.now()}`
+            : teacherObj && (teacherObj.user_id || teacherObj.profile_id || teacherObj.id) ? [teacherObj.user_id || teacherObj.profile_id || teacherObj.id] : [];
+          
+          const teacherNames = viewMode.value === 'class'
+            ? selectedTeacherIds.value.map(id => {
+                const t = teachers.value.find(tt => (tt.user_id || tt.id) === id);
+                return t ? `${t.first_name || ''} ${t.last_name || ''}`.trim() : '';
+              })
+            : teacherObj
+              ? [`${teacherObj.first_name || ''} ${teacherObj.last_name || ''}`.trim()]
+              : [];
+          
+          // Get class name for teacher view from selected class
+          const selectedClassObj = viewMode.value === 'teacher' && selectedClass.value
+            ? availableClasses.value.find(c => c.id === selectedClass.value)
+            : null;
+          
+          const lessonData = {
+            id: `draft-${Date.now()}`,
+            teacher_ids: teacherIds,
+            staff_ids: teacherIds, // For compatibility
+            teacher_names: teacherNames,
+            class_id: viewMode.value === 'class' ? classObj?.id : selectedClass.value,
+            class_name: viewMode.value === 'class' ? rowItem : (selectedClassObj?.name || ''),
+            day_id: dayObj?.day_id,
+            day_name_de: dayName || '',
+            block_number: blockNumber || 0,
+            period_id: periodObj?.id,
+            subject_id: selectedSubject.value || '',
+            room_id: selectedRoom.value || '',
+            meeting_name: '',
+            notes: '',
+            isDraft: true
           };
           emit('trigger-event', { name: 'assignDraftLesson', event: { value: lessonData } });
         } else if (!lesson) {
@@ -1006,6 +1020,15 @@ ${t('status')}: ${status}`;
               name: 'selectedTeacherIdsChange',
               event: { value: [] }
             });
+          } else if (viewMode.value === 'teacher' && teacherObj) {
+            // Teacher view - pre-select the clicked teacher
+            const teacherId = teacherObj.user_id || teacherObj.profile_id || teacherObj.id;
+            if (teacherId) {
+              emit('trigger-event', {
+                name: 'selectedTeacherIdsChange', 
+                event: { value: [teacherId] }
+              });
+            }
           }
         } else {
           // Existing lesson - open form
@@ -1020,6 +1043,15 @@ ${t('status')}: ${status}`;
               name: 'selectedTeacherIdsChange',
               event: { value: teacherIds }
             });
+          } else if (viewMode.value === 'teacher' && !lesson.teacher_ids?.length && teacherObj) {
+            // Teacher view with lesson missing teacher data - pre-select the clicked teacher
+            const teacherId = teacherObj.user_id || teacherObj.profile_id || teacherObj.id;
+            if (teacherId) {
+              emit('trigger-event', {
+                name: 'selectedTeacherIdsChange',
+                event: { value: [teacherId] }
+              });
+            }
           }
         }
       } else {
@@ -1121,15 +1153,23 @@ ${t('status')}: ${status}`;
       selectedCell.value = null;
     };
     const saveDraftLesson = (lessonData, eventName = 'assignDraftLesson') => {
-      if (lessonData.teacherId && !Array.isArray(lessonData.teacher_ids)) {
-        lessonData.teacher_ids = [lessonData.teacherId];
+      // Create a clean copy of the lesson data without Vue reactivity
+      const cleanLessonData = JSON.parse(JSON.stringify(lessonData));
+      
+      // Ensure arrays are plain arrays, not Vue reactive proxies
+      if (cleanLessonData.teacher_ids) {
+        cleanLessonData.teacher_ids = [...cleanLessonData.teacher_ids];
       }
-      if (lessonData.teacher && !Array.isArray(lessonData.teacher_names)) {
-        lessonData.teacher_names = [lessonData.teacher];
+      if (cleanLessonData.staff_ids) {
+        cleanLessonData.staff_ids = [...cleanLessonData.staff_ids];
       }
+      if (cleanLessonData.teacher_names) {
+        cleanLessonData.teacher_names = [...cleanLessonData.teacher_names];
+      }
+      
       emit('trigger-event', {
         name: eventName || 'assignDraftLesson',
-        event: { value: lessonData }
+        event: { value: cleanLessonData }
       });
       closeLessonModal();
       selectedCell.value = null;
@@ -1217,38 +1257,42 @@ ${t('status')}: ${status}`;
       const periodObj = getPeriodByNumber(periods.value, blockNumber);
 
       // Create new lesson data with copied content but new position and ID
+      const teacherIds = viewMode.value === 'class'
+        ? copiedLesson.value.teacher_ids
+        : teacherObj && (teacherObj.user_id || teacherObj.profile_id || teacherObj.id) 
+          ? [teacherObj.user_id || teacherObj.profile_id || teacherObj.id] 
+          : copiedLesson.value.teacher_ids;
+      
+      const teacherNames = viewMode.value === 'class'
+        ? copiedLesson.value.teacher_names
+        : teacherObj
+          ? [`${teacherObj.first_name || ''} ${teacherObj.last_name || ''}`.trim()]
+          : copiedLesson.value.teacher_names;
+      
       const lessonData = {
-        // Copy all the lesson content
-        subjectId: copiedLesson.value.subject_id,
-        roomId: copiedLesson.value.room_id,
-        meeting_name: copiedLesson.value.meeting_name,
-        notes: copiedLesson.value.notes,
-        
-        // Update position to target cell
-        teacher: viewMode.value === 'teacher' ? rowItem : null,
-        teacherId: viewMode.value === 'teacher' && teacherObj ? (teacherObj.user_id || teacherObj.profile_id || teacherObj.id) : null,
-        class: viewMode.value === 'class' ? rowItem : null,
-        classId: viewMode.value === 'class' ? classObj?.id : copiedLesson.value.class_id,
-        day: dayName,
-        dayId: dayObj?.day_id,
-        period: blockNumber,
-        periodId: periodObj?.id,
-        
-        // Handle teacher assignments based on view mode
-        teacher_ids: viewMode.value === 'class'
-          ? copiedLesson.value.teacher_ids
-          : teacherObj && (teacherObj.user_id || teacherObj.profile_id || teacherObj.id) 
-            ? [teacherObj.user_id || teacherObj.profile_id || teacherObj.id] 
-            : copiedLesson.value.teacher_ids,
-        teacher_names: viewMode.value === 'class'
-          ? copiedLesson.value.teacher_names
-          : teacherObj
-            ? [`${teacherObj.first_name || ''} ${teacherObj.last_name || ''}`.trim()]
-            : copiedLesson.value.teacher_names,
-        
         // Generate new unique ID or use existing one if updating
         id: existingLesson ? existingLesson.id : `draft-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        isUpdate: !!existingLesson
+        
+        // Copy all the lesson content with normalized structure
+        subject_id: copiedLesson.value.subject_id || '',
+        room_id: copiedLesson.value.room_id || '',
+        meeting_name: copiedLesson.value.meeting_name || '',
+        notes: copiedLesson.value.notes || '',
+        
+        // Update position to target cell
+        class_id: viewMode.value === 'class' ? classObj?.id : copiedLesson.value.class_id,
+        class_name: viewMode.value === 'class' ? rowItem : copiedLesson.value.class_name || '',
+        day_id: dayObj?.day_id,
+        day_name_de: dayName || '',
+        block_number: blockNumber || 0,
+        period_id: periodObj?.id,
+        
+        // Handle teacher assignments based on view mode
+        teacher_ids: teacherIds,
+        staff_ids: teacherIds, // For compatibility
+        teacher_names: teacherNames,
+        
+        isDraft: true
       };
 
       // Save the pasted lesson

@@ -391,9 +391,14 @@ export default {
             selectedPeriod.value = props.period;
             meetingName.value = '';
             notes.value = '';
-            selectedTeacherIds.value = Array.isArray(props.selectedTeacherIds)
-              ? props.selectedTeacherIds.map(String)
-              : [];
+            // For teacher view, use teacherId if available, otherwise use selectedTeacherIds
+            if (props.viewMode === 'teacher' && props.teacherId) {
+              selectedTeacherIds.value = [String(props.teacherId)];
+            } else {
+              selectedTeacherIds.value = Array.isArray(props.selectedTeacherIds)
+                ? props.selectedTeacherIds.map(String)
+                : [];
+            }
           }
           teacherSearch.value = '';
         }
@@ -426,22 +431,21 @@ export default {
       );
 
       const lessonData = {
-        teacher: props.viewMode === 'teacher' ? props.teacher : null,
-        teacherId: props.viewMode === 'teacher' ? props.teacherId : null,
-        staff_ids: teacherIds,
-        teacher_names: teacherNames,
-        class: props.viewMode === 'class' ? props.class : null,
-        classId: props.viewMode === 'class' ? props.classId : selectedClass.value,
-        day: finalDay,
-        dayId: selectedDayObj?.day_id || selectedDayObj?.id || props.dayId,
-        period: finalPeriod,
-        periodId: selectedPeriodObj?.id || props.periodId,
-        subjectId: selectedSubject.value,
-        roomId: selectedRoom.value,
         id: props.existingLesson?.id || `draft-${Date.now()}`,
-        meeting_name: meetingName.value,
-        notes: notes.value,
-        isUpdate: !!props.existingLesson
+        teacher_ids: teacherIds,
+        staff_ids: teacherIds, // For compatibility
+        teacher_names: teacherNames,
+        class_id: props.viewMode === 'class' ? props.classId : selectedClass.value,
+        class_name: props.viewMode === 'class' ? props.class : '',
+        day_id: selectedDayObj?.day_id || selectedDayObj?.id || props.dayId,
+        day_name_de: finalDay || '',
+        block_number: finalPeriod || 0,
+        period_id: selectedPeriodObj?.id || props.periodId,
+        subject_id: selectedSubject.value || '',
+        room_id: selectedRoom.value || '',
+        meeting_name: meetingName.value || '',
+        notes: notes.value || '',
+        isDraft: true
       };
 
       if (props.existingLesson) {

@@ -116,7 +116,7 @@ const detectTeacherDoubleBooking = (draftLessons, language = 'de') => {
 /**
  * Detect room double-booking conflicts
  */
-const detectRoomDoubleBooking = (draftLessons, language = 'de') => {
+const detectRoomDoubleBooking = (draftLessons, rooms = [], language = 'de') => {
   const conflicts = [];
   const roomSchedule = new Map();
 
@@ -142,6 +142,13 @@ const detectRoomDoubleBooking = (draftLessons, language = 'de') => {
   roomSchedule.forEach((timeSlots, roomId) => {
     timeSlots.forEach((lessons, timeKey) => {
       if (lessons.length > 1) {
+        // Check if room allows multi-class booking
+        const room = rooms.find(r => r.id === roomId);
+        if (room && room.is_multi_class_bookable === true) {
+          // Skip conflict for rooms that allow multiple classes
+          return;
+        }
+        
         conflicts.push({
           type: CONFLICT_TYPES.ROOM_DOUBLE_BOOKING,
           severity: CONFLICT_SEVERITY.ERROR,
@@ -289,15 +296,23 @@ const detectMissingData = (draftLessons, language = 'de') => {
   draftLessons.forEach(lesson => {
     const missing = [];
     
+    // Check if this is a course (has course_id)
+    const isCourse = lesson.course_id !== null && lesson.course_id !== undefined;
+    
     if (!lesson.staff_ids || !lesson.staff_ids.length) {
       missing.push('teacher');
     }
-    if (!lesson.class_id) {
-      missing.push('class');
+    
+    // For courses, class and subject are not required
+    if (!isCourse) {
+      if (!lesson.class_id) {
+        missing.push('class');
+      }
+      if (!lesson.subject_id) {
+        missing.push('subject');
+      }
     }
-    if (!lesson.subject_id) {
-      missing.push('subject');
-    }
+    
     if (!lesson.room_id) {
       missing.push('room');
     }
@@ -365,7 +380,7 @@ const detectClassWrongRoom = (draftLessons, classes, rooms, language = 'de') => 
 export const detectConflicts = (draftLessons, teachers = [], classes = [], rooms = [], language = 'de') => {
   const allConflicts = [
     ...detectTeacherDoubleBooking(draftLessons, language),
-    ...detectRoomDoubleBooking(draftLessons, language),
+    ...detectRoomDoubleBooking(draftLessons, rooms, language),
     ...detectClassDoubleBooking(draftLessons, language),
     ...detectTeacherOverload(draftLessons, teachers, language),
     ...detectRoomInactive(draftLessons, rooms, language),
