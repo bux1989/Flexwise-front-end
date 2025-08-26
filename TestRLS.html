@@ -452,14 +452,15 @@
         let testResults = {};
 
         // Comprehensive list of all tables and views in the Flexwise database
+        // Based on collections analysis from Flexwise front-end application
         const allTables = {
             core: [
-                'schools',
+                'structure_schools',      // School information
                 'school_settings', 
-                'structure_classes',
+                'structure_classes',      // Class structure and info
                 'structure_day_types',
-                'structure_periods',
-                'schedule_periods',
+                'structure_days',         // Day structure configuration
+                'schedule_periods',       // School period/block structure
                 'roles'
             ],
             users: [
@@ -467,7 +468,7 @@
                 'user_roles',
                 'profile_info_student',
                 'profile_info_staff',
-                'family_members',
+                'family_members',         // Family relationships
                 'family_member_child_links'
             ],
             academic: [
@@ -478,22 +479,32 @@
                 'teacher_assignments'
             ],
             operational: [
-                'student_daily_log',
+                'student_daily_log',                      // Daily student activity logs
                 'student_check_ins',
                 'attendance_daily_overview',
                 'attendance_class_stats',
-                'pickup_arrangements',
+                'student_weekly_pickup_arrangements',     // Student pickup arrangements
                 'announcements',
                 'bulletin_posts'
             ],
             views: [
-                'vw_student_profiles',
-                'vw_course_schedules_detailed',
+                'vw_student_profiles',                    // Student profile information
+                'vw_course_schedules_detailed',           // Course schedules with teachers
                 'vw_daily_attendance',
+                'vw_daily_attendance_overview',           // Daily attendance statistics
+                'vw_daily_attendance_by_class',           // Class-based attendance stats
+                'vw_attendance_dashboard',                // Student absence tracking
                 'vw_class_rosters',
                 'vw_teacher_schedules',
                 'vw_parent_children',
-                'vw_school_overview'
+                'vw_school_overview',
+                'vw_school_days',                         // School calendar days
+                'vw_checkin_students_today',              // Today's check-in/out status
+                'vw_student_attendance_today',            // Current day lesson attendance
+                'vw_bulletin_post_users',                 // Announcements and posts
+                'vwm_user_login_profiles',                // Current user profile
+                'vw_parent_open_registration_cta',        // Registration prompts
+                'vw_parent_course_windows'                // Course registration options
             ],
             system: [
                 'api_logs',
@@ -568,6 +579,8 @@
                 return;
             }
 
+            console.log('Copying RLS results...', testResults);
+
             const resultsText = Object.entries(testResults).map(([tableName, result]) => {
                 const hasError = !!result.error;
                 const isEmpty = !hasError && result.count === 0;
@@ -594,12 +607,41 @@
                 text += '\nNotes:\n';
                 
                 return text;
-            }).join('\n');
+            }).join('\n\n');
+            
+            console.log('Results text to copy:', resultsText);
+            
+            if (!resultsText || resultsText.trim() === '') {
+                showError('No results data to copy. Results text is empty.');
+                return;
+            }
             
             navigator.clipboard.writeText(resultsText).then(() => {
-                showSuccess('RLS test results copied to clipboard!');
+                showSuccess(`RLS test results copied to clipboard! (${Object.keys(testResults).length} tables)`);
+                console.log('Successfully copied to clipboard');
             }).catch(err => {
+                console.error('Clipboard error:', err);
                 showError('Failed to copy results: ' + err.message);
+                
+                // Fallback: create a temporary textarea for manual copy
+                const textArea = document.createElement('textarea');
+                textArea.value = resultsText;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    showSuccess('RLS test results copied using fallback method!');
+                } catch (fallbackErr) {
+                    showError('Both clipboard and fallback copy methods failed. Please copy manually from console.');
+                    console.log('COPY THIS RLS RESULTS TEXT:', resultsText);
+                }
+                
+                document.body.removeChild(textArea);
             });
         }
 
@@ -682,26 +724,44 @@
 
         function selectParentPageTables() {
             selectNoneTables();
-            // Tables that parents typically access based on the Flexwise parent dashboard analysis
+            // Tables that parents access based on the Flexwise parent dashboard collections analysis
+            // Using the exact database table names from the collections mapping
             const parentTables = [
-                // Core data parents need to see
-                'schools', 'structure_classes', 'schedule_periods', 'roles',
+                // Core infrastructure
+                'structure_schools',                      // School information
+                'structure_classes',                      // Class structure and info
+                'schedule_periods',                       // School period/block structure
+                'structure_days',                         // Day structure configuration
                 // User and family data
-                'user_profiles', 'profile_info_student', 'family_members', 'family_member_child_links',
-                // Daily tracking and attendance (including the daily log collection bc58fbf4-7a59-489e-9323-72fe54c88fdb)
-                'student_daily_log', 'student_check_ins', 'attendance_daily_overview',
-                // Academic information for their children
-                'course_schedules', 'course_registrations', 'subjects',
-                // Communication and logistics
-                'announcements', 'pickup_arrangements',
-                // Key views parents use
-                'vw_student_profiles', 'vw_daily_attendance', 'vw_parent_children', 'vw_course_schedules_detailed'
+                'family_members',                         // Family relationships
+                // Daily tracking and attendance
+                'student_daily_log',                      // Daily student activity logs (collection bc58fbf4-7a59-489e-9323-72fe54c88fdb)
+                'student_weekly_pickup_arrangements',     // Student pickup arrangements
+                // Views parents use
+                'vw_student_profiles',                    // Student profile information
+                'vw_course_schedules_detailed',           // Course schedules with teachers
+                'vw_school_days',                         // School calendar days
+                'vw_checkin_students_today',              // Today's check-in/out status
+                'vw_student_attendance_today',            // Current day lesson attendance
+                'vw_bulletin_post_users',                 // Announcements and posts
+                'vw_daily_attendance_overview',           // Daily attendance statistics
+                'vw_daily_attendance_by_class',           // Class-based attendance stats
+                'vw_attendance_dashboard',                // Student absence tracking
+                'vwm_user_login_profiles',                // Current user profile
+                'vw_parent_open_registration_cta',        // Registration prompts
+                'vw_parent_course_windows'                // Course registration options
             ];
             
             parentTables.forEach(table => {
                 const checkbox = document.getElementById(`table_${table}`);
-                if (checkbox) checkbox.checked = true;
+                if (checkbox) {
+                    checkbox.checked = true;
+                } else {
+                    console.warn(`Table checkbox not found: table_${table}`);
+                }
             });
+            
+            console.log(`Selected ${parentTables.length} parent page tables:`, parentTables);
         }
 
         function getSelectedTables() {
