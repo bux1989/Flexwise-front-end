@@ -383,6 +383,9 @@
                 <button onclick="copyConsoleLogs()" id="copyButton">
                     📋 Copy Console Logs
                 </button>
+                <button onclick="copyRLSResults()" id="copyResultsButton" disabled style="background: #2196f3;">
+                    📄 Copy RLS Results
+                </button>
             </div>
         </div>
 
@@ -438,6 +441,7 @@
             <div id="consoleLogs" class="console-log">Waiting for tests to run...</div>
             <button onclick="clearLogs()">Clear Logs</button>
             <button onclick="copyConsoleLogs()">📋 Copy All Logs</button>
+            <button onclick="copyRLSResults()" id="copyResultsButton2" disabled style="background: #2196f3;">📄 Copy RLS Results</button>
         </div>
     </div>
 
@@ -555,6 +559,47 @@
                 showSuccess('Console logs copied to clipboard!');
             }).catch(err => {
                 showError('Failed to copy logs: ' + err.message);
+            });
+        }
+
+        function copyRLSResults() {
+            if (Object.keys(testResults).length === 0) {
+                showError('No test results available to copy. Please run tests first.');
+                return;
+            }
+
+            const resultsText = Object.entries(testResults).map(([tableName, result]) => {
+                const hasError = !!result.error;
+                const isEmpty = !hasError && result.count === 0;
+                
+                let statusIcon = hasError ? '❌' : (isEmpty ? '⚠️' : '✅');
+                let statusText = hasError ? 'BLOCKED' : (isEmpty ? 'EMPTY' : 'ACCESSIBLE');
+                
+                let text = `${tableName} ${statusIcon} ${statusText} Records visible: ${result.count}`;
+                
+                if (hasError && result.errorDetails) {
+                    text += ` ${statusIcon} Error Details`;
+                    text += ` Message: ${result.errorDetails.message || 'Unknown error'}`;
+                    if (result.errorDetails.code) {
+                        text += ` Code: ${result.errorDetails.code}`;
+                    }
+                    if (result.errorDetails.details) {
+                        text += ` Details: ${result.errorDetails.details}`;
+                    }
+                    if (result.errorDetails.hint) {
+                        text += ` Hint: ${result.errorDetails.hint}`;
+                    }
+                }
+                
+                text += '\nNotes:\n';
+                
+                return text;
+            }).join('\n');
+            
+            navigator.clipboard.writeText(resultsText).then(() => {
+                showSuccess('RLS test results copied to clipboard!');
+            }).catch(err => {
+                showError('Failed to copy results: ' + err.message);
             });
         }
 
@@ -807,6 +852,8 @@
                 document.getElementById('resultsSection').classList.add('hidden');
                 document.getElementById('summarySection').classList.add('hidden');
                 document.getElementById('progressSection').classList.add('hidden');
+                document.getElementById('copyResultsButton').disabled = true;
+                document.getElementById('copyResultsButton2').disabled = true;
                 document.getElementById('loginEmail').value = '';
                 document.getElementById('loginPassword').value = '';
                 
@@ -842,6 +889,8 @@
             document.getElementById('progressSection').classList.remove('hidden');
             document.getElementById('summarySection').classList.add('hidden');
             document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('copyResultsButton').disabled = true;
+            document.getElementById('copyResultsButton2').disabled = true;
             
             testResults = {};
             let completed = 0;
@@ -956,6 +1005,10 @@
                 // Show results
                 document.getElementById('summarySection').classList.remove('hidden');
                 displayComprehensiveResults();
+                
+                // Enable the Copy RLS Results button
+                document.getElementById('copyResultsButton').disabled = false;
+                document.getElementById('copyResultsButton2').disabled = false;
 
             } catch (error) {
                 logMessage('Comprehensive RLS test failed', 'error', { error: error.message });
