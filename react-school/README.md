@@ -1,6 +1,6 @@
 # School Management System - React Version
 
-A clean React conversion of the WeWeb school management app, focusing on login and teacher dashboard functionality.
+A React-based school management application with login and teacher dashboard functionality.
 
 ## Features
 
