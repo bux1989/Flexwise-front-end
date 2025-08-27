@@ -1400,8 +1400,8 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                       >
                         <div className="flex items-center gap-3">
                           <div className={`font-medium text-gray-600 min-w-[50px] leading-tight ${isMobile ? 'text-base' : 'text-sm'}`}>
-                            <div>{lesson.time} -</div>
-                            <div>{lesson.endTime}</div>
+                            <div>{lesson.time || (lesson.start_datetime ? new Date(lesson.start_datetime).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : '')} -</div>
+                            <div>{lesson.endTime || (lesson.end_datetime ? new Date(lesson.end_datetime).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : '')}</div>
                           </div>
                           <div className="flex-1">
                             {isMobile ? (
