@@ -40,16 +40,11 @@ export default function Login() {
           <h1 className="welcome-text">Herzlich willkommen bei</h1>
           
           <div className="logo-section">
-            <div className="logo-container">
-              <div className="logo-icon">
-                <div className="checkmark">✓</div>
-              </div>
-              <div className="logo-text">
-                <span className="flex-text">Flex</span>
-                <span className="wise-text">Wise</span>
-              </div>
-            </div>
-            <p className="tagline">Flexible Tools for Smart Schools</p>
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fc537084d33954bda931d75d8c7afc864?format=webp&width=800"
+              alt="FlexWise - Flexible Tools for Smart Schools"
+              className="logo-image"
+            />
           </div>
           
           <h2 className="account-heading">Ihr Konto</h2>
