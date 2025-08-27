@@ -32,7 +32,14 @@ function App() {
 
   // Profile loading logic
   const loadUserProfile = useCallback(async (user) => {
+    // Prevent duplicate loading
+    if (profileLoading) {
+      console.log('⏳ Profile already loading, skipping...')
+      return
+    }
+
     try {
+      setProfileLoading(true)
       console.log('👤 Loading profile for:', user.email)
 
       const profileId = user.user_metadata?.profile_id
