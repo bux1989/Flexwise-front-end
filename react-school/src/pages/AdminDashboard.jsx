@@ -38,7 +38,17 @@ export default function AdminDashboard({ user }) {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    try {
+      console.log('🚪 Logging out...')
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('❌ Logout error:', error)
+      } else {
+        console.log('✅ Logout successful')
+      }
+    } catch (err) {
+      console.error('💥 Logout failed:', err)
+    }
   }
 
   if (loading) {
