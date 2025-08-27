@@ -77,7 +77,8 @@ export async function getCurrentUserProfile() {
     
     // Use the correct connection pattern: user_metadata.profile_id → user_profiles.id
     console.log('🔗 Looking up profile using profile_id:', profileId)
-    
+    console.log('📋 Full user metadata:', user.user_metadata)
+
     const { data: profile, error } = await supabase
       .from('user_profiles')
       .select(`
@@ -87,6 +88,8 @@ export async function getCurrentUserProfile() {
       `)
       .eq('id', profileId)
       .single()
+
+    console.log('📊 Database query result:', { profile, error })
       
     if (error) {
       console.error('❌ Profile lookup failed:', {
