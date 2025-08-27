@@ -1,28 +1,28 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { handleLogin } from '../lib/supabase'
+import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        setError(error.message)
-      }
+      const { user, profile, role } = await handleLogin(email, password)
+      
+      // Success - navigation will be handled by App.jsx useEffect
+      console.log('Login successful:', { user: user.email, role })
+      
     } catch (err) {
-      setError('An unexpected error occurred')
+      console.error('Login error:', err)
+      setError(err.message || 'Login failed. Please check your credentials.')
     } finally {
       setLoading(false)
     }
@@ -50,7 +50,7 @@ export default function Login() {
           <div className="account-heading">Ihr Konto</div>
         </div>
 
-        <form onSubmit={handleLogin} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="email" className="form-label">Email</label>
             <input
@@ -62,6 +62,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               className="form-input"
               placeholder="Enter your email"
+              disabled={loading}
             />
           </div>
           
@@ -76,6 +77,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               className="form-input"
               placeholder="Enter your password"
+              disabled={loading}
             />
             <div className="forgot-password">
               <a href="#" className="forgot-link">Forgot password?</a>
