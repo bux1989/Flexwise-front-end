@@ -18,14 +18,17 @@ function App() {
     
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 Auth state change:', event)
+      console.log('🔄 Auth state change:', event, session ? 'with session' : 'no session')
       if (event === 'SIGNED_IN') {
+        console.log('👋 User signed in, loading profile...')
         await loadUserProfile(session.user)
       } else if (event === 'SIGNED_OUT') {
+        console.log('👋 User signed out, clearing state...')
         setUser(null)
         setUserProfile(null)
         setUserRole(null)
         sessionStorage.removeItem('userContext')
+        console.log('✅ User state cleared')
       }
     })
 
