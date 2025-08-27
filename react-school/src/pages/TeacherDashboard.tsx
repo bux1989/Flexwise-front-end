@@ -1386,7 +1386,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                     
                     return (
                       <div 
-                        key={lesson.id}
+                        key={lesson.id || lesson.lesson_id}
                         className={`flex items-center justify-between p-2 rounded-lg ${
                           lesson.isCurrent 
                             ? 'bg-blue-50 border-l-4 border-blue-400' 
@@ -2878,7 +2878,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                   
                   {/* Grid Header */}
                   <div className="grid grid-cols-5 gap-2 border-b pb-3">
-                    <div className="font-medium text-sm">{isMobile ? 'SuS' : 'Sch��ler'}</div>
+                    <div className="font-medium text-sm">{isMobile ? 'SuS' : 'Schüler'}</div>
                     <div className="font-medium text-sm text-center">{isMobile ? 'Anw' : 'Anwesend'}</div>
                     <div className="font-medium text-sm text-center">{isMobile ? 'Spät' : 'Verspätet'}</div>
                     <div className="font-medium text-sm text-center">{isMobile ? 'Abw. E' : 'Abwesend (E)'}</div>
