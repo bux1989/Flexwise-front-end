@@ -1,12 +1,51 @@
-# React + Vite
+# School Management System - React Version
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A clean React conversion of the WeWeb school management app, focusing on login and teacher dashboard functionality.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Login Page**: Clean authentication with Supabase
+- **Teacher Dashboard**: Schedule view, attendance tracking, real-time updates
+- **Self-hosted ready**: Built for your own infrastructure
 
-## Expanding the ESLint configuration
+## Setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Configure Supabase:
+Create a `.env` file with your Supabase credentials:
+```
+VITE_SUPABASE_URL=your-supabase-project-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+3. Start development server:
+```bash
+npm run dev
+```
+
+## Demo Credentials
+
+For testing without Supabase setup:
+- Email: teacher@school.com
+- Password: demo123
+
+## Pages
+
+- `/` - Redirects to dashboard if logged in, otherwise login
+- `/login` - Login page
+- `/dashboard/teacher` - Teacher dashboard
+
+## Tech Stack
+
+- React 18 + Vite
+- React Router for navigation
+- Supabase for authentication & database
+- Tailwind CSS for styling
+
+## Deployment
+
+Built for self-hosting. After `npm run build`, deploy the `dist` folder to your server.
