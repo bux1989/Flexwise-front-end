@@ -1417,9 +1417,14 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                 ) : (
                   <TooltipProvider>
                     {displayedLessons.map((lesson) => {
+                    if (!lesson || typeof lesson !== 'object') {
+                      console.warn('Invalid lesson data:', lesson);
+                      return null;
+                    }
+
                     const attendanceStatus = getAttendanceStatus(lesson);
                     const attendanceNumbers = getAttendanceNumbers(lesson);
-                    
+
                     return (
                       <div 
                         key={lesson.id || lesson.lesson_id}
