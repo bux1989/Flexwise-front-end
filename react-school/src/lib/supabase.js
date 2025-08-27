@@ -119,10 +119,12 @@ export async function checkAccess() {
 export async function getCurrentUserProfile() {
   try {
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     if (!session) return null
-    
-    const { data: profile, error } = await supabase
+
+    console.log('getCurrentUserProfile for session user:', session.user.id, session.user.email)
+
+    let { data: profile, error } = await supabase
       .from('user_profiles')
       .select(`
         *,
@@ -131,12 +133,33 @@ export async function getCurrentUserProfile() {
       `)
       .eq('id', session.user.user_metadata?.profile_id || session.user.id)
       .single()
-      
-    if (error) throw error
-    
+
+    console.log('getCurrentUserProfile result:', { profile, error })
+
+    if (error) {
+      // Try by email as fallback
+      const { data: profileByEmail, error: emailError } = await supabase
+        .from('user_profiles')
+        .select(`
+          *,
+          roles(name),
+          structure_schools(name)
+        `)
+        .eq('email', session.user.email)
+        .single()
+
+      console.log('getCurrentUserProfile by email:', { profileByEmail, emailError })
+
+      if (emailError) throw emailError
+      profile = profileByEmail
+    }
+
+    const finalRole = profile.roles?.name || 'Parent'
+    console.log('Final role determined:', finalRole)
+
     return {
       ...profile,
-      role: profile.roles?.name || 'Parent'
+      role: finalRole
     }
   } catch (error) {
     console.error('Error fetching user profile:', error)
