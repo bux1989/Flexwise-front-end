@@ -36,48 +36,100 @@ export async function handleLogin(email, password) {
   }
 }
 
-// Get current user profile
+// Get current user profile using the correct connection pattern
 export async function getCurrentUserProfile() {
   try {
-    const { data: { session } } = await supabase.auth.getSession()
-
-    if (!session) {
-      console.log('❌ No session found')
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      console.log('❌ No authenticated user found')
       return null
     }
-
-    console.log('👤 Loading profile for user:', session.user.email)
-
-    // For admin emails, use fallback immediately to avoid database issues
-    if (session.user.email.includes('buckle') || session.user.email.includes('admin')) {
-      console.log('🔧 Using immediate admin fallback for:', session.user.email)
-      const adminProfile = {
-        id: session.user.id,
-        email: session.user.email,
-        first_name: 'Admin',
-        last_name: 'User',
-        roles: { name: 'Admin' },
-        school_name: 'SchulFlex Admin',
-        role: 'Admin'
+    
+    console.log('👤 Getting profile for user:', {
+      auth_id: user.id,
+      email: user.email,
+      profile_id: user.user_metadata?.profile_id
+    })
+    
+    // Check if we have the profile_id in user_metadata
+    const profileId = user.user_metadata?.profile_id
+    
+    if (!profileId) {
+      console.error('❌ No profile_id found in user_metadata')
+      
+      // Fallback for admin emails
+      if (user.email.includes('buckle') || user.email.includes('admin')) {
+        console.log('🔧 Using admin fallback due to missing profile_id')
+        return {
+          id: user.id,
+          email: user.email,
+          first_name: 'Admin',
+          last_name: 'User',
+          roles: { name: 'Admin' },
+          structure_schools: { name: 'SchulFlex Admin' },
+          role: 'Admin'
+        }
       }
-      console.log('🎭 Admin role assigned:', adminProfile.role)
-      return adminProfile
+      
+      return null
     }
-
-    // For regular users, return a simple profile with Parent role
-    // (Database queries removed to prevent infinite loops)
-    console.log('👥 Using default profile for regular user')
+    
+    // Use the correct connection pattern: user_metadata.profile_id → user_profiles.id
+    console.log('🔗 Looking up profile using profile_id:', profileId)
+    
+    const { data: profile, error } = await supabase
+      .from('user_profiles')
+      .select(`
+        *,
+        roles(name),
+        structure_schools(name)
+      `)
+      .eq('id', profileId)
+      .single()
+      
+    if (error) {
+      console.error('❌ Profile lookup failed:', error)
+      
+      // Fallback for admin emails
+      if (user.email.includes('buckle') || user.email.includes('admin')) {
+        console.log('🔧 Using admin fallback due to profile lookup error')
+        return {
+          id: user.id,
+          email: user.email,
+          first_name: 'Admin',
+          last_name: 'User',
+          roles: { name: 'Admin' },
+          structure_schools: { name: 'SchulFlex Admin' },
+          role: 'Admin'
+        }
+      }
+      
+      throw error
+    }
+    
+    if (!profile) {
+      console.error('❌ No profile found for profile_id:', profileId)
+      return null
+    }
+    
+    const role = profile.roles?.name || 'Parent'
+    const school = profile.structure_schools?.name || 'Unknown School'
+    
+    console.log('✅ Profile loaded successfully:', {
+      profile_id: profile.id,
+      name: `${profile.first_name} ${profile.last_name}`,
+      role: role,
+      school: school
+    })
+    
     return {
-      id: session.user.id,
-      email: session.user.email,
-      first_name: 'User',
-      last_name: '',
-      roles: { name: 'Parent' },
-      role: 'Parent'
+      ...profile,
+      role: role
     }
     
   } catch (error) {
-    console.error('💥 Error fetching user profile:', error)
+    console.error('💥 Error in getCurrentUserProfile:', error)
     return null
   }
 }
