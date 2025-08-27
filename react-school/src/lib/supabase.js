@@ -149,8 +149,8 @@ export async function fetchLessonsForTeacher(teacherId) {
     const { data: lessons, error } = await supabase
       .from('vw_lesson_view_enriched')
       .select('*')
-      .eq('teacher_id', teacherId)
-      .order('lesson_start_time', { ascending: true })
+      .contains('teacher_ids', [teacherId])
+      .order('start_datetime', { ascending: true })
 
     if (error) {
       console.error('❌ Error fetching lessons:', error)
@@ -169,16 +169,20 @@ export async function fetchLessonsForTeacher(teacherId) {
 // Fetch lessons for current date
 export async function fetchTodaysLessons(teacherId, date = new Date()) {
   try {
-    const dateStr = date.toISOString().split('T')[0] // Format: YYYY-MM-DD
-    console.log('📅 Fetching lessons for date:', dateStr)
+    const startOfDay = new Date(date)
+    startOfDay.setHours(0, 0, 0, 0)
+    const endOfDay = new Date(date)
+    endOfDay.setHours(23, 59, 59, 999)
+
+    console.log('📅 Fetching lessons for date:', date.toISOString().split('T')[0])
 
     const { data: lessons, error } = await supabase
       .from('vw_lesson_view_enriched')
       .select('*')
-      .eq('teacher_id', teacherId)
-      .gte('lesson_date', dateStr)
-      .lt('lesson_date', new Date(date.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-      .order('lesson_start_time', { ascending: true })
+      .contains('teacher_ids', [teacherId])
+      .gte('start_datetime', startOfDay.toISOString())
+      .lt('start_datetime', endOfDay.toISOString())
+      .order('start_datetime', { ascending: true })
 
     if (error) {
       console.error('❌ Error fetching today\'s lessons:', error)
