@@ -1447,15 +1447,15 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 {!lesson.isCancelled && (
                                   <div className="text-sm text-gray-600 mt-1">
                                     {lesson.room || lesson.room_name}
-                                    {lesson.otherTeachers.length > 0 && (
+                                    {lesson.otherTeachers && lesson.otherTeachers.length > 0 && (
                                       <span>
                                         {' • '}
                                         {lesson.otherTeachers
-                                          .filter(t => lesson.teacherRole !== 'support' || t.isMainResponsible)
-                                          .map((teacher, index) => (
+                                          ?.filter(t => lesson.teacherRole !== 'support' || t.isMainResponsible)
+                                          ?.map((teacher, index) => (
                                             <span key={index}>
                                               {getMobileTeacherAbbreviation(teacher.name)}
-                                              {index < lesson.otherTeachers.filter(t => lesson.teacherRole !== 'support' || t.isMainResponsible).length - 1 && ', '}
+                                              {index < (lesson.otherTeachers?.filter(t => lesson.teacherRole !== 'support' || t.isMainResponsible)?.length || 0) - 1 && ', '}
                                             </span>
                                           ))}
                                       </span>
