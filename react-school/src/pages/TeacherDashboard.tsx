@@ -1417,7 +1417,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                       <>
                                         <span className="text-base font-medium">
                                           {getMobileSubjectAbbreviation(lesson.subject || lesson.subject_name)} {lesson.class || lesson.class_name}
-                                          {lesson.isSubstitute && <span className="text-purple-600"> Vertretung</span>}
+                                          {(lesson.isSubstitute || lesson.substitute_detected) && <span className="text-purple-600"> Vertretung</span>}
                                         </span>
                                       </>
                                     )}
@@ -1430,11 +1430,11 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                       size="sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        toggleMobileLessonDetails(lesson.id);
+                                        toggleMobileLessonDetails(lesson.id || lesson.lesson_id);
                                       }}
                                       className="h-6 w-6 p-0 flex-shrink-0"
                                     >
-                                      {expandedMobileLessonDetails.has(lesson.id) ? (
+                                      {expandedMobileLessonDetails.has(lesson.id || lesson.lesson_id) ? (
                                         <ChevronUp className="h-3 w-3" />
                                       ) : (
                                         <ChevronDown className="h-3 w-3" />
@@ -1505,7 +1505,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                       <span className="text-red-600 line-through">{lesson.subject || lesson.subject_name}</span>
                                       <span className="text-red-600">Entfällt</span>
                                     </div>
-                                  ) : lesson.isSubstitute ? (
+                                  ) : (lesson.isSubstitute || lesson.substitute_detected) ? (
                                     <div className="flex items-center gap-2">
                                       <span>{lesson.subject || lesson.subject_name}</span>
                                       <span className="text-purple-600">Vertretung</span>
@@ -1563,7 +1563,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                           ))}
                                         </>
                                       )}
-                                      {lesson.isSubstitute && (
+                                      {(lesson.isSubstitute || lesson.substitute_detected) && (
                                         <span className="text-purple-600"> • für {lesson.substituteFor}</span>
                                       )}
                                     </>
