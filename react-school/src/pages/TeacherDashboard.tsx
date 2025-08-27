@@ -60,10 +60,11 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         setIsLoadingLessons(true);
         setLessonsError(null);
 
-        // Get current user profile to get teacher ID
-        const profile = await getCurrentUserProfile();
-        if (!profile) {
-          throw new Error('No user profile found');
+        // Use the profile prop passed from App.jsx
+        if (!profile || !profile.id) {
+          console.log('No profile available, using mock data');
+          setLessons([]); // Use empty array or could fallback to INITIAL_LESSONS
+          return;
         }
 
         setCurrentProfile(profile);
@@ -83,7 +84,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
     };
 
     loadLessons();
-  }, [selectedDate]); // Re-fetch when date changes
+  }, [selectedDate, profile]); // Re-fetch when date or profile changes
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [attendanceViewMode, setAttendanceViewMode] = useState<'overview' | 'edit'>('edit');
