@@ -82,19 +82,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
           // Determine if lesson is current (happening now)
           const isCurrent = startTime && endTime && now >= startTime && now <= endTime;
 
-          // Check for substitute lesson
-          const isSubstitute = lesson.substitute_detected || lesson.isSubstitute || false;
-
-          // Check for cancelled lesson (could be in warnings or other fields)
-          const isCancelled = lesson.isCancelled ||
-                             (lesson.warnings && lesson.warnings.includes('cancelled')) ||
-                             (lesson.is_type === 'cancelled') ||
-                             false;
-
-          // Add some demo statuses for testing (remove this later)
-          const demoIsCurrent = index === 1; // Make second lesson current
-          const demoIsSubstitute = index === 2; // Make third lesson substitute
-          const demoIsCancelled = false;
+          // Use lesson_type from view for accurate status detection
+          const isSubstitute = lesson.lesson_type === 'substitute' || lesson.is_substitute;
+          const isCancelled = lesson.lesson_type === 'cancelled' || lesson.is_cancelled;
 
           console.log(`Lesson ${index + 1}:`, {
             subject: lesson.subject_name,
