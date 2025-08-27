@@ -1362,8 +1362,25 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             </CardHeader>
             <CardContent className="space-y-1">
               <div className="space-y-1">
-                <TooltipProvider>
-                  {displayedLessons.map((lesson) => {
+                {isLoadingLessons ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                    Lade Stundenplan...
+                  </div>
+                ) : lessonsError ? (
+                  <div className="text-center py-8 text-red-500">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+                    <div>Fehler beim Laden des Stundenplans</div>
+                    <div className="text-sm text-gray-500 mt-1">{lessonsError}</div>
+                  </div>
+                ) : lessons.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Calendar className="h-8 w-8 mx-auto mb-2" />
+                    Keine Stunden für diesen Tag
+                  </div>
+                ) : (
+                  <TooltipProvider>
+                    {displayedLessons.map((lesson) => {
                     const attendanceStatus = getAttendanceStatus(lesson);
                     const attendanceNumbers = getAttendanceNumbers(lesson);
                     
@@ -1610,8 +1627,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                         </div>
                       </div>
                     );
-                  })}
-                </TooltipProvider>
+                    })}
+                  </TooltipProvider>
+                )}
               </div>
             </CardContent>
           </Card>
