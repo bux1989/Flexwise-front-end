@@ -1502,16 +1502,16 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 <div className="font-medium flex items-center gap-2 flex-wrap">
                                   {lesson.isCancelled ? (
                                     <div className="flex items-center gap-2">
-                                      <span className="text-red-600 line-through">{lesson.subject}</span>
+                                      <span className="text-red-600 line-through">{lesson.subject || lesson.subject_name}</span>
                                       <span className="text-red-600">Entfällt</span>
                                     </div>
                                   ) : lesson.isSubstitute ? (
                                     <div className="flex items-center gap-2">
-                                      <span>{lesson.subject}</span>
+                                      <span>{lesson.subject || lesson.subject_name}</span>
                                       <span className="text-purple-600">Vertretung</span>
                                     </div>
                                   ) : (
-                                    lesson.subject
+                                    lesson.subject || lesson.subject_name
                                   )}
                                   
                                   {lesson.teacherRole === 'support' && (
@@ -1544,12 +1544,12 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 <div className="text-sm text-gray-600">
                                   {lesson.isCancelled ? (
                                     <div>
-                                      <span className="line-through text-red-500">{lesson.class}</span>
+                                      <span className="line-through text-red-500">{lesson.class || lesson.class_name}</span>
                                       <span className="text-red-600 ml-2">{lesson.cancellationReason}</span>
                                     </div>
                                   ) : (
                                     <>
-                                      {lesson.class} • {lesson.room}
+                                      {lesson.class || lesson.class_name} • {lesson.room || lesson.room_name}
                                       {lesson.otherTeachers.length > 0 && (
                                         <>
                                           {' • '}
@@ -2878,7 +2878,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                   
                   {/* Grid Header */}
                   <div className="grid grid-cols-5 gap-2 border-b pb-3">
-                    <div className="font-medium text-sm">{isMobile ? 'SuS' : 'Schüler'}</div>
+                    <div className="font-medium text-sm">{isMobile ? 'SuS' : 'Sch��ler'}</div>
                     <div className="font-medium text-sm text-center">{isMobile ? 'Anw' : 'Anwesend'}</div>
                     <div className="font-medium text-sm text-center">{isMobile ? 'Spät' : 'Verspätet'}</div>
                     <div className="font-medium text-sm text-center">{isMobile ? 'Abw. E' : 'Abwesend (E)'}</div>
