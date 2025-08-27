@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import Settings from '../components/Settings'
 
 export default function AdminDashboard({ user }) {
   const [adminData, setAdminData] = useState(null)
   const [systemStats, setSystemStats] = useState({})
   const [loading, setLoading] = useState(true)
+  const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
     fetchAdminData()
