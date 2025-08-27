@@ -1551,15 +1551,15 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                   ) : (
                                     <>
                                       {lesson.class || lesson.class_name} • {lesson.room || lesson.room_name}
-                                      {lesson.otherTeachers.length > 0 && (
+                                      {lesson.otherTeachers && lesson.otherTeachers.length > 0 && (
                                         <>
                                           {' • '}
-                                          {lesson.otherTeachers.map((teacher, index) => (
+                                          {lesson.otherTeachers?.map((teacher, index) => (
                                             <span key={index}>
                                               <span className={teacher.isMainResponsible && lesson.teacherRole === 'support' ? 'underline' : ''}>
                                                 {teacher.name}
                                               </span>
-                                              {index < lesson.otherTeachers.length - 1 && ', '}
+                                              {index < (lesson.otherTeachers?.length || 0) - 1 && ', '}
                                             </span>
                                           ))}
                                         </>
