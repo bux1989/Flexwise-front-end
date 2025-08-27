@@ -39,7 +39,7 @@ function App() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const loadUserProfile = async (user) => {
+  const loadUserProfile = useCallback(async (user) => {
     try {
       console.log('👤 Loading profile for:', user.email)
 
@@ -111,7 +111,7 @@ function App() {
     } finally {
       setLoading(false)
     }
-  }
+  }, []) // Empty dependency array since it only uses supabase and setState
 
   const getDashboardPath = () => {
     if (!userProfile) return '/dashboard/parent'
