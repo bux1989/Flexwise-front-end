@@ -1445,7 +1445,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 
                                 {!lesson.isCancelled && (
                                   <div className="text-sm text-gray-600 mt-1">
-                                    {lesson.room}
+                                    {lesson.room || lesson.room_name}
                                     {lesson.otherTeachers.length > 0 && (
                                       <span>
                                         {' • '}
