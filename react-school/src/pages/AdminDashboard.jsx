@@ -87,8 +87,8 @@ export default function AdminDashboard({ user }) {
                   Back to Dashboard
                 </button>
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-                  <p className="text-gray-600">School Configuration</p>
+                  <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                  <p className="text-gray-600">Settings</p>
                 </div>
               </div>
               <button
