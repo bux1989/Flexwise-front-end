@@ -13,7 +13,6 @@ A React-based school management application with login and teacher dashboard fun
 1. Install dependencies:
 ```bash
 npm install
-```test 
 
 2. Configure Supabase:
 Create a `.env` file with your Supabase credentials:
