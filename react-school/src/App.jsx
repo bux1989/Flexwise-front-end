@@ -1,17 +1,126 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
+import { supabase } from './lib/supabase'
+
+// Components
 import Login from './pages/Login'
 import TeacherDashboard from './pages/TeacherDashboard'
 import ParentDashboard from './pages/ParentDashboard'
 import ExternalDashboard from './pages/ExternalDashboard'
 import AdminDashboard from './pages/AdminDashboard'
-import { supabase } from './lib/supabase'
+
+// Constants
+const ROLE_ROUTES = {
+  'Admin': '/dashboard/admin',
+  'Super Admin': '/dashboard/admin',
+  'Teacher': '/dashboard/teacher',
+  'Erzieher*innen': '/dashboard/teacher',
+  'Parent': '/dashboard/parent',
+  'Externe': '/dashboard/external',
+  'Student': '/dashboard/parent'
+}
+
+const DEFAULT_ROUTE = '/dashboard/parent'
+const DEFAULT_ROLE = 'Parent'
 
 function App() {
+  // State
   const [session, setSession] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // Profile loading logic
+  const loadUserProfile = useCallback(async (user) => {
+    try {
+      console.log('👤 Loading profile for:', user.email)
+
+      const profileId = user.user_metadata?.profile_id
+      if (!profileId) {
+        console.error('❌ No profile_id in user metadata for:', user.email)
+        setUserProfile(createFallbackProfile(user, DEFAULT_ROLE))
+        return
+      }
+
+      console.log('🔗 Looking up roles using profile_id:', profileId)
+
+      // Fetch user roles
+      const { data: userRoles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('*, roles(name)')
+        .eq('user_profile_id', profileId)
+
+      const role = extractUserRole(userRoles, rolesError)
+
+      // Fetch profile details
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('*, structure_schools(name)')
+        .eq('id', profileId)
+        .single()
+
+      setUserProfile({
+        ...(profile || {}),
+        id: profileId,
+        email: user.email,
+        first_name: profile?.first_name || 'User',
+        last_name: profile?.last_name || '',
+        role
+      })
+
+    } catch (error) {
+      console.error('💥 Profile load error:', error)
+      setUserProfile(createFallbackProfile(user, DEFAULT_ROLE))
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Helper functions
+  const createFallbackProfile = (user, role) => ({
+    id: user.id,
+    email: user.email,
+    first_name: 'User',
+    last_name: '',
+    role
+  })
+
+  const extractUserRole = (userRoles, error) => {
+    if (!error && userRoles?.length > 0) {
+      const roleNames = userRoles.map(ur => ur.roles?.name).filter(Boolean)
+      const role = roleNames.join(', ') || DEFAULT_ROLE
+      console.log('✅ Roles found:', roleNames)
+      return role
+    } else {
+      console.log('⚠️ No roles found, using fallback')
+      return DEFAULT_ROLE
+    }
+  }
+
+  const getDashboardPath = () => {
+    if (!userProfile) return DEFAULT_ROUTE
+    return ROLE_ROUTES[userProfile.role] || DEFAULT_ROUTE
+  }
+
+  const renderDashboard = () => {
+    if (!userProfile) return <Navigate to="/login" replace />
+
+    const dashboardProps = { user: session.user, profile: userProfile }
+
+    switch (userProfile.role) {
+      case 'Admin':
+      case 'Super Admin':
+        return <AdminDashboard {...dashboardProps} />
+      case 'Teacher':
+      case 'Erzieher*innen':
+        return <TeacherDashboard {...dashboardProps} />
+      case 'Externe':
+        return <ExternalDashboard {...dashboardProps} />
+      default:
+        return <ParentDashboard {...dashboardProps} />
+    }
+  }
+
+  // Authentication setup
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -39,113 +148,7 @@ function App() {
     return () => subscription.unsubscribe()
   }, [loadUserProfile])
 
-  const loadUserProfile = useCallback(async (user) => {
-    try {
-      console.log('👤 Loading profile for:', user.email)
-
-      // Use the EXACT same pattern as the working RLS dashboard
-      const profileId = user.user_metadata?.profile_id
-
-      if (!profileId) {
-        console.error('❌ No profile_id in user metadata for:', user.email)
-        setUserProfile({
-          id: user.id,
-          email: user.email,
-          first_name: 'User',
-          last_name: '',
-          role: 'Parent'
-        })
-        setLoading(false)
-        return
-      }
-
-      console.log('🔗 Looking up roles using profile_id:', profileId)
-
-      // Use the EXACT same query as the working dashboard
-      const { data: userRoles, error } = await supabase
-        .from('user_roles')
-        .select(`
-          *,
-          roles(name)
-        `)
-        .eq('user_profile_id', profileId)
-
-      let role = 'Parent' // fallback
-
-      if (!error && userRoles && userRoles.length > 0) {
-        const roleNames = userRoles.map(ur => ur.roles?.name).filter(Boolean)
-        role = roleNames.join(', ') || 'Parent'
-        console.log('✅ Roles found:', roleNames)
-      } else {
-        console.log('⚠️ No roles found, using Parent fallback')
-      }
-
-      // Also get profile details
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select(`
-          *,
-          structure_schools(name)
-        `)
-        .eq('id', profileId)
-        .single()
-
-      setUserProfile({
-        ...(profile || {}),
-        id: profileId,
-        email: user.email,
-        first_name: profile?.first_name || 'User',
-        last_name: profile?.last_name || '',
-        role: role
-      })
-
-    } catch (error) {
-      console.error('💥 Profile load error:', error)
-      setUserProfile({
-        id: user.id,
-        email: user.email,
-        first_name: 'User',
-        last_name: '',
-        role: 'Parent'
-      })
-    } finally {
-      setLoading(false)
-    }
-  }, []) // Empty dependency array since it only uses supabase and setState
-
-  const getDashboardPath = () => {
-    if (!userProfile) return '/dashboard/parent'
-    
-    const routes = {
-      'Admin': '/dashboard/admin',
-      'Super Admin': '/dashboard/admin',
-      'Teacher': '/dashboard/teacher',
-      'Erzieher*innen': '/dashboard/teacher',
-      'Parent': '/dashboard/parent',
-      'Externe': '/dashboard/external',
-      'Student': '/dashboard/parent'
-    }
-    
-    return routes[userProfile.role] || '/dashboard/parent'
-  }
-
-  const renderDashboard = () => {
-    if (!userProfile) return <Navigate to="/login" replace />
-
-    switch (userProfile.role) {
-      case 'Admin':
-      case 'Super Admin':
-        return <AdminDashboard user={session.user} profile={userProfile} />
-      case 'Teacher':
-      case 'Erzieher*innen':
-        return <TeacherDashboard user={session.user} profile={userProfile} />
-      case 'Externe':
-        return <ExternalDashboard user={session.user} profile={userProfile} />
-      default:
-        return <ParentDashboard user={session.user} profile={userProfile} />
-    }
-  }
-
+  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -157,6 +160,7 @@ function App() {
     )
   }
 
+  // Main render
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
