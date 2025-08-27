@@ -177,7 +177,7 @@ export async function fetchTodaysLessons(teacherId, date = new Date()) {
     console.log('📅 Fetching lessons for date:', date.toISOString().split('T')[0])
 
     const { data: lessons, error } = await supabase
-      .from('vw_lesson_view_enriched')
+      .from('vw_react_lesson_details')
       .select('*')
       .contains('teacher_ids', [teacherId])
       .gte('start_datetime', startOfDay.toISOString())
