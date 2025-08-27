@@ -74,24 +74,42 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         console.log('📚 Raw lessons data from Supabase:', lessonsData);
 
         // Transform Supabase data to match expected structure
-        const transformedLessons = lessonsData.map(lesson => ({
-          ...lesson,
-          id: lesson.lesson_id || lesson.id,
-          subject: lesson.subject_name || lesson.subject,
-          class: lesson.class_name || lesson.class,
-          room: lesson.room_name || lesson.room,
-          time: lesson.start_datetime ? new Date(lesson.start_datetime).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : lesson.time,
-          endTime: lesson.end_datetime ? new Date(lesson.end_datetime).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : lesson.endTime,
-          isSubstitute: lesson.substitute_detected || lesson.isSubstitute || false,
-          isCancelled: lesson.isCancelled || false,
-          isCurrent: false, // We'll determine this based on time
-          teacherRole: 'main',
-          otherTeachers: lesson.teacher_names ? lesson.teacher_names.map(name => ({ name })) : [],
-          enrolled: lesson.student_count || 0,
-          students: lesson.student_names_with_class ? lesson.student_names_with_class.map((name, index) => ({ id: index + 1, name })) : [],
-          attendanceTaken: false,
-          lessonNote: ''
-        }));
+        const now = new Date();
+        const transformedLessons = lessonsData.map(lesson => {
+          const startTime = lesson.start_datetime ? new Date(lesson.start_datetime) : null;
+          const endTime = lesson.end_datetime ? new Date(lesson.end_datetime) : null;
+
+          // Determine if lesson is current (happening now)
+          const isCurrent = startTime && endTime && now >= startTime && now <= endTime;
+
+          // Check for substitute lesson
+          const isSubstitute = lesson.substitute_detected || lesson.isSubstitute || false;
+
+          // Check for cancelled lesson (could be in warnings or other fields)
+          const isCancelled = lesson.isCancelled ||
+                             (lesson.warnings && lesson.warnings.includes('cancelled')) ||
+                             (lesson.is_type === 'cancelled') ||
+                             false;
+
+          return {
+            ...lesson,
+            id: lesson.lesson_id || lesson.id,
+            subject: lesson.subject_name || lesson.subject,
+            class: lesson.class_name || lesson.class,
+            room: lesson.room_name || lesson.room,
+            time: startTime ? startTime.toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : lesson.time,
+            endTime: endTime ? endTime.toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : lesson.endTime,
+            isSubstitute,
+            isCancelled,
+            isCurrent,
+            teacherRole: 'main',
+            otherTeachers: lesson.teacher_names ? lesson.teacher_names.map(name => ({ name })) : [],
+            enrolled: lesson.student_count || 0,
+            students: lesson.student_names_with_class ? lesson.student_names_with_class.map((name, index) => ({ id: index + 1, name })) : [],
+            attendanceTaken: false,
+            lessonNote: ''
+          };
+        });
 
         console.log('🔄 Transformed lessons:', transformedLessons);
         setLessons(transformedLessons);
