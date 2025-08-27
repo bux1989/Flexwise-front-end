@@ -141,7 +141,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
     };
 
     loadLessons();
-  }, [selectedDate, profile]); // Re-fetch when date or profile changes
+  }, [selectedDate, profile?.id]); // Re-fetch when date or profile ID changes
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [attendanceViewMode, setAttendanceViewMode] = useState<'overview' | 'edit'>('edit');
