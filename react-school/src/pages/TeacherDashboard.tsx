@@ -566,10 +566,18 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
       
       // Always show future lessons
       const now = new Date();
-      const [lessonHours, lessonMinutes] = lesson.time.split(':').map(Number);
-      const lessonTime = new Date();
-      lessonTime.setHours(lessonHours, lessonMinutes, 0, 0);
-      
+      let lessonTime;
+
+      if (lesson.start_datetime) {
+        lessonTime = new Date(lesson.start_datetime);
+      } else if (lesson.time) {
+        const [lessonHours, lessonMinutes] = lesson.time.split(':').map(Number);
+        lessonTime = new Date();
+        lessonTime.setHours(lessonHours, lessonMinutes, 0, 0);
+      } else {
+        return true; // If no time info, show the lesson
+      }
+
       if (lessonTime > now) return true;
       
       // For past lessons, only hide if attendance is complete
