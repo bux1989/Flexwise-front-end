@@ -94,7 +94,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             isCurrent,
             isSubstitute,
             isCancelled,
-            substitute_detected: lesson.substitute_detected
+            lesson_type: lesson.lesson_type
           });
 
           return {
