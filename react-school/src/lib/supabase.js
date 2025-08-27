@@ -20,7 +20,7 @@ export async function handleLogin(email, password) {
     // 2. Get user profile with role information
     console.log('Looking up profile for user:', authData.user.id, authData.user.user_metadata)
 
-    const { data: profile, error: profileError } = await supabase
+    let { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select(`
         *,
