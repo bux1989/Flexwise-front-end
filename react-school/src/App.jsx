@@ -5,108 +5,102 @@ import TeacherDashboard from './pages/TeacherDashboard'
 import ParentDashboard from './pages/ParentDashboard'
 import ExternalDashboard from './pages/ExternalDashboard'
 import AdminDashboard from './pages/AdminDashboard'
-import { supabase, isDemo } from './lib/supabase'
+import { supabase, getCurrentUserProfile, getRouteByRole, setupRLSContext } from './lib/supabase'
 
 function App() {
   const [user, setUser] = useState(null)
+  const [userProfile, setUserProfile] = useState(null)
   const [userRole, setUserRole] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchUserRole(session.user)
-      }
-      setLoading(false)
-    })
-
+    initializeAuth()
+    
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchUserRole(session.user)
-      } else {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN') {
+        await loadUserProfile(session.user)
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+        setUserProfile(null)
         setUserRole(null)
+        sessionStorage.removeItem('userContext')
       }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  const fetchUserRole = async (user) => {
+  const initializeAuth = async () => {
     try {
-      if (isDemo) {
-        // Demo mode - determine role based on email domain or keywords
-        const email = user.email.toLowerCase()
-        if (email.includes('admin')) {
-          setUserRole('admin')
-        } else if (email.includes('teacher') || email.includes('erzieher')) {
-          setUserRole('teacher')
-        } else if (email.includes('parent') || email.includes('eltern')) {
-          setUserRole('parent')
-        } else if (email.includes('external') || email.includes('consultant')) {
-          setUserRole('external')
-        } else {
-          // Default to parent for demo
-          setUserRole('parent')
-        }
-      } else {
-        // Real Supabase - query user role from your database
-        // This is where you'd query your actual user roles table
-        // Example:
-        // const { data, error } = await supabase
-        //   .from('user_profiles')
-        //   .select('role')
-        //   .eq('user_id', user.id)
-        //   .single()
-        
-        // if (data) {
-        //   setUserRole(data.role)
-        // } else {
-        //   setUserRole('parent') // default
-        // }
-        
-        // For now, use demo logic
-        const email = user.email.toLowerCase()
-        if (email.includes('admin')) {
-          setUserRole('admin')
-        } else if (email.includes('teacher') || email.includes('erzieher')) {
-          setUserRole('teacher')
-        } else if (email.includes('parent') || email.includes('eltern')) {
-          setUserRole('parent')
-        } else if (email.includes('external') || email.includes('consultant')) {
-          setUserRole('external')
-        } else {
-          setUserRole('parent') // default
-        }
+      // Check if user is already authenticated
+      const session = await setupRLSContext()
+      
+      if (session) {
+        await loadUserProfile(session.user)
       }
     } catch (error) {
-      console.error('Error fetching user role:', error)
-      setUserRole('parent') // default fallback
+      console.error('Auth initialization error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadUserProfile = async (user) => {
+    try {
+      setUser(user)
+      
+      // Get user profile with role
+      const profile = await getCurrentUserProfile()
+      
+      if (profile) {
+        setUserProfile(profile)
+        setUserRole(profile.role)
+        
+        console.log('User loaded:', {
+          email: user.email,
+          role: profile.role,
+          school: profile.structure_schools?.name
+        })
+      } else {
+        console.error('No profile found for user')
+        // Could redirect to profile setup page
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error)
+      // Handle error - maybe redirect to login
     }
   }
 
   const getDashboardPath = () => {
-    switch (userRole) {
-      case 'admin':
-        return '/dashboard/admin'
-      case 'teacher':
-        return '/dashboard/teacher'
-      case 'parent':
-        return '/dashboard/parent'
-      case 'external':
-        return '/dashboard/external'
+    if (!userRole) return '/dashboard/parent' // default
+    return getRouteByRole(userRole)
+  }
+
+  const renderDashboard = (role) => {
+    switch (role) {
+      case 'Admin':
+      case 'Super Admin':
+        return <AdminDashboard user={user} profile={userProfile} />
+      case 'Teacher':
+      case 'Erzieher*innen':
+        return <TeacherDashboard user={user} profile={userProfile} />
+      case 'Parent':
+        return <ParentDashboard user={user} profile={userProfile} />
+      case 'Externe':
+        return <ExternalDashboard user={user} profile={userProfile} />
       default:
-        return '/dashboard/parent'
+        return <ParentDashboard user={user} profile={userProfile} />
     }
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="text-lg text-gray-900">Loading...</div>
+          <div className="text-sm text-gray-500 mt-2">Initializing FlexWise</div>
+        </div>
       </div>
     )
   }
@@ -114,51 +108,52 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
-        {isDemo && (
-          <div className="bg-yellow-100 text-yellow-800 p-2 text-center text-sm">
-            🔄 Demo Mode - Add your Supabase credentials to .env for full functionality
-          </div>
-        )}
         <Routes>
           <Route 
             path="/login" 
-            element={user ? <Navigate to={getDashboardPath()} /> : <Login />} 
+            element={user ? <Navigate to={getDashboardPath()} replace /> : <Login />} 
           />
           
           {/* Teacher Dashboard - for teachers and erzieher */}
           <Route 
             path="/dashboard/teacher" 
-            element={user ? <TeacherDashboard user={user} /> : <Navigate to="/login" />} 
+            element={user ? renderDashboard('Teacher') : <Navigate to="/login" replace />} 
           />
           
           {/* Parent Dashboard */}
           <Route 
             path="/dashboard/parent" 
-            element={user ? <ParentDashboard user={user} /> : <Navigate to="/login" />} 
+            element={user ? renderDashboard('Parent') : <Navigate to="/login" replace />} 
           />
           
           {/* External Dashboard */}
           <Route 
             path="/dashboard/external" 
-            element={user ? <ExternalDashboard user={user} /> : <Navigate to="/login" />} 
+            element={user ? renderDashboard('Externe') : <Navigate to="/login" replace />} 
           />
           
           {/* Admin Dashboard */}
           <Route 
             path="/dashboard/admin" 
-            element={user ? <AdminDashboard user={user} /> : <Navigate to="/login" />} 
+            element={user ? renderDashboard('Admin') : <Navigate to="/login" replace />} 
+          />
+          
+          {/* Student Dashboard (if needed) */}
+          <Route 
+            path="/dashboard/student" 
+            element={user ? renderDashboard('Student') : <Navigate to="/login" replace />} 
           />
           
           {/* Root redirect */}
           <Route 
             path="/" 
-            element={<Navigate to={user ? getDashboardPath() : "/login"} />} 
+            element={<Navigate to={user ? getDashboardPath() : "/login"} replace />} 
           />
           
           {/* Catch all - redirect to appropriate dashboard or login */}
           <Route 
             path="*" 
-            element={<Navigate to={user ? getDashboardPath() : "/login"} />} 
+            element={<Navigate to={user ? getDashboardPath() : "/login"} replace />} 
           />
         </Routes>
       </div>
