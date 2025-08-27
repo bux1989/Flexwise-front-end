@@ -1390,7 +1390,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                         className={`flex items-center justify-between p-2 rounded-lg ${
                           lesson.isCurrent 
                             ? 'bg-blue-50 border-l-4 border-blue-400' 
-                            : lesson.isSubstitute
+                            : lesson.isSubstitute || lesson.substitute_detected
                             ? 'bg-purple-50'
                             : lesson.isCancelled
                             ? 'bg-red-50'
