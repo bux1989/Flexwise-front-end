@@ -91,9 +91,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             startTime,
             endTime,
             now,
-            isCurrent: demoIsCurrent,
-            isSubstitute: isSubstitute || demoIsSubstitute,
-            isCancelled: demoIsCancelled,
+            isCurrent,
+            isSubstitute,
+            isCancelled,
             substitute_detected: lesson.substitute_detected
           });
 
