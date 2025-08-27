@@ -1,54 +1,119 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Get Supabase credentials from environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+// Use your actual Supabase credentials
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://api.schulflex.app'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzQ2MzA5NjAwLCJleHAiOjE5MDQwNzYwMDB9.mhTQEJi2po9vvM_sjtKzKUrYYQEbFyvykOwkE_gya-Q'
 
-// Check if we have valid Supabase credentials
-const hasValidCredentials = supabaseUrl && supabaseAnonKey && 
-  supabaseUrl.startsWith('http') && supabaseAnonKey.length > 10
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-let supabase = null
-
-if (hasValidCredentials) {
-  // Use real Supabase client
-  supabase = createClient(supabaseUrl, supabaseAnonKey)
-} else {
-  // Create a mock Supabase client for demo purposes
-  supabase = {
-    auth: {
-      getSession: () => Promise.resolve({ data: { session: null } }),
-      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-      signInWithPassword: ({ email, password }) => {
-        // Demo login - accept any email/password for demo
-        if (email && password) {
-          return Promise.resolve({ 
-            data: { 
-              user: { 
-                id: 'demo-user', 
-                email: email 
-              } 
-            }, 
-            error: null 
-          })
-        }
-        return Promise.resolve({ 
-          data: { user: null }, 
-          error: { message: 'Invalid credentials' } 
-        })
-      },
-      signOut: () => Promise.resolve({ error: null })
-    },
-    from: () => ({
-      select: () => Promise.resolve({ data: [], error: null }),
-      insert: () => Promise.resolve({ data: null, error: null }),
-      update: () => Promise.resolve({ data: null, error: null }),
-      delete: () => Promise.resolve({ data: null, error: null })
+// Authentication with role-based routing
+export async function handleLogin(email, password) {
+  try {
+    // 1. Authenticate user
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
     })
+    
+    if (error) throw error
+    
+    // 2. Get user profile with role information
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select(`
+        *,
+        roles(name),
+        structure_schools(name)
+      `)
+      .eq('id', authData.user.user_metadata?.profile_id || authData.user.id)
+      .single()
+      
+    if (profileError) {
+      console.error('Profile fetch error:', profileError)
+      throw new Error('Could not fetch user profile')
+    }
+    
+    // 3. Store user context for RLS
+    const userContext = {
+      userId: profile.id,
+      schoolId: profile.school_id,
+      role: profile.roles?.name || 'Parent'
+    }
+    
+    sessionStorage.setItem('userContext', JSON.stringify(userContext))
+    
+    return {
+      user: authData.user,
+      profile: profile,
+      role: profile.roles?.name || 'Parent'
+    }
+    
+  } catch (error) {
+    console.error('Login error:', error)
+    throw error
   }
-  
-  console.log('🔄 Using demo mode - add your Supabase credentials to .env for real functionality')
 }
 
-export { supabase }
-export const isDemo = !hasValidCredentials
+// Role-based routing logic
+export function getRouteByRole(role) {
+  const routes = {
+    'Parent': '/dashboard/parent',
+    'Teacher': '/dashboard/teacher', 
+    'Admin': '/dashboard/admin',
+    'Student': '/dashboard/student',
+    'Erzieher*innen': '/dashboard/teacher', // Use teacher dashboard for erzieher
+    'Externe': '/dashboard/external',
+    'Super Admin': '/dashboard/admin'
+  }
+  
+  return routes[role] || '/dashboard/parent'
+}
+
+// RLS Context Setup
+export async function setupRLSContext() {
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  if (!session) {
+    return null
+  }
+  
+  // RLS policies automatically use auth.uid() and auth.get_current_user_school_id()
+  return session
+}
+
+// Route Protection
+export async function checkAccess() {
+  const session = await supabase.auth.getSession()
+  return session.data.session
+}
+
+// Get current user profile
+export async function getCurrentUserProfile() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session) return null
+    
+    const { data: profile, error } = await supabase
+      .from('user_profiles')
+      .select(`
+        *,
+        roles(name),
+        structure_schools(name)
+      `)
+      .eq('id', session.user.user_metadata?.profile_id || session.user.id)
+      .single()
+      
+    if (error) throw error
+    
+    return {
+      ...profile,
+      role: profile.roles?.name || 'Parent'
+    }
+  } catch (error) {
+    console.error('Error fetching user profile:', error)
+    return null
+  }
+}
+
+export const isDemo = false // Always use real authentication now
