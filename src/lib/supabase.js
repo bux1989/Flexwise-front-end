@@ -149,7 +149,7 @@ export async function fetchLessonsForTeacher(teacherId) {
     const { data: lessons, error } = await supabase
       .from('vw_react_lesson_details')
       .select('*')
-      .contains('teacher_ids', [teacherId])
+      .eq('assigned_teacher_id', teacherId)
       .order('start_datetime', { ascending: true })
 
     if (error) {
