@@ -18,6 +18,7 @@ function App() {
     
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Auth state change:', event)
       if (event === 'SIGNED_IN') {
         await loadUserProfile(session.user)
       } else if (event === 'SIGNED_OUT') {
@@ -30,6 +31,25 @@ function App() {
 
     return () => subscription.unsubscribe()
   }, [])
+
+  // Handle role-based redirects when userRole changes
+  useEffect(() => {
+    if (user && userRole) {
+      const correctPath = getDashboardPath()
+      const currentPath = window.location.pathname
+
+      console.log('🎯 Role redirect check:', {
+        currentPath,
+        correctPath,
+        userRole
+      })
+
+      if (currentPath !== correctPath) {
+        console.log('🔀 Redirecting to correct dashboard:', correctPath)
+        window.location.href = correctPath
+      }
+    }
+  }, [userRole, user])
 
   const initializeAuth = async () => {
     try {
