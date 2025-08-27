@@ -28,6 +28,7 @@ function App() {
   const [session, setSession] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [profileLoading, setProfileLoading] = useState(false)
 
   // Profile loading logic
   const loadUserProfile = useCallback(async (user) => {
