@@ -1,1 +1,0 @@
-{"name":"course-scheduler","version":"1.0.0","scripts":{"build":"weweb build","serve":"weweb serve"},"dependencies":{"pinia":"^2.1.7","vue":"^3.3.4"},"devDependencies":{"@vue/eslint-config-prettier":"^10.2.0","babel-eslint":"^10.1.0","eslint-plugin-prettier":"^5.5.4","eslint-plugin-vue":"^10.4.0","prettier":"^3.6.2","webpack-cli":"^6.0.1","webpack-dev-server":"^5.2.2"}}

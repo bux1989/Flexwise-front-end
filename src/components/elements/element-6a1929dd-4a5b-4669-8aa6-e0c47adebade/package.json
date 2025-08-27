@@ -1,1 +1,0 @@
-{"name":"ww-schedule-table","version":"1.9.4","license":"MIT","scripts":{"build":"weweb build","serve":"weweb serve"},"dependencies":{"vue":"^3.5.18"}}
