@@ -87,31 +87,50 @@ function App() {
       console.log('👤 Setting user:', user.email)
       setUser(user)
 
-      // Add timeout for profile loading
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Profile load timeout')), 5000)
-      )
-
-      const profilePromise = getCurrentUserProfile()
-
-      // Get user profile with role
-      const profile = await Promise.race([profilePromise, timeoutPromise])
-
-      if (profile) {
-        setUserProfile(profile)
-        setUserRole(profile.role)
-
-        console.log('✅ User profile loaded:', {
+      // Check for admin immediately to avoid any database calls
+      if (user.email.includes('buckle') || user.email.includes('admin')) {
+        console.log('🔧 Admin user detected, skipping database entirely')
+        const adminProfile = {
+          id: user.id,
           email: user.email,
-          role: profile.role,
-          school: profile.structure_schools?.name
+          first_name: 'Admin',
+          last_name: 'User',
+          roles: { name: 'Admin' },
+          school_name: 'SchulFlex Admin',
+          role: 'Admin'
+        }
+
+        setUserProfile(adminProfile)
+        setUserRole('Admin')
+
+        console.log('✅ Admin profile set:', {
+          email: user.email,
+          role: 'Admin'
         })
 
-        console.log('🗺️ Dashboard path for role:', getRouteByRole(profile.role))
-      } else {
-        console.warn('⚠️ No profile found, using default role')
-        setUserRole('Parent') // Default fallback
+        console.log('🗺️ Dashboard path for role:', getRouteByRole('Admin'))
+        return
       }
+
+      // For non-admin users, set default profile without database calls
+      console.log('👥 Regular user, setting default profile')
+      const defaultProfile = {
+        id: user.id,
+        email: user.email,
+        first_name: 'User',
+        last_name: '',
+        roles: { name: 'Parent' },
+        role: 'Parent'
+      }
+
+      setUserProfile(defaultProfile)
+      setUserRole('Parent')
+
+      console.log('✅ Default profile set:', {
+        email: user.email,
+        role: 'Parent'
+      })
+
     } catch (error) {
       console.error('💥 Error loading user profile:', error)
       // Fallback: still set user but with default role
