@@ -71,7 +71,30 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
         // Fetch lessons for the selected date
         const lessonsData = await fetchTodaysLessons(profile.id, selectedDate);
-        setLessons(lessonsData);
+        console.log('📚 Raw lessons data from Supabase:', lessonsData);
+
+        // Transform Supabase data to match expected structure
+        const transformedLessons = lessonsData.map(lesson => ({
+          ...lesson,
+          id: lesson.lesson_id || lesson.id,
+          subject: lesson.subject_name || lesson.subject,
+          class: lesson.class_name || lesson.class,
+          room: lesson.room_name || lesson.room,
+          time: lesson.start_datetime ? new Date(lesson.start_datetime).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : lesson.time,
+          endTime: lesson.end_datetime ? new Date(lesson.end_datetime).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : lesson.endTime,
+          isSubstitute: lesson.substitute_detected || lesson.isSubstitute || false,
+          isCancelled: lesson.isCancelled || false,
+          isCurrent: false, // We'll determine this based on time
+          teacherRole: 'main',
+          otherTeachers: lesson.teacher_names ? lesson.teacher_names.map(name => ({ name })) : [],
+          enrolled: lesson.student_count || 0,
+          students: lesson.student_names_with_class ? lesson.student_names_with_class.map((name, index) => ({ id: index + 1, name })) : [],
+          attendanceTaken: false,
+          lessonNote: ''
+        }));
+
+        console.log('🔄 Transformed lessons:', transformedLessons);
+        setLessons(transformedLessons);
 
       } catch (error) {
         console.error('Failed to load lessons:', error);
