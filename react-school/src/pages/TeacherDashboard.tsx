@@ -75,7 +75,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
         // Transform Supabase data to match expected structure
         const now = new Date();
-        const transformedLessons = lessonsData.map(lesson => {
+        const transformedLessons = lessonsData.map((lesson, index) => {
           const startTime = lesson.start_datetime ? new Date(lesson.start_datetime) : null;
           const endTime = lesson.end_datetime ? new Date(lesson.end_datetime) : null;
 
@@ -90,6 +90,22 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                              (lesson.warnings && lesson.warnings.includes('cancelled')) ||
                              (lesson.is_type === 'cancelled') ||
                              false;
+
+          // Add some demo statuses for testing (remove this later)
+          const demoIsCurrent = index === 1; // Make second lesson current
+          const demoIsSubstitute = index === 2; // Make third lesson substitute
+          const demoIsCancelled = false;
+
+          console.log(`Lesson ${index + 1}:`, {
+            subject: lesson.subject_name,
+            startTime,
+            endTime,
+            now,
+            isCurrent: demoIsCurrent,
+            isSubstitute: isSubstitute || demoIsSubstitute,
+            isCancelled: demoIsCancelled,
+            substitute_detected: lesson.substitute_detected
+          });
 
           return {
             ...lesson,
