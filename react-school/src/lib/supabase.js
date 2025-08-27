@@ -56,26 +56,11 @@ export async function getCurrentUserProfile() {
     const profileId = user.user_metadata?.profile_id
     
     if (!profileId) {
-      console.error('❌ No profile_id found in user_metadata')
-      
-      // Fallback for admin emails
-      if (user.email.includes('buckle') || user.email.includes('admin')) {
-        console.log('🔧 Using admin fallback due to missing profile_id')
-        return {
-          id: user.id,
-          email: user.email,
-          first_name: 'Admin',
-          last_name: 'User',
-          roles: { name: 'Admin' },
-          structure_schools: { name: 'SchulFlex Admin' },
-          role: 'Admin'
-        }
-      }
-      
-      return null
+      console.error('❌ No profile_id found in user_metadata for user:', user.email)
+      throw new Error('User account not properly set up - missing profile_id in metadata')
     }
     
-    // Use the correct connection pattern: user_metadata.profile_id → user_profiles.id
+    // Use the correct connection pattern: user_metadata.profile_id ��� user_profiles.id
     console.log('🔗 Looking up profile using profile_id:', profileId)
     console.log('📋 Full user metadata:', user.user_metadata)
 
@@ -97,24 +82,11 @@ export async function getCurrentUserProfile() {
         message: error.message,
         details: error.details,
         hint: error.hint,
-        fullError: error
+        query_attempted: `user_profiles.id = ${profileId}`
       })
 
-      // Fallback for admin emails
-      if (user.email.includes('buckle') || user.email.includes('admin')) {
-        console.log('🔧 Using admin fallback due to profile lookup error')
-        return {
-          id: user.id,
-          email: user.email,
-          first_name: 'Admin',
-          last_name: 'User',
-          roles: { name: 'Admin' },
-          structure_schools: { name: 'SchulFlex Admin' },
-          role: 'Admin'
-        }
-      }
-
-      throw error
+      // Don't use fallbacks - let authentication fail properly
+      throw new Error(`Profile lookup failed: ${error.message}`)
     }
     
     if (!profile) {
