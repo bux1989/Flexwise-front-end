@@ -52,50 +52,48 @@ export async function getCurrentUserProfile() {
     let profile = null
     let error = null
     
-    // Approach 1: Try by auth user ID
+    // Approach 1: Try by auth user ID - simplified query to avoid relationship issues
     const { data: profileById, error: errorById } = await supabase
       .from('user_profiles')
       .select(`
         *,
-        roles(name),
-        structure_schools(name)
+        roles(name)
       `)
       .eq('id', session.user.id)
       .single()
-      
+
     if (profileById && !errorById) {
       profile = profileById
       console.log('✅ Found profile by ID:', profile.roles?.name)
     } else {
       console.log('⚠️ Profile by ID failed:', errorById)
-      
+
       // Approach 2: Try by email
       const { data: profileByEmail, error: errorByEmail } = await supabase
         .from('user_profiles')
         .select(`
           *,
-          roles(name),
-          structure_schools(name)
+          roles(name)
         `)
         .eq('email', session.user.email)
         .single()
-        
+
       if (profileByEmail && !errorByEmail) {
         profile = profileByEmail
         console.log('✅ Found profile by email:', profile.roles?.name)
       } else {
         console.log('❌ Profile by email failed:', errorByEmail)
         
-        // Approach 3: For admin account, provide fallback
-        if (session.user.email === 'buckle+2@opendoors.team') {
-          console.log('🔧 Using admin fallback profile')
+        // Approach 3: For admin accounts, provide fallback
+        if (session.user.email.includes('buckle') || session.user.email.includes('admin')) {
+          console.log('🔧 Using admin fallback profile for:', session.user.email)
           profile = {
             id: session.user.id,
             email: session.user.email,
             first_name: 'Admin',
             last_name: 'User',
             roles: { name: 'Admin' },
-            structure_schools: { name: 'SchulFlex Admin' }
+            school_name: 'SchulFlex Admin'
           }
         }
       }
