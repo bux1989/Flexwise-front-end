@@ -37,7 +37,7 @@ function App() {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [loadUserProfile])
 
   const loadUserProfile = useCallback(async (user) => {
     try {
