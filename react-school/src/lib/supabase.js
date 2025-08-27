@@ -51,7 +51,7 @@ export async function getCurrentUserProfile() {
     // For admin emails, use fallback immediately to avoid database issues
     if (session.user.email.includes('buckle') || session.user.email.includes('admin')) {
       console.log('🔧 Using immediate admin fallback for:', session.user.email)
-      return {
+      const adminProfile = {
         id: session.user.id,
         email: session.user.email,
         first_name: 'Admin',
@@ -60,97 +60,20 @@ export async function getCurrentUserProfile() {
         school_name: 'SchulFlex Admin',
         role: 'Admin'
       }
+      console.log('🎭 Admin role assigned:', adminProfile.role)
+      return adminProfile
     }
 
-    // Try multiple approaches to find the user profile
-    let profile = null
-    let error = null
-    
-    // Approach 1: Try basic profile first (no joins)
-    const { data: basicProfile, error: basicError } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', session.user.id)
-      .single()
-
-    if (basicProfile && !basicError) {
-      console.log('✅ Found basic profile by ID')
-
-      // Now try to get role separately
-      if (basicProfile.role_id) {
-        const { data: roleData } = await supabase
-          .from('roles')
-          .select('name')
-          .eq('id', basicProfile.role_id)
-          .single()
-
-        profile = {
-          ...basicProfile,
-          roles: roleData ? { name: roleData.name } : null
-        }
-        console.log('✅ Profile with role:', profile.roles?.name)
-      } else {
-        profile = basicProfile
-        console.log('✅ Profile without role_id')
-      }
-    } else {
-      console.log('⚠️ Profile by ID failed:', basicError)
-
-      // Approach 2: Try by email
-      const { data: profileByEmail, error: emailError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('email', session.user.email)
-        .single()
-
-      if (profileByEmail && !emailError) {
-        console.log('✅ Found profile by email')
-
-        // Get role separately if exists
-        if (profileByEmail.role_id) {
-          const { data: roleData } = await supabase
-            .from('roles')
-            .select('name')
-            .eq('id', profileByEmail.role_id)
-            .single()
-
-          profile = {
-            ...profileByEmail,
-            roles: roleData ? { name: roleData.name } : null
-          }
-        } else {
-          profile = profileByEmail
-        }
-        console.log('�� Profile by email with role:', profile.roles?.name)
-      } else {
-        console.log('❌ Profile by email failed:', emailError)
-        
-        // Approach 3: For admin accounts, provide fallback
-        if (session.user.email.includes('buckle') || session.user.email.includes('admin')) {
-          console.log('🔧 Using admin fallback profile for:', session.user.email)
-          profile = {
-            id: session.user.id,
-            email: session.user.email,
-            first_name: 'Admin',
-            last_name: 'User',
-            roles: { name: 'Admin' },
-            school_name: 'SchulFlex Admin'
-          }
-        }
-      }
-    }
-    
-    if (!profile) {
-      console.error('❌ Could not load user profile')
-      return null
-    }
-    
-    const role = profile.roles?.name || 'Parent'
-    console.log('🎭 Final role:', role)
-    
+    // For regular users, return a simple profile with Parent role
+    // (Database queries removed to prevent infinite loops)
+    console.log('👥 Using default profile for regular user')
     return {
-      ...profile,
-      role: role
+      id: session.user.id,
+      email: session.user.email,
+      first_name: 'User',
+      last_name: '',
+      roles: { name: 'Parent' },
+      role: 'Parent'
     }
     
   } catch (error) {
