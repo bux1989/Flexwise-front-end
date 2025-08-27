@@ -8,6 +8,35 @@ export default function AdminDashboard({ user }) {
   const [loading, setLoading] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
 
+  // CSS Debug: Check if styles are being applied
+  useEffect(() => {
+    console.log('🎨 AdminDashboard CSS Debug:')
+    console.log('- Document head stylesheets:', document.styleSheets.length)
+
+    // Check if Tailwind classes exist in CSS
+    const testElement = document.createElement('div')
+    testElement.className = 'bg-white p-4 shadow rounded-lg'
+    testElement.style.position = 'absolute'
+    testElement.style.top = '-1000px'
+    document.body.appendChild(testElement)
+
+    const computedStyle = window.getComputedStyle(testElement)
+    console.log('- bg-white background:', computedStyle.backgroundColor)
+    console.log('- shadow box-shadow:', computedStyle.boxShadow)
+    console.log('- rounded-lg border-radius:', computedStyle.borderRadius)
+    console.log('- p-4 padding:', computedStyle.padding)
+
+    document.body.removeChild(testElement)
+
+    // Check main container styles
+    const container = document.querySelector('[data-loc*="AdminDashboard"]')
+    if (container) {
+      const containerStyle = window.getComputedStyle(container)
+      console.log('- Container background:', containerStyle.backgroundColor)
+      console.log('- Container class list:', container.className)
+    }
+  }, [])
+
   useEffect(() => {
     fetchAdminData()
   }, [])
