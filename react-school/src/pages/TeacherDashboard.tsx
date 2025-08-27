@@ -1702,7 +1702,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
               </div>
 
               {/* Vertretungsstunden section */}
-              {substituteLessons.length > 0 && (
+              {substituteLessons && substituteLessons.length > 0 && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-semibold flex items-center gap-2">
@@ -1781,7 +1781,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                 {displayedEvents.map((event) => {
                   const isExpanded = expandedEventDescriptions.has(event.id);
                   const isMobileExpanded = expandedMobileEvents.has(event.id);
-                  const shouldTruncate = event.description.length > 80;
+                  const shouldTruncate = event.description && event.description.length > 80;
                   const truncatedDesc = truncateDescription(event.description);
                   
                   return (
@@ -2016,9 +2016,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                 })}
                 
                 {/* Enhanced Event Navigation with "weniger anzeigen" functionality */}
-                {filteredEvents.length > 3 && (
+                {filteredEvents && filteredEvents.length > 3 && (
                   <div className="text-center pt-2 space-y-2">
-                    {filteredEvents.length > eventDisplayCount && (
+                    {filteredEvents && filteredEvents.length > eventDisplayCount && (
                       <Button
                         variant="ghost"
                         size="sm"  
@@ -2026,7 +2026,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                         className="text-blue-600 hover:text-blue-800"
                       >
                         <ChevronDown className="h-4 w-4 mr-1" />
-                        mehr anzeigen ({filteredEvents.length - eventDisplayCount} weitere)
+                        mehr anzeigen ({(filteredEvents?.length || 0) - eventDisplayCount} weitere)
                       </Button>
                     )}
                     {eventDisplayCount > 3 && (
@@ -2172,7 +2172,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
               )}
 
               {/* Enhanced Task Navigation with "weniger anzeigen" functionality - Between filters and list */}
-              {!isMobile && filteredAndSortedTasks.length > 3 && taskDisplayCount > 3 && (
+              {!isMobile && filteredAndSortedTasks && filteredAndSortedTasks.length > 3 && taskDisplayCount > 3 && (
                 <div className="text-center pb-2">
                   <Button
                     variant="ghost"
@@ -2425,9 +2425,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                 )}
                 
                 {/* Enhanced Task Navigation with "weniger anzeigen" functionality */}
-                {filteredAndSortedTasks.length > 3 && (
+                {filteredAndSortedTasks && filteredAndSortedTasks.length > 3 && (
                   <div className="text-center pt-2 space-y-2">
-                    {filteredAndSortedTasks.length > taskDisplayCount && (
+                    {filteredAndSortedTasks && filteredAndSortedTasks.length > taskDisplayCount && (
                       <Button
                         variant="ghost"
                         size="sm"  
@@ -2435,7 +2435,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                         className="text-blue-600 hover:text-blue-800"
                       >
                         <ChevronDown className="h-4 w-4 mr-1" />
-                        mehr anzeigen ({filteredAndSortedTasks.length - taskDisplayCount} weitere)
+                        mehr anzeigen ({(filteredAndSortedTasks?.length || 0) - taskDisplayCount} weitere)
                       </Button>
                     )}
                     {taskDisplayCount > 3 && (
