@@ -135,11 +135,16 @@ export default function AdminDashboard({ user }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" data-debug="admin-container" style={{border: '2px solid red', backgroundColor: '#f9fafb'}}>
+      {/* CSS Debug Indicator */}
+      <div style={{position: 'fixed', top: '10px', right: '10px', background: 'yellow', padding: '5px', zIndex: 9999, fontSize: '12px'}}>
+        CSS Debug: Check Console
+      </div>
+
       {/* Header */}
-      <header className="bg-white shadow">
+      <header className="bg-white shadow" data-debug="header" style={{backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+          <div className="flex justify-between items-center py-6" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 0'}}>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
                 Admin Dashboard
