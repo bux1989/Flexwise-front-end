@@ -581,8 +581,28 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
     }
   };
 
-  const handleHeaderButtonClick = (action: string) => {
-    alert(`Clicked: ${action}`);
+  const handleHeaderButtonClick = async (action: string) => {
+    switch (action) {
+      case 'Ausloggen':
+        try {
+          const { error } = await supabase.auth.signOut();
+          if (error) {
+            console.error('Logout error:', error);
+            alert('Fehler beim Ausloggen');
+          }
+          // The App.jsx component will handle the redirect automatically
+        } catch (error) {
+          console.error('Logout error:', error);
+          alert('Fehler beim Ausloggen');
+        }
+        break;
+      case 'Klassenbuch':
+      case 'Mein Account':
+        alert(`${action} wird bald verfügbar sein`);
+        break;
+      default:
+        alert(`Clicked: ${action}`);
+    }
   };
 
   const handleToggleEventDescription = (eventId: number) => {
