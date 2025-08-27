@@ -141,4 +141,57 @@ export async function checkAccess() {
   return session.data.session
 }
 
+// Fetch lessons from vw_lesson_view_enriched view
+export async function fetchLessonsForTeacher(teacherId) {
+  try {
+    console.log('📚 Fetching lessons from vw_lesson_view_enriched for teacher:', teacherId)
+
+    const { data: lessons, error } = await supabase
+      .from('vw_lesson_view_enriched')
+      .select('*')
+      .eq('teacher_id', teacherId)
+      .order('lesson_start_time', { ascending: true })
+
+    if (error) {
+      console.error('❌ Error fetching lessons:', error)
+      throw error
+    }
+
+    console.log('✅ Lessons fetched successfully:', lessons?.length || 0, 'lessons')
+    return lessons || []
+
+  } catch (error) {
+    console.error('💥 Error in fetchLessonsForTeacher:', error)
+    throw error
+  }
+}
+
+// Fetch lessons for current date
+export async function fetchTodaysLessons(teacherId, date = new Date()) {
+  try {
+    const dateStr = date.toISOString().split('T')[0] // Format: YYYY-MM-DD
+    console.log('📅 Fetching lessons for date:', dateStr)
+
+    const { data: lessons, error } = await supabase
+      .from('vw_lesson_view_enriched')
+      .select('*')
+      .eq('teacher_id', teacherId)
+      .gte('lesson_date', dateStr)
+      .lt('lesson_date', new Date(date.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+      .order('lesson_start_time', { ascending: true })
+
+    if (error) {
+      console.error('❌ Error fetching today\'s lessons:', error)
+      throw error
+    }
+
+    console.log('✅ Today\'s lessons fetched:', lessons?.length || 0, 'lessons')
+    return lessons || []
+
+  } catch (error) {
+    console.error('💥 Error in fetchTodaysLessons:', error)
+    throw error
+  }
+}
+
 export const isDemo = false // Always use real authentication now
