@@ -89,8 +89,14 @@ export async function getCurrentUserProfile() {
       .single()
       
     if (error) {
-      console.error('❌ Profile lookup failed:', error)
-      
+      console.error('❌ Profile lookup failed:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        fullError: error
+      })
+
       // Fallback for admin emails
       if (user.email.includes('buckle') || user.email.includes('admin')) {
         console.log('🔧 Using admin fallback due to profile lookup error')
@@ -104,7 +110,7 @@ export async function getCurrentUserProfile() {
           role: 'Admin'
         }
       }
-      
+
       throw error
     }
     
