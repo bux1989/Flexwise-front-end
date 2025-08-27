@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState, useEffect } from 'react'
 import Login from './pages/Login'
 import TeacherDashboard from './pages/TeacherDashboard'
-import { supabase } from './lib/supabase'
+import { supabase, isDemo } from './lib/supabase'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -34,6 +34,11 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
+        {isDemo && (
+          <div className="bg-yellow-100 text-yellow-800 p-2 text-center text-sm">
+            🔄 Demo Mode - Add your Supabase credentials to .env for full functionality
+          </div>
+        )}
         <Routes>
           <Route 
             path="/login" 
