@@ -84,7 +84,7 @@ export default function AdminDashboard({ user }) {
             </div>
             <div className="flex items-center space-x-3">
               <button
-                onClick={() => console.log('Settings clicked')}
+                onClick={() => setShowSettings(!showSettings)}
                 className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 flex items-center"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
