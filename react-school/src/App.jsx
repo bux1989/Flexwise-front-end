@@ -102,14 +102,23 @@ function App() {
 
         console.log('🗺️ Dashboard path for role:', getRouteByRole(profile.role))
       } else {
-        console.warn('⚠️ No profile found, using default role')
-        setUserRole('Parent') // Default fallback
+        console.error('❌ No profile returned from database')
+        await handleAuthFailure('Profile not found')
       }
     } catch (error) {
       console.error('💥 Error loading user profile:', error)
-      // Fallback: still set user but with default role
-      setUserRole('Parent')
+      await handleAuthFailure(error.message || 'Profile loading failed')
     }
+  }
+
+  const handleAuthFailure = async (reason) => {
+    console.log('🚫 Authentication failed:', reason)
+    // Sign out the user and redirect to login
+    await supabase.auth.signOut()
+    setUser(null)
+    setUserProfile(null)
+    setUserRole(null)
+    // The useEffect will redirect to login when user becomes null
   }
 
   const getDashboardPath = () => {
