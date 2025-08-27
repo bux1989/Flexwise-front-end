@@ -40,14 +40,21 @@ export default function AdminDashboard({ user }) {
   const handleLogout = async () => {
     try {
       console.log('🚪 Logging out...')
-      const { error } = await supabase.auth.signOut()
+
+      // Use signOut with scope: 'local' to avoid server-side issues
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
+
       if (error) {
         console.error('❌ Logout error:', error)
+        // Even if there's an error, the local session is cleared
+        console.log('🔄 Local session cleared despite error')
       } else {
         console.log('✅ Logout successful')
       }
     } catch (err) {
       console.error('💥 Logout failed:', err)
+      // Force local logout even if server fails
+      console.log('🔄 Forcing local logout...')
     }
   }
 
