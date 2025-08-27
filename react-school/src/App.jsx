@@ -87,50 +87,24 @@ function App() {
       console.log('👤 Setting user:', user.email)
       setUser(user)
 
-      // Check for admin immediately to avoid any database calls
-      if (user.email.includes('buckle') || user.email.includes('admin')) {
-        console.log('🔧 Admin user detected, skipping database entirely')
-        const adminProfile = {
-          id: user.id,
-          email: user.email,
-          first_name: 'Admin',
-          last_name: 'User',
-          roles: { name: 'Admin' },
-          school_name: 'SchulFlex Admin',
-          role: 'Admin'
-        }
+      // Get user profile using the proper database connection
+      const profile = await getCurrentUserProfile()
 
-        setUserProfile(adminProfile)
-        setUserRole('Admin')
+      if (profile) {
+        setUserProfile(profile)
+        setUserRole(profile.role)
 
-        console.log('✅ Admin profile set:', {
+        console.log('✅ User profile loaded:', {
           email: user.email,
-          role: 'Admin'
+          role: profile.role,
+          school: profile.structure_schools?.name || profile.school_name
         })
 
-        console.log('🗺️ Dashboard path for role:', getRouteByRole('Admin'))
-        return
+        console.log('🗺️ Dashboard path for role:', getRouteByRole(profile.role))
+      } else {
+        console.warn('⚠️ No profile found, using default role')
+        setUserRole('Parent') // Default fallback
       }
-
-      // For non-admin users, set default profile without database calls
-      console.log('👥 Regular user, setting default profile')
-      const defaultProfile = {
-        id: user.id,
-        email: user.email,
-        first_name: 'User',
-        last_name: '',
-        roles: { name: 'Parent' },
-        role: 'Parent'
-      }
-
-      setUserProfile(defaultProfile)
-      setUserRole('Parent')
-
-      console.log('✅ Default profile set:', {
-        email: user.email,
-        role: 'Parent'
-      })
-
     } catch (error) {
       console.error('💥 Error loading user profile:', error)
       // Fallback: still set user but with default role
