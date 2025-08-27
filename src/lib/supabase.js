@@ -179,7 +179,7 @@ export async function fetchTodaysLessons(teacherId, date = new Date()) {
     const { data: lessons, error } = await supabase
       .from('vw_react_lesson_details')
       .select('*')
-      .contains('teacher_ids', [teacherId])
+      .eq('assigned_teacher_id', teacherId)
       .gte('start_datetime', startOfDay.toISOString())
       .lt('start_datetime', endOfDay.toISOString())
       .order('start_datetime', { ascending: true })
