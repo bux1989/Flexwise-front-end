@@ -551,10 +551,14 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
   // Filter lessons for mobile display
   const displayedLessons = useMemo(() => {
+    if (!lessons || !Array.isArray(lessons)) {
+      return []; // Return empty array if lessons is null/undefined/not an array
+    }
+
     if (!isMobile || showAllLessonsOnMobile) {
       return lessons; // Show all lessons on desktop or when "show all" is enabled on mobile
     }
-    
+
     // On mobile, hide past lessons where attendance is complete by default
     return lessons.filter(lesson => {
       // Always show current lesson
