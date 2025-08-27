@@ -1416,7 +1416,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                     ) : (
                                       <>
                                         <span className="text-base font-medium">
-                                          {getMobileSubjectAbbreviation(lesson.subject)} {lesson.class}
+                                          {getMobileSubjectAbbreviation(lesson.subject || lesson.subject_name)} {lesson.class || lesson.class_name}
                                           {lesson.isSubstitute && <span className="text-purple-600"> Vertretung</span>}
                                         </span>
                                       </>
