@@ -80,8 +80,9 @@ function App() {
       setUserProfile(createFallbackProfile(user, DEFAULT_ROLE))
     } finally {
       setLoading(false)
+      setProfileLoading(false)
     }
-  }, [])
+  }, [profileLoading])
 
   // Helper functions
   const createFallbackProfile = (user, role) => ({
