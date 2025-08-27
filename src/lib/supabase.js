@@ -141,13 +141,13 @@ export async function checkAccess() {
   return session.data.session
 }
 
-// Fetch lessons from vw_lesson_view_enriched view
+// Fetch lessons from vw_react_lesson_details view
 export async function fetchLessonsForTeacher(teacherId) {
   try {
-    console.log('📚 Fetching lessons from vw_lesson_view_enriched for teacher:', teacherId)
+    console.log('📚 Fetching lessons from vw_react_lesson_details for teacher:', teacherId)
 
     const { data: lessons, error } = await supabase
-      .from('vw_lesson_view_enriched')
+      .from('vw_react_lesson_details')
       .select('*')
       .contains('teacher_ids', [teacherId])
       .order('start_datetime', { ascending: true })
