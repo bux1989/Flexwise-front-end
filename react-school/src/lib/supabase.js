@@ -6,30 +6,28 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIU
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Authentication with role-based routing
+// Authentication only - App.jsx handles profile/role loading
 export async function handleLogin(email, password) {
   try {
     console.log('🔐 Attempting login for:', email)
-    
-    // 1. Authenticate user
+
     const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password
     })
-    
+
     if (error) {
       console.error('❌ Auth error:', error)
       throw error
     }
-    
+
     console.log('✅ Authentication successful for:', authData.user.email)
-    
+
     return {
-      user: authData.user,
-      profile: null, // Will be loaded separately
-      role: null     // Will be determined separately
+      user: authData.user
+      // Note: profile and role are handled by App.jsx
     }
-    
+
   } catch (error) {
     console.error('💥 Login error:', error)
     throw error
