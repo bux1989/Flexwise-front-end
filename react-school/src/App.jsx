@@ -42,7 +42,7 @@ function App() {
   const loadUserProfile = async (user) => {
     try {
       console.log('👤 Loading profile for:', user.email)
-      
+
       // For admin emails, use immediate assignment
       if (user.email.includes('buckle') || user.email.includes('admin')) {
         console.log('🔧 Admin user detected')
@@ -57,39 +57,26 @@ function App() {
         return
       }
 
-      // For other users, try database lookup with profile_id
-      const profileId = user.user_metadata?.profile_id
-      
-      if (profileId) {
-        console.log('🔗 Looking up profile:', profileId)
-        const { data: profile, error } = await supabase
-          .from('user_profiles')
-          .select(`
-            *,
-            roles(name),
-            structure_schools(name)
-          `)
-          .eq('id', profileId)
-          .single()
-          
-        if (profile && !error) {
-          console.log('✅ Profile loaded:', profile.roles?.name)
-          setUserProfile({
-            ...profile,
-            role: profile.roles?.name || 'Parent'
-          })
-        } else {
-          console.log('⚠️ Profile not found, using default')
-          setUserProfile({
-            id: user.id,
-            email: user.email,
-            first_name: 'User',
-            last_name: '',
-            role: 'Parent'
-          })
-        }
+      // Direct lookup using auth.uid() as profile ID
+      console.log('🔗 Looking up profile with user.id:', user.id)
+      const { data: profile, error } = await supabase
+        .from('user_profiles')
+        .select(`
+          *,
+          roles(name),
+          structure_schools(name)
+        `)
+        .eq('id', user.id)  // Direct mapping: user.id = user_profiles.id
+        .single()
+
+      if (profile && !error) {
+        console.log('✅ Profile loaded:', profile.roles?.name)
+        setUserProfile({
+          ...profile,
+          role: profile.roles?.name || 'Parent'
+        })
       } else {
-        console.log('👥 No profile_id, using default')
+        console.log('⚠️ Profile not found, using default')
         setUserProfile({
           id: user.id,
           email: user.email,
