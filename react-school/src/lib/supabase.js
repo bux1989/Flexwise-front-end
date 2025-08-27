@@ -55,18 +55,25 @@ export async function handleLogin(email, password) {
     }
     
     // 3. Store user context for RLS
+    const detectedRole = profile.roles?.name || 'Parent'
+    console.log('Role detection:', {
+      profileRoles: profile.roles,
+      detectedRole,
+      profileData: profile
+    })
+
     const userContext = {
       userId: profile.id,
       schoolId: profile.school_id,
-      role: profile.roles?.name || 'Parent'
+      role: detectedRole
     }
-    
+
     sessionStorage.setItem('userContext', JSON.stringify(userContext))
-    
+
     return {
       user: authData.user,
       profile: profile,
-      role: profile.roles?.name || 'Parent'
+      role: detectedRole
     }
     
   } catch (error) {
