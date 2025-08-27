@@ -18,6 +18,8 @@ export async function handleLogin(email, password) {
     if (error) throw error
     
     // 2. Get user profile with role information
+    console.log('Looking up profile for user:', authData.user.id, authData.user.user_metadata)
+
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select(`
@@ -27,10 +29,29 @@ export async function handleLogin(email, password) {
       `)
       .eq('id', authData.user.user_metadata?.profile_id || authData.user.id)
       .single()
-      
+
+    console.log('Profile query result:', { profile, profileError })
+
     if (profileError) {
       console.error('Profile fetch error:', profileError)
-      throw new Error('Could not fetch user profile')
+      // Try alternative lookup by email if profile_id lookup fails
+      const { data: profileByEmail, error: emailError } = await supabase
+        .from('user_profiles')
+        .select(`
+          *,
+          roles(name),
+          structure_schools(name)
+        `)
+        .eq('email', authData.user.email)
+        .single()
+
+      console.log('Profile by email result:', { profileByEmail, emailError })
+
+      if (emailError) {
+        throw new Error('Could not fetch user profile')
+      } else {
+        profile = profileByEmail
+      }
     }
     
     // 3. Store user context for RLS
