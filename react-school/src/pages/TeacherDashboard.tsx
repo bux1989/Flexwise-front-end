@@ -1,25 +1,25 @@
 import { useState, useMemo } from 'react';
 import { Calendar, Bell, MessageCircle, Menu, Info, Clock, MapPin, Plus, Check, AlertCircle, X, Edit, Trash2, HelpCircle, UserPlus, Search, Filter, Star, ChevronDown, ChevronUp, EyeOff, Eye, BookOpen, Users, UserX, User, FileText, LogOut, CalendarIcon, ClipboardList, MoreHorizontal } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
-import { Button } from './components/ui/button';
-import { Badge } from './components/ui/badge';
-import { Checkbox } from './components/ui/checkbox';
-import { Avatar, AvatarFallback } from './components/ui/avatar';
-import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover';
-import { Calendar as CalendarComponent } from './components/ui/calendar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './components/ui/dialog';
-import { Input } from './components/ui/input';
-import { Label } from './components/ui/label';
-import { Textarea } from './components/ui/textarea';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './components/ui/tooltip';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select';
-import { useIsMobile } from './components/ui/use-mobile';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Checkbox } from '../components/ui/checkbox';
+import { Avatar, AvatarFallback } from '../components/ui/avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { Calendar as CalendarComponent } from '../components/ui/calendar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../components/ui/tooltip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { useIsMobile } from '../components/ui/use-mobile';
 
 // Imported components and utilities
-import { Header } from './components/Header';
-import { AddTaskDialog } from './components/AddTaskDialog';
-import { TimeInputWithArrows } from './components/TimeInputWithArrows';
-import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, INITIAL_LESSONS, ASSIGNEE_GROUPS } from './constants/mockData';
+import { Header } from '../components/Header';
+import { AddTaskDialog } from '../components/AddTaskDialog';
+import { TimeInputWithArrows } from '../components/TimeInputWithArrows';
+import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, INITIAL_LESSONS, ASSIGNEE_GROUPS } from '../constants/mockData';
 import { 
   getSubstituteLessons, 
   getPriorityValue, 
@@ -33,9 +33,14 @@ import {
   getTeacherAbbreviation,
   createLessonNoteWithMetadata,
   parseLessonNote
-} from './utils/helpers';
+} from '../utils/helpers';
 
-export default function App() {
+interface TeacherDashboardProps {
+  user?: any;
+  profile?: any;
+}
+
+export default function TeacherDashboard({ user, profile }: TeacherDashboardProps) {
   const isMobile = useIsMobile();
   
   const [tasks, setTasks] = useState(INITIAL_TASKS);
