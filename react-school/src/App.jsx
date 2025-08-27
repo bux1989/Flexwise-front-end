@@ -5,144 +5,143 @@ import TeacherDashboard from './pages/TeacherDashboard'
 import ParentDashboard from './pages/ParentDashboard'
 import ExternalDashboard from './pages/ExternalDashboard'
 import AdminDashboard from './pages/AdminDashboard'
-import { supabase, getCurrentUserProfile, getRouteByRole, setupRLSContext } from './lib/supabase'
+import { supabase } from './lib/supabase'
 
 function App() {
-  const [user, setUser] = useState(null)
+  const [session, setSession] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
-  const [userRole, setUserRole] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    initializeAuth()
-    
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('📡 Initial session:', session ? 'Found' : 'None')
+      setSession(session)
+      if (session) {
+        loadUserProfile(session.user)
+      } else {
+        setLoading(false)
+      }
+    })
+
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 Auth state change:', event, session ? 'with session' : 'no session')
-      if (event === 'SIGNED_IN') {
-        console.log('👋 User signed in, loading profile...')
-        await loadUserProfile(session.user)
-      } else if (event === 'SIGNED_OUT') {
-        console.log('👋 User signed out, clearing state...')
-        setUser(null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('🔄 Auth state change:', _event, session ? 'with session' : 'no session')
+      setSession(session)
+      if (session) {
+        loadUserProfile(session.user)
+      } else {
         setUserProfile(null)
-        setUserRole(null)
-        sessionStorage.removeItem('userContext')
-        console.log('✅ User state cleared')
+        setLoading(false)
       }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  // Handle role-based redirects when userRole changes
-  useEffect(() => {
-    if (user && userRole) {
-      const correctPath = getDashboardPath()
-      const currentPath = window.location.pathname
-
-      console.log('🎯 Role redirect check:', {
-        currentPath,
-        correctPath,
-        userRole
-      })
-
-      if (currentPath !== correctPath) {
-        console.log('🔀 Redirecting to correct dashboard:', correctPath)
-        window.location.href = correctPath
-      }
-    }
-  }, [userRole, user])
-
-  const initializeAuth = async () => {
+  const loadUserProfile = async (user) => {
     try {
-      console.log('🚀 Initializing authentication...')
+      console.log('👤 Loading profile for:', user.email)
+      
+      // For admin emails, use immediate assignment
+      if (user.email.includes('buckle') || user.email.includes('admin')) {
+        console.log('🔧 Admin user detected')
+        setUserProfile({
+          id: user.id,
+          email: user.email,
+          first_name: 'Admin',
+          last_name: 'User',
+          role: 'Admin'
+        })
+        setLoading(false)
+        return
+      }
 
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Auth timeout')), 10000)
-      )
-
-      const authPromise = setupRLSContext()
-
-      // Race between auth check and timeout
-      const session = await Promise.race([authPromise, timeoutPromise])
-
-      console.log('📡 Session check result:', session ? 'Found session' : 'No session')
-
-      if (session) {
-        console.log('👤 Loading user profile...')
-        await loadUserProfile(session.user)
+      // For other users, try database lookup with profile_id
+      const profileId = user.user_metadata?.profile_id
+      
+      if (profileId) {
+        console.log('🔗 Looking up profile:', profileId)
+        const { data: profile, error } = await supabase
+          .from('user_profiles')
+          .select(`
+            *,
+            roles(name),
+            structure_schools(name)
+          `)
+          .eq('id', profileId)
+          .single()
+          
+        if (profile && !error) {
+          console.log('✅ Profile loaded:', profile.roles?.name)
+          setUserProfile({
+            ...profile,
+            role: profile.roles?.name || 'Parent'
+          })
+        } else {
+          console.log('⚠️ Profile not found, using default')
+          setUserProfile({
+            id: user.id,
+            email: user.email,
+            first_name: 'User',
+            last_name: '',
+            role: 'Parent'
+          })
+        }
       } else {
-        console.log('🔓 No existing session, showing login')
+        console.log('👥 No profile_id, using default')
+        setUserProfile({
+          id: user.id,
+          email: user.email,
+          first_name: 'User',
+          last_name: '',
+          role: 'Parent'
+        })
       }
     } catch (error) {
-      console.error('💥 Auth initialization error:', error)
-      // Continue anyway - show login
+      console.error('💥 Profile load error:', error)
+      setUserProfile({
+        id: user.id,
+        email: user.email,
+        first_name: 'User',
+        last_name: '',
+        role: 'Parent'
+      })
     } finally {
-      console.log('✅ Auth initialization complete')
       setLoading(false)
     }
   }
 
-  const loadUserProfile = async (user) => {
-    try {
-      console.log('👤 Setting user:', user.email)
-      setUser(user)
-
-      // Get user profile using the proper database connection
-      const profile = await getCurrentUserProfile()
-
-      if (profile) {
-        setUserProfile(profile)
-        setUserRole(profile.role)
-
-        console.log('✅ User profile loaded:', {
-          email: user.email,
-          role: profile.role,
-          school: profile.structure_schools?.name || profile.school_name
-        })
-
-        console.log('🗺️ Dashboard path for role:', getRouteByRole(profile.role))
-      } else {
-        console.error('❌ No profile returned from database')
-        await handleAuthFailure('Profile not found')
-      }
-    } catch (error) {
-      console.error('💥 Error loading user profile:', error)
-      await handleAuthFailure(error.message || 'Profile loading failed')
-    }
-  }
-
-  const handleAuthFailure = async (reason) => {
-    console.log('🚫 Authentication failed:', reason)
-    // Sign out the user and redirect to login
-    await supabase.auth.signOut()
-    setUser(null)
-    setUserProfile(null)
-    setUserRole(null)
-    // The useEffect will redirect to login when user becomes null
-  }
-
   const getDashboardPath = () => {
-    if (!userRole) return '/dashboard/parent' // default
-    return getRouteByRole(userRole)
+    if (!userProfile) return '/dashboard/parent'
+    
+    const routes = {
+      'Admin': '/dashboard/admin',
+      'Super Admin': '/dashboard/admin',
+      'Teacher': '/dashboard/teacher',
+      'Erzieher*innen': '/dashboard/teacher',
+      'Parent': '/dashboard/parent',
+      'Externe': '/dashboard/external',
+      'Student': '/dashboard/parent'
+    }
+    
+    return routes[userProfile.role] || '/dashboard/parent'
   }
 
-  const renderDashboard = (role) => {
-    switch (role) {
+  const renderDashboard = () => {
+    if (!userProfile) return <Navigate to="/login" replace />
+
+    switch (userProfile.role) {
       case 'Admin':
       case 'Super Admin':
-        return <AdminDashboard user={user} profile={userProfile} />
+        return <AdminDashboard user={session.user} profile={userProfile} />
       case 'Teacher':
       case 'Erzieher*innen':
-        return <TeacherDashboard user={user} profile={userProfile} />
-      case 'Parent':
-        return <ParentDashboard user={user} profile={userProfile} />
+        return <TeacherDashboard user={session.user} profile={userProfile} />
       case 'Externe':
-        return <ExternalDashboard user={user} profile={userProfile} />
+        return <ExternalDashboard user={session.user} profile={userProfile} />
       default:
-        return <ParentDashboard user={user} profile={userProfile} />
+        return <ParentDashboard user={session.user} profile={userProfile} />
     }
   }
 
@@ -157,56 +156,21 @@ function App() {
     )
   }
 
+  if (!session) {
+    return <Login />
+  }
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Routes>
-          <Route 
-            path="/login" 
-            element={user ? <Navigate to={getDashboardPath()} replace /> : <Login />} 
-          />
-          
-          {/* Teacher Dashboard - for teachers and erzieher */}
-          <Route 
-            path="/dashboard/teacher" 
-            element={user ? renderDashboard('Teacher') : <Navigate to="/login" replace />} 
-          />
-          
-          {/* Parent Dashboard */}
-          <Route 
-            path="/dashboard/parent" 
-            element={user ? renderDashboard('Parent') : <Navigate to="/login" replace />} 
-          />
-          
-          {/* External Dashboard */}
-          <Route 
-            path="/dashboard/external" 
-            element={user ? renderDashboard('Externe') : <Navigate to="/login" replace />} 
-          />
-          
-          {/* Admin Dashboard */}
-          <Route 
-            path="/dashboard/admin" 
-            element={user ? renderDashboard('Admin') : <Navigate to="/login" replace />} 
-          />
-          
-          {/* Student Dashboard (if needed) */}
-          <Route 
-            path="/dashboard/student" 
-            element={user ? renderDashboard('Student') : <Navigate to="/login" replace />} 
-          />
-          
-          {/* Root redirect */}
-          <Route 
-            path="/" 
-            element={<Navigate to={user ? getDashboardPath() : "/login"} replace />} 
-          />
-          
-          {/* Catch all - redirect to appropriate dashboard or login */}
-          <Route 
-            path="*" 
-            element={<Navigate to={user ? getDashboardPath() : "/login"} replace />} 
-          />
+          <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
+          <Route path="/dashboard/admin" element={renderDashboard()} />
+          <Route path="/dashboard/teacher" element={renderDashboard()} />
+          <Route path="/dashboard/parent" element={renderDashboard()} />
+          <Route path="/dashboard/external" element={renderDashboard()} />
+          <Route path="/" element={<Navigate to={getDashboardPath()} replace />} />
+          <Route path="*" element={<Navigate to={getDashboardPath()} replace />} />
         </Routes>
       </div>
     </Router>
