@@ -33,45 +33,69 @@ function App() {
 
   const initializeAuth = async () => {
     try {
-      // Check if user is already authenticated
-      const session = await setupRLSContext()
-      
+      console.log('🚀 Initializing authentication...')
+
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Auth timeout')), 10000)
+      )
+
+      const authPromise = setupRLSContext()
+
+      // Race between auth check and timeout
+      const session = await Promise.race([authPromise, timeoutPromise])
+
+      console.log('📡 Session check result:', session ? 'Found session' : 'No session')
+
       if (session) {
+        console.log('👤 Loading user profile...')
         await loadUserProfile(session.user)
+      } else {
+        console.log('🔓 No existing session, showing login')
       }
     } catch (error) {
-      console.error('Auth initialization error:', error)
+      console.error('💥 Auth initialization error:', error)
+      // Continue anyway - show login
     } finally {
+      console.log('✅ Auth initialization complete')
       setLoading(false)
     }
   }
 
   const loadUserProfile = async (user) => {
     try {
+      console.log('👤 Setting user:', user.email)
       setUser(user)
-      
+
+      // Add timeout for profile loading
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Profile load timeout')), 8000)
+      )
+
+      const profilePromise = getCurrentUserProfile()
+
       // Get user profile with role
-      const profile = await getCurrentUserProfile()
-      
+      const profile = await Promise.race([profilePromise, timeoutPromise])
+
       if (profile) {
         setUserProfile(profile)
         setUserRole(profile.role)
 
-        console.log('User loaded in App:', {
+        console.log('✅ User profile loaded:', {
           email: user.email,
           role: profile.role,
-          school: profile.structure_schools?.name,
-          fullProfile: profile
+          school: profile.structure_schools?.name
         })
 
-        console.log('Dashboard path for role:', getRouteByRole(profile.role))
+        console.log('🗺️ Dashboard path for role:', getRouteByRole(profile.role))
       } else {
-        console.error('No profile found for user')
-        // Could redirect to profile setup page
+        console.warn('⚠️ No profile found, using default role')
+        setUserRole('Parent') // Default fallback
       }
     } catch (error) {
-      console.error('Error loading user profile:', error)
-      // Handle error - maybe redirect to login
+      console.error('💥 Error loading user profile:', error)
+      // Fallback: still set user but with default role
+      setUserRole('Parent')
     }
   }
 
