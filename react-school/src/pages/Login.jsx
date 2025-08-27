@@ -13,11 +13,11 @@ export default function Login() {
     setError('')
 
     try {
-      const { user, profile, role } = await handleLogin(email, password)
-      
-      // Success - navigation will be handled by App.jsx useEffect
-      console.log('Login successful:', { user: user.email, role })
-      
+      const { user } = await handleLogin(email, password)
+
+      // Success - profile/role loading and navigation handled by App.jsx
+      console.log('Login successful:', { user: user.email })
+
     } catch (err) {
       console.error('Login error:', err)
       setError(err.message || 'Login failed. Please check your credentials.')
