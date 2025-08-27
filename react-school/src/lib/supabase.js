@@ -52,37 +52,64 @@ export async function getCurrentUserProfile() {
     let profile = null
     let error = null
     
-    // Approach 1: Try by auth user ID - simplified query to avoid relationship issues
-    const { data: profileById, error: errorById } = await supabase
+    // Approach 1: Try basic profile first (no joins)
+    const { data: basicProfile, error: basicError } = await supabase
       .from('user_profiles')
-      .select(`
-        *,
-        roles(name)
-      `)
+      .select('*')
       .eq('id', session.user.id)
       .single()
 
-    if (profileById && !errorById) {
-      profile = profileById
-      console.log('✅ Found profile by ID:', profile.roles?.name)
+    if (basicProfile && !basicError) {
+      console.log('✅ Found basic profile by ID')
+
+      // Now try to get role separately
+      if (basicProfile.role_id) {
+        const { data: roleData } = await supabase
+          .from('roles')
+          .select('name')
+          .eq('id', basicProfile.role_id)
+          .single()
+
+        profile = {
+          ...basicProfile,
+          roles: roleData ? { name: roleData.name } : null
+        }
+        console.log('✅ Profile with role:', profile.roles?.name)
+      } else {
+        profile = basicProfile
+        console.log('✅ Profile without role_id')
+      }
     } else {
-      console.log('⚠️ Profile by ID failed:', errorById)
+      console.log('⚠️ Profile by ID failed:', basicError)
 
       // Approach 2: Try by email
-      const { data: profileByEmail, error: errorByEmail } = await supabase
+      const { data: profileByEmail, error: emailError } = await supabase
         .from('user_profiles')
-        .select(`
-          *,
-          roles(name)
-        `)
+        .select('*')
         .eq('email', session.user.email)
         .single()
 
-      if (profileByEmail && !errorByEmail) {
-        profile = profileByEmail
-        console.log('✅ Found profile by email:', profile.roles?.name)
+      if (profileByEmail && !emailError) {
+        console.log('✅ Found profile by email')
+
+        // Get role separately if exists
+        if (profileByEmail.role_id) {
+          const { data: roleData } = await supabase
+            .from('roles')
+            .select('name')
+            .eq('id', profileByEmail.role_id)
+            .single()
+
+          profile = {
+            ...profileByEmail,
+            roles: roleData ? { name: roleData.name } : null
+          }
+        } else {
+          profile = profileByEmail
+        }
+        console.log('✅ Profile by email with role:', profile.roles?.name)
       } else {
-        console.log('❌ Profile by email failed:', errorByEmail)
+        console.log('❌ Profile by email failed:', emailError)
         
         // Approach 3: For admin accounts, provide fallback
         if (session.user.email.includes('buckle') || session.user.email.includes('admin')) {
