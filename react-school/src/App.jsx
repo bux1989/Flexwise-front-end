@@ -43,40 +43,11 @@ function App() {
     try {
       console.log('👤 Loading profile for:', user.email)
 
-      // For admin emails, use immediate assignment
-      if (user.email.includes('buckle') || user.email.includes('admin')) {
-        console.log('🔧 Admin user detected')
-        setUserProfile({
-          id: user.id,
-          email: user.email,
-          first_name: 'Admin',
-          last_name: 'User',
-          role: 'Admin'
-        })
-        setLoading(false)
-        return
-      }
+      // Use the EXACT same pattern as the working RLS dashboard
+      const profileId = user.user_metadata?.profile_id
 
-      // Direct lookup using auth.uid() as profile ID
-      console.log('🔗 Looking up profile with user.id:', user.id)
-      const { data: profile, error } = await supabase
-        .from('user_profiles')
-        .select(`
-          *,
-          roles(name),
-          structure_schools(name)
-        `)
-        .eq('id', user.id)  // Direct mapping: user.id = user_profiles.id
-        .single()
-
-      if (profile && !error) {
-        console.log('✅ Profile loaded:', profile.roles?.name)
-        setUserProfile({
-          ...profile,
-          role: profile.roles?.name || 'Parent'
-        })
-      } else {
-        console.log('⚠️ Profile not found, using default')
+      if (!profileId) {
+        console.error('❌ No profile_id in user metadata for:', user.email)
         setUserProfile({
           id: user.id,
           email: user.email,
@@ -84,7 +55,50 @@ function App() {
           last_name: '',
           role: 'Parent'
         })
+        setLoading(false)
+        return
       }
+
+      console.log('🔗 Looking up roles using profile_id:', profileId)
+
+      // Use the EXACT same query as the working dashboard
+      const { data: userRoles, error } = await supabase
+        .from('user_roles')
+        .select(`
+          *,
+          roles(name)
+        `)
+        .eq('user_profile_id', profileId)
+
+      let role = 'Parent' // fallback
+
+      if (!error && userRoles && userRoles.length > 0) {
+        const roleNames = userRoles.map(ur => ur.roles?.name).filter(Boolean)
+        role = roleNames.join(', ') || 'Parent'
+        console.log('✅ Roles found:', roleNames)
+      } else {
+        console.log('⚠️ No roles found, using Parent fallback')
+      }
+
+      // Also get profile details
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select(`
+          *,
+          structure_schools(name)
+        `)
+        .eq('id', profileId)
+        .single()
+
+      setUserProfile({
+        ...(profile || {}),
+        id: profileId,
+        email: user.email,
+        first_name: profile?.first_name || 'User',
+        last_name: profile?.last_name || '',
+        role: role
+      })
+
     } catch (error) {
       console.error('💥 Profile load error:', error)
       setUserProfile({
