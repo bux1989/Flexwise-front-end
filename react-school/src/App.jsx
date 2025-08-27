@@ -56,12 +56,15 @@ function App() {
       if (profile) {
         setUserProfile(profile)
         setUserRole(profile.role)
-        
-        console.log('User loaded:', {
+
+        console.log('User loaded in App:', {
           email: user.email,
           role: profile.role,
-          school: profile.structure_schools?.name
+          school: profile.structure_schools?.name,
+          fullProfile: profile
         })
+
+        console.log('Dashboard path for role:', getRouteByRole(profile.role))
       } else {
         console.error('No profile found for user')
         // Could redirect to profile setup page
