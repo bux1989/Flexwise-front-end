@@ -37,17 +37,17 @@ export default function Login() {
       
       <div className="login-card">
         <div className="welcome-section">
-          <h1 className="welcome-text">Herzlich willkommen bei</h1>
+          <div className="welcome-text">Herzlich willkommen bei</div>
           
           <div className="logo-section">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fc537084d33954bda931d75d8c7afc864?format=webp&width=800"
-              alt="FlexWise - Flexible Tools for Smart Schools"
+            <img 
+              src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fc537084d33954bda931d75d8c7afc864?format=webp&width=800" 
+              alt="FlexWise - Flexible Tools for Smart Schools" 
               className="logo-image"
             />
           </div>
           
-          <h2 className="account-heading">Ihr Konto</h2>
+          <div className="account-heading">Ihr Konto</div>
         </div>
 
         <form onSubmit={handleLogin} className="login-form">
