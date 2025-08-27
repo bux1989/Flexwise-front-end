@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Calendar, Bell, MessageCircle, Menu, Info, Clock, MapPin, Plus, Check, AlertCircle, X, Edit, Trash2, HelpCircle, UserPlus, Search, Filter, Star, ChevronDown, ChevronUp, EyeOff, Eye, BookOpen, Users, UserX, User, FileText, LogOut, CalendarIcon, ClipboardList, MoreHorizontal } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -19,7 +19,8 @@ import { useIsMobile } from '../components/ui/use-mobile';
 import { Header } from '../components/Header';
 import { AddTaskDialog } from '../components/AddTaskDialog';
 import { TimeInputWithArrows } from '../components/TimeInputWithArrows';
-import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, INITIAL_LESSONS, ASSIGNEE_GROUPS } from '../constants/mockData';
+import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from '../constants/mockData';
+import { fetchTodaysLessons, getCurrentUserProfile } from '../lib/supabase';
 import { 
   getSubstituteLessons, 
   getPriorityValue, 
@@ -45,9 +46,44 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
   
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [events, setEvents] = useState(INITIAL_EVENTS);
-  const [lessons, setLessons] = useState(INITIAL_LESSONS);
+  const [lessons, setLessons] = useState([]);
+  const [isLoadingLessons, setIsLoadingLessons] = useState(true);
+  const [lessonsError, setLessonsError] = useState(null);
   
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [currentProfile, setCurrentProfile] = useState(null);
+
+  // Fetch lessons from Supabase
+  useEffect(() => {
+    const loadLessons = async () => {
+      try {
+        setIsLoadingLessons(true);
+        setLessonsError(null);
+
+        // Get current user profile to get teacher ID
+        const profile = await getCurrentUserProfile();
+        if (!profile) {
+          throw new Error('No user profile found');
+        }
+
+        setCurrentProfile(profile);
+
+        // Fetch lessons for the selected date
+        const lessonsData = await fetchTodaysLessons(profile.id, selectedDate);
+        setLessons(lessonsData);
+
+      } catch (error) {
+        console.error('Failed to load lessons:', error);
+        setLessonsError(error.message);
+        // Keep empty lessons array on error
+        setLessons([]);
+      } finally {
+        setIsLoadingLessons(false);
+      }
+    };
+
+    loadLessons();
+  }, [selectedDate]); // Re-fetch when date changes
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [attendanceViewMode, setAttendanceViewMode] = useState<'overview' | 'edit'>('edit');
