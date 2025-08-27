@@ -79,9 +79,7 @@ body {
 .bg-red-100 { background-color: #fee2e2; }
 .bg-red-50 { background-color: #fef2f2; }
 .bg-red-600 { background-color: #dc2626; }
-.bg-yellow-100 { background-color: #fef3c7; }
 .text-blue-800 { color: #1e40af; }
-.text-yellow-800 { color: #92400e; }
 .text-green-800 { color: #166534; }
 .text-yellow-800 { color: #92400e; }
 .text-red-800 { color: #991b1b; }
@@ -138,95 +136,72 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-/* WeWeb Login Page Styles */
+/* Exact WeWeb Login Page Styles */
 .login-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
-  background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
-  padding: 2rem;
+  background-color: #f0f6ff;
+  padding: 24px;
 }
 
 .login-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  z-index: 0;
+  display: none; /* Remove background patterns */
 }
 
-.geometric-pattern {
-  position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 200px;
-  height: 200px;
-  background: rgba(59, 130, 246, 0.1);
-  border-radius: 50%;
-  transform: rotate(45deg);
-}
-
+.geometric-pattern,
 .geometric-pattern-2 {
-  position: absolute;
-  bottom: 10%;
-  right: 10%;
-  width: 150px;
-  height: 150px;
-  background: rgba(99, 102, 241, 0.1);
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  display: none;
 }
 
 .login-card {
   background: white;
-  border-radius: 24px;
-  padding: 3rem 2.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  padding: 48px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   max-width: 400px;
   width: 100%;
-  position: relative;
-  z-index: 1;
+  text-align: center;
 }
 
 .welcome-section {
-  text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 }
 
 .welcome-text {
-  font-size: 1.125rem;
-  color: #374151;
-  margin-bottom: 1.5rem;
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 24px;
   font-weight: 400;
+  text-align: center;
 }
 
 .logo-section {
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
 }
 
 .logo-image {
-  width: 100%;
-  max-width: 300px;
+  width: 200px;
   height: auto;
-  margin: 0 auto;
-  display: block;
 }
 
 .account-heading {
-  font-size: 1.5rem;
+  font-size: 20px;
   font-weight: 600;
   color: #111827;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  text-align: center;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 20px;
+  text-align: left;
 }
 
 .form-group {
@@ -235,39 +210,39 @@ input:focus {
 }
 
 .form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
+  font-size: 12px;
+  font-weight: 400;
+  color: #4b5563;
+  margin-bottom: 8px;
 }
 
 .form-input {
-  padding: 0.875rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
-  font-size: 1rem;
-  transition: all 0.2s;
-  background: #f9fafb;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #111827;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #3b82f6;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 1px #3b82f6;
 }
 
 .form-input::placeholder {
   color: #9ca3af;
+  font-size: 14px;
 }
 
 .forgot-password {
   text-align: right;
-  margin-top: 0.5rem;
+  margin-top: 8px;
 }
 
 .forgot-link {
-  font-size: 0.875rem;
+  font-size: 12px;
   color: #6b7280;
   text-decoration: none;
 }
@@ -280,13 +255,13 @@ input:focus {
   background: #3b82f6;
   color: white;
   border: none;
-  border-radius: 12px;
-  padding: 1rem;
-  font-size: 1rem;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  margin-top: 1rem;
+  margin-top: 8px;
 }
 
 .signin-button:hover:not(:disabled) {
@@ -302,26 +277,25 @@ input:focus {
   background: #fee2e2;
   border: 1px solid #fecaca;
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 12px;
 }
 
 .error-text {
-  font-size: 0.875rem;
+  font-size: 12px;
   color: #dc2626;
 }
 
 .login-footer {
-  position: absolute;
-  bottom: 2rem;
+  position: fixed;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 2rem;
-  z-index: 1;
+  gap: 32px;
 }
 
 .footer-link {
-  font-size: 0.875rem;
+  font-size: 12px;
   color: #6b7280;
   text-decoration: none;
 }
@@ -332,14 +306,14 @@ input:focus {
 
 @media (max-width: 640px) {
   .login-card {
-    padding: 2rem 1.5rem;
-    margin: 1rem;
+    padding: 32px 24px;
+    margin: 16px;
   }
-
+  
   .login-footer {
     position: static;
     transform: none;
-    margin-top: 2rem;
+    margin-top: 32px;
     justify-content: center;
   }
 }
