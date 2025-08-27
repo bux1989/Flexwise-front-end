@@ -32,12 +32,6 @@ function App() {
 
   // Profile loading logic
   const loadUserProfile = useCallback(async (user) => {
-    // Prevent duplicate loading
-    if (profileLoading) {
-      console.log('⏳ Profile already loading, skipping...')
-      return
-    }
-
     try {
       setProfileLoading(true)
       console.log('👤 Loading profile for:', user.email)
@@ -82,7 +76,7 @@ function App() {
       setLoading(false)
       setProfileLoading(false)
     }
-  }, [profileLoading])
+  }, [])
 
   // Helper functions
   const createFallbackProfile = (user, role) => ({
