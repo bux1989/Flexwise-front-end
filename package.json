@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "npm run dev --workspace=@flexwise/web-app",
     "dev:react": "npm run dev --workspace=@flexwise/web-app",
-    "build": "npm ci --if-present || npm install && npm run build --workspace=@flexwise/shared && npm run build --workspace=@flexwise/web-app",
+    "build": "npm ci --if-present || npm install && npm run build --workspace=@flexwise/web-app",
     "build:shared": "npm run build --workspace=@flexwise/shared",
     "build:react": "npm run build --workspace=@flexwise/web-app",
     "preview": "npm run preview --workspace=@flexwise/web-app",
