@@ -10,8 +10,8 @@ import { Users, User, BookOpen, CalendarDays, Clock, AlertTriangle, CheckCircle,
 import { getStudentStatisticsForClass, getCourseDataForClass, getCourseStudentsForCourse, getStudentById, updateAbsenceDetails, updateLatenessDetails, convertToExcused, getStudentIdFromCourseName, getAllStudentStatistics, getClassNameById, SEMESTER_START_DATE, getCurrentDateString } from '../../../shared/domains/academic/klassenbuch';
 import { ExcuseEditModal } from './ExcuseEditModal';
 import { AddExcuseModal } from './AddExcuseModal';
-import { useIsMobile } from './ui/use-mobile';
-import type { AbsenceDetail, LatenessDetail, ExcuseInfo, CourseAttendanceEntry } from '../data/mockData';
+import { useIsMobile } from '../ui/use-mobile';
+import type { AbsenceDetail, LatenessDetail, ExcuseInfo, CourseAttendanceEntry } from '../../../shared/domains/academic/klassenbuch';
 
 interface Class {
   id: string;
