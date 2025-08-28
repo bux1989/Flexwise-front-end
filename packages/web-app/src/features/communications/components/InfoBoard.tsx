@@ -111,13 +111,50 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
           )}
         </div>
 
+        {/* Loading and Error States */}
+        {loading && (
+          <div className="p-2 bg-blue-50 rounded-lg text-center">
+            <div className="text-sm text-blue-600">Lade Info-Board Daten...</div>
+          </div>
+        )}
+
+        {error && (
+          <div className="p-2 bg-red-50 rounded-lg text-center">
+            <div className="text-sm text-red-600">Fehler: {error}</div>
+            <Button variant="outline" size="sm" onClick={refresh} className="mt-2">
+              Neu laden
+            </Button>
+          </div>
+        )}
+
+        {/* Real-time Bulletin Posts */}
+        {bulletinPosts.length > 0 && (
+          <div className="space-y-2">
+            {bulletinPosts.map((post) => (
+              <div
+                key={post.id}
+                className={`p-2 rounded-lg ${post.priority === 'high' ? 'bg-red-50 border border-red-200' : 'bg-blue-50'} ${isMobile ? 'cursor-pointer' : ''}`}
+                onClick={isMobile ? () => toggleInfoBoardPost(post.id) : undefined}
+              >
+                <div className="flex justify-between items-start">
+                  <h4 className="font-semibold">{post.title}</h4>
+                  <div className="text-xs text-gray-600">{post.timestamp}</div>
+                </div>
+                {(!isMobile || expandedInfoBoardPosts.has(post.id)) && (
+                  <div className="text-xs text-gray-600 mt-1">{post.content}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Vertretungsstunden section */}
-        {substituteLessons.length > 0 && (
+        {substitutions.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-semibold flex items-center gap-2">
                 <UserPlus className="h-4 w-4 text-purple-500" />
-                Vertretungsstunden
+                Vertretungsstunden ({substitutions.length})
               </h4>
               {isMobile && (
                 <div className="flex items-center space-x-2">
@@ -144,16 +181,21 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
             </div>
             {showSubstituteLessons && (
               <div className="space-y-2">
-                {substituteLessons.map((substitute, index) => (
-                  <div key={index} className="p-2 bg-purple-50 rounded-lg border border-purple-200">
+                {substitutions.map((substitute) => (
+                  <div key={substitute.id} className="p-2 bg-purple-50 rounded-lg border border-purple-200">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="font-medium text-sm text-purple-800">
                           {substitute.subject} {substitute.class}
                         </div>
                         <div className="text-xs text-purple-600 mt-1">
-                          für {substitute.forTeacher}
+                          {substitute.reason}
                         </div>
+                        {substitute.notes && (
+                          <div className="text-xs text-purple-600 italic">
+                            {substitute.notes}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">
                         <div className="text-xs text-purple-700 font-medium">
@@ -164,15 +206,23 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
                         </div>
                       </div>
                     </div>
-                    {!isMobile && (
+                    {!isMobile && substitute.date && (
                       <div className="text-xs text-purple-600 mt-2">
-                        {substitute.date}
+                        {new Date(substitute.date).toLocaleDateString('de-DE')}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Empty state when no data is available */}
+        {!loading && !error && substitutions.length === 0 && bulletinPosts.length === 0 && (
+          <div className="p-4 text-center text-gray-500">
+            <Info className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+            <div className="text-sm">Keine aktuellen Informationen verfügbar</div>
           </div>
         )}
       </CardContent>
