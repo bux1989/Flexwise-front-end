@@ -244,3 +244,117 @@ export const TIME_SLOTS = [
 
 // Date constants
 export const getCurrentDateString = () => new Date().toLocaleDateString('de-DE');
+
+// Helper functions from Teacher Dashboard
+export const getSubstituteLessons = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dayAfterTomorrow = new Date();
+  dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+
+  return [
+    {
+      date: tomorrow.toLocaleDateString('de-DE', {
+        weekday: 'long',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }),
+      time: '13:30 - 14:15',
+      class: 'Klasse 9A',
+      subject: 'Deutsch',
+      room: 'Raum 112',
+      forTeacher: 'Frau Weber'
+    },
+    {
+      date: dayAfterTomorrow.toLocaleDateString('de-DE', {
+        weekday: 'long',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }),
+      time: '09:00 - 09:45',
+      class: 'Klasse 8B',
+      subject: 'Geschichte',
+      room: 'Raum 204',
+      forTeacher: 'Dr. Hoffmann'
+    }
+  ];
+};
+
+export const needsAttendanceTracking = (lessonTime: string, lessonEndTime: string, selectedDate: Date, isCurrent: boolean = false) => {
+  const isToday = selectedDate.toDateString() === new Date().toDateString();
+  if (!isToday) return false;
+
+  const currentTime = new Date();
+  const [startHours, startMinutes] = lessonTime.split(':').map(Number);
+  const [endHours, endMinutes] = lessonEndTime.split(':').map(Number);
+
+  const lessonStartTime = new Date();
+  lessonStartTime.setHours(startHours, startMinutes, 0, 0);
+
+  const lessonEnd = new Date();
+  lessonEnd.setHours(endHours, endMinutes, 0, 0);
+
+  if (isCurrent) {
+    return true;
+  }
+
+  return currentTime >= lessonStartTime;
+};
+
+export const getAttendanceStatus = (lesson: any) => {
+  if (!lesson.attendance) return 'none';
+
+  const { present, late, absent } = lesson.attendance;
+  const recordedAttendance = present.length + late.length + absent.length;
+
+  if (recordedAttendance === 0) return 'none';
+  if (recordedAttendance === lesson.enrolled) return 'complete';
+  return 'incomplete';
+};
+
+export const getAttendanceSummary = (lesson: any) => {
+  if (!lesson.attendance) return null;
+  const { present, late, absent } = lesson.attendance;
+  return {
+    present: present.length,
+    late: late.length,
+    absent: absent.length
+  };
+};
+
+export const getAttendanceNumbers = (lesson: any) => {
+  const preExistingAbsentCount = lesson.preExistingAbsences?.length || 0;
+
+  if (!lesson.attendance) {
+    return {
+      potentialPresent: lesson.enrolled - preExistingAbsentCount,
+      absent: preExistingAbsentCount,
+      present: 0,
+      missing: 0
+    };
+  }
+
+  const { present, late, absent } = lesson.attendance;
+  const recordedAttendance = present.length + late.length + absent.length;
+  const missingStudents = lesson.enrolled - recordedAttendance;
+
+  return {
+    present: present.length,
+    late: late.length,
+    absent: absent.length,
+    missing: missingStudents,
+    potentialPresent: lesson.enrolled - preExistingAbsentCount
+  };
+};
+
+export const formatDateTime = () => {
+  return new Date().toLocaleDateString('de-DE', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
+};
