@@ -220,8 +220,8 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xl font-bold">Task Management</CardTitle>
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-3">
+        <CardTitle className="text-lg lg:text-xl font-bold">Task Management</CardTitle>
         {canAssignTasks && (
           <Button 
             onClick={() => setAddTaskDialogOpen(true)}
@@ -233,9 +233,9 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
           </Button>
         )}
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 lg:space-y-4">
         {/* Task Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -271,13 +271,13 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
             </SelectContent>
           </Select>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox 
+          <div className="flex items-center space-x-2 sm:col-span-2 lg:col-span-1">
+            <Checkbox
               id="hotlist"
               checked={showHotListOnly}
               onCheckedChange={setShowHotListOnly}
             />
-            <label htmlFor="hotlist" className="text-sm">Hot List Only</label>
+            <label htmlFor="hotlist" className="text-xs lg:text-sm">Hot List Only</label>
           </div>
         </div>
 
@@ -288,7 +288,7 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
             checked={showCompletedTasks}
             onCheckedChange={setShowCompletedTasks}
           />
-          <label htmlFor="completed" className="text-sm">
+          <label htmlFor="completed" className="text-xs lg:text-sm">
             Show Completed Tasks ({tasks.filter(t => t.completed).length})
           </label>
         </div>
