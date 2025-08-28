@@ -116,6 +116,10 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             }
           }
 
+          // Get attendance badge data for this lesson
+          const lessonId = lesson.lesson_id || lesson.id;
+          const badgeData = attendanceBadges[lessonId];
+
           return {
             ...lesson,
             id: lesson.lesson_id || lesson.id,
@@ -129,12 +133,20 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             isCurrent,
             teacherRole: 'main',
             otherTeachers: lesson.teacher_names ? lesson.teacher_names.map(name => ({ name })) : [],
-            enrolled: lesson.student_count || 0,
+            enrolled: badgeData?.total_students || lesson.student_count || 0,
             students: lesson.student_names_with_class ? lesson.student_names_with_class.map((name, index) => ({ id: index + 1, name })) : [],
             attendanceTaken: lesson.attendance_taken || false,
             lessonNote: '',
             // Use real attendance data if available
-            attendance: attendanceData
+            attendance: attendanceData,
+            // Add attendance badge data
+            attendanceBadge: badgeData ? {
+              total_students: badgeData.total_students,
+              present_count: badgeData.present_count,
+              late_count: badgeData.late_count,
+              absent_count: badgeData.absent_count,
+              attendance_status: badgeData.attendance_status
+            } : null
           };
         }));
 
