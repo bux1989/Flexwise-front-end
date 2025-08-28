@@ -748,7 +748,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                 <div className="space-y-4">
                   {/* Lesson Note Section */}
                   <div className="space-y-2">
-                    <Label htmlFor="lesson-note" className="font-medium">
+                    <Label htmlFor="lesson-note" className="font-medium text-center lg:text-left block text-lg">
                       Klassenbuch-Eintrag
                     </Label>
                     <Textarea
@@ -760,15 +760,17 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
                     {!isMobile && (
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-600 text-center lg:text-left">
                         Klicken Sie auf die Symbole, um die Anwesenheit zu markieren
                       </div>
                     )}
-                    <Button onClick={saveAttendance} className="bg-green-600 hover:bg-green-700 ml-auto">
-                      Anwesenheit speichern
-                    </Button>
+                    <div className="flex justify-center lg:justify-end">
+                      <Button onClick={saveAttendance} className="bg-green-600 hover:bg-green-700">
+                        Anwesenheit speichern
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Grid Header */}
