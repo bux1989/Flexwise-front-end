@@ -13,7 +13,6 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "types": ["vite/client"],
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "declarationMap": true,
