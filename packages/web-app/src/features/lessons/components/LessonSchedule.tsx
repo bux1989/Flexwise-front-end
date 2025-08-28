@@ -105,15 +105,10 @@ export function LessonSchedule({
     });
   }, [lessons, isMobile, showAllLessonsOnMobile]);
 
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date) {
-      onDateChange(date);
-      setIsDatePickerOpen(false);
+  const handleDatePickerChange = (newValue: Dayjs | null) => {
+    if (newValue) {
+      onDateChange(newValue.toDate());
     }
-  };
-
-  const handleTodayClick = () => {
-    onDateChange(new Date());
   };
 
   return (
