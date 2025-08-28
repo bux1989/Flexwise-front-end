@@ -9,8 +9,8 @@
   base = "."
 
 [build.environment]
-  # Use Node 18+ as specified in package.json
-  NODE_VERSION = "18"
+  # Use Node 20+ as required by Vite and React Router
+  NODE_VERSION = "20"
   
   # Enable npm workspaces
   NPM_FLAGS = "--prefer-offline --no-audit"

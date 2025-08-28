@@ -46,7 +46,7 @@
     "supabase-types.ts"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.json",
     "dev": "tsc --watch",
     "type-check": "tsc --noEmit"
   },
