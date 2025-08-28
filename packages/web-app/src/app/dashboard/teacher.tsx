@@ -552,221 +552,330 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
           {selectedLesson && (
             <div>
-              {/* Edit Mode - Attendance taking interface */}
-              <div className="space-y-4">
-                {/* Lesson Note Section */}
-                <div className="space-y-2">
-                  <Label htmlFor="lesson-note" className="font-medium">
-                    Klassenbuch-Eintrag
-                  </Label>
-                  <Textarea
-                    id="lesson-note"
-                    placeholder="Notizen zur Stunde, behandelte Themen, besondere Vorkommnisse..."
-                    value={lessonNote}
-                    onChange={(e) => setLessonNote(e.target.value)}
-                    className="min-h-[80px]"
-                  />
-                </div>
+              {attendanceViewMode === 'overview' && selectedLesson.attendanceData ? (
+                // Overview Mode - Clean summary view
+                <div className="space-y-6">
+                  {/* Lesson Note Section */}
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-blue-900">Klassenbuch-Eintrag</h4>
+                      <p className="text-sm text-blue-800">
+                        {selectedLesson.attendanceData.lessonNote || (
+                          <span className="text-gray-500 italic">
+                            Kein Eintrag vorhanden -
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setAttendanceViewMode('edit')}
+                              className="h-auto p-0 ml-1 underline text-blue-600"
+                            >
+                              hinzufügen
+                            </Button>
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
 
-                <div className="flex items-center justify-between">
-                  {!isMobile && (
-                    <div className="text-sm text-gray-600">
-                      Klicken Sie auf die Symbole, um die Anwesenheit zu markieren
+                  {/* Present Students */}
+                  <div>
+                    <h4 className="flex items-center gap-2 mb-3">
+                      <Check className="h-5 w-5 text-green-600" />
+                      Anwesend ({selectedLesson.attendanceData.present?.length || 0})
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {selectedLesson.attendanceData.present?.map((student: any) => (
+                        <div key={student.id} className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-sm">{student.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Late Students */}
+                  {selectedLesson.attendanceData.late && selectedLesson.attendanceData.late.length > 0 && (
+                    <div>
+                      <h4 className="flex items-center gap-2 mb-3">
+                        <Clock className="h-5 w-5 text-yellow-600" />
+                        Verspätet ({selectedLesson.attendanceData.late.length})
+                      </h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {selectedLesson.attendanceData.late.map((student: any) => (
+                          <div key={student.id} className="flex items-center justify-between p-2 bg-yellow-50 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                              <span className="text-sm">{student.name}</span>
+                            </div>
+                            <div className="text-right">
+                              <Badge variant="outline" className="text-xs bg-yellow-100 text-yellow-800">
+                                {student.minutesLate || 1} Min. verspätet
+                              </Badge>
+                              {student.arrivalTime && (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  Ankunft: {student.arrivalTime}
+                                </div>
+                              )}
+                              {student.lateExcused && (
+                                <Badge variant="secondary" className="text-xs mt-1">
+                                  Entschuldigt
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
-                  <Button onClick={saveAttendance} className="bg-green-600 hover:bg-green-700 ml-auto">
-                    Anwesenheit speichern
-                  </Button>
+
+                  {/* Absent Students */}
+                  {selectedLesson.attendanceData.absent && selectedLesson.attendanceData.absent.length > 0 && (
+                    <div>
+                      <h4 className="flex items-center gap-2 mb-3">
+                        <X className="h-5 w-5 text-red-500" />
+                        Abwesend ({selectedLesson.attendanceData.absent.length})
+                      </h4>
+                      <div className="space-y-2">
+                        {selectedLesson.attendanceData.absent.map((student: any) => (
+                          <div key={student.id} className="flex items-center justify-between p-2 bg-red-50 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                              <span className="text-sm">{student.name}</span>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              {student.excused ? (
+                                <Badge variant="secondary" className="text-xs">
+                                  Entschuldigt{student.reason && ` - ${student.reason}`}
+                                </Badge>
+                              ) : (
+                                <Badge variant="destructive" className="text-xs">
+                                  Unentschuldigt
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
+              ) : (
+                // Edit Mode - Attendance taking interface
+                <div className="space-y-4">
+                  {/* Lesson Note Section */}
+                  <div className="space-y-2">
+                    <Label htmlFor="lesson-note" className="font-medium">
+                      Klassenbuch-Eintrag
+                    </Label>
+                    <Textarea
+                      id="lesson-note"
+                      placeholder="Notizen zur Stunde, behandelte Themen, besondere Vorkommnisse..."
+                      value={lessonNote}
+                      onChange={(e) => setLessonNote(e.target.value)}
+                      className="min-h-[80px]"
+                    />
+                  </div>
 
-                {/* Grid Header */}
-                <div className="grid grid-cols-5 gap-1 lg:gap-2 border-b pb-3">
-                  <div className="font-medium text-xs lg:text-sm">{isMobile ? 'SuS' : 'Schüler'}</div>
-                  <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Anw' : 'Anwesend'}</div>
-                  <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Spät' : 'Verspätet'}</div>
-                  <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Abw. E' : 'Abwesend (E)'}</div>
-                  <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Abw. U' : 'Abwesend (U)'}</div>
-                </div>
-
-                {/* Alle Buttons */}
-                <div className="grid grid-cols-5 gap-1 lg:gap-2 pb-2 border-b">
-                  <div></div>
-                  <div className="flex justify-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs px-1 lg:px-2 py-1 h-6 lg:h-7"
-                      onClick={() => setAllStudentsStatus('present')}
-                    >
-                      Alle
+                  <div className="flex items-center justify-between">
+                    {!isMobile && (
+                      <div className="text-sm text-gray-600">
+                        Klicken Sie auf die Symbole, um die Anwesenheit zu markieren
+                      </div>
+                    )}
+                    <Button onClick={saveAttendance} className="bg-green-600 hover:bg-green-700 ml-auto">
+                      Anwesenheit speichern
                     </Button>
                   </div>
-                  <div className="flex justify-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs px-2 py-1 h-7"
-                      onClick={() => setAllStudentsStatus('late')}
-                    >
-                      Alle
-                    </Button>
+
+                  {/* Grid Header */}
+                  <div className="grid grid-cols-5 gap-1 lg:gap-2 border-b pb-3">
+                    <div className="font-medium text-xs lg:text-sm">{isMobile ? 'SuS' : 'Schüler'}</div>
+                    <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Anw' : 'Anwesend'}</div>
+                    <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Spät' : 'Verspätet'}</div>
+                    <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Abw. E' : 'Abwesend (E)'}</div>
+                    <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Abw. U' : 'Abwesend (U)'}</div>
                   </div>
-                  <div className="flex justify-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs px-2 py-1 h-7"
-                      onClick={() => setAllStudentsStatus('excused')}
-                    >
-                      Alle
-                    </Button>
+
+                  {/* Alle Buttons */}
+                  <div className="grid grid-cols-5 gap-1 lg:gap-2 pb-2 border-b">
+                    <div></div>
+                    <div className="flex justify-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-1 lg:px-2 py-1 h-6 lg:h-7"
+                        onClick={() => setAllStudentsStatus('present')}
+                      >
+                        Alle
+                      </Button>
+                    </div>
+                    <div className="flex justify-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-2 py-1 h-7"
+                        onClick={() => setAllStudentsStatus('late')}
+                      >
+                        Alle
+                      </Button>
+                    </div>
+                    <div className="flex justify-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-2 py-1 h-7"
+                        onClick={() => setAllStudentsStatus('excused')}
+                      >
+                        Alle
+                      </Button>
+                    </div>
+                    <div className="flex justify-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-2 py-1 h-7"
+                        onClick={() => setAllStudentsStatus('unexcused')}
+                      >
+                        Alle
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex justify-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs px-2 py-1 h-7"
-                      onClick={() => setAllStudentsStatus('unexcused')}
-                    >
-                      Alle
-                    </Button>
-                  </div>
-                </div>
 
-                {/* Student Rows */}
-                <div className="space-y-1">
-                  {selectedLesson.students?.map((student: any) => {
-                    const attendance = tempAttendance[student.id];
+                  {/* Student Rows */}
+                  <div className="space-y-1">
+                    {selectedLesson.students?.map((student: any) => {
+                      const attendance = tempAttendance[student.id];
 
-                    return (
-                      <div key={student.id} className="space-y-2">
-                        <div className="grid grid-cols-5 gap-2 items-center py-2 px-2 hover:bg-gray-50 rounded">
-                          {/* Student Name */}
-                          <div className="text-sm flex items-center gap-2">
-                            {student.name}
+                      return (
+                        <div key={student.id} className="space-y-2">
+                          <div className="grid grid-cols-5 gap-2 items-center py-2 px-2 hover:bg-gray-50 rounded">
+                            {/* Student Name */}
+                            <div className="text-sm flex items-center gap-2">
+                              {student.name}
+                            </div>
+
+                            {/* Present */}
+                            <div className="flex justify-center">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={`h-8 w-8 p-0 ${
+                                  attendance?.status === 'present'
+                                    ? 'text-green-600 bg-green-50 hover:bg-green-100'
+                                    : 'text-gray-300 hover:text-green-600 hover:bg-green-50'
+                                }`}
+                                onClick={() => setStudentStatus(student.id, 'present')}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                            </div>
+
+                            {/* Late */}
+                            <div className="flex justify-center">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={`h-8 w-8 p-0 ${
+                                  attendance?.status === 'late'
+                                    ? 'text-yellow-600 bg-yellow-50 hover:bg-yellow-100'
+                                    : 'text-gray-300 hover:text-yellow-600 hover:bg-yellow-50'
+                                }`}
+                                onClick={() => setStudentStatus(student.id, 'late')}
+                              >
+                                <Clock className="h-4 w-4" />
+                              </Button>
+                            </div>
+
+                            {/* Excused Absent */}
+                            <div className="flex justify-center">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={`h-8 w-8 p-0 ${
+                                  attendance?.status === 'excused'
+                                    ? 'text-blue-600 bg-blue-50 hover:bg-blue-100'
+                                    : 'text-gray-300 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                                onClick={() => setStudentStatus(student.id, 'excused')}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+
+                            {/* Unexcused Absent */}
+                            <div className="flex justify-center">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={`h-8 w-8 p-0 ${
+                                  attendance?.status === 'unexcused'
+                                    ? 'text-red-600 bg-red-50 hover:bg-red-100'
+                                    : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
+                                }`}
+                                onClick={() => setStudentStatus(student.id, 'unexcused')}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
 
-                          {/* Present */}
-                          <div className="flex justify-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className={`h-8 w-8 p-0 ${
-                                attendance?.status === 'present'
-                                  ? 'text-green-600 bg-green-50 hover:bg-green-100'
-                                  : 'text-gray-300 hover:text-green-600 hover:bg-green-50'
-                              }`}
-                              onClick={() => setStudentStatus(student.id, 'present')}
-                            >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                          </div>
+                          {/* Excuse reason field for excused students */}
+                          {attendance?.status === 'excused' && (
+                            <div className="ml-4 mr-2">
+                              <Input
+                                placeholder="Grund der Entschuldigung (z.B. Krankheit, Arzttermin...)"
+                                value={attendance.excuseReason || ''}
+                                onChange={(e) => setStudentExcuseReason(student.id, e.target.value)}
+                                className="text-sm"
+                              />
+                            </div>
+                          )}
 
-                          {/* Late */}
-                          <div className="flex justify-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className={`h-8 w-8 p-0 ${
-                                attendance?.status === 'late'
-                                  ? 'text-yellow-600 bg-yellow-50 hover:bg-yellow-100'
-                                  : 'text-gray-300 hover:text-yellow-600 hover:bg-yellow-50'
-                              }`}
-                              onClick={() => setStudentStatus(student.id, 'late')}
-                            >
-                              <Clock className="h-4 w-4" />
-                            </Button>
-                          </div>
-
-                          {/* Excused Absent */}
-                          <div className="flex justify-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className={`h-8 w-8 p-0 ${
-                                attendance?.status === 'excused'
-                                  ? 'text-blue-600 bg-blue-50 hover:bg-blue-100'
-                                  : 'text-gray-300 hover:text-blue-600 hover:bg-blue-50'
-                              }`}
-                              onClick={() => setStudentStatus(student.id, 'excused')}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-
-                          {/* Unexcused Absent */}
-                          <div className="flex justify-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className={`h-8 w-8 p-0 ${
-                                attendance?.status === 'unexcused'
-                                  ? 'text-red-600 bg-red-50 hover:bg-red-100'
-                                  : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
-                              }`}
-                              onClick={() => setStudentStatus(student.id, 'unexcused')}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* Excuse reason field for excused students */}
-                        {attendance?.status === 'excused' && (
-                          <div className="ml-4 mr-2">
-                            <Input
-                              placeholder="Grund der Entschuldigung (z.B. Krankheit, Arzttermin...)"
-                              value={attendance.excuseReason || ''}
-                              onChange={(e) => setStudentExcuseReason(student.id, e.target.value)}
-                              className="text-sm"
-                            />
-                          </div>
-                        )}
-
-                        {/* Late student details */}
-                        {attendance?.status === 'late' && (
-                          <div className="ml-4 mr-2 space-y-2">
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <Label htmlFor={`arrival-${student.id}`} className="text-xs">Ankunftszeit</Label>
-                                <Input
-                                  id={`arrival-${student.id}`}
-                                  type="time"
-                                  value={attendance.arrivalTime || ''}
-                                  onChange={(e) => setStudentArrivalTime(student.id, e.target.value)}
-                                  className="text-sm h-8"
-                                />
-                              </div>
-                              <div className="flex items-end">
-                                <div className="flex items-center space-x-2">
-                                  <Checkbox
-                                    id={`late-excused-${student.id}`}
-                                    checked={attendance.lateExcused || false}
-                                    onCheckedChange={(checked) => setStudentLateExcused(student.id, !!checked)}
+                          {/* Late student details */}
+                          {attendance?.status === 'late' && (
+                            <div className="ml-4 mr-2 space-y-2">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <Label htmlFor={`arrival-${student.id}`} className="text-xs">Ankunftszeit</Label>
+                                  <Input
+                                    id={`arrival-${student.id}`}
+                                    type="time"
+                                    value={attendance.arrivalTime || ''}
+                                    onChange={(e) => setStudentArrivalTime(student.id, e.target.value)}
+                                    className="text-sm h-8"
                                   />
-                                  <Label htmlFor={`late-excused-${student.id}`} className="text-xs">
-                                    Entschuldigt
-                                  </Label>
+                                </div>
+                                <div className="flex items-end">
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`late-excused-${student.id}`}
+                                      checked={attendance.lateExcused || false}
+                                      onCheckedChange={(checked) => setStudentLateExcused(student.id, !!checked)}
+                                    />
+                                    <Label htmlFor={`late-excused-${student.id}`} className="text-xs">
+                                      Entschuldigt
+                                    </Label>
+                                  </div>
                                 </div>
                               </div>
+                              <div className="text-xs text-gray-500">
+                                {attendance.minutesLate} Minuten verspätet
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-500">
-                              {attendance.minutesLate} Minuten verspätet
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
 
-                {/* Bottom Save Button - Duplicate of the top save button for better UX */}
-                <div className="flex justify-end pt-4 border-t">
-                  <Button onClick={saveAttendance} className="bg-green-600 hover:bg-green-700">
-                    Anwesenheit speichern
-                  </Button>
+                  {/* Bottom Save Button - Duplicate of the top save button for better UX */}
+                  <div className="flex justify-end pt-4 border-t">
+                    <Button onClick={saveAttendance} className="bg-green-600 hover:bg-green-700">
+                      Anwesenheit speichern
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </DialogContent>
