@@ -22,20 +22,30 @@ import { AddTaskDialog } from '../components/AddTaskDialog';
 import { TimeInputWithArrows } from '../components/TimeInputWithArrows';
 import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from '../constants/mockData';
 import { fetchTodaysLessons, fetchLessonAttendance, fetchAttendanceBadges, supabase } from '../lib/supabase';
+// Import from new domain structure
 import {
-  getSubstituteLessons,
-  getPriorityValue,
-  needsAttendanceTracking,
-  getAttendanceStatus,
-  getAttendanceSummary,
-  getAttendanceNumbers,
+  useAttendanceTracking as needsAttendanceTracking,
+  useAttendanceStatus as getAttendanceStatus,
+  useAttendanceSummary as getAttendanceSummary,
+  useAttendanceNumbers as getAttendanceNumbers
+} from '../../shared/domains/attendance/fehlzeiten/hooks';
+
+import {
+  useSubstituteLessons as getSubstituteLessons,
+  useTeacherAbbreviation as getTeacherAbbreviation
+} from '../../shared/domains/scheduling/stundenplan/hooks';
+
+import {
+  usePriorityValue as getPriorityValue
+} from '../../shared/domains/management/to-do-list/hooks';
+
+import {
   formatDateTime,
   formatTimestamp,
   formatCompactTimestamp,
-  getTeacherAbbreviation,
   createLessonNoteWithMetadata,
   parseLessonNote
-} from '../utils/helpers';
+} from '../../shared/utils/dateHelpers';
 
 interface TeacherDashboardProps {
   user?: any;
