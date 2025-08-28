@@ -603,9 +603,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] lg:max-h-[80vh] overflow-y-auto mx-2 lg:mx-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <div>
-                Anwesenheit - {selectedLesson?.subject} {selectedLesson?.class}
+            <DialogTitle className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+              <div className="text-center lg:text-left">
+                <div className="text-lg lg:text-xl font-semibold">
+                  Anwesenheit - {selectedLesson?.subject} {selectedLesson?.class}
+                </div>
                 <div className="text-sm font-normal text-gray-600 mt-1">
                   {selectedDate.toLocaleDateString('de-DE', {
                     weekday: 'long',
@@ -616,15 +618,18 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                 </div>
               </div>
               {attendanceViewMode === 'overview' && overviewData && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={switchToEdit}
-                  className="flex items-center gap-1"
-                >
-                  <Edit className="h-4 w-4" />
-                  Anwesenheit bearbeiten
-                </Button>
+                <div className="flex justify-center lg:justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={switchToEdit}
+                    className="flex items-center gap-1"
+                  >
+                    <Edit className="h-4 w-4" />
+                    <span className="hidden sm:inline">Anwesenheit bearbeiten</span>
+                    <span className="sm:hidden">Bearbeiten</span>
+                  </Button>
+                </div>
               )}
             </DialogTitle>
           </DialogHeader>
