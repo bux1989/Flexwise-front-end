@@ -140,7 +140,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       // - Edit button → 'edit'
       setAttendanceViewMode(viewMode);
 
-      if (finalViewMode === 'overview' && isComplete) {
+      if (viewMode === 'overview') {
         // Structure data for overview mode
         const lesson = lessons.find(l => l.id === lessonId);
         const nameToStudentId = new Map<string, string>();
