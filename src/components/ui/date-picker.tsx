@@ -25,6 +25,7 @@ export function DatePicker({
   className,
   disabled = false,
 }: DatePickerProps) {
+  console.log('🔍 DatePicker rendered with props:', { date, disabled, placeholder, className });
   const [open, setOpen] = React.useState(false)
 
   // Validate date to prevent errors
