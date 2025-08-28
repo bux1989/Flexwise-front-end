@@ -85,6 +85,12 @@ function App() {
         .single()
 
       console.log('📋 Profile query result:', { profile, profileError })
+      if (profileError) {
+        console.error('🚨 Profile query error details:', profileError)
+        console.error('🚨 Error message:', profileError.message)
+        console.error('🚨 Error code:', profileError.code)
+        console.error('🚨 Full error:', JSON.stringify(profileError, null, 2))
+      }
       console.log('🏷️ Profile first_name:', profile?.first_name)
 
       const finalProfile = {
