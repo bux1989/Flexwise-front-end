@@ -2684,7 +2684,10 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
       {/* Klassenbuch Section */}
       {showKlassenbuch && (
         <div className="transition-all duration-300 ease-in-out">
-          <KlassenbuchApp />
+          {/* <KlassenbuchApp /> */}
+          <div className="p-8 text-center text-gray-500">
+            Klassenbuch feature will be restored after migration
+          </div>
         </div>
       )}
 
