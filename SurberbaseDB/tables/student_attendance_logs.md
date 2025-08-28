@@ -1,77 +1,107 @@
-# student_attendance_logs
+# student_attendance_logs Table
 
-**Type:** Table  
-**Purpose:** Tracks student presence, movement, and participation in classes  
-**Schema:** public  
-**Related:** [classes](../tables/classes.md), [students](../tables/students.md), [lesson_view_enriched](../views/lesson_view_enriched.md)
+Central table for tracking student attendance at individual lessons in the Flexwise school management system.
 
-## Columns
-| Name | Type | PK | FK → | Not Null | Default | Notes |
-|------|------|----|------|----------|---------|-------|
-| id | uuid | ✅ | - | ✅ | uuid_generate_v4() | Primary key |
-| student_id | uuid | - | students.id | ✅ | - | Foreign key to students |
-| class_id | uuid | - | classes.id | ✅ | - | Foreign key to classes |
-| attendance_date | date | - | - | ✅ | - | Date of attendance |
-| status | attendance_status | - | - | ✅ | 'present' | present, absent, late, excused |
-| check_in_time | timestamptz | - | - | - | - | Actual arrival time |
-| check_out_time | timestamptz | - | - | - | - | Departure time |
-| notes | text | - | - | - | - | Additional notes about attendance |
-| created_at | timestamptz | - | - | ✅ | now() | Record creation timestamp |
-| updated_at | timestamptz | - | - | ✅ | now() | Last update timestamp |
+## Table Structure
 
-## Keys & Constraints
-- PK: id
-- Unique: (student_id, class_id, attendance_date)
-- Check: check_in_time <= check_out_time
-- Check: status IN ('present', 'absent', 'late', 'excused')
-
-## Indexes
-- `idx_attendance_student_date` on (student_id, attendance_date) – purpose: fast lookups by student and date
-- `idx_attendance_class_date` on (class_id, attendance_date) – purpose: class roll calls
-- `idx_attendance_status` on (status) – purpose: filtering by attendance status
-
-## RLS
-- Enabled: Yes
-- Policies:
-  - `attendance_select_policy` (SELECT): `auth.uid() IN (SELECT user_id FROM student_users WHERE student_id = student_attendance_logs.student_id) OR auth.uid() IN (SELECT user_id FROM teacher_classes WHERE class_id = student_attendance_logs.class_id)` – intent: students can see their own attendance, teachers can see their class attendance
-  - `attendance_insert_policy` (INSERT): `auth.uid() IN (SELECT user_id FROM teacher_classes WHERE class_id = student_attendance_logs.class_id)` – intent: only teachers can record attendance
-
-## Triggers
-- `update_attendance_timestamp` BEFORE UPDATE → `update_updated_at_column`
-- `log_attendance_changes` AFTER INSERT/UPDATE/DELETE → `audit_attendance_changes`
-
-## Dependencies
-- Writes to: audit_log
-- Reads from: students, classes, teacher_classes
-- Referenced by: [attendance_summary_view](../views/attendance_summary_view.md), [daily_attendance_report](../functions/daily_attendance_report.md)
-
-## Example Queries
 ```sql
--- Get today's attendance for a specific class
-SELECT sal.*, s.first_name, s.last_name
-FROM student_attendance_logs sal
-JOIN students s ON sal.student_id = s.id
-WHERE sal.class_id = $1 
-AND sal.attendance_date = CURRENT_DATE;
-
--- Mark student as present
-INSERT INTO student_attendance_logs (student_id, class_id, attendance_date, status, check_in_time)
-VALUES ($1, $2, CURRENT_DATE, 'present', NOW());
-
--- Get attendance summary for a student
-SELECT 
-    COUNT(*) as total_days,
-    COUNT(CASE WHEN status = 'present' THEN 1 END) as present_days,
-    COUNT(CASE WHEN status = 'absent' THEN 1 END) as absent_days
-FROM student_attendance_logs
-WHERE student_id = $1 
-AND attendance_date >= $2 
-AND attendance_date <= $3;
+CREATE TABLE public.student_attendance_logs (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    lesson_id uuid NOT NULL,
+    student_id uuid NOT NULL,
+    daily_log_id uuid,
+    lateness_duration_minutes integer,
+    method text,
+    recorded_by uuid,
+    "timestamp" timestamp without time zone DEFAULT now(),
+    notes text,
+    status public.attendance_status,
+    absence_note_id uuid,
+    school_id uuid NOT NULL
+);
 ```
 
-## Notes
+## Field Descriptions
 
-* Attendance records are immutable once created (only status can be updated within same day)
-* Check-in/out times are optional for basic attendance tracking
-* RLS ensures data privacy between students and classes
-* Consider partitioning by attendance_date for better performance with large datasets
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | uuid | Primary key, auto-generated |
+| `lesson_id` | uuid | Foreign key to course_lessons table (required) |
+| `student_id` | uuid | Foreign key to profile_info_student table (required) |
+| `daily_log_id` | uuid | Foreign key to student_daily_log table |
+| `lateness_duration_minutes` | integer | Minutes late (if applicable) |
+| `method` | text | How attendance was recorded (manual, QR code, etc.) |
+| `recorded_by` | uuid | Staff member who recorded attendance |
+| `timestamp` | timestamp | When attendance was recorded (default: now) |
+| `notes` | text | Additional attendance notes |
+| `status` | attendance_status | Attendance status (enum type) |
+| `absence_note_id` | uuid | Foreign key to student_absence_notes table |
+| `school_id` | uuid | Foreign key to structure_schools table (required) |
+
+## Relationships
+
+- **Belongs to**: `course_lessons` (via lesson_id)
+- **Belongs to**: `profile_info_student` (via student_id)  
+- **Belongs to**: `student_daily_log` (via daily_log_id)
+- **Belongs to**: `student_absence_notes` (via absence_note_id)
+- **Belongs to**: `structure_schools` (via school_id)
+- **Belongs to**: `profile_info_staff` (via recorded_by)
+
+## Attendance Status Enum
+
+The `status` field uses a custom enum type `public.attendance_status`. Common values likely include:
+- Present
+- Absent  
+- Late
+- Excused
+- Partial
+
+## Key Features
+
+- **Lesson-Level Tracking**: Records attendance for individual lessons/sessions
+- **Lateness Tracking**: Captures exact minutes late when applicable
+- **Multiple Recording Methods**: Supports various attendance recording methods
+- **Staff Attribution**: Tracks who recorded the attendance
+- **Audit Trail**: Full timestamp tracking for attendance events
+- **Absence Integration**: Links to formal absence notes when applicable
+- **Daily Log Connection**: Integrates with broader daily student logs
+
+## Usage Patterns
+
+This table is used for:
+
+1. **Real-time Attendance**: Recording attendance as lessons occur
+2. **Lateness Tracking**: Capturing and reporting tardiness patterns
+3. **Absence Documentation**: Linking attendance to formal absence processes
+4. **Reporting**: Generating attendance reports and analytics
+5. **Parent Communication**: Providing attendance updates to families
+
+## Related Tables
+
+### Core Relationships
+- `course_lessons` - The specific lesson/session
+- `profile_info_student` - Student information
+- `student_daily_log` - Daily student activity summary
+
+### Extended Relationships
+- `student_absence_notes` - Formal absence documentation
+- `student_presence_events` - Detailed presence/absence events
+- `staff_class_links` - Staff assigned to classes
+
+## Related Views
+
+- `vw_attendance_dashboard` - Attendance dashboard data
+- `vw_class_checkins_today` - Today's class check-ins
+- `vw_daily_attendance_by_class` - Class-wise daily attendance
+- `vw_daily_attendance_overview` - Overall attendance overview
+- `vw_student_attendance_today` - Today's student attendance
+- `vw_lesson_attendance_badges` - Lesson attendance indicators
+
+## Data Integrity Notes
+
+- Requires both `lesson_id` and `student_id` (cannot have attendance without lesson and student)
+- Must include `school_id` for data isolation
+- `timestamp` defaults to current time for audit purposes
+- Supports flexible status tracking via enum type
+
+This table forms the foundation of the attendance tracking system, providing detailed lesson-by-lesson attendance records that roll up into daily, weekly, and term-level reporting.
