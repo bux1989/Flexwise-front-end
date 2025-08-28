@@ -58,6 +58,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const [selectedLessonForAttendance, setSelectedLessonForAttendance] = useState<string | null>(null);
   const [tempAttendance, setTempAttendance] = useState<{[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}}>({});
   const [lessonNote, setLessonNote] = useState('');
+  const [overviewData, setOverviewData] = useState<any>(null);
 
   // Mobile detection (simple check)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
@@ -122,10 +123,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const openOverviewMode = async (lessonId: string) => {
     console.log('🟢 GREEN BADGE CLICKED - Opening overview mode for lesson:', lessonId);
 
+    // Set lesson but DON'T open dialog yet - load data first
     setSelectedLessonForAttendance(lessonId);
     setAttendanceViewMode('overview');
-    setAttendanceDialogOpen(true);
-    console.log('📖 Dialog opened in OVERVIEW mode');
+    setOverviewData(null); // Clear previous data
 
     try {
       console.log('📋 Fetching attendance data for overview...');
@@ -177,21 +178,22 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         })) || []
       };
 
-      // Attach to lesson
-      const lessonIndex = lessons.findIndex(l => l.id === lessonId);
-      if (lessonIndex !== -1) {
-        lessons[lessonIndex].attendanceData = structuredData;
-        console.log('💾 Structured data attached to lesson:', {
-          present: structuredData.present.length,
-          late: structuredData.late.length,
-          absent: structuredData.absent.length,
-          hasNote: !!structuredData.lessonNote
-        });
-      }
+      // Store data in state instead of mutating lessons array
+      setOverviewData(structuredData);
+      console.log('💾 Structured data stored in state:', {
+        present: structuredData.present.length,
+        late: structuredData.late.length,
+        absent: structuredData.absent.length,
+        hasNote: !!structuredData.lessonNote
+      });
 
-      console.log('✅ Overview mode ready - should now display data');
+      // THEN open dialog with data ready
+      setAttendanceDialogOpen(true);
+      console.log('✅ Overview mode ready and dialog opened with data');
     } catch (error) {
       console.error('❌ Error loading overview:', error);
+      // Still open dialog even on error
+      setAttendanceDialogOpen(true);
     }
   };
 
@@ -645,6 +647,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           setAttendanceViewMode('edit'); // Reset to edit as default
           setTempAttendance({});
           setLessonNote('');
+          setOverviewData(null); // Clear overview data
         }
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] lg:max-h-[80vh] overflow-y-auto mx-2 lg:mx-auto">
@@ -661,7 +664,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                   })} um {selectedLesson?.time} Uhr
                 </div>
               </div>
-              {attendanceViewMode === 'overview' && selectedLesson?.attendanceData && (
+              {attendanceViewMode === 'overview' && overviewData && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -676,16 +679,16 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           </DialogHeader>
 
           {selectedLesson && (
-            <div>
-              {attendanceViewMode === 'overview' && selectedLesson.attendanceData ? (
+        <div>
+          {attendanceViewMode === 'overview' && overviewData ? (
                 // Overview Mode - Clean summary view
                 <div className="space-y-6">
                   {/* Lesson Note Section */}
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="space-y-3">
                       <h4 className="font-medium text-blue-900">Klassenbuch-Eintrag</h4>
-                      <p className="text-sm text-blue-800">
-                        {selectedLesson.attendanceData.lessonNote || (
+                  <p className="text-sm text-blue-800">
+                    {overviewData.lessonNote || (
                           <span className="text-gray-500 italic">
                             Kein Eintrag vorhanden -
                             <Button
@@ -705,11 +708,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                   {/* Present Students */}
                   <div>
                     <h4 className="flex items-center gap-2 mb-3">
-                      <Check className="h-5 w-5 text-green-600" />
-                      Anwesend ({selectedLesson.attendanceData.present?.length || 0})
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {selectedLesson.attendanceData.present?.map((student: any) => (
+                  <Check className="h-5 w-5 text-green-600" />
+                  Anwesend ({overviewData.present?.length || 0})
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {overviewData.present?.map((student: any) => (
                         <div key={student.id} className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                           <span className="text-sm">{student.name}</span>
@@ -719,14 +722,14 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                   </div>
 
                   {/* Late Students */}
-                  {selectedLesson.attendanceData.late && selectedLesson.attendanceData.late.length > 0 && (
-                    <div>
-                      <h4 className="flex items-center gap-2 mb-3">
-                        <Clock className="h-5 w-5 text-yellow-600" />
-                        Verspätet ({selectedLesson.attendanceData.late.length})
-                      </h4>
-                      <div className="grid grid-cols-1 gap-2">
-                        {selectedLesson.attendanceData.late.map((student: any) => (
+              {overviewData.late && overviewData.late.length > 0 && (
+                <div>
+                  <h4 className="flex items-center gap-2 mb-3">
+                    <Clock className="h-5 w-5 text-yellow-600" />
+                    Verspätet ({overviewData.late.length})
+                  </h4>
+                  <div className="grid grid-cols-1 gap-2">
+                    {overviewData.late.map((student: any) => (
                           <div key={student.id} className="flex items-center justify-between p-2 bg-yellow-50 rounded-lg">
                             <div className="flex items-center gap-2">
                               <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
@@ -754,14 +757,14 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                   )}
 
                   {/* Absent Students */}
-                  {selectedLesson.attendanceData.absent && selectedLesson.attendanceData.absent.length > 0 && (
-                    <div>
-                      <h4 className="flex items-center gap-2 mb-3">
-                        <X className="h-5 w-5 text-red-500" />
-                        Abwesend ({selectedLesson.attendanceData.absent.length})
-                      </h4>
-                      <div className="space-y-2">
-                        {selectedLesson.attendanceData.absent.map((student: any) => (
+              {overviewData.absent && overviewData.absent.length > 0 && (
+                <div>
+                  <h4 className="flex items-center gap-2 mb-3">
+                    <X className="h-5 w-5 text-red-500" />
+                    Abwesend ({overviewData.absent.length})
+                  </h4>
+                  <div className="space-y-2">
+                    {overviewData.absent.map((student: any) => (
                           <div key={student.id} className="flex items-center justify-between p-2 bg-red-50 rounded-lg">
                             <div className="flex items-center gap-2">
                               <div className="w-2 h-2 bg-red-500 rounded-full"></div>
