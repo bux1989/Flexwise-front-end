@@ -56,6 +56,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [attendanceViewMode, setAttendanceViewMode] = useState<'overview' | 'edit'>('edit');
   const [selectedLessonForAttendance, setSelectedLessonForAttendance] = useState<string | null>(null);
+  const [excuseDialogOpen, setExcuseDialogOpen] = useState(false);
+  const [selectedStudentForExcuse, setSelectedStudentForExcuse] = useState<{lessonId: string, studentId: string, isEdit?: boolean} | null>(null);
+  const [excuseReason, setExcuseReason] = useState('');
+  const [tempAttendance, setTempAttendance] = useState<{[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}}>({});
+  const [lessonNote, setLessonNote] = useState('');
 
   // Mobile detection (simple check)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
