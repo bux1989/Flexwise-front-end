@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../compo
 import { Textarea } from '../../../components/ui/textarea';
 import { AddTaskDialog } from '../../../components/AddTaskDialog';
 import { INITIAL_TASKS, ASSIGNEE_GROUPS } from '../../../../../shared/data/mockData';
-import { formatTimestamp, getPriorityValue } from '../../../../../shared/utils/dateHelpers';
+import { formatTimestamp } from '../../../../../shared/utils/dateHelpers';
+import { getPriorityValue } from '../../../../../shared/domains/management/to-do-list/utils';
 
 interface TaskManagementProps {
   currentTeacher: string;

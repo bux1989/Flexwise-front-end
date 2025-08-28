@@ -21,7 +21,7 @@ import { useIsMobile } from '../../components/ui/use-mobile';
 import { Header } from '../../components/Header';
 import { AddTaskDialog } from '../../components/AddTaskDialog';
 import { TimeInputWithArrows } from '../../components/TimeInputWithArrows';
-import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from '../../constants/mockData';
+import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from '../../../../shared/data/mockData';
 import { fetchTodaysLessons, fetchLessonAttendance, fetchAttendanceBadges, supabase } from '../../lib/supabase';
 // Import from new domain structure
 import {
