@@ -4,7 +4,10 @@ import {
   Lesson,
   ExcuseInfo,
   ExcuseEditHistory,
-  StudentStatistics
+  StudentStatistics,
+  AbsenceDetail,
+  LatenessDetail,
+  CourseAttendanceEntry
 } from './utils';
 
 export interface Course {
@@ -33,31 +36,6 @@ export interface AttendanceRecord {
 }
 
 
-export interface CourseAttendanceEntry {
-  code: 'A' | 'S' | 'E' | 'U';
-  excuseInfo?: ExcuseInfo; // For 'E' (always) and 'S' (when excused)
-}
-
-export interface AbsenceDetail {
-  id: string;
-  date: string;
-  subject: string;
-  type: 'excused' | 'unexcused';
-  absenceType: 'fehltag' | 'fehlstunde'; // NEW: distinguish between whole day and individual lesson
-  reason?: string;
-  minutes: number;
-  excuseInfo?: ExcuseInfo;
-}
-
-export interface LatenessDetail {
-  id: string;
-  date: string;
-  subject: string;
-  type: 'excused' | 'unexcused';
-  minutes: number;
-  reason?: string;
-  excuseInfo?: ExcuseInfo;
-}
 
 
 // Current teacher name for filtering

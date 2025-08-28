@@ -47,6 +47,32 @@ export interface ExcuseEditHistory {
   previousText?: string;
 }
 
+export interface AbsenceDetail {
+  id: string;
+  date: string;
+  subject: string;
+  type: 'excused' | 'unexcused';
+  absenceType: 'fehltag' | 'fehlstunde'; // distinguish between whole day and individual lesson
+  reason?: string;
+  minutes: number;
+  excuseInfo?: ExcuseInfo;
+}
+
+export interface LatenessDetail {
+  id: string;
+  date: string;
+  subject: string;
+  type: 'excused' | 'unexcused';
+  minutes: number;
+  reason?: string;
+  excuseInfo?: ExcuseInfo;
+}
+
+export interface CourseAttendanceEntry {
+  code: 'A' | 'S' | 'E' | 'U';
+  excuseInfo?: ExcuseInfo; // For 'E' (always) and 'S' (when excused)
+}
+
 export interface StudentStatistics {
   id: string;
   name: string;
