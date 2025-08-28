@@ -70,9 +70,15 @@ function transformLessonData(supabaseLessons: any[], attendanceBadges: any = {})
       adminComment: lesson.notes,
       students,
       attendance: {
-        present: badge.present_students || [],
-        late: badge.late_students || [],
-        absent: badge.absent_students || []
+        present: [], // Arrays not provided by badge view, would need separate fetch
+        late: [],
+        absent: [],
+        // Add badge counts for display
+        presentCount: badge.present_count || 0,
+        lateCount: badge.late_count || 0,
+        absentCount: badge.absent_count || 0,
+        totalStudents: badge.total_students || 0,
+        status: badge.attendance_status || 'none'
       },
       attendanceTaken: lesson.attendance_taken || false
     };
