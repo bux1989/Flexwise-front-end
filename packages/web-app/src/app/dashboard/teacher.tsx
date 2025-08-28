@@ -577,7 +577,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                 </div>
 
                 {/* Alle Buttons */}
-                <div className="grid grid-cols-5 gap-2 pb-2 border-b">
+                <div className="grid grid-cols-5 gap-1 lg:gap-2 pb-2 border-b">
                   <div></div>
                   <div className="flex justify-center">
                     <Button
