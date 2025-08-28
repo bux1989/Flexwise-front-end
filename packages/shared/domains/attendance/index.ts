@@ -1,6 +1,6 @@
 // Attendance domain exports
 export * from './fehlzeiten/utils';
-export * from './fehlzeiten/hooks';
+// Hooks moved to web-app features
 
 // Re-export types for convenience
 export type {

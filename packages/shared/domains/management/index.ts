@@ -1,6 +1,6 @@
 // Management domain exports
 export * from './to-do-list/utils';
-export * from './to-do-list/hooks';
+// Hooks moved to web-app features
 
 // Re-export types for convenience
 export type {

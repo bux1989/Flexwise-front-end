@@ -3,7 +3,7 @@
 
 // Klassenbuch (Digital Class Register) module
 export * from './klassenbuch/utils';
-export * from './klassenbuch/hooks';
+// Hooks moved to web-app features
 export * from './klassenbuch/data';
 
 // Re-export types for convenience

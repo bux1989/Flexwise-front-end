@@ -1,6 +1,6 @@
 // Scheduling domain exports
 export * from './stundenplan/utils';
-export * from './stundenplan/hooks';
+// Hooks moved to web-app features
 
 // Re-export types for convenience
 export type {
