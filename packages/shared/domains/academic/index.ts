@@ -16,7 +16,10 @@ export type {
 } from './klassenbuch/utils';
 
 export type {
-
+  AbsenceDetail,
+  LatenessDetail,
+  CourseAttendanceEntry,
+  ExcuseEditHistory,
   Course,
   CourseStudent,
   AttendanceRecord
