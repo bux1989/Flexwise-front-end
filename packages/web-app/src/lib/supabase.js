@@ -275,12 +275,12 @@ export async function fetchLessonAttendance(lessonId) {
 
     console.log('✅ Table access successful, test data:', testData)
 
-    // Now try the actual query
+    // Now try the actual query - specify which user_profiles relationship we want
     const { data: attendance, error } = await supabase
       .from('student_attendance_logs')
       .select(`
         *,
-        user_profiles(first_name, last_name)
+        user_profiles!student_attendance_logs_student_id_fkey(first_name, last_name)
       `)
       .eq('lesson_id', lessonId)
 
