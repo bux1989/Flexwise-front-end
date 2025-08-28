@@ -347,9 +347,9 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleTaskHotList(task.id)}
-                    className="h-8 w-8 p-0"
+                    className="h-7 w-7 lg:h-8 lg:w-8 p-0"
                   >
-                    <Star className={`h-4 w-4 ${task.hotList ? 'text-yellow-500 fill-current' : 'text-gray-400'}`} />
+                    <Star className={`h-3 w-3 lg:h-4 lg:w-4 ${task.hotList ? 'text-yellow-500 fill-current' : 'text-gray-400'}`} />
                   </Button>
                   <Button
                     variant="ghost"
@@ -358,9 +358,9 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
                       setSelectedTaskForComment(task.id);
                       setCommentDialogOpen(true);
                     }}
-                    className="h-8 w-8 p-0"
+                    className="h-7 w-7 lg:h-8 lg:w-8 p-0"
                   >
-                    <MessageCircle className="h-4 w-4" />
+                    <MessageCircle className="h-3 w-3 lg:h-4 lg:w-4" />
                   </Button>
                 </div>
               </div>
