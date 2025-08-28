@@ -265,13 +265,11 @@ export async function fetchLessonAttendance(lessonId) {
       .eq('lesson_id', lessonId)
 
     if (error) {
-      console.error('❌ Error fetching attendance:', error)
-      console.error('❌ Error details:', {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
-      })
+      console.error('❌ Error fetching attendance:', JSON.stringify(error, null, 2))
+      console.error('❌ Error message:', error.message)
+      console.error('❌ Error code:', error.code)
+      console.error('❌ Error details:', error.details)
+      console.error('❌ Error hint:', error.hint)
       throw error
     }
 
