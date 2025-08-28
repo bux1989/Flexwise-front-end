@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { handleLogin } from '../lib/supabase'
+import { supabase } from '@flexwise/shared/supabase'
 
 export default function Login() {
   const [email, setEmail] = useState('')
