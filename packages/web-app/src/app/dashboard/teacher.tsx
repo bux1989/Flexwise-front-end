@@ -50,26 +50,38 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   useEffect(() => {
     const loadUserProfile = async () => {
       try {
+        console.log('🔄 Starting profile load for teacher dashboard');
+        console.log('📝 Current fallback teacher name:', currentTeacher);
+
         const profile = await getCurrentUserProfile();
+        console.log('📊 Raw profile data received:', profile);
+
         if (profile && profile.first_name && profile.last_name) {
           // Format the teacher name based on role and gender patterns
           const firstName = profile.first_name;
           const lastName = profile.last_name;
+
+          console.log('🏷️ Profile names found:', { firstName, lastName });
 
           // Simple German salutation logic - could be enhanced with explicit gender field
           const salutation = firstName.toLowerCase().endsWith('a') || firstName.toLowerCase().endsWith('e')
             ? 'Frau' : 'Herr';
 
           const fullName = `${salutation} ${firstName} ${lastName}`;
+          console.log('🎯 Setting teacher name to:', fullName);
           setCurrentTeacher(fullName);
 
-          console.log('✅ Teacher profile loaded:', fullName);
+          console.log('✅ Teacher profile loaded successfully:', fullName);
+        } else {
+          console.log('⚠️ Profile missing first_name or last_name, using fallback');
+          console.log('📋 Profile structure:', profile);
         }
       } catch (error) {
-        console.warn('Could not load user profile, using fallback:', error);
+        console.warn('❌ Could not load user profile, using fallback:', error);
         // Keep the fallback value
       } finally {
         setIsLoadingProfile(false);
+        console.log('🏁 Profile loading completed, current teacher:', currentTeacher);
       }
     };
 
