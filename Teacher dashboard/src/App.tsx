@@ -291,14 +291,14 @@ export default function App() {
         ...task, 
         completed: true,
         completedAt: now,
-        completedBy: CURRENT_TEACHER,
+        completedBy: currentTeacher,
         comments: completionComment.trim() ? [
           ...task.comments,
           {
             id: task.comments.length + 1,
             text: completionComment.trim(),
             timestamp: now,
-            author: CURRENT_TEACHER
+            author: currentTeacher
           }
         ] : task.comments
       } : task
