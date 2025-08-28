@@ -1295,8 +1295,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      <Header 
-        currentTeacher={CURRENT_TEACHER}
+      <Header
+        currentTeacher={currentTeacher}
         dateString={dateString}
         onButtonClick={handleHeaderButtonClick}
       />
