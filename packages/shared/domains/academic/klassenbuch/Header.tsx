@@ -1,11 +1,8 @@
 import React from 'react';
-import { Card } from '../ui/card';
-import { Button } from '../ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Badge } from '../ui/badge';
+// UI components should be provided by the consuming application
+// These imports will be resolved by the React app using this domain
 import { Calendar, ChevronLeft, ChevronRight, BarChart3, CalendarCheck } from 'lucide-react';
 import { getClassesForStatistics, getCoursesForStatistics } from './data/mockData';
-import { useIsMobile } from '../ui/use-mobile';
 
 interface Class {
   id: string;
@@ -24,6 +21,16 @@ interface HeaderProps {
   onClassChange: (classItem: Class) => void;
   classes: Class[];
   statisticsViewType?: 'class' | 'student' | 'course';
+  isMobile?: boolean;
+  // UI component props - these will be resolved by the consuming app
+  Card?: any;
+  Button?: any;
+  Select?: any;
+  SelectContent?: any;
+  SelectItem?: any;
+  SelectTrigger?: any;
+  SelectValue?: any;
+  Badge?: any;
 }
 
 export function Header({
@@ -34,9 +41,17 @@ export function Header({
   selectedClass,
   onClassChange,
   classes,
-  statisticsViewType = 'class'
+  statisticsViewType = 'class',
+  isMobile = false,
+  Card,
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Badge
 }: HeaderProps) {
-  const isMobile = useIsMobile();
 
   // Get filtered classes based on current view and statistics view type
   const getFilteredClasses = () => {
