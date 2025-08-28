@@ -134,24 +134,35 @@ Based on the working application, these features need domain organization:
 - **Enrollment management**
 - **Parent-student relationships**
 
+### 3. Feature Licensing Model ✅
+
+**Decision**: Basic version + add-on modules (graceful degradation)
+- **Basic tier**: Core functionality for all 19 modules
+- **Premium/Enterprise**: Enhanced features within each module
+- **Implementation**: Modules always visible, features unlock with subscription
+
+Example:
+```jsx
+// Stundenplan module - always available
+<StundenplanModule>
+  <BasicScheduleView />                    {/* Always available */}
+
+  {hasFeature('advanced_scheduling') && (
+    <AdvancedScheduleEditor />             {/* Premium feature */}
+  )}
+
+  {hasFeature('schedule_analytics') && (
+    <ScheduleAnalytics />                  {/* Enterprise feature */}
+  )}
+</StundenplanModule>
+```
+
+**Benefits:**
+- Users can try basic functionality
+- Clear upgrade path within familiar interface
+- No jarring "module not available" experiences
+
 ## Next Questions to Address
-
-### 3. Feature Licensing Integration
-How should licensed features be controlled?
-
-**A)** **Component-level** gating:
-```jsx
-<FeatureGate feature="advanced_attendance">
-  <AttendanceAnalytics />
-</FeatureGate>
-```
-
-**B)** **Domain-level** licensing:
-```jsx
-const { hasAccess } = useDomainAccess('lessons', 'advanced_features');
-```
-
-**C)** **Route-level** protection at the dashboard level?
 
 ---
 
