@@ -288,11 +288,12 @@ export async function fetchLessonAttendance(lessonId) {
     return grouped
 
   } catch (error) {
-    console.error('💥 Error in fetchLessonAttendance:', {
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-      code: error.code,
+    console.error('💥 Error in fetchLessonAttendance:', error)
+    console.error('💥 Error details:', {
+      message: error?.message,
+      details: error?.details,
+      hint: error?.hint,
+      code: error?.code,
       lessonId: lessonId
     })
     throw error
