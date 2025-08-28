@@ -6,11 +6,4 @@ export * from './utils';
 export * from './hooks';
 export * from './data';
 
-// Re-export key types for convenience
-export type {
-  Class,
-  Student,
-  Lesson,
-  StudentStatistics,
-  ExcuseInfo
-} from './utils';
+// Note: Types are already exported via 'export * from ./utils' above
