@@ -56,6 +56,17 @@ function transformLessonData(supabaseLessons: any[], attendanceBadges: any = {})
       name: nameWithClass
     }));
 
+    // Create mock attendance arrays with correct lengths for helper functions
+    const presentCount = badge.present_count || 0;
+    const lateCount = badge.late_count || 0;
+    const absentCount = badge.absent_count || 0;
+    const totalStudents = badge.total_students || lesson.student_count || 0;
+
+    // Create arrays with correct lengths (mock data for counts)
+    const presentArray = Array(presentCount).fill(null).map((_, i) => ({ id: `present_${i}`, name: `Student ${i + 1}` }));
+    const lateArray = Array(lateCount).fill(null).map((_, i) => ({ id: `late_${i}`, name: `Student ${i + 1}` }));
+    const absentArray = Array(absentCount).fill(null).map((_, i) => ({ id: `absent_${i}`, name: `Student ${i + 1}` }));
+
     return {
       id: lesson.lesson_id,
       time: startTime.format('HH:mm'),
@@ -70,16 +81,11 @@ function transformLessonData(supabaseLessons: any[], attendanceBadges: any = {})
       otherTeachers,
       adminComment: lesson.notes,
       students,
+      enrolled: totalStudents, // For helper functions
       attendance: {
-        present: [], // Arrays not provided by badge view, would need separate fetch
-        late: [],
-        absent: [],
-        // Add badge counts for display
-        presentCount: badge.present_count || 0,
-        lateCount: badge.late_count || 0,
-        absentCount: badge.absent_count || 0,
-        totalStudents: badge.total_students || 0,
-        status: badge.attendance_status || 'none'
+        present: presentArray,
+        late: lateArray,
+        absent: absentArray
       },
       attendanceTaken: lesson.attendance_taken || false
     };
