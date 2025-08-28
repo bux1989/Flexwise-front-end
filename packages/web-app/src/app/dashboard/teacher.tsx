@@ -300,6 +300,104 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // Helper function to get selected lesson
   const selectedLesson = lessons.find(l => l.id === selectedLessonForAttendance);
 
+  // Function to switch to edit mode with proper data fetching
+  const switchToEditMode = async () => {
+    if (!selectedLessonForAttendance) return;
+
+    try {
+      console.log('🔄 Switching to edit mode and fetching data for lesson:', selectedLessonForAttendance);
+
+      // Fetch actual attendance data from Supabase
+      const attendanceData = await fetchLessonAttendance(selectedLessonForAttendance);
+
+      // Prepare tempAttendance for editing
+      const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
+
+      // Build a lookup of display student name -> synthetic student id used in UI
+      const lesson = lessons.find(l => l.id === selectedLessonForAttendance);
+      const nameToStudentId = new Map<string, string>();
+      lesson?.students?.forEach((s: any) => {
+        const baseName = (s.name?.split(' (')[0] || '').trim().toLowerCase();
+        if (baseName) nameToStudentId.set(baseName, s.id);
+      });
+      const getUiStudentId = (record: any): string | undefined => {
+        const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
+        const first = profile?.first_name || '';
+        const last = profile?.last_name || '';
+        const key = `${first} ${last}`.trim().toLowerCase();
+        return nameToStudentId.get(key);
+      };
+
+      // Process present students
+      attendanceData.present?.forEach((record: any) => {
+        const sid = getUiStudentId(record);
+        if (!sid) {
+          console.warn('⚠️ Could not match present record to UI student:', record);
+          return;
+        }
+        editAttendance[sid] = { status: 'present' };
+      });
+
+      // Process late students
+      attendanceData.late?.forEach((record: any) => {
+        const sid = getUiStudentId(record);
+        if (!sid) {
+          console.warn('⚠️ Could not match late record to UI student:', record);
+          return;
+        }
+
+        // Determine minutes late using DB value or fallback to recorded_at vs lesson start
+        const startParts = (lesson?.time || '').split(':').map(Number);
+        const base = new Date(selectedDate);
+        if (!isNaN(startParts[0]) && !isNaN(startParts[1])) {
+          base.setHours(startParts[0], startParts[1], 0, 0);
+        }
+        const recordedAt = record.recorded_at ? new Date(record.recorded_at) : null;
+        let minutesLate = typeof record.late_minutes === 'number' && record.late_minutes > 0
+          ? record.late_minutes
+          : (recordedAt && !isNaN(base.getTime())
+              ? Math.max(1, Math.floor((recordedAt.getTime() - base.getTime()) / (1000 * 60)))
+              : 5);
+
+        // Compute arrival time = lesson start + minutesLate
+        const arrival = new Date(base.getTime() + minutesLate * 60000);
+        const arrivalTime = `${arrival.getHours().toString().padStart(2, '0')}:${arrival.getMinutes().toString().padStart(2, '0')}`;
+
+        editAttendance[sid] = {
+          status: 'late',
+          minutesLate,
+          arrivalTime,
+          lateExcused: false
+        };
+      });
+
+      // Process absent students (both excused and unexcused)
+      attendanceData.absent?.forEach((record: any) => {
+        const sid = getUiStudentId(record);
+        if (!sid) {
+          console.warn('⚠️ Could not match absent record to UI student:', record);
+          return;
+        }
+        editAttendance[sid] = {
+          status: record.status === 'absent_excused' ? 'excused' : 'unexcused',
+          excuseReason: record.notes || ''
+        };
+      });
+
+      setTempAttendance(editAttendance);
+      setLessonNote(''); // Reset lesson note for now
+      setAttendanceViewMode('edit');
+
+      console.log('✅ Switched to edit mode with prefilled data:', editAttendance);
+
+    } catch (error) {
+      console.error('❌ Error switching to edit mode:', error);
+      setTempAttendance({});
+      setLessonNote('');
+      setAttendanceViewMode('edit');
+    }
+  };
+
   // Helper function to get default late time
   const getDefaultLateTime = (lesson: any): string => {
     if (!lesson) return '';
