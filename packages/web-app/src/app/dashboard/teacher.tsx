@@ -120,21 +120,33 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Simple function: Open overview mode (for green badges - complete attendance)
   const openOverviewMode = async (lessonId: string) => {
-    console.log('👁️ Opening overview mode for lesson:', lessonId);
+    console.log('🟢 GREEN BADGE CLICKED - Opening overview mode for lesson:', lessonId);
 
     setSelectedLessonForAttendance(lessonId);
     setAttendanceViewMode('overview');
     setAttendanceDialogOpen(true);
+    console.log('📖 Dialog opened in OVERVIEW mode');
 
     try {
+      console.log('📋 Fetching attendance data for overview...');
       // Fetch data for overview mode
       const [attendanceData, diaryEntry] = await Promise.all([
         fetchLessonAttendance(lessonId),
         fetchLessonDiaryEntry(lessonId)
       ]);
 
+      console.log('📊 Raw attendance data received:', {
+        present: attendanceData.present?.length || 0,
+        late: attendanceData.late?.length || 0,
+        absent: attendanceData.absent?.length || 0
+      });
+      console.log('📝 Diary entry received:', diaryEntry ? 'Yes' : 'No');
+
       const lesson = lessons.find(l => l.id === lessonId);
-      if (!lesson) return;
+      if (!lesson) {
+        console.error('❌ Lesson not found in lessons array:', lessonId);
+        return;
+      }
 
       const getUiStudentName = (record: any): string => {
         const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
@@ -169,9 +181,15 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       const lessonIndex = lessons.findIndex(l => l.id === lessonId);
       if (lessonIndex !== -1) {
         lessons[lessonIndex].attendanceData = structuredData;
+        console.log('💾 Structured data attached to lesson:', {
+          present: structuredData.present.length,
+          late: structuredData.late.length,
+          absent: structuredData.absent.length,
+          hasNote: !!structuredData.lessonNote
+        });
       }
 
-      console.log('✅ Overview mode ready');
+      console.log('✅ Overview mode ready - should now display data');
     } catch (error) {
       console.error('❌ Error loading overview:', error);
     }
