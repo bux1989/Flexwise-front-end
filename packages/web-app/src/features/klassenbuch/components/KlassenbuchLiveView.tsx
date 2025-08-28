@@ -144,8 +144,22 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
     }
   };
 
-  const weekDays = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
-  const mobileWeekDays = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
+  // Generate display names for school days
+  const weekDays = schoolDays.map(schoolDay => schoolDay.day.name_de || schoolDay.day.name_en);
+  const mobileWeekDays = schoolDays.map(schoolDay => {
+    const dayName = schoolDay.day.name_de || schoolDay.day.name_en;
+    // Create mobile abbreviations
+    const mobileMap: Record<string, string> = {
+      'Montag': 'Mo', 'Monday': 'Mo',
+      'Dienstag': 'Di', 'Tuesday': 'Di',
+      'Mittwoch': 'Mi', 'Wednesday': 'Mi',
+      'Donnerstag': 'Do', 'Thursday': 'Do',
+      'Freitag': 'Fr', 'Friday': 'Fr',
+      'Samstag': 'Sa', 'Saturday': 'Sa',
+      'Sonntag': 'So', 'Sunday': 'So'
+    };
+    return mobileMap[dayName] || dayName.substring(0, 2);
+  });
   const displayWeekDays = isMobile ? mobileWeekDays : weekDays;
   const weekDates = getWeekDates(selectedWeek);
 
