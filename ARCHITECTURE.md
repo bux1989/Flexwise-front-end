@@ -72,7 +72,7 @@ shared/domains/
 │   ├── elternbriefe/
 │   ├── info-board/
 │   └── steckboard/
-└─�� management/
+└── management/
 │   ├── berichte/
 │   ├── statistiken/
 │   ├── to-do-list/
@@ -194,7 +194,38 @@ Mobile Structure:
 
 **Note**: Admin dashboard needs quick select actions (TBD what these are)
 
-## Next Questions to Address
+### 5. Data Synchronization Strategy ✅
+
+**Decision**: Real-time sync + offline capability with sync warnings
+
+**Implementation**:
+```jsx
+// Web: Always real-time
+const { lessons, isLoading } = useLessons(teacherId);
+
+// Mobile: Offline-first with sync status
+const { lessons, syncStatus, isOnline } = useOfflineLessons(teacherId);
+
+// Sync status UI
+{!isOnline && (
+  <SyncWarning>
+    ⚠️ Data not synced - Connect to internet to update
+  </SyncWarning>
+)}
+```
+
+**Benefits**:
+- Teachers can mark attendance without internet
+- Real-time updates when connected
+- Clear warnings when data might be stale
+- Automatic sync when connection restored
+
+**User Experience**:
+- Web: Always shows latest data (requires internet)
+- Mobile: Works offline, shows sync status
+- Conflict resolution: Last write wins with timestamps
+
+## Architecture Summary
 
 ---
 
