@@ -435,8 +435,6 @@ BEGIN
         WHEN v_status = 'absent_excused' THEN 'absent_excused'::public.presence_status
         WHEN v_status = 'absent_unexcused' THEN 'absent_unexcused'::public.presence_status
         WHEN v_status = 'left_early' THEN 'left_early'::public.presence_status
-        WHEN v_status = 'temporarily_offsite' THEN 'temporarily_offsite'::public.presence_status
-        WHEN v_status = 'left_without_notice' THEN 'left_without_notice'::public.presence_status
         ELSE 'unmarked'::public.presence_status
       END,
       CASE WHEN v_status = 'late' THEN TRUE ELSE FALSE END
@@ -446,7 +444,7 @@ BEGIN
       updated_at = NOW(),
       last_updated_by = p_recorded_by,
       presence_status = CASE
-        WHEN EXCLUDED.presence_status IN ('present','absent_excused','absent_unexcused','left_early','temporarily_offsite','left_without_notice')::public.presence_status[] THEN EXCLUDED.presence_status
+        WHEN EXCLUDED.presence_status IN ('present','absent_excused','absent_unexcused','left_early')::public.presence_status[] THEN EXCLUDED.presence_status
         ELSE student_daily_log.presence_status
       END,
       is_late = student_daily_log.is_late OR EXCLUDED.is_late
@@ -467,10 +465,11 @@ BEGIN
       school_id = EXCLUDED.school_id
     RETURNING id INTO v_attendance_log_id;
 
-    student_id := v_student_id;
-    daily_log_id := v_daily_log_id;
-    attendance_log_id := v_attendance_log_id;
-    status := v_status;
+    -- Fix: Use the function's return table column names explicitly
+    save_lesson_attendance_bulk.student_id := v_student_id;
+    save_lesson_attendance_bulk.daily_log_id := v_daily_log_id;
+    save_lesson_attendance_bulk.attendance_log_id := v_attendance_log_id;
+    save_lesson_attendance_bulk.status := v_status;
     RETURN NEXT;
   END LOOP;
 END;
