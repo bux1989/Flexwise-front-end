@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { Users, User, BookOpen, CalendarDays, Clock, AlertTriangle, CheckCircle, Edit3, FileText, Calendar, ChevronDown, ChevronRight, BarChart3, Search, X } from 'lucide-react';
-import { getStudentStatisticsForClass, getCourseDataForClass, getCourseStudentsForCourse, getStudentById, updateAbsenceDetails, updateLatenessDetails, convertToExcused, getStudentIdFromCourseName, getAllStudentStatistics, getClassNameById, SEMESTER_START_DATE, getCurrentDateString } from '../../../shared/domains/academic/klassenbuch';
+import { getStudentStatisticsForClass, getCourseDataForClass, getCourseStudentsForCourse, getStudentById, updateAbsenceDetails, updateLatenessDetails, convertToExcused, getStudentIdFromCourseName, getAllStudentStatistics, getClassNameById, SEMESTER_START_DATE, getCurrentDateString } from '../../../shared/domains/academic';
 import { ExcuseEditModal } from './ExcuseEditModal';
 import { AddExcuseModal } from './AddExcuseModal';
 import { useIsMobile } from '../ui/use-mobile';
@@ -559,7 +559,7 @@ export function StatisticsView({ selectedClass, onViewTypeChange, selectedStuden
           <CardContent className="p-4">
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                <strong>Statistikzeitraum:</strong> {SEMESTER_START_DATE} bis {getCurrentDateString()}
+                <strong>Statistikzeitraum:</strong> {SEMESTER_START_DATE} bis {getCurrentDate()}
               </p>
             </div>
           </CardContent>
@@ -705,7 +705,7 @@ export function StatisticsView({ selectedClass, onViewTypeChange, selectedStuden
               <CardContent className="p-3">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
-                    <strong>Statistikzeitraum:</strong> {SEMESTER_START_DATE} bis {getCurrentDateString()}
+                    <strong>Statistikzeitraum:</strong> {SEMESTER_START_DATE} bis {getCurrentDate()}
                   </p>
                 </div>
               </CardContent>
@@ -811,7 +811,7 @@ export function StatisticsView({ selectedClass, onViewTypeChange, selectedStuden
         <CardContent className="p-4">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              <strong>Statistikzeitraum:</strong> {SEMESTER_START_DATE} bis {getCurrentDateString()}
+              <strong>Statistikzeitraum:</strong> {SEMESTER_START_DATE} bis {getCurrentDate()}
             </p>
           </div>
         </CardContent>
