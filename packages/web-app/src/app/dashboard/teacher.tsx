@@ -136,31 +136,60 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
         const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
 
+        // Build a lookup of display student name -> synthetic student id used in UI
+        const lesson = lessons.find(l => l.id === lessonId);
+        const nameToStudentId = new Map<string, string>();
+        lesson?.students?.forEach((s: any) => {
+          const baseName = (s.name?.split(' (')[0] || '').trim().toLowerCase();
+          if (baseName) nameToStudentId.set(baseName, s.id);
+        });
+        const getUiStudentId = (record: any): string | undefined => {
+          const first = record?.user_profiles?.first_name || '';
+          const last = record?.user_profiles?.last_name || '';
+          const key = `${first} ${last}`.trim().toLowerCase();
+          return nameToStudentId.get(key);
+        };
+
         // Process present students
         attendanceData.present?.forEach((record: any) => {
-          editAttendance[record.student_id] = { status: 'present' };
+          const sid = getUiStudentId(record);
+          if (!sid) {
+            console.warn('⚠️ Could not match present record to UI student:', record);
+            return;
+          }
+          editAttendance[sid] = { status: 'present' };
         });
 
         // Process late students
         attendanceData.late?.forEach((record: any) => {
-          editAttendance[record.student_id] = {
+          const sid = getUiStudentId(record);
+          if (!sid) {
+            console.warn('⚠️ Could not match late record to UI student:', record);
+            return;
+          }
+          editAttendance[sid] = {
             status: 'late',
-            minutesLate: record.lateness_duration_minutes || 1,
-            arrivalTime: record.arrival_time || getDefaultLateTime(lessons.find(l => l.id === lessonId)),
-            lateExcused: record.is_excused || false
+            minutesLate: record.late_minutes || 1,
+            arrivalTime: getDefaultLateTime(lesson),
+            lateExcused: false
           };
         });
 
         // Process absent students (both excused and unexcused)
         attendanceData.absent?.forEach((record: any) => {
-          editAttendance[record.student_id] = {
+          const sid = getUiStudentId(record);
+          if (!sid) {
+            console.warn('⚠️ Could not match absent record to UI student:', record);
+            return;
+          }
+          editAttendance[sid] = {
             status: record.status === 'absent_excused' ? 'excused' : 'unexcused',
             excuseReason: record.notes || ''
           };
         });
 
         setTempAttendance(editAttendance);
-        setLessonNote(''); // TODO: Initialize with existing lesson note if available
+        setLessonNote('');
 
         console.log('✅ Attendance data loaded and prefilled:', editAttendance);
 
@@ -173,7 +202,6 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           code: error?.code,
           lessonId: lessonId
         });
-        // Initialize with empty state if fetch fails
         setTempAttendance({});
         setLessonNote('');
       }
