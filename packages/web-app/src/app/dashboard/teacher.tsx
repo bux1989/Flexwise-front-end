@@ -61,17 +61,13 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         console.log('📊 Raw profile data received:', profile);
 
         if (profile && profile.first_name && profile.last_name) {
-          // Format the teacher name based on role and gender patterns
+          // Format the teacher name without salutation
           const firstName = profile.first_name;
           const lastName = profile.last_name;
 
           console.log('🏷️ Profile names found:', { firstName, lastName });
 
-          // Simple German salutation logic - could be enhanced with explicit gender field
-          const salutation = firstName.toLowerCase().endsWith('a') || firstName.toLowerCase().endsWith('e')
-            ? 'Frau' : 'Herr';
-
-          const fullName = `${salutation} ${firstName} ${lastName}`;
+          const fullName = `${firstName} ${lastName}`;
           console.log('🎯 Setting teacher name to:', fullName);
           setCurrentTeacher(fullName);
 
