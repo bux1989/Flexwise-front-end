@@ -722,6 +722,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         if (!open) {
           setSelectedLessonForAttendance(null);
           setAttendanceViewMode('edit'); // Reset to edit as default
+          setAttendanceLoading(false); // Reset loading state
           setTempAttendance({});
           setLessonNote('');
         }
