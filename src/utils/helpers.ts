@@ -71,11 +71,15 @@ export const needsAttendanceTracking = (lessonTime: string, lessonEndTime: strin
 };
 
 export const getAttendanceStatus = (lesson: any) => {
+  // If attendance has been taken but no attendance object, something's wrong
+  if (lesson.attendanceTaken && !lesson.attendance) return 'none';
+
+  // If no attendance tracking yet
   if (!lesson.attendance) return 'none';
-  
+
   const { present, late, absent } = lesson.attendance;
   const recordedAttendance = present.length + late.length + absent.length;
-  
+
   if (recordedAttendance === 0) return 'none';
   if (recordedAttendance === lesson.enrolled) return 'complete';
   return 'incomplete';
