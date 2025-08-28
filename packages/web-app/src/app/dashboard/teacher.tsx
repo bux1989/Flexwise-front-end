@@ -708,7 +708,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setAttendanceViewMode('edit')}
+                  onClick={switchToEditMode}
                   className="flex items-center gap-1"
                 >
                   <Edit className="h-4 w-4" />
