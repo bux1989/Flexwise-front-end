@@ -405,6 +405,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       });
 
       console.log('✅ Attendance saved');
+
+      // Refetch attendance data for the lesson to update badges
+      await refreshLessonAttendanceData(selectedLesson.id);
+
       setTempAttendance({});
       setLessonNote('');
       setAttendanceDialogOpen(false);
