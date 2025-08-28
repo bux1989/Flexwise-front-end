@@ -103,18 +103,19 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             lesson_type: lesson.lesson_type
           });
 
-          // Fetch real attendance data if attendance has been taken
+          // Temporarily disable individual attendance fetching - using badge data instead
           let attendanceData = null;
-          if (lesson.attendance_taken) {
-            try {
-              attendanceData = await fetchLessonAttendance(lesson.lesson_id || lesson.id);
-              console.log(`📋 Loaded attendance for lesson ${lesson.lesson_id}:`, attendanceData);
-            } catch (error) {
-              console.error(`❌ Failed to load attendance for lesson ${lesson.lesson_id}:`, error);
-              // Fall back to empty attendance structure
-              attendanceData = { present: [], late: [], absent: [] };
-            }
-          }
+          // TODO: Re-enable when student_attendance_logs table is properly configured
+          // if (lesson.attendance_taken) {
+          //   try {
+          //     attendanceData = await fetchLessonAttendance(lesson.lesson_id || lesson.id);
+          //     console.log(`📋 Loaded attendance for lesson ${lesson.lesson_id}:`, attendanceData);
+          //   } catch (error) {
+          //     console.error(`❌ Failed to load attendance for lesson ${lesson.lesson_id}:`, error);
+          //     // Fall back to empty attendance structure
+          //     attendanceData = { present: [], late: [], absent: [] };
+          //   }
+          // }
 
           // Get attendance badge data for this lesson
           const lessonId = lesson.lesson_id || lesson.id;
