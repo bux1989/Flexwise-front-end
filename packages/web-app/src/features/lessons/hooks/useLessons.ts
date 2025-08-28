@@ -216,7 +216,12 @@ export function useLessons(teacherId: string | null, selectedDate: Date): UseLes
     lessons,
     loading,
     error,
-    refetch: fetchLessons
+    refetch: fetchLessons,
+    realtime: {
+      isConnected: realtimeStatus.isConnected,
+      channelCount: realtimeStatus.channelCount,
+      refresh: realtimeStatus.refresh
+    }
   };
 }
 
