@@ -14,7 +14,7 @@ on:
         type: string
 
 env:
-  DEPLOYMENT_FOLDER: packages/react-app/dist
+  DEPLOYMENT_FOLDER: packages/web-app/dist
 
 jobs:
 # Please do not rename this job
