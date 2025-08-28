@@ -52,6 +52,7 @@ export function DatePicker({
         !isValidDate && "text-gray-500",
         className
       )}
+      onClick={() => console.log('🚫 DatePicker clicked - should be disabled!')}
     >
       <div className="flex items-center gap-2 w-full">
         <span className="flex-1 text-left text-sm">
