@@ -163,6 +163,121 @@ The project includes `netlify.toml` with:
 - `/dashboard/admin` - Admin dashboard
 - `/dashboard/student` - Student dashboard
 
+## Figma Import Guidelines
+
+### CRITICAL: Before Importing Any Figma Design
+
+#### 1. Project Structure Analysis
+**ALWAYS** understand the existing codebase first:
+```bash
+# Check existing components
+find packages/react-app/src/components -name "*.jsx" -o -name "*.tsx"
+
+# Check existing pages
+find packages/react-app/src/pages -name "*.jsx" -o -name "*.tsx"
+
+# Check shared components
+find packages/shared -name "*.tsx" -o -name "*.ts"
+```
+
+#### 2. Component Naming & Organization
+- **NEVER** create duplicate components
+- **ALWAYS** check if similar functionality exists
+- **USE** existing design system components from `packages/react-app/src/components/ui/`
+- **FOLLOW** existing naming conventions (PascalCase for components)
+
+#### 3. File Placement Rules
+```
+packages/react-app/src/
+├── components/
+│   ├── ui/              # Reusable UI components (buttons, inputs, etc.)
+│   ├── klassenbuch/     # Domain-specific components
+│   └── [feature]/       # Feature-specific components
+├── pages/               # Page-level components
+└── constants/           # Static data and constants
+```
+
+#### 4. Import Strategy
+**BEFORE** creating new files:
+1. **Check existing UI components**: `ls packages/react-app/src/components/ui/`
+2. **Check shared utilities**: `ls packages/shared/`
+3. **Grep for similar functionality**: `grep -r "similar-feature" packages/`
+
+#### 5. Asset Handling
+- **Images**: Use Builder.io CDN URLs (already configured in project)
+- **Icons**: Use Lucide React icons (`import { IconName } from 'lucide-react'`)
+- **Fonts**: Use existing Tailwind CSS font classes
+- **Colors**: Use existing Tailwind color palette
+
+#### 6. Styling Guidelines
+- **USE** Tailwind CSS classes (already configured)
+- **AVOID** custom CSS files unless absolutely necessary
+- **FOLLOW** existing responsive patterns (`sm:`, `md:`, `lg:`)
+- **USE** existing color scheme (grays, blues, etc.)
+
+#### 7. Common Figma Import Mistakes to AVOID
+
+❌ **DON'T DO:**
+- Create new button components when `components/ui/button.tsx` exists
+- Hardcode colors instead of using Tailwind classes
+- Create separate CSS files for component-specific styles
+- Import fonts when Tailwind fonts are configured
+- Create new input components when `components/ui/input.tsx` exists
+- Duplicate existing layout patterns
+
+✅ **DO:**
+- Reuse existing components from `components/ui/`
+- Extend existing components with new variants
+- Use Tailwind utility classes
+- Follow existing responsive patterns
+- Check shared package for utilities before creating new ones
+- Maintain consistent spacing and sizing
+
+#### 8. Pre-Import Checklist
+Before creating ANY new component from Figma:
+
+- [ ] Search existing codebase for similar components
+- [ ] Check `components/ui/` for reusable elements
+- [ ] Verify if functionality exists in shared package
+- [ ] Plan component hierarchy and props interface
+- [ ] Identify reusable patterns vs one-off designs
+- [ ] Map Figma design to existing Tailwind classes
+
+#### 9. Integration Process
+1. **Analyze** the Figma design for existing patterns
+2. **Map** design elements to existing components
+3. **Identify** new components that are actually needed
+4. **Create** only net-new functionality
+5. **Test** responsive behavior matches existing patterns
+6. **Verify** accessibility standards are maintained
+
+#### 10. Design System Consistency
+- **Button variants**: Use existing button component with new variants
+- **Input types**: Extend existing input component
+- **Card layouts**: Use existing card component patterns
+- **Navigation**: Follow existing header/navigation patterns
+- **Typography**: Use existing Tailwind typography classes
+- **Spacing**: Follow existing spacing scale (4, 8, 12, 16, etc.)
+
+### Example: Proper Figma Import Process
+```bash
+# 1. Research existing code
+grep -r "dashboard" packages/react-app/src/
+ls packages/react-app/src/components/ui/
+
+# 2. Plan new component
+# - Does it extend existing Dashboard?
+# - Can I reuse existing Card component?
+# - Are the buttons using existing Button component?
+
+# 3. Create only what's needed
+# - Reuse components/ui/card.tsx
+# - Reuse components/ui/button.tsx
+# - Create new DashboardStats.tsx that composes existing components
+```
+
+**Remember**: The goal is to EXTEND the existing design system, not replace it!
+
 ## Testing the Build
 ```bash
 # Test production build locally
