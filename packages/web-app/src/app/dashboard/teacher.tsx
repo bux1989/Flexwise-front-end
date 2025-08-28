@@ -116,8 +116,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
-        currentTeacher={currentTeacher}
+      <Header
+        currentTeacher={isLoadingProfile ? "Wird geladen..." : currentTeacher}
         dateString={dateString}
         onButtonClick={handleHeaderButtonClick}
       />
