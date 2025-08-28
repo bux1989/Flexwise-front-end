@@ -197,11 +197,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Simple function: Open edit mode (for orange/red badges - incomplete/no attendance)
   const openEditMode = async (lessonId: string) => {
-    console.log('✏️ Opening edit mode for lesson:', lessonId);
+    console.log('🟠 ORANGE BADGE CLICKED - Opening edit mode for lesson:', lessonId);
 
+    // Set lesson but DON'T open dialog yet - load data first to prevent lag
     setSelectedLessonForAttendance(lessonId);
     setAttendanceViewMode('edit');
-    setAttendanceDialogOpen(true);
 
     // Clear previous data
     setTempAttendance({});
