@@ -3,11 +3,11 @@
 import * as React from "react"
 import { format, isValid } from "date-fns"
 import { de } from "date-fns/locale"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
+import { DayPicker } from "react-day-picker"
 
 import { cn } from "./utils"
 import { Button } from "./button"
-import { Calendar } from "./calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 
 interface DatePickerProps {
@@ -44,20 +44,6 @@ export function DatePicker({
     }
   };
 
-  const formatCalendarFooter = (selectedDate: Date | undefined) => {
-    if (!selectedDate || !isValid(selectedDate)) {
-      return '';
-    }
-
-    try {
-      // Show full date in German format
-      return format(selectedDate, "EEEE, d. MMMM yyyy", { locale: de });
-    } catch (error) {
-      console.warn('Calendar footer formatting error:', error);
-      return '';
-    }
-  };
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -84,29 +70,57 @@ export function DatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-0 border shadow-lg rounded-lg z-[1000]"
+        className="w-auto p-0 border shadow-lg rounded-lg z-[9999]"
         align="start"
-        sideOffset={4}
-        style={{ zIndex: 1000 }}
+        sideOffset={8}
       >
-        <div className="bg-white rounded-lg border border-gray-200 shadow-xl">
-          <Calendar
+        <div className="bg-white rounded-lg border border-gray-200 shadow-xl min-w-[300px]">
+          <DayPicker
             mode="single"
             selected={isValidDate ? date : undefined}
             onSelect={(selectedDate) => {
               onDateChange?.(selectedDate)
               setOpen(false)
             }}
-            initialFocus
-            className="border-0 p-3"
             locale={de}
             weekStartsOn={1}
             showOutsideDays={true}
+            className="p-4"
+            classNames={{
+              months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+              month: "space-y-4",
+              caption: "flex justify-center pt-1 relative items-center",
+              caption_label: "text-lg font-semibold text-gray-900",
+              nav: "space-x-1 flex items-center",
+              nav_button: cn(
+                "h-8 w-8 bg-transparent p-0 hover:bg-gray-100 border-0 text-gray-600 hover:text-gray-800 transition-colors duration-200 rounded-md"
+              ),
+              nav_button_previous: "absolute left-1",
+              nav_button_next: "absolute right-1",
+              table: "w-full border-collapse space-y-1",
+              head_row: "flex",
+              head_cell: "text-gray-500 rounded-md w-8 font-medium text-sm text-center",
+              row: "flex w-full mt-2",
+              cell: "h-8 w-8 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-100 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+              day: cn(
+                "h-8 w-8 p-0 font-normal aria-selected:opacity-100 rounded-md hover:bg-gray-100 transition-colors"
+              ),
+              day_selected: "bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-600 focus:text-white",
+              day_today: "bg-blue-100 text-blue-900 font-semibold",
+              day_outside: "text-gray-400 opacity-50 aria-selected:bg-blue-50 aria-selected:text-blue-400 aria-selected:opacity-30",
+              day_disabled: "text-gray-400 opacity-50",
+              day_range_middle: "aria-selected:bg-blue-50 aria-selected:text-blue-900",
+              day_hidden: "invisible",
+            }}
+            components={{
+              IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+              IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+            }}
           />
           {isValidDate && (
-            <div className="px-4 pb-3 pt-2 border-t bg-gray-50 rounded-b-lg">
-              <p className="text-sm font-medium text-gray-900">
-                {formatCalendarFooter(date)}
+            <div className="px-4 pb-4 pt-0 border-t bg-gray-50 rounded-b-lg">
+              <p className="text-sm font-medium text-gray-700 text-center">
+                {format(date, "EEEE, d. MMMM yyyy", { locale: de })}
               </p>
             </div>
           )}
