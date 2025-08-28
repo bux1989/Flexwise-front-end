@@ -208,14 +208,25 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setLessonNote('');
 
     try {
-      // Fetch and prefill data
+      console.log('📋 Fetching data for edit mode...');
+      // Fetch and prefill data BEFORE opening dialog
       const [attendanceData, diaryEntry] = await Promise.all([
         fetchLessonAttendance(lessonId),
         fetchLessonDiaryEntry(lessonId)
       ]);
 
+      console.log('📊 Raw data received:', {
+        present: attendanceData.present?.length || 0,
+        late: attendanceData.late?.length || 0,
+        absent: attendanceData.absent?.length || 0,
+        hasNote: !!diaryEntry
+      });
+
       const lesson = lessons.find(l => l.id === lessonId);
-      if (!lesson) return;
+      if (!lesson) {
+        console.error('❌ Lesson not found:', lessonId);
+        return;
+      }
 
       const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
 
@@ -262,12 +273,18 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         }
       });
 
+      // Set all data first
       setTempAttendance(editAttendance);
       setLessonNote(diaryEntry);
 
-      console.log('✅ Edit mode ready, prefilled:', Object.keys(editAttendance).length, 'students');
+      // THEN open dialog - should now appear instantly with data
+      setAttendanceDialogOpen(true);
+
+      console.log('✅ Edit mode ready and dialog opened with prefilled data:', Object.keys(editAttendance).length, 'students');
     } catch (error) {
       console.error('❌ Error loading edit mode:', error);
+      // Still open dialog even on error
+      setAttendanceDialogOpen(true);
     }
   };
 
