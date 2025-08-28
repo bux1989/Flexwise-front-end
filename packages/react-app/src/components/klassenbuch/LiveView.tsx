@@ -18,16 +18,7 @@ interface LiveViewProps {
   selectedClass: Class;
 }
 
-const timeSlots = [
-  { period: 1, time: '08:00-08:45' },
-  { period: 2, time: '08:50-09:35' },
-  { period: 3, time: '09:55-10:40' },
-  { period: 4, time: '10:45-11:30' },
-  { period: 5, time: '11:50-12:35' },
-  { period: 6, time: '12:40-13:25' },
-  { period: 7, time: '13:45-14:30' },
-  { period: 8, time: '14:35-15:20' },
-];
+const timeSlots = TIME_SLOTS;
 
 export function LiveView({ selectedWeek, selectedClass }: LiveViewProps) {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
