@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { handleLogin } from '../lib/supabase'
+import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, Palette } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
