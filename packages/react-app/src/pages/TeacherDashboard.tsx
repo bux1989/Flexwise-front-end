@@ -648,17 +648,23 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
   };
 
   const handleHeaderButtonClick = async (action: string) => {
+    console.log('🔘 Header button clicked:', action);
     switch (action) {
       case 'Ausloggen':
+        console.log('🚪 Starting logout process...');
         try {
+          console.log('📤 Calling supabase.auth.signOut()');
           const { error } = await supabase.auth.signOut();
+          console.log('�� Logout response:', { error });
           if (error) {
             console.error('Logout error:', error);
             alert('Fehler beim Ausloggen');
+          } else {
+            console.log('✅ Logout successful, App.jsx should handle redirect');
           }
           // The App.jsx component will handle the redirect automatically
         } catch (error) {
-          console.error('Logout error:', error);
+          console.error('💥 Logout exception:', error);
           alert('Fehler beim Ausloggen');
         }
         break;
