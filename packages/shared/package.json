@@ -3,47 +3,44 @@
   "version": "1.0.0",
   "description": "Shared utilities and types for Flexwise applications",
   "type": "module",
-  "main": "./lib/index.ts",
-  "types": "./lib/index.ts",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./lib/index.ts",
-      "types": "./lib/index.ts"
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
     },
     "./supabase": {
-      "import": "./lib/supabaseClient.ts",
-      "types": "./lib/supabaseClient.ts"
+      "import": "./dist/lib/supabaseClient.js",
+      "types": "./dist/lib/supabaseClient.d.ts"
     },
     "./utils": {
-      "import": "./utils/index.ts",
-      "types": "./utils/index.ts"
+      "import": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
     },
     "./types": {
-      "import": "./supabase-types.ts",
-      "types": "./supabase-types.ts"
+      "import": "./dist/supabase-types.js",
+      "types": "./dist/supabase-types.d.ts"
     },
     "./domains/academic": {
-      "import": "./domains/academic/index.ts",
-      "types": "./domains/academic/index.ts"
+      "import": "./dist/domains/academic/index.js",
+      "types": "./dist/domains/academic/index.d.ts"
     },
     "./domains/attendance": {
-      "import": "./domains/attendance/index.ts",
-      "types": "./domains/attendance/index.ts"
+      "import": "./dist/domains/attendance/index.js",
+      "types": "./dist/domains/attendance/index.d.ts"
     },
     "./domains/scheduling": {
-      "import": "./domains/scheduling/index.ts",
-      "types": "./domains/scheduling/index.ts"
+      "import": "./dist/domains/scheduling/index.js",
+      "types": "./dist/domains/scheduling/index.d.ts"
     },
     "./domains/management": {
-      "import": "./domains/management/index.ts",
-      "types": "./domains/management/index.ts"
+      "import": "./dist/domains/management/index.js",
+      "types": "./dist/domains/management/index.d.ts"
     }
   },
   "files": [
-    "lib",
-    "utils",
-    "domains",
-    "supabase-types.ts"
+    "dist"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
