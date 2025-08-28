@@ -311,8 +311,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     try {
       console.log('🔄 Switching to edit mode and fetching data for lesson:', selectedLessonForAttendance);
 
-      // Fetch actual attendance data from Supabase
-      const attendanceData = await fetchLessonAttendance(selectedLessonForAttendance);
+      // Fetch both attendance data and lesson diary entry from Supabase
+      const [attendanceData, diaryEntry] = await Promise.all([
+        fetchLessonAttendance(selectedLessonForAttendance),
+        fetchLessonDiaryEntry(selectedLessonForAttendance)
+      ]);
 
       // Prepare tempAttendance for editing
       const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
