@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../compo
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../components/ui/tooltip';
 import { Check, AlertTriangle, AlertCircle, X, RefreshCw, MessageSquare } from 'lucide-react';
 import { KlassenbuchAttendanceModal } from './KlassenbuchAttendanceModal';
-import { getTimetableForClass, getStudentsForClass, type Lesson } from '../data/klassenbuchDataAdapter';
+import { getTimetableForClass, getStudentsForClass, getSchedulePeriods, getSchoolDays, formatTimeSlot, type Lesson, type SchedulePeriod, type SchoolDay } from '../data/klassenbuchDataAdapter';
 
 interface Class {
   id: string;
