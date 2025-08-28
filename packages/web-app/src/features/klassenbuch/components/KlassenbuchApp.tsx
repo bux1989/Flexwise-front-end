@@ -66,6 +66,34 @@ export function KlassenbuchApp({ onClose, currentTeacher, hideHeader = false }: 
       )}
 
       <main className={hideHeader ? "" : "mx-auto container px-6 py-8"}>
+        {hideHeader && (
+          <div className="mb-6 bg-white rounded-lg border p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={currentView === 'live' ? 'default' : 'outline'}
+                  onClick={() => handleViewChange('live')}
+                  className="flex items-center space-x-2"
+                >
+                  <span>Live Ansicht</span>
+                </Button>
+                <Button
+                  variant={currentView === 'statistics' ? 'default' : 'outline'}
+                  onClick={() => handleViewChange('statistics')}
+                  className="flex items-center space-x-2"
+                >
+                  <span>Statistiken</span>
+                </Button>
+              </div>
+
+              {/* Add class/course selection here if needed */}
+              <div className="text-sm text-gray-600">
+                {selectedClass.name}
+              </div>
+            </div>
+          </div>
+        )}
+
         {currentView === 'live' ? (
           <KlassenbuchLiveView
             selectedWeek={selectedWeek}
