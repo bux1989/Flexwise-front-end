@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Input } from './ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Input } from '../ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Badge } from '../ui/badge';
+import { Progress } from '../ui/progress';
 import { Users, User, BookOpen, CalendarDays, Clock, AlertTriangle, CheckCircle, Edit3, FileText, Calendar, ChevronDown, ChevronRight, BarChart3, Search, X } from 'lucide-react';
 import { getStudentStatisticsForClass, getCourseDataForClass, getCourseStudentsForCourse, getStudentById, updateAbsenceDetails, updateLatenessDetails, convertToExcused, getStudentIdFromCourseName, getAllStudentStatistics, getClassNameById, getAvailableClasses, SEMESTER_START_DATE, getCurrentDate } from '../data/mockData';
 import { ExcuseEditModal } from './ExcuseEditModal';
