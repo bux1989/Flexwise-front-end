@@ -90,8 +90,16 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   const dateString = formatDateTime();
 
-  const handleHeaderButtonClick = (action: string) => {
+  const handleHeaderButtonClick = async (action: string) => {
     console.log(`Header button clicked: ${action}`);
+
+    if (action === 'Ausloggen') {
+      console.log('🚪 Logout button clicked, signing out...');
+      await handleLogout();
+    } else {
+      // Handle other actions in the future
+      console.log(`Action "${action}" not implemented yet`);
+    }
   };
 
   const handleDateChange = (date: Date) => {
