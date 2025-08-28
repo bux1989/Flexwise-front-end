@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Check, AlertTriangle, AlertCircle, X, RefreshCw, MessageSquare } from 'lucide-react';
-import { getTimetableForClass, getStudentsForClass, Lesson, TIME_SLOTS } from '../../../shared/domains/academic';
+import { getTimetableForClass, getStudentsForClass, Lesson, TIME_SLOTS } from '@flexwise/shared/domains/academic';
 import { useIsMobile } from '../ui/use-mobile';
 
 interface Class {
@@ -118,7 +118,7 @@ export function LiveView({ selectedWeek, selectedClass }: LiveViewProps) {
           {getStatusIcon(lesson)}
           {lesson.isOngoing && (
             <Badge variant="default" className="text-xs">
-              L��uft
+              Läuft
             </Badge>
           )}
         </div>
