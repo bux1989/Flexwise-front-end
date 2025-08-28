@@ -250,8 +250,8 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
   const [expandedMobileLessonComments, setExpandedMobileLessonComments] = useState<Set<number>>(new Set());
   const [expandedMobileLessonDetails, setExpandedMobileLessonDetails] = useState<Set<number>>(new Set());
 
-  // Main content section visibility state
-  const [showMainContent, setShowMainContent] = useState(true);
+  // Main content section visibility state - now controls whether to show dashboard or klassenbuch
+  const [showKlassenbuch, setShowKlassenbuch] = useState(false);
   
   // Expansion state for tasks and events
   const [taskDisplayCount, setTaskDisplayCount] = useState(3);
