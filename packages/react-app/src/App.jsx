@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from './lib/supabase'
+import { supabase, getCurrentUserProfile, getRouteByRole } from '@flexwise/shared/supabase'
 
 // Components
 import Login from './pages/Login'
