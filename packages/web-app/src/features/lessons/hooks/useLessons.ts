@@ -34,17 +34,29 @@ interface UseLessonsResult {
 // Transform Supabase lesson data to component format
 function transformLessonData(supabaseLessons: any[], attendanceBadges: any = {}): LessonData[] {
   const now = dayjs();
-  
+
   return supabaseLessons.map(lesson => {
     const startTime = dayjs(lesson.start_datetime);
     const endTime = dayjs(lesson.end_datetime);
-    const badge = attendanceBadges[lesson.id] || {};
-    
+    const badge = attendanceBadges[lesson.lesson_id] || {};
+
     // Determine if lesson is current (within the lesson time window)
     const isCurrent = now.isAfter(startTime) && now.isBefore(endTime);
-    
+
+    // Transform teacher names array to expected format
+    const otherTeachers = (lesson.teacher_names || []).map((name: string, index: number) => ({
+      id: `teacher_${index}`,
+      name: name
+    }));
+
+    // Transform student names array to expected format
+    const students = (lesson.student_names_with_class || []).map((nameWithClass: string, index: number) => ({
+      id: `student_${index}`,
+      name: nameWithClass
+    }));
+
     return {
-      id: lesson.id,
+      id: lesson.lesson_id,
       time: startTime.format('HH:mm'),
       endTime: endTime.format('HH:mm'),
       subject: lesson.subject_name || 'Unbekanntes Fach',
@@ -54,15 +66,15 @@ function transformLessonData(supabaseLessons: any[], attendanceBadges: any = {})
       isCurrent,
       isSubstitute: lesson.is_substitute || false,
       isCancelled: lesson.is_cancelled || false,
-      otherTeachers: lesson.other_teachers || [],
+      otherTeachers,
       adminComment: lesson.notes,
-      students: lesson.enrolled_students || [],
+      students,
       attendance: {
         present: badge.present_students || [],
         late: badge.late_students || [],
         absent: badge.absent_students || []
       },
-      attendanceTaken: badge.attendance_complete || false
+      attendanceTaken: lesson.attendance_taken || false
     };
   });
 }
