@@ -90,7 +90,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         // Fetch attendance badge data for all lessons
         const lessonIds = lessonsData.map(lesson => lesson.lesson_id || lesson.id);
         const attendanceBadges = await fetchAttendanceBadges(lessonIds);
-        console.log('🏷️ Attendance badges loaded:', attendanceBadges);
+        console.log('���️ Attendance badges loaded:', attendanceBadges);
 
         // Transform Supabase data to match expected structure
         const now = new Date();
@@ -159,8 +159,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
           const cleanText = (text: string | null | undefined): string => {
             if (!text) return '';
             return text
-              .replace(/[\uFFFD\u00EF\u00BF\u00BD]/g, '') // Remove replacement characters
-              .replace(/[^\u0000-\u007F\u00A0-\u017F\u0100-\u024F]/g, '') // Keep only Latin characters
+              .replace(/[\uFFFD\u00EF\u00BF\u00BD��]/g, '') // Remove replacement characters and encoding artifacts
+              .replace(/\x00/g, '') // Remove null bytes
+              .replace(/[^\u0000-\u007F\u00A0-\u024F\u1E00-\u1EFF]/g, '') // Keep Latin, extended Latin, and common symbols
               .trim();
           };
 
