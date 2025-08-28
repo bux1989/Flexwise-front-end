@@ -1,0 +1,45 @@
+{
+  "name": "@flexwise/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for Flexwise applications",
+  "type": "module",
+  "main": "./lib/index.ts",
+  "types": "./lib/index.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/index.ts",
+      "types": "./lib/index.ts"
+    },
+    "./supabase": {
+      "import": "./lib/supabaseClient.ts",
+      "types": "./lib/supabaseClient.ts"
+    },
+    "./utils": {
+      "import": "./utils/index.ts",
+      "types": "./utils/index.ts"
+    },
+    "./types": {
+      "import": "./supabase-types.ts",
+      "types": "./supabase-types.ts"
+    }
+  },
+  "files": [
+    "lib",
+    "utils",
+    "supabase-types.ts"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
