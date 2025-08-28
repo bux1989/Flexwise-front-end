@@ -489,7 +489,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
           {/* Info Board - Right Column */}
           <InfoBoard
-            schoolId={lessons.length > 0 ? lessons[0]?.id?.split('-')[0] : undefined}
+            schoolId={schoolId}
             isMobile={isMobile}
           />
         </div>
