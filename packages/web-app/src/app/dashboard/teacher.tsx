@@ -355,18 +355,65 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setTempAttendance(newAttendance);
   };
 
-  const saveAttendance = () => {
+  const saveAttendance = async () => {
     if (!selectedLesson) return;
+    try {
+      console.log('💾 Saving attendance via RPC...', { lessonId: selectedLesson.id });
 
-    console.log('💾 Saving attendance to Supabase...', { lessonId: selectedLesson.id, tempAttendance, lessonNote });
+      // Map UI student names to real profile IDs
+      const { students, schoolId } = await getLessonStudentNameIdPairs(selectedLesson.id);
+      const nameToId = new Map(students.map(s => [s.displayName.trim().toLowerCase(), s.id]));
 
-    // TODO: Implement actual Supabase save using bulkSaveAttendance
-    // For now, just close the dialog
-    setTempAttendance({});
-    setLessonNote('');
-    setAttendanceDialogOpen(false);
-    setSelectedLessonForAttendance(null);
-    setAttendanceViewMode('edit');
+      // Build attendance payload
+      const mapStatus = (s) => {
+        if (s === 'present') return 'present';
+        if (s === 'late') return 'late';
+        if (s === 'excused') return 'absent_excused';
+        if (s === 'unexcused') return 'absent_unexcused';
+        return 'present';
+      };
+
+      const attendanceArray = [];
+      selectedLesson.students?.forEach((stu) => {
+        const a = tempAttendance[stu.id];
+        if (!a) return;
+        const studentId = nameToId.get((stu.name || '').trim().toLowerCase());
+        if (!studentId) {
+          console.warn('⚠️ Could not resolve student ID for', stu.name);
+          return;
+        }
+        let note = null;
+        if (a.status === 'excused' && a.excuseReason) note = a.excuseReason;
+        if (a.status === 'late') {
+          const parts = [];
+          if (a.arrivalTime) parts.push(`Ankunft: ${a.arrivalTime}`);
+          if (a.minutesLate) parts.push(`${a.minutesLate} Min. verspätet`);
+          if (a.lateExcused) parts.push('Entschuldigt');
+          note = parts.join(' | ') || null;
+        }
+        attendanceArray.push({ student_id: studentId, status: mapStatus(a.status), note });
+      });
+
+      // Call RPC
+      await saveLessonAttendanceBulkRPC({
+        lessonId: selectedLesson.id,
+        schoolId,
+        attendance: attendanceArray,
+        diaryText: lessonNote || null,
+        diaryType: 'attendance',
+        diaryPrivate: false,
+      });
+
+      console.log('✅ Attendance saved');
+      setTempAttendance({});
+      setLessonNote('');
+      setAttendanceDialogOpen(false);
+      setSelectedLessonForAttendance(null);
+      setAttendanceViewMode('edit');
+    } catch (err) {
+      console.error('❌ Failed to save attendance:', err);
+      alert(`Speichern fehlgeschlagen: ${err?.message || err}`);
+    }
   };
 
   const handleEventRSVP = (eventId: number, response: 'attending' | 'maybe' | 'not_attending') => {
