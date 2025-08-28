@@ -86,7 +86,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
         // Fetch lessons for the selected date
         const lessonsData = await fetchTodaysLessons(profile.id, selectedDate);
-        console.log('��� Raw lessons data from Supabase:', lessonsData);
+        console.log('📚 Raw lessons data from Supabase:', lessonsData);
 
         // Fetch attendance badge data for all lessons
         const lessonIds = lessonsData.map(lesson => lesson.lesson_id || lesson.id);
@@ -2680,6 +2680,13 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         </div>
       </div>
       {/* End of Main Content Section */}
+
+      {/* Klassenbuch Section */}
+      {showKlassenbuch && (
+        <div className="transition-all duration-300 ease-in-out">
+          <KlassenbuchApp />
+        </div>
+      )}
 
       {/* Impressum Footer Link */}
       <div className="fixed bottom-4 right-4">
