@@ -215,5 +215,4 @@ export const TIME_SLOTS = [
 ];
 
 // Date constants
-export const SEMESTER_START_DATE = '01.08.2024';
 export const getCurrentDateString = () => new Date().toLocaleDateString('de-DE');
