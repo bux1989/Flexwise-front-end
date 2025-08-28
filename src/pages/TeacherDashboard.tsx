@@ -121,6 +121,17 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
           const lessonId = lesson.lesson_id || lesson.id;
           const badgeData = attendanceBadges[lessonId];
 
+          // Debug logging for first lesson
+          if (index === 0) {
+            console.log('🎯 First lesson details:', {
+              lesson_id: lessonId,
+              subject: lesson.subject_name,
+              class: lesson.class_name,
+              time: lesson.start_datetime,
+              badgeData: badgeData
+            });
+          }
+
           return {
             ...lesson,
             id: lesson.lesson_id || lesson.id,
