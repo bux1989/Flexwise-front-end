@@ -21,11 +21,28 @@
     "./types": {
       "import": "./supabase-types.ts",
       "types": "./supabase-types.ts"
+    },
+    "./domains/academic": {
+      "import": "./domains/academic/index.ts",
+      "types": "./domains/academic/index.ts"
+    },
+    "./domains/attendance": {
+      "import": "./domains/attendance/index.ts",
+      "types": "./domains/attendance/index.ts"
+    },
+    "./domains/scheduling": {
+      "import": "./domains/scheduling/index.ts",
+      "types": "./domains/scheduling/index.ts"
+    },
+    "./domains/management": {
+      "import": "./domains/management/index.ts",
+      "types": "./domains/management/index.ts"
     }
   },
   "files": [
     "lib",
     "utils",
+    "domains",
     "supabase-types.ts"
   ],
   "scripts": {
