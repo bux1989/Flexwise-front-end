@@ -437,7 +437,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
           id: task.comments.length + 1, 
           text: commentText, 
           timestamp,
-          author: CURRENT_TEACHER
+          author: getCurrentTeacherName()
         }] 
       } : task
     ));
@@ -1280,14 +1280,14 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
           lessonNote,
           selectedLesson.attendanceTakenBy,
           selectedLesson.attendanceTakenAt,
-          CURRENT_TEACHER,
+          getCurrentTeacherName(),
           timestamp
         );
       } else {
         // Fallback for existing lessons without metadata
         updatedLessonNote = createLessonNoteWithMetadata(
           lessonNote,
-          CURRENT_TEACHER,
+          getCurrentTeacherName(),
           timestamp
         );
       }
@@ -1417,7 +1417,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         tempLessonNote,
         lesson.attendanceTakenBy,
         lesson.attendanceTakenAt,
-        CURRENT_TEACHER,
+        getCurrentTeacherName(),
         timestamp
       );
     } else if (lesson.attendanceTakenBy && lesson.attendanceTakenAt) {
