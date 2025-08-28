@@ -90,6 +90,7 @@ export function LessonsElement({
               onDateChange={onDateSelect}
               placeholder="Datum auswählen"
               className="h-8 text-sm"
+              disabled={true}
             />
           </div>
         </div>
