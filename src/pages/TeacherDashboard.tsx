@@ -7,6 +7,7 @@ import { Checkbox } from '../components/ui/checkbox';
 import { Avatar, AvatarFallback } from '../components/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Calendar as CalendarComponent } from '../components/ui/calendar';
+import { DatePicker } from '../components/ui/date-picker';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -1496,7 +1497,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                   <div className={`flex items-center gap-2 flex-wrap ${lesson.isCancelled ? 'text-red-600' : ''}`}>
                                     {lesson.isCancelled ? (
                                       <span className="text-base font-medium">
-                                        {getMobileSubjectAbbreviation(lesson.subject)} {lesson.class} – Entfällt
+                                        {getMobileSubjectAbbreviation(lesson.subject)} {lesson.class} ��� Entfällt
                                       </span>
                                     ) : (
                                       <>
