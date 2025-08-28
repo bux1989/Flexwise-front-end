@@ -32,6 +32,45 @@ export function Header({
   onClassChange,
   klassenbuchClasses = []
 }: HeaderProps) {
+  // Helper functions for Klassenbuch
+  const formatWeekRange = (date: Date) => {
+    if (!date) return '';
+    const startOfWeek = new Date(date);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+    startOfWeek.setDate(diff);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 4);
+
+    const formatDate = (d: Date) => d.toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+
+    return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+  };
+
+  const changeWeek = (direction: 'prev' | 'next') => {
+    if (!selectedWeek || !onWeekChange) return;
+    const newWeek = new Date(selectedWeek);
+    newWeek.setDate(newWeek.getDate() + (direction === 'next' ? 7 : -7));
+    onWeekChange(newWeek);
+  };
+
+  const getCurrentWeek = () => {
+    if (!onWeekChange) return;
+    const today = new Date();
+    onWeekChange(today);
+  };
+
+  const shouldShowClassSelection = () => {
+    if (!showKlassenbuch) return false;
+    if (klassenbuchView === 'statistics') return false; // Hide for statistics for now
+    return klassenbuchClasses.length > 0;
+  };
+
   return (
     <header className="bg-white border-b px-3 py-2 lg:px-6 lg:py-4">
       <div className="flex items-center justify-between">
