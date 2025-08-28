@@ -48,14 +48,14 @@ export async function handleLogout() {
       console.log('✅ Logout successful')
     }
 
-    // Force redirect to login page
-    window.location.href = '/auth/login'
+    // Force redirect to login page (root shows login when not authenticated)
+    window.location.href = '/'
 
   } catch (err) {
     console.error('💥 Logout failed:', err)
     console.log('🔄 Forcing local logout and redirect...')
     // Force redirect even if logout fails
-    window.location.href = '/auth/login'
+    window.location.href = '/'
   }
 }
 
