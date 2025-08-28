@@ -23,20 +23,20 @@ import { TimeInputWithArrows } from '../components/TimeInputWithArrows';
 import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from '../constants/mockData';
 import { supabase } from '@flexwise/shared/supabase';
 import { fetchTodaysLessons, fetchLessonAttendance, fetchAttendanceBadges } from '../lib/supabase';
-import { 
-  getSubstituteLessons, 
-  getPriorityValue, 
-  needsAttendanceTracking, 
-  getAttendanceStatus, 
-  getAttendanceSummary, 
-  getAttendanceNumbers, 
-  formatDateTime, 
+import {
+  getSubstituteLessons,
+  getPriorityValue,
+  needsAttendanceTracking,
+  getAttendanceStatus,
+  getAttendanceSummary,
+  getAttendanceNumbers,
+  formatDateTime,
   formatTimestamp,
   formatCompactTimestamp,
   getTeacherAbbreviation,
   createLessonNoteWithMetadata,
   parseLessonNote
-} from '../utils/helpers';
+} from '@flexwise/shared/utils';
 
 interface TeacherDashboardProps {
   user?: any;
