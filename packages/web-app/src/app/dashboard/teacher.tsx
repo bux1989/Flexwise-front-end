@@ -355,15 +355,15 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setTempAttendance(newAttendance);
   };
 
-  // Function to refresh attendance data for all lessons
+  // Function to refresh attendance data (real-time will handle automatically, but keep for manual refresh)
   const refreshLessonAttendanceData = async (lessonId: string) => {
     try {
-      console.log('🔄 Refreshing attendance data for lesson:', lessonId);
+      console.log('🔄 Manual refresh requested for lesson:', lessonId);
 
-      // Refetch all lessons data to get updated attendance badges
+      // Real-time should handle this automatically, but provide manual fallback
       await refetchLessons();
 
-      console.log('✅ Lesson attendance data refreshed');
+      console.log('✅ Manual lesson data refresh completed');
     } catch (error) {
       console.error('❌ Failed to refresh attendance data:', error);
     }
