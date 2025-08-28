@@ -132,28 +132,10 @@ export function LessonSchedule({
               </Label>
             </div>
           )}
-          <Button 
-            size="sm" 
-            className={`${isToday ? 'bg-cyan-400 hover:bg-cyan-500' : 'bg-gray-200 hover:bg-gray-300'} text-black h-8 px-3`}
-            onClick={handleTodayClick}
-          >
-            Heute
-          </Button>
-          <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Calendar className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <CalendarComponent
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateSelect}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <CompactDatePicker
+            value={selectedDayjs}
+            onChange={handleDatePickerChange}
+          />
         </div>
       </CardHeader>
       <CardContent className="space-y-1">
