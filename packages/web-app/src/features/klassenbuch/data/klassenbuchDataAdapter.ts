@@ -1,7 +1,7 @@
 // Data adapter that integrates Klassen Buch mock data with the web-app system
 // This provides the same API as the original mockData but can be swapped for real data later
 
-// Re-export the types and data from the original Klassen Buch mock data
+// Re-export the types and data from the local mockData copy
 export type {
   Student,
   Lesson,
@@ -14,7 +14,7 @@ export type {
   AbsenceDetail,
   LatenessDetail,
   StudentStatistics
-} from '../../../../../Klassen buch/src/data/mockData';
+} from './mockData';
 
 // Import and re-export all the data and helper functions
 export {
@@ -45,7 +45,7 @@ export {
   convertToExcused,
   getStudentIdFromCourseName,
   getClassNameById
-} from '../../../../../Klassen buch/src/data/mockData';
+} from './mockData';
 
 // Additional adapter functions can be added here to bridge any gaps
 // between the Klassen Buch data structure and the web-app requirements
