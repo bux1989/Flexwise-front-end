@@ -76,7 +76,7 @@ function App() {
       setLoading(false)
       setProfileLoading(false)
     }
-  }, [])
+  }, []) // Empty dependency array to prevent recreation
 
   // Helper functions
   const createFallbackProfile = (user, role) => ({
