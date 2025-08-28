@@ -20,23 +20,15 @@ interface KlassenbuchLiveViewProps {
   selectedClass: Class;
 }
 
-const timeSlots = [
-  { period: 1, time: '08:00-08:45' },
-  { period: 2, time: '08:50-09:35' },
-  { period: 3, time: '09:55-10:40' },
-  { period: 4, time: '10:45-11:30' },
-  { period: 5, time: '11:50-12:35' },
-  { period: 6, time: '12:40-13:25' },
-  { period: 7, time: '13:45-14:30' },
-  { period: 8, time: '14:35-15:20' },
-  { period: 9, time: '15:25-16:10' },
-  { period: 10, time: '16:15-17:00' },
-];
-
 export function KlassenbuchLiveView({ selectedWeek, selectedClass }: KlassenbuchLiveViewProps) {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [commentModalLesson, setCommentModalLesson] = useState<Lesson | null>(null);
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+
+  // Get database-driven periods and school days
+  const schoolId = 'school-1'; // TODO: Get from selectedClass or user context
+  const schedulePeriods = getSchedulePeriods(schoolId, ['instructional', 'flex']);
+  const schoolDays = getSchoolDays(schoolId);
 
   // Get class-specific data
   const classTimetable = getTimetableForClass(selectedClass.id);
