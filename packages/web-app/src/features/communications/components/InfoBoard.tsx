@@ -6,7 +6,7 @@ import { Checkbox } from '../../../components/ui/checkbox';
 import { Label } from '../../../components/ui/label';
 
 // Import substitute lessons from shared domains
-import { getSubstituteLessons } from '../../../../shared/domains/academic/klassenbuch/utils.ts';
+import { getSubstituteLessons } from '../../../../../shared/domains/academic/klassenbuch/utils';
 
 interface InfoBoardProps {
   isMobile?: boolean;
