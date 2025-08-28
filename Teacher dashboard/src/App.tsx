@@ -1111,7 +1111,7 @@ export default function App() {
           lessonNote,
           selectedLesson.attendanceTakenBy,
           selectedLesson.attendanceTakenAt,
-          CURRENT_TEACHER,
+          currentTeacher,
           timestamp
         );
       } else {
