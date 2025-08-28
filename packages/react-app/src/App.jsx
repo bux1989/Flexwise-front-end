@@ -173,7 +173,10 @@ function App() {
       if (session) {
         loadUserProfile(session.user)
       } else {
+        // Clear all user state when session is lost
+        console.log('🧹 Clearing user state due to missing session')
         setUserProfile(null)
+        setProfileLoading(false)
         setLoading(false)
       }
     })
