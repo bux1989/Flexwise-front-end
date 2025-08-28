@@ -24,20 +24,20 @@ import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from 
 import { fetchTodaysLessons, fetchLessonAttendance, fetchAttendanceBadges, supabase } from '../lib/supabase';
 // Import from new domain structure
 import {
-  useAttendanceTracking as needsAttendanceTracking,
-  useAttendanceStatus as getAttendanceStatus,
-  useAttendanceSummary as getAttendanceSummary,
-  useAttendanceNumbers as getAttendanceNumbers
-} from '../../shared/domains/attendance/fehlzeiten/hooks';
+  needsAttendanceTracking,
+  getAttendanceStatus,
+  getAttendanceSummary,
+  getAttendanceNumbers
+} from '../../shared/domains/attendance/fehlzeiten/utils';
 
 import {
-  useSubstituteLessons as getSubstituteLessons,
-  useTeacherAbbreviation as getTeacherAbbreviation
-} from '../../shared/domains/scheduling/stundenplan/hooks';
+  getSubstituteLessons,
+  getTeacherAbbreviation
+} from '../../shared/domains/scheduling/stundenplan/utils';
 
 import {
-  usePriorityValue as getPriorityValue
-} from '../../shared/domains/management/to-do-list/hooks';
+  getPriorityValue
+} from '../../shared/domains/management/to-do-list/utils';
 
 import {
   formatDateTime,
