@@ -17,7 +17,7 @@ import {
   getAttendanceSummary, 
   getAttendanceNumbers,
   formatDateTime
-} from '../../../../shared/domains/academic/klassenbuch/utils';
+} from '../../../../shared/domains/academic/klassenbuch/utils.ts';
 
 interface LessonScheduleProps {
   lessons: any[];
