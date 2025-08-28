@@ -1727,7 +1727,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                     </div>
                                   ) : (
                                     <>
-                                      {lesson.class || lesson.class_name} �� {lesson.room || lesson.room_name}
+                                      {lesson.class || lesson.class_name} • {lesson.room || lesson.room_name}
                                       {lesson.otherTeachers && lesson.otherTeachers.length > 0 && (
                                         <>
                                           {' • '}
