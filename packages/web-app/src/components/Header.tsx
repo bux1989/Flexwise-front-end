@@ -10,7 +10,7 @@ interface HeaderProps {
 
 export function Header({ currentTeacher, dateString, onButtonClick }: HeaderProps) {
   return (
-    <header className="bg-white border-b px-4 py-3 lg:px-6 lg:py-4">
+    <header className="bg-white border-b px-3 py-2 lg:px-6 lg:py-4">
       <div className="flex items-center justify-between">
         <div className="min-w-0 flex-1">
           <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">Hallo {currentTeacher} 👋</h1>
