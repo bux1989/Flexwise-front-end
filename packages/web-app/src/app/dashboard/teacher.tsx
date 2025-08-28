@@ -468,9 +468,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         </div>
       )}
 
-      <div className="p-4 lg:p-6">
+      <div className="p-2 lg:p-6">
         {/* Top Row - 2 columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-4 lg:mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6 mb-3 lg:mb-6">
           {/* Schedule/Lesson Management - Left Column */}
           {lessonsError ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -495,7 +495,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         </div>
 
         {/* Bottom Row - 2 columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6">
           {/* Events/Communications - Left Column */}
           <Events
             events={events}
