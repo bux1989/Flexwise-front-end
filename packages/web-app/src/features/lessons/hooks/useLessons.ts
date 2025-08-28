@@ -31,6 +31,11 @@ interface UseLessonsResult {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
+  realtime: {
+    isConnected: boolean;
+    channelCount: number;
+    refresh: () => void;
+  };
 }
 
 // Transform Supabase lesson data to component format
