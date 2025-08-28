@@ -107,12 +107,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setSelectedDate(date);
   };
 
-  const handleAttendanceClick = (lessonId: number, viewMode: 'overview' | 'edit' = 'edit') => {
+  const handleAttendanceClick = (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
     setSelectedLessonForAttendance(lessonId);
     setAttendanceViewMode(viewMode);
     setAttendanceDialogOpen(true);
     console.log(`Attendance clicked for lesson ${lessonId} in ${viewMode} mode`);
-    // TODO: Implement attendance dialog
   };
 
   const handleEventRSVP = (eventId: number, response: 'attending' | 'maybe' | 'not_attending') => {
