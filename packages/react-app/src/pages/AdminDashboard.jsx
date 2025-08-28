@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@flexwise/shared/supabase'
+import { supabase } from '../lib/supabase'
 import Settings from '../components/Settings'
 
 export default function AdminDashboard({ user }) {
