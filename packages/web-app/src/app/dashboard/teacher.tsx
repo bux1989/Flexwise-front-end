@@ -739,6 +739,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Test Auth Status - Remove after verification */}
+      <AuthStatus />
     </div>
   );
 }
