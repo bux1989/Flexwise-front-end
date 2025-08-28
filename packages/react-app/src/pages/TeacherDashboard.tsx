@@ -689,6 +689,11 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
     }
   };
 
+  // Get current teacher name for system records (fallback to constant if profile not available)
+  const getCurrentTeacherName = () => {
+    return getTeacherGreeting() || CURRENT_TEACHER;
+  };
+
   // Filter lessons for mobile display
   const displayedLessons = useMemo(() => {
     if (!lessons || !Array.isArray(lessons)) {
