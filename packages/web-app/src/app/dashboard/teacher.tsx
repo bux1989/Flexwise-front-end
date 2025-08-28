@@ -18,7 +18,7 @@ import { Check, Clock, X, Edit } from 'lucide-react';
 // Import mock data and utilities
 import { CURRENT_TEACHER, INITIAL_EVENTS } from '../../../../shared/data/mockData';
 import { formatDateTime } from '../../../../shared/domains/academic/klassenbuch/utils';
-import { getCurrentUserProfile, handleLogout } from '../../lib/supabase';
+import { getCurrentUserProfile, handleLogout, fetchLessonAttendance } from '../../lib/supabase';
 import { useLessons, useTeacherProfile } from '../../features/lessons/hooks/useLessons';
 
 interface TeacherDashboardProps {
