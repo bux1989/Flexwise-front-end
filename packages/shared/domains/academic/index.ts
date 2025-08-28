@@ -4,6 +4,7 @@
 // Klassenbuch (Digital Class Register) module
 export * from './klassenbuch/utils';
 export * from './klassenbuch/hooks';
+export * from './klassenbuch/data';
 
 // Re-export types for convenience
 export type {
@@ -13,6 +14,16 @@ export type {
   StudentStatistics,
   ExcuseInfo
 } from './klassenbuch/utils';
+
+export type {
+  AbsenceDetail,
+  LatenessDetail,
+  CourseAttendanceEntry,
+  ExcuseEditHistory,
+  Course,
+  CourseStudent,
+  AttendanceRecord
+} from './klassenbuch/data';
 
 // Future modules would be added here:
 // export * from './digitales-klassenbuch/utils';
