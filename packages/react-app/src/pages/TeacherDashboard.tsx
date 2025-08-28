@@ -1304,7 +1304,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
               attendanceTakenBy: getCurrentTeacherName(),
               attendanceTakenAt: timestamp
             } : {
-              attendanceLastEditedBy: CURRENT_TEACHER,
+              attendanceLastEditedBy: getCurrentTeacherName(),
               attendanceLastEditedAt: timestamp
             })
           }
@@ -1438,7 +1438,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             ...l, 
             lessonNote: updatedLessonNote,
             ...(parsedNote.hasMetadata && lesson.attendanceTakenBy && lesson.attendanceTakenAt ? {
-              attendanceLastEditedBy: CURRENT_TEACHER,
+              attendanceLastEditedBy: getCurrentTeacherName(),
               attendanceLastEditedAt: timestamp
             } : {})
           }
