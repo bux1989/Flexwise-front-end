@@ -123,17 +123,97 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   const handleAttendanceClick = async (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
     setSelectedLessonForAttendance(lessonId);
-    setAttendanceViewMode(viewMode);
     setAttendanceDialogOpen(true);
     console.log(`Attendance clicked for lesson ${lessonId} in ${viewMode} mode`);
 
-    if (viewMode === 'edit') {
-      try {
-        console.log('📋 Fetching existing attendance data for lesson:', lessonId);
+    try {
+      console.log('📋 Fetching existing attendance data for lesson:', lessonId);
 
-        // Fetch actual attendance data from Supabase
-        const attendanceData = await fetchLessonAttendance(lessonId);
+      // Fetch actual attendance data from Supabase
+      const attendanceData = await fetchLessonAttendance(lessonId);
+      const lesson = lessons.find(l => l.id === lessonId);
 
+      // Check if attendance is complete
+      const totalStudents = lesson?.students?.length || 0;
+      const recordedStudents = (attendanceData.present?.length || 0) +
+                              (attendanceData.late?.length || 0) +
+                              (attendanceData.absent?.length || 0);
+      const isComplete = totalStudents > 0 && recordedStudents === totalStudents;
+
+      // Determine which view mode to use
+      let finalViewMode = viewMode;
+      if (isComplete && viewMode === 'edit') {
+        finalViewMode = 'overview';
+      } else if (!isComplete) {
+        finalViewMode = 'edit';
+      }
+
+      setAttendanceViewMode(finalViewMode);
+
+      if (finalViewMode === 'overview' && isComplete) {
+        // Structure data for overview mode
+        const lesson = lessons.find(l => l.id === lessonId);
+        const nameToStudentId = new Map<string, string>();
+        lesson?.students?.forEach((s: any) => {
+          const baseName = (s.name?.split(' (')[0] || '').trim().toLowerCase();
+          if (baseName) nameToStudentId.set(baseName, s.id);
+        });
+
+        const getUiStudentName = (record: any): string => {
+          const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
+          const first = profile?.first_name || '';
+          const last = profile?.last_name || '';
+          return `${first} ${last}`.trim();
+        };
+
+        // Structure data for overview mode
+        const structuredData = {
+          lessonNote: '', // We can add lesson note fetching later
+          present: attendanceData.present?.map((record: any) => ({
+            id: record.student_id,
+            name: getUiStudentName(record)
+          })) || [],
+          late: attendanceData.late?.map((record: any) => {
+            const startParts = (lesson?.time || '').split(':').map(Number);
+            const base = new Date(selectedDate);
+            if (!isNaN(startParts[0]) && !isNaN(startParts[1])) {
+              base.setHours(startParts[0], startParts[1], 0, 0);
+            }
+            const recordedAt = record.recorded_at ? new Date(record.recorded_at) : null;
+            let minutesLate = typeof record.late_minutes === 'number' && record.late_minutes > 0
+              ? record.late_minutes
+              : (recordedAt && !isNaN(base.getTime())
+                  ? Math.max(1, Math.floor((recordedAt.getTime() - base.getTime()) / (1000 * 60)))
+                  : 5);
+
+            const arrival = new Date(base.getTime() + minutesLate * 60000);
+            const arrivalTime = `${arrival.getHours().toString().padStart(2, '0')}:${arrival.getMinutes().toString().padStart(2, '0')}`;
+
+            return {
+              id: record.student_id,
+              name: getUiStudentName(record),
+              minutesLate,
+              arrivalTime,
+              lateExcused: false // We can add this field to the database later
+            };
+          }) || [],
+          absent: attendanceData.absent?.map((record: any) => ({
+            id: record.student_id,
+            name: getUiStudentName(record),
+            excused: record.status === 'absent_excused',
+            reason: record.notes || ''
+          })) || []
+        };
+
+        // Attach structured data to lesson for overview mode
+        const lessonIndex = lessons.findIndex(l => l.id === lessonId);
+        if (lessonIndex !== -1) {
+          lessons[lessonIndex].attendanceData = structuredData;
+        }
+
+        console.log('✅ Attendance data structured for overview mode:', structuredData);
+      } else {
+        // Edit mode - prepare tempAttendance for editing
         const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
 
         // Build a lookup of display student name -> synthetic student id used in UI
@@ -210,20 +290,21 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         setTempAttendance(editAttendance);
         setLessonNote('');
 
-        console.log('✅ Attendance data loaded and prefilled:', editAttendance);
-
-      } catch (error) {
-        console.error('❌ Error fetching attendance data:', error);
-        console.error('❌ Error details:', {
-          message: error?.message,
-          details: error?.details,
-          hint: error?.hint,
-          code: error?.code,
-          lessonId: lessonId
-        });
-        setTempAttendance({});
-        setLessonNote('');
+        console.log('✅ Attendance data loaded and prefilled for edit mode:', editAttendance);
       }
+
+    } catch (error) {
+      console.error('❌ Error fetching attendance data:', error);
+      console.error('❌ Error details:', {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        lessonId: lessonId
+      });
+      setAttendanceViewMode('edit');
+      setTempAttendance({});
+      setLessonNote('');
     }
   };
 
