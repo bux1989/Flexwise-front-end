@@ -33,16 +33,49 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [lessons, setLessons] = useState(INITIAL_LESSONS);
   const [events, setEvents] = useState<Event[]>(INITIAL_EVENTS);
-  
+
+  // User profile state
+  const [currentTeacher, setCurrentTeacher] = useState(user?.name || CURRENT_TEACHER || 'Lehrer');
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
   // Attendance dialog state (for lesson schedule)
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [attendanceViewMode, setAttendanceViewMode] = useState<'overview' | 'edit'>('edit');
   const [selectedLessonForAttendance, setSelectedLessonForAttendance] = useState<number | null>(null);
-  
+
   // Mobile detection (simple check)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
-  const currentTeacher = user?.name || CURRENT_TEACHER || 'Lehrer';
+  // Load user profile on component mount
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        const profile = await getCurrentUserProfile();
+        if (profile && profile.first_name && profile.last_name) {
+          // Format the teacher name based on role and gender patterns
+          const firstName = profile.first_name;
+          const lastName = profile.last_name;
+
+          // Simple German salutation logic - could be enhanced with explicit gender field
+          const salutation = firstName.toLowerCase().endsWith('a') || firstName.toLowerCase().endsWith('e')
+            ? 'Frau' : 'Herr';
+
+          const fullName = `${salutation} ${firstName} ${lastName}`;
+          setCurrentTeacher(fullName);
+
+          console.log('✅ Teacher profile loaded:', fullName);
+        }
+      } catch (error) {
+        console.warn('Could not load user profile, using fallback:', error);
+        // Keep the fallback value
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    loadUserProfile();
+  }, []);
+
   const dateString = formatDateTime();
 
   const handleHeaderButtonClick = (action: string) => {
