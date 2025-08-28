@@ -16,6 +16,7 @@ import { getPriorityValue } from '../../../../../shared/domains/management/to-do
 interface TaskManagementProps {
   currentTeacher: string;
   canAssignTasks: boolean;
+  isMobile?: boolean;
 }
 
 export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagementProps) {
