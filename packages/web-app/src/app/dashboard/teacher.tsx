@@ -290,54 +290,72 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     }
   };
 
-  // Simple function: Switch from overview to edit (for edit button)
-  const switchToEdit = async () => {
-    if (!selectedLessonForAttendance) {
-      console.error('❌ Cannot switch to edit - no lesson selected');
+  // Simple function: Switch from overview to edit (for edit button) - reuse existing data
+  const switchToEdit = () => {
+    if (!selectedLessonForAttendance || !overviewData) {
+      console.error('❌ Cannot switch to edit - no lesson or data available');
       return;
     }
 
-    console.log('🔄 EDIT BUTTON CLICKED - Switching to edit mode for lesson:', selectedLessonForAttendance);
+    console.log('🔄 EDIT BUTTON CLICKED - Switching to edit mode instantly using overview data');
 
-    setAttendanceViewMode('edit');
-    setTempAttendance({});
-    setLessonNote('');
-
-    try {
-      // Fetch and prefill data
-      const [attendanceData, diaryEntry] = await Promise.all([
-        fetchLessonAttendance(selectedLessonForAttendance),
-        fetchLessonDiaryEntry(selectedLessonForAttendance)
-      ]);
-
-      // Same prefill logic as openEditMode but simplified
-      const lesson = lessons.find(l => l.id === selectedLessonForAttendance);
-      if (!lesson) return;
-
-      const editAttendance: {[studentId: string]: any} = {};
-
-      // Simple processing - just map the data
-      attendanceData.present?.forEach((record: any) => {
-        const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
-        const name = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
-        const student = lesson.students?.find((s: any) => s.name.toLowerCase().includes(name.toLowerCase()));
-        if (student) {
-          editAttendance[student.id] = { status: 'present' };
-        } else {
-          console.warn('⚠️ Could not find student for:', name);
-        }
-      });
-
-      setTempAttendance(editAttendance);
-      setLessonNote(diaryEntry);
-
-      console.log('✅ Switched to edit mode with data:', {
-        studentsProcessed: Object.keys(editAttendance).length,
-        hasNote: !!diaryEntry
-      });
-    } catch (error) {
-      console.error('❌ Error switching to edit:', error);
+    const lesson = lessons.find(l => l.id === selectedLessonForAttendance);
+    if (!lesson) {
+      console.error('❌ Lesson not found:', selectedLessonForAttendance);
+      return;
     }
+
+    // Convert overview data to edit format instantly
+    const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
+
+    // Build student name to ID mapping for quick lookup
+    const nameToStudentId = new Map<string, string>();
+    lesson.students?.forEach((s: any) => {
+      const baseName = (s.name?.split(' (')[0] || '').trim().toLowerCase();
+      if (baseName) nameToStudentId.set(baseName, s.id);
+    });
+
+    // Convert present students
+    overviewData.present?.forEach((student: any) => {
+      const studentId = nameToStudentId.get(student.name.toLowerCase());
+      if (studentId) {
+        editAttendance[studentId] = { status: 'present' };
+      }
+    });
+
+    // Convert late students
+    overviewData.late?.forEach((student: any) => {
+      const studentId = nameToStudentId.get(student.name.toLowerCase());
+      if (studentId) {
+        editAttendance[studentId] = {
+          status: 'late',
+          minutesLate: student.minutesLate || 5,
+          arrivalTime: student.arrivalTime || '08:05',
+          lateExcused: student.lateExcused || false
+        };
+      }
+    });
+
+    // Convert absent students
+    overviewData.absent?.forEach((student: any) => {
+      const studentId = nameToStudentId.get(student.name.toLowerCase());
+      if (studentId) {
+        editAttendance[studentId] = {
+          status: student.excused ? 'excused' : 'unexcused',
+          excuseReason: student.reason || ''
+        };
+      }
+    });
+
+    // Set all data instantly
+    setTempAttendance(editAttendance);
+    setLessonNote(overviewData.lessonNote || '');
+    setAttendanceViewMode('edit');
+
+    console.log('✅ Instantly switched to edit mode with converted data:', {
+      studentsProcessed: Object.keys(editAttendance).length,
+      hasNote: !!overviewData.lessonNote
+    });
   };
 
   // Main handler that routes to the right function
