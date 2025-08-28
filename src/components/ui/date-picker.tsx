@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
+import { format, isValid } from "date-fns"
 import { de } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
 
@@ -21,11 +21,42 @@ interface DatePickerProps {
 export function DatePicker({
   date,
   onDateChange,
-  placeholder = "MM/DD/YYYY",
+  placeholder = "Datum auswählen",
   className,
   disabled = false,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
+
+  // Validate date to prevent errors
+  const isValidDate = date && isValid(date)
+
+  const formatDisplayDate = (selectedDate: Date | undefined) => {
+    if (!selectedDate || !isValid(selectedDate)) {
+      return placeholder;
+    }
+
+    try {
+      // Use German date format (DD.MM.YYYY)
+      return format(selectedDate, "dd.MM.yyyy");
+    } catch (error) {
+      console.warn('Date formatting error:', error);
+      return placeholder;
+    }
+  };
+
+  const formatCalendarFooter = (selectedDate: Date | undefined) => {
+    if (!selectedDate || !isValid(selectedDate)) {
+      return '';
+    }
+
+    try {
+      // Show full date in German format
+      return format(selectedDate, "EEEE, d. MMMM yyyy", { locale: de });
+    } catch (error) {
+      console.warn('Calendar footer formatting error:', error);
+      return '';
+    }
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -34,16 +65,19 @@ export function DatePicker({
           variant="outline"
           className={cn(
             "w-full justify-start text-left font-normal h-10 px-3 py-2 bg-white border border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200",
-            !date && "text-gray-500",
+            !isValidDate && "text-gray-500",
             disabled && "opacity-50 cursor-not-allowed",
             className
           )}
           disabled={disabled}
+          role="combobox"
+          aria-expanded={open}
+          aria-label={`Datum auswählen. ${isValidDate ? `Aktuell ausgewählt: ${formatDisplayDate(date)}` : 'Kein Datum ausgewählt'}`}
         >
           <div className="flex items-center gap-2 w-full">
             <span className="flex-1 text-left text-sm">
-              {date ? (
-                format(date, "MM/dd/yyyy")
+              {isValidDate ? (
+                formatDisplayDate(date)
               ) : (
                 <span className="text-gray-500">{placeholder}</span>
               )}
@@ -60,18 +94,21 @@ export function DatePicker({
         <div className="bg-white rounded-lg">
           <Calendar
             mode="single"
-            selected={date}
+            selected={isValidDate ? date : undefined}
             onSelect={(selectedDate) => {
               onDateChange?.(selectedDate)
               setOpen(false)
             }}
             initialFocus
             className="border-0"
+            locale={de}
+            weekStartsOn={1} // Monday start for German calendar
+            showOutsideDays={true}
           />
-          {date && (
-            <div className="px-4 pb-3 pt-0 border-t bg-gray-50 rounded-b-lg">
+          {isValidDate && (
+            <div className="px-4 pb-3 pt-2 border-t bg-gray-50 rounded-b-lg">
               <p className="text-sm font-medium text-gray-900">
-                {format(date, "EEE, MMM d", { locale: de })}
+                {formatCalendarFooter(date)}
               </p>
             </div>
           )}
