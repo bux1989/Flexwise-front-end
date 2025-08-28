@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { Users, User, BookOpen, CalendarDays, Clock, AlertTriangle, CheckCircle, Edit3, FileText, Calendar, ChevronDown, ChevronRight, BarChart3, Search, X } from 'lucide-react';
-import { getStudentStatisticsForClass, getCourseDataForClass, getCourseStudentsForCourse, getStudentById, updateAbsenceDetails, updateLatenessDetails, convertToExcused, getStudentIdFromCourseName, getAllStudentStatistics, getClassNameById, SEMESTER_START_DATE, getCurrentDateString } from '../../../shared/domains/academic';
+import { getStudentStatisticsForClass, getCourseDataForClass, getCourseStudentsForCourse, getStudentById, updateAbsenceDetails, updateLatenessDetails, convertToExcused, getStudentIdFromCourseName, getAllStudentStatistics, getClassNameById, SEMESTER_START_DATE, getCurrentDateString } from '@flexwise/shared/domains/academic';
 import { ExcuseEditModal } from './ExcuseEditModal';
 import { AddExcuseModal } from './AddExcuseModal';
 import { useIsMobile } from '../ui/use-mobile';
