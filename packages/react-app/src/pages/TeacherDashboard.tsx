@@ -655,17 +655,41 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         try {
           console.log('📤 Calling supabase.auth.signOut()');
           const { error } = await supabase.auth.signOut();
-          console.log('�� Logout response:', { error });
+          console.log('📨 Logout response:', { error });
+
           if (error) {
-            console.error('Logout error:', error);
-            alert('Fehler beim Ausloggen');
+            // Check if it's just a "session missing" error - this is actually fine
+            if (error.message && error.message.includes('Auth session missing')) {
+              console.log('✅ Session already expired - treating as successful logout');
+              // Session is already gone, which is what we wanted anyway
+              // App.jsx will detect the missing session and redirect to login
+            } else {
+              console.error('❌ Actual logout error:', error);
+              alert('Fehler beim Ausloggen: ' + error.message);
+            }
           } else {
             console.log('✅ Logout successful, App.jsx should handle redirect');
           }
-          // The App.jsx component will handle the redirect automatically
+
+          // Force a page reload to ensure clean state after logout
+          // This helps when session is in an inconsistent state
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+
         } catch (error) {
           console.error('💥 Logout exception:', error);
-          alert('Fehler beim Ausloggen');
+
+          // Handle AuthSessionMissingError specifically
+          if (error.message && error.message.includes('Auth session missing')) {
+            console.log('✅ Session already expired - treating as successful logout');
+            // Force reload to clean state
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          } else {
+            alert('Fehler beim Ausloggen: ' + error.message);
+          }
         }
         break;
       case 'Klassenbuch':
