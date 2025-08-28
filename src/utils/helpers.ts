@@ -92,6 +92,16 @@ export const getAttendanceStatus = (lesson: any) => {
 };
 
 export const getAttendanceSummary = (lesson: any) => {
+  // Use real attendance badge data if available
+  if (lesson.attendanceBadge) {
+    return {
+      present: lesson.attendanceBadge.present_count,
+      late: lesson.attendanceBadge.late_count,
+      absent: lesson.attendanceBadge.absent_count
+    };
+  }
+
+  // Fallback to old logic
   if (!lesson.attendance) return null;
   const { present, late, absent } = lesson.attendance;
   return {
