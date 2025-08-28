@@ -536,6 +536,17 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                   })} um {selectedLesson?.time} Uhr
                 </div>
               </div>
+              {attendanceViewMode === 'overview' && selectedLesson?.attendanceData && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAttendanceViewMode('edit')}
+                  className="flex items-center gap-1"
+                >
+                  <Edit className="h-4 w-4" />
+                  Anwesenheit bearbeiten
+                </Button>
+              )}
             </DialogTitle>
           </DialogHeader>
 
