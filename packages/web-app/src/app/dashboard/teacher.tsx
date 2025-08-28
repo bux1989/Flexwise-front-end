@@ -138,13 +138,20 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         {/* Top Row - 2 columns */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Schedule/Lesson Management - Left Column */}
-          <LessonSchedule
-            lessons={lessons}
-            selectedDate={selectedDate}
-            onDateChange={handleDateChange}
-            onAttendanceClick={handleAttendanceClick}
-            isMobile={isMobile}
-          />
+          {lessonsError ? (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <h3 className="text-red-800 font-medium mb-2">Fehler beim Laden des Stundenplans</h3>
+              <p className="text-red-600 text-sm">{lessonsError}</p>
+            </div>
+          ) : (
+            <LessonSchedule
+              lessons={lessons}
+              selectedDate={selectedDate}
+              onDateChange={handleDateChange}
+              onAttendanceClick={handleAttendanceClick}
+              isMobile={isMobile}
+            />
+          )}
 
           {/* Info Board - Right Column */}
           <InfoBoard isMobile={isMobile} />
