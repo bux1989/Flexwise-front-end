@@ -6,9 +6,10 @@ import { InfoBoard } from '../../features/communications/components/InfoBoard';
 import { Events } from '../../features/communications/components/Events';
 
 // Import mock data and utilities
-import { CURRENT_TEACHER, INITIAL_LESSONS, INITIAL_EVENTS } from '../../../../shared/data/mockData';
+import { CURRENT_TEACHER, INITIAL_EVENTS } from '../../../../shared/data/mockData';
 import { formatDateTime } from '../../../../shared/domains/academic/klassenbuch/utils';
 import { getCurrentUserProfile, handleLogout } from '../../lib/supabase';
+import { useLessons, useTeacherProfile } from '../../features/lessons/hooks/useLessons';
 
 interface TeacherDashboardProps {
   user?: {
