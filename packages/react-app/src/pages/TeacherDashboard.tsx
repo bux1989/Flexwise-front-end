@@ -1269,7 +1269,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
       // First time taking attendance - create new format
       updatedLessonNote = createLessonNoteWithMetadata(
         lessonNote,
-        CURRENT_TEACHER,
+        getCurrentTeacherName(),
         timestamp
       );
     } else {
@@ -2526,7 +2526,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 {/* Show individual assignees */}
                                 {task.assignedTo.length > 0 && !task.assignedTo.includes(getCurrentTeacherName()) && assignedGroups.length === 0 && (
                                   <span className="text-purple-600">
-                                    → {task.assignedTo.join(', ')}
+                                    ��� {task.assignedTo.join(', ')}
                                   </span>
                                 )}
                                 
