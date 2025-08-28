@@ -48,14 +48,18 @@ export function Header({ currentTeacher, dateString, onButtonClick, showKlassenb
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => onButtonClick('Klassenbuch')}
+                  onClick={() => onButtonClick(showKlassenbuch ? 'Klassenbuch-Close' : 'Klassenbuch')}
                   className="h-8 w-8 lg:h-10 lg:w-10 p-0"
                 >
-                  <BookOpen className="h-4 w-4 lg:h-6 lg:w-6" />
+                  {showKlassenbuch ? (
+                    <LogOut className="h-4 w-4 lg:h-6 lg:w-6" />
+                  ) : (
+                    <BookOpen className="h-4 w-4 lg:h-6 lg:w-6" />
+                  )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Klassenbuch</p>
+                <p>{showKlassenbuch ? 'Schließen' : 'Klassenbuch'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

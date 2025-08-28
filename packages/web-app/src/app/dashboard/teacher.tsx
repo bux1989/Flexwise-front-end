@@ -99,6 +99,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       await handleLogout();
     } else if (action === 'Klassenbuch') {
       setShowKlassenbuch(true);
+    } else if (action === 'Klassenbuch-Close') {
+      setShowKlassenbuch(false);
     }
     // Handle other actions in the future
   };
