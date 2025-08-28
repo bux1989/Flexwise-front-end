@@ -86,7 +86,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
         // Fetch lessons for the selected date
         const lessonsData = await fetchTodaysLessons(profile.id, selectedDate);
-        console.log('📚 Raw lessons data from Supabase:', lessonsData);
+        console.log('��� Raw lessons data from Supabase:', lessonsData);
 
         // Fetch attendance badge data for all lessons
         const lessonIds = lessonsData.map(lesson => lesson.lesson_id || lesson.id);
@@ -252,6 +252,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
   // Main content section visibility state - now controls whether to show dashboard or klassenbuch
   const [showKlassenbuch, setShowKlassenbuch] = useState(false);
+  const showMainContent = !showKlassenbuch;
   
   // Expansion state for tasks and events
   const [taskDisplayCount, setTaskDisplayCount] = useState(3);
