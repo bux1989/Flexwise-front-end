@@ -24,6 +24,7 @@ interface HeaderProps {
   onClassChange: (classItem: Class) => void;
   classes: Class[];
   statisticsViewType?: 'class' | 'student' | 'course';
+  isMobile?: boolean;
 }
 
 export function Header({
