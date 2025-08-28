@@ -757,7 +757,17 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
           {selectedLesson && (
             <div>
-              {attendanceViewMode === 'overview' && selectedLesson.attendanceData ? (
+              {/* Loading Indicator */}
+              {attendanceLoading && (
+                <div className="flex items-center justify-center p-8">
+                  <div className="text-sm text-gray-600 flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    Lade Anwesenheitsdaten...
+                  </div>
+                </div>
+              )}
+
+              {!attendanceLoading && attendanceViewMode === 'overview' && selectedLesson.attendanceData ? (
                 // Overview Mode - Clean summary view
                 <div className="space-y-6">
                   {/* Lesson Note Section */}
