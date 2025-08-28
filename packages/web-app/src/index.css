@@ -62,55 +62,55 @@
 /* Gentle floating and falling animations for background icons */
 @keyframes float-gentle {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+    transform: translateY(0px) translateX(0px);
   }
   50% {
-    transform: translateY(-10px) translateX(2px) rotate(var(--tw-rotate));
+    transform: translateY(-10px) translateX(2px);
   }
 }
 
 @keyframes float-slow {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+    transform: translateY(0px) translateX(0px);
   }
   50% {
-    transform: translateY(-8px) translateX(-3px) rotate(var(--tw-rotate));
+    transform: translateY(-8px) translateX(-3px);
   }
 }
 
 @keyframes float-medium {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+    transform: translateY(0px) translateX(0px);
   }
   50% {
-    transform: translateY(-12px) translateX(1px) rotate(var(--tw-rotate));
+    transform: translateY(-12px) translateX(1px);
   }
 }
 
 @keyframes fall-gentle {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+    transform: translateY(0px) translateX(0px);
   }
   50% {
-    transform: translateY(8px) translateX(-2px) rotate(var(--tw-rotate));
+    transform: translateY(8px) translateX(-2px);
   }
 }
 
 @keyframes fall-slow {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+    transform: translateY(0px) translateX(0px);
   }
   50% {
-    transform: translateY(6px) translateX(3px) rotate(var(--tw-rotate));
+    transform: translateY(6px) translateX(3px);
   }
 }
 
 @keyframes fall-medium {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+    transform: translateY(0px) translateX(0px);
   }
   50% {
-    transform: translateY(10px) translateX(-1px) rotate(var(--tw-rotate));
+    transform: translateY(10px) translateX(-1px);
   }
 }
 
