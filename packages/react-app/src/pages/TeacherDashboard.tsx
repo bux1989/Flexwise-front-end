@@ -82,7 +82,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
         // Fetch lessons for the selected date
         const lessonsData = await fetchTodaysLessons(profile.id, selectedDate);
-        console.log('�� Raw lessons data from Supabase:', lessonsData);
+        console.log('📚 Raw lessons data from Supabase:', lessonsData);
 
         // Fetch attendance badge data for all lessons
         const lessonIds = lessonsData.map(lesson => lesson.lesson_id || lesson.id);
@@ -2526,7 +2526,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 {/* Show individual assignees */}
                                 {task.assignedTo.length > 0 && !task.assignedTo.includes(CURRENT_TEACHER) && assignedGroups.length === 0 && (
                                   <span className="text-purple-600">
-                                    ��� {task.assignedTo.join(', ')}
+                                    → {task.assignedTo.join(', ')}
                                   </span>
                                 )}
                                 
@@ -2629,7 +2629,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
       <AddTaskDialog
         open={addTaskDialogOpen}
         onOpenChange={setAddTaskDialogOpen}
-        currentTeacher={CURRENT_TEACHER}
+        currentTeacher={getCurrentTeacherName()}
         canAssignTasks={canAssignTasks}
         onCreateTask={createNewTask}
       />
