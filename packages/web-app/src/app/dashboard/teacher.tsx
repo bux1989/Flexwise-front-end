@@ -290,9 +290,12 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Simple function: Switch from overview to edit (for edit button)
   const switchToEdit = async () => {
-    if (!selectedLessonForAttendance) return;
+    if (!selectedLessonForAttendance) {
+      console.error('❌ Cannot switch to edit - no lesson selected');
+      return;
+    }
 
-    console.log('🔄 Switching to edit mode');
+    console.log('🔄 EDIT BUTTON CLICKED - Switching to edit mode for lesson:', selectedLessonForAttendance);
 
     setAttendanceViewMode('edit');
     setTempAttendance({});
