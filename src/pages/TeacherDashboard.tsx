@@ -76,7 +76,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
         // Transform Supabase data to match expected structure
         const now = new Date();
-        const transformedLessons = lessonsData.map((lesson, index) => {
+        const transformedLessons = await Promise.all(lessonsData.map(async (lesson, index) => {
           const startTime = lesson.start_datetime ? new Date(lesson.start_datetime) : null;
           const endTime = lesson.end_datetime ? new Date(lesson.end_datetime) : null;
 
@@ -98,6 +98,19 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             lesson_type: lesson.lesson_type
           });
 
+          // Fetch real attendance data if attendance has been taken
+          let attendanceData = null;
+          if (lesson.attendance_taken) {
+            try {
+              attendanceData = await fetchLessonAttendance(lesson.lesson_id || lesson.id);
+              console.log(`📋 Loaded attendance for lesson ${lesson.lesson_id}:`, attendanceData);
+            } catch (error) {
+              console.error(`❌ Failed to load attendance for lesson ${lesson.lesson_id}:`, error);
+              // Fall back to empty attendance structure
+              attendanceData = { present: [], late: [], absent: [] };
+            }
+          }
+
           return {
             ...lesson,
             id: lesson.lesson_id || lesson.id,
@@ -115,14 +128,10 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             students: lesson.student_names_with_class ? lesson.student_names_with_class.map((name, index) => ({ id: index + 1, name })) : [],
             attendanceTaken: lesson.attendance_taken || false,
             lessonNote: '',
-            // Create attendance structure if attendance has been taken
-            attendance: lesson.attendance_taken ? {
-              present: [], // Would be populated from actual attendance records
-              late: [],    // Would be populated from actual attendance records
-              absent: []   // Would be populated from actual attendance records
-            } : null
+            // Use real attendance data if available
+            attendance: attendanceData
           };
-        });
+        }));
 
         console.log('🔄 Transformed lessons:', transformedLessons);
         setLessons(transformedLessons);
