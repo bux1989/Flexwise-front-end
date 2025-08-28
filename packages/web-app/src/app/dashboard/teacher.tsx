@@ -319,13 +319,20 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
         const name = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
         const student = lesson.students?.find((s: any) => s.name.toLowerCase().includes(name.toLowerCase()));
-        if (student) editAttendance[student.id] = { status: 'present' };
+        if (student) {
+          editAttendance[student.id] = { status: 'present' };
+        } else {
+          console.warn('⚠️ Could not find student for:', name);
+        }
       });
 
       setTempAttendance(editAttendance);
       setLessonNote(diaryEntry);
 
-      console.log('✅ Switched to edit mode');
+      console.log('✅ Switched to edit mode with data:', {
+        studentsProcessed: Object.keys(editAttendance).length,
+        hasNote: !!diaryEntry
+      });
     } catch (error) {
       console.error('❌ Error switching to edit:', error);
     }
