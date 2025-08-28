@@ -248,6 +248,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
   const [showAllLessonsOnMobile, setShowAllLessonsOnMobile] = useState(false);
   const [expandedMobileLessonComments, setExpandedMobileLessonComments] = useState<Set<number>>(new Set());
   const [expandedMobileLessonDetails, setExpandedMobileLessonDetails] = useState<Set<number>>(new Set());
+
+  // Main content section visibility state
+  const [showMainContent, setShowMainContent] = useState(true);
   
   // Expansion state for tasks and events
   const [taskDisplayCount, setTaskDisplayCount] = useState(3);
@@ -693,6 +696,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         }
         break;
       case 'Klassenbuch':
+        console.log('📖 Toggling main content visibility');
+        setShowMainContent(!showMainContent);
+        break;
       case 'Mein Account':
         alert(`${action} wird bald verfügbar sein`);
         break;
@@ -1523,7 +1529,11 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         onButtonClick={handleHeaderButtonClick}
       />
 
-      <div className="p-6">
+      {/* Main Content Section - Collapsible */}
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+        showMainContent ? 'opacity-100 max-h-full' : 'opacity-0 max-h-0'
+      }`}>
+        <div className="p-6">
         {/* Top Row - 2 columns */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Stundenplan */}
@@ -2665,7 +2675,9 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             </CardContent>
           </Card>
         </div>
+        </div>
       </div>
+      {/* End of Main Content Section */}
 
       {/* Impressum Footer Link */}
       <div className="fixed bottom-4 right-4">
