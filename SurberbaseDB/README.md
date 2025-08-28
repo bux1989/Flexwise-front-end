@@ -183,6 +183,10 @@ The database implements comprehensive row-level security (RLS) with:
 
 - `flexwise28082025dump.sql` - Complete database dump from August 28, 2025
 - `README.md` - This documentation file (you are here)
+- `schema-index.md` - Complete index of all database objects with organized categories
+- `quick-reference.md` - Common queries, functions, and usage patterns
+- `tables/` - Detailed documentation for key database tables
+- `views/` - Documentation for important database views
 
 ## Next Steps
 

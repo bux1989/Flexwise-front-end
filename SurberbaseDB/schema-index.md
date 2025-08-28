@@ -21,7 +21,7 @@ Complete index of all database objects in the Flexwise Supabase database.
 - `structure_school_days` - Academic calendar
 - `structure_school_semesters` - Semester definitions
 - `structure_school_years` - Academic year periods
-- `structure_schools` - School definitions and settings
+- **`structure_schools`** ⭐ - School definitions and settings ([Documentation](tables/structure_schools.md))
 - `subject_class_hours` - Class-specific subject hours
 - `subject_grade_hours` - Grade-specific subject hours
 - `subjects` - Subject/course catalog
@@ -91,7 +91,7 @@ Complete index of all database objects in the Flexwise Supabase database.
 - `user_codes` - User authentication codes
 - `user_group_members` - Group membership
 - `user_groups` - User group definitions
-- `user_profiles` - User account profiles
+- **`user_profiles`** ⭐ - User account profiles ([Documentation](tables/user_profiles.md))
 - `user_roles` - User role assignments
 - `v_is_subrole` - Role hierarchy view table
 - `v_primary_email` - Primary email view table
