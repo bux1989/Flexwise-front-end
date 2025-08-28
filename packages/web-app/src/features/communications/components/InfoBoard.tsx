@@ -66,50 +66,6 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
-        {/* Regular info items - always show titles */}
-        <div 
-          className={`p-2 rounded-lg bg-gray-50 ${isMobile ? 'cursor-pointer' : ''}`}
-          onClick={isMobile ? () => toggleInfoBoardPost('schulversammlung') : undefined}
-        >
-          <div className="flex justify-between items-start">
-            <h4 className="font-semibold">Schulversammlung</h4>
-            <div className="text-xs text-gray-600 flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              14:30
-            </div>
-          </div>
-          {(!isMobile || expandedInfoBoardPosts.has('schulversammlung')) && (
-            <div className="text-xs text-gray-600 mt-1">Heute in der Aula</div>
-          )}
-        </div>
-        
-        <div 
-          className={`p-2 rounded-lg bg-gray-50 ${isMobile ? 'cursor-pointer' : ''}`}
-          onClick={isMobile ? () => toggleInfoBoardPost('lehrerkonferenz') : undefined}
-        >
-          <div className="flex justify-between items-start">
-            <h4 className="font-semibold">Lehrerkonferenz</h4>
-            <div className="text-xs text-gray-600 flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              16:30
-            </div>
-          </div>
-          {(!isMobile || expandedInfoBoardPosts.has('lehrerkonferenz')) && (
-            <div className="text-xs text-gray-600 mt-1">Morgen im Konferenzraum</div>
-          )}
-        </div>
-
-        <div 
-          className={`p-2 rounded-lg bg-gray-50 ${isMobile ? 'cursor-pointer' : ''}`}
-          onClick={isMobile ? () => toggleInfoBoardPost('it-systemupdate') : undefined}
-        >
-          <h4 className="font-semibold">IT-Systemupdate</h4>
-          {(!isMobile || expandedInfoBoardPosts.has('it-systemupdate')) && (
-            <div className="text-xs text-gray-600 mt-1">
-              Freitag geplant, voraussichtlich am Wochenende abgeschlossen
-            </div>
-          )}
-        </div>
 
         {/* Loading and Error States */}
         {loading && (
