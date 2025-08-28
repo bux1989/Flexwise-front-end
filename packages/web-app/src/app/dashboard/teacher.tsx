@@ -15,13 +15,13 @@ import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../components/ui/tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { useIsMobile } from '../components/ui/use-mobile';
+import { useIsMobile } from '../../components/ui/use-mobile';
 
 // Imported components and utilities
-import { Header } from '../components/Header';
-import { AddTaskDialog } from '../components/AddTaskDialog';
-import { TimeInputWithArrows } from '../components/TimeInputWithArrows';
-import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from '../constants/mockData';
+import { Header } from '../../components/Header';
+import { AddTaskDialog } from '../../components/AddTaskDialog';
+import { TimeInputWithArrows } from '../../components/TimeInputWithArrows';
+import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from '../../constants/mockData';
 import { fetchTodaysLessons, fetchLessonAttendance, fetchAttendanceBadges, supabase } from '../lib/supabase';
 // Import from new domain structure
 import {
