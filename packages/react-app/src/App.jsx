@@ -105,6 +105,19 @@ function App() {
   }
 
   const renderDashboard = () => {
+    // If profile is loading, show loading state instead of redirecting
+    if (!userProfile && profileLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="text-lg text-gray-900">Loading Profile...</div>
+            <div className="text-sm text-gray-500 mt-2">Setting up your dashboard</div>
+          </div>
+        </div>
+      )
+    }
+
+    // If no profile and not loading, redirect to login
     if (!userProfile) return <Navigate to="/login" replace />
 
     const dashboardProps = { user: session.user, profile: userProfile }
