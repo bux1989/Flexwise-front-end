@@ -468,7 +468,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         </div>
       )}
 
-      <div className="p-2 lg:p-6">
+      <div className="p-1 lg:p-6">
         {/* Top Row - 2 columns */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6 mb-3 lg:mb-6">
           {/* Schedule/Lesson Management - Left Column */}
