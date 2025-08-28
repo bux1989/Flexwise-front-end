@@ -144,8 +144,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           if (baseName) nameToStudentId.set(baseName, s.id);
         });
         const getUiStudentId = (record: any): string | undefined => {
-          const first = record?.user_profiles?.first_name || '';
-          const last = record?.user_profiles?.last_name || '';
+          const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
+          const first = profile?.first_name || '';
+          const last = profile?.last_name || '';
           const key = `${first} ${last}`.trim().toLowerCase();
           return nameToStudentId.get(key);
         };
@@ -167,10 +168,28 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             console.warn('⚠️ Could not match late record to UI student:', record);
             return;
           }
+
+          // Determine minutes late using DB value or fallback to recorded_at vs lesson start
+          const startParts = (lesson?.time || '').split(':').map(Number);
+          const base = new Date(selectedDate);
+          if (!isNaN(startParts[0]) && !isNaN(startParts[1])) {
+            base.setHours(startParts[0], startParts[1], 0, 0);
+          }
+          const recordedAt = record.recorded_at ? new Date(record.recorded_at) : null;
+          let minutesLate = typeof record.late_minutes === 'number' && record.late_minutes > 0
+            ? record.late_minutes
+            : (recordedAt && !isNaN(base.getTime())
+                ? Math.max(1, Math.floor((recordedAt.getTime() - base.getTime()) / (1000 * 60)))
+                : 5);
+
+          // Compute arrival time = lesson start + minutesLate
+          const arrival = new Date(base.getTime() + minutesLate * 60000);
+          const arrivalTime = `${arrival.getHours().toString().padStart(2, '0')}:${arrival.getMinutes().toString().padStart(2, '0')}`;
+
           editAttendance[sid] = {
             status: 'late',
-            minutesLate: record.late_minutes || 1,
-            arrivalTime: getDefaultLateTime(lesson),
+            minutesLate,
+            arrivalTime,
             lateExcused: false
           };
         });
