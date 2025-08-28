@@ -198,4 +198,107 @@ export async function fetchTodaysLessons(teacherId, date = new Date()) {
   }
 }
 
+// Attendance tracking functions
+export async function fetchLessonAttendance(lessonId) {
+  try {
+    console.log('📋 Fetching attendance for lesson:', lessonId)
+
+    const { data: attendance, error } = await supabase
+      .from('student_attendance_logs')
+      .select(`
+        *,
+        user_profiles(first_name, last_name)
+      `)
+      .eq('lesson_id', lessonId)
+
+    if (error) {
+      console.error('❌ Error fetching attendance:', error)
+      throw error
+    }
+
+    // Group attendance by status
+    const grouped = {
+      present: attendance?.filter(record => record.status === 'present') || [],
+      late: attendance?.filter(record => record.status === 'late') || [],
+      absent: attendance?.filter(record => record.status === 'absent') || []
+    }
+
+    console.log('✅ Attendance fetched:', grouped)
+    return grouped
+
+  } catch (error) {
+    console.error('💥 Error in fetchLessonAttendance:', error)
+    throw error
+  }
+}
+
+export async function saveAttendanceRecord(lessonId, studentId, status, additionalData = {}) {
+  try {
+    console.log('💾 Saving attendance record:', { lessonId, studentId, status, additionalData })
+
+    const attendanceRecord = {
+      lesson_id: lessonId,
+      student_id: studentId,
+      status: status, // 'present', 'late', 'absent'
+      recorded_at: new Date().toISOString(),
+      ...additionalData // Can include notes, late_minutes, etc.
+    }
+
+    const { data, error } = await supabase
+      .from('student_attendance_logs')
+      .upsert(attendanceRecord, {
+        onConflict: 'lesson_id,student_id',
+        ignoreDuplicates: false
+      })
+      .select()
+
+    if (error) {
+      console.error('❌ Error saving attendance:', error)
+      throw error
+    }
+
+    console.log('✅ Attendance record saved:', data)
+    return data
+
+  } catch (error) {
+    console.error('💥 Error in saveAttendanceRecord:', error)
+    throw error
+  }
+}
+
+export async function bulkSaveAttendance(lessonId, attendanceRecords) {
+  try {
+    console.log('📚 Bulk saving attendance for lesson:', lessonId, attendanceRecords)
+
+    const records = attendanceRecords.map(record => ({
+      lesson_id: lessonId,
+      student_id: record.studentId,
+      status: record.status,
+      recorded_at: new Date().toISOString(),
+      notes: record.notes || null,
+      late_minutes: record.lateMinutes || null
+    }))
+
+    const { data, error } = await supabase
+      .from('student_attendance_logs')
+      .upsert(records, {
+        onConflict: 'lesson_id,student_id',
+        ignoreDuplicates: false
+      })
+      .select()
+
+    if (error) {
+      console.error('❌ Error bulk saving attendance:', error)
+      throw error
+    }
+
+    console.log('✅ Bulk attendance saved:', data)
+    return data
+
+  } catch (error) {
+    console.error('💥 Error in bulkSaveAttendance:', error)
+    throw error
+  }
+}
+
 export const isDemo = false // Always use real authentication now
