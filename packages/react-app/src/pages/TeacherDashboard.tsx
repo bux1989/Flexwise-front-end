@@ -1236,7 +1236,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             id: student.id, 
             excused: true, 
             reason: attendance.excuseReason || 'Entschuldigt',
-            excusedBy: CURRENT_TEACHER,
+            excusedBy: getCurrentTeacherName(),
             excusedAt: new Date().toLocaleString('de-DE', {
               day: '2-digit',
               month: '2-digit', 
@@ -1301,7 +1301,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             attendance: totalStudentsWithAttendance > 0 ? { present, late, absent } : undefined,
             lessonNote: updatedLessonNote,
             ...(wasFirstTime ? {
-              attendanceTakenBy: CURRENT_TEACHER,
+              attendanceTakenBy: getCurrentTeacherName(),
               attendanceTakenAt: timestamp
             } : {
               attendanceLastEditedBy: CURRENT_TEACHER,
@@ -1350,7 +1350,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                     ...student, 
                     excused: true, 
                     reason: excuseReason || 'Entschuldigt',
-                    excusedBy: CURRENT_TEACHER,
+                    excusedBy: getCurrentTeacherName(),
                     excusedAt: timestamp
                   }
                 : student
@@ -1705,7 +1705,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                     </div>
                                   ) : (
                                     <>
-                                      {lesson.class || lesson.class_name} • {lesson.room || lesson.room_name}
+                                      {lesson.class || lesson.class_name} �� {lesson.room || lesson.room_name}
                                       {lesson.otherTeachers && lesson.otherTeachers.length > 0 && (
                                         <>
                                           {' • '}
