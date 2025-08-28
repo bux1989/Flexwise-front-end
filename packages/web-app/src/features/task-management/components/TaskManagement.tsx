@@ -19,7 +19,7 @@ interface TaskManagementProps {
   isMobile?: boolean;
 }
 
-export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagementProps) {
+export function TaskManagement({ currentTeacher, canAssignTasks, isMobile = false }: TaskManagementProps) {
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [taskSearchQuery, setTaskSearchQuery] = useState('');
   const [taskPriorityFilter, setTaskPriorityFilter] = useState<string>('all');
