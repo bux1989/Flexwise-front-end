@@ -140,11 +140,12 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                               (attendanceData.absent?.length || 0);
       const isComplete = totalStudents > 0 && recordedStudents === totalStudents;
 
-      // Determine which view mode to use
+      // Respect the explicitly requested view mode
+      // Only auto-determine if no explicit mode preference
       let finalViewMode = viewMode;
-      if (isComplete && viewMode === 'edit') {
-        finalViewMode = 'overview';
-      } else if (!isComplete) {
+      if (viewMode === 'edit' && isComplete && recordedStudents === 0) {
+        // Only default to overview if clicking on a completely empty lesson
+        // This case shouldn't happen, but just in case
         finalViewMode = 'edit';
       }
 
