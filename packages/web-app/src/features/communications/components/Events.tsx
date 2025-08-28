@@ -141,16 +141,19 @@ export function Events({ events, onEventRSVP, isMobile = false }: EventsProps) {
             </Button>
           )}
         </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="show-past-events"
-            checked={showPastEvents}
-            onCheckedChange={handleTogglePastEvents}
-          />
-          <Label htmlFor="show-past-events" className="text-sm">
-            Vergangene Veranstaltungen
-          </Label>
-        </div>
+        {/* Only show filters on desktop or when mobile section is expanded */}
+        {(!isMobile || expandedInfoItems.has('events')) && (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="show-past-events"
+              checked={showPastEvents}
+              onCheckedChange={handleTogglePastEvents}
+            />
+            <Label htmlFor="show-past-events" className="text-sm">
+              Vergangene Veranstaltungen
+            </Label>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
