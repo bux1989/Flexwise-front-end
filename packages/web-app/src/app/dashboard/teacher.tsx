@@ -521,7 +521,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           setLessonNote('');
         }
       }}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] lg:max-h-[80vh] overflow-y-auto mx-2 lg:mx-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <div>
