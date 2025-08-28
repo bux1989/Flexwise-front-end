@@ -218,6 +218,7 @@ export function useLessons(teacherId: string | null, selectedDate: Date): UseLes
     loading,
     error,
     refetch: fetchLessons,
+    schoolId,
     realtime: {
       isConnected: realtimeStatus.isConnected,
       channelCount: realtimeStatus.channelCount,
