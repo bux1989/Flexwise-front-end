@@ -2,8 +2,20 @@
 // This domain contains modules related to academic activities and record-keeping
 
 // Klassenbuch (Digital Class Register) module
-export * as klassenbuch from './klassenbuch';
+export * from './klassenbuch/utils';
+export * from './klassenbuch/hooks';
+
+// Re-export types for convenience
+export type {
+  Class,
+  Student,
+  Lesson,
+  StudentStatistics,
+  ExcuseInfo
+} from './klassenbuch/utils';
 
 // Future modules would be added here:
-// export * as digitalesklaasenbuch from './digitales-klassenbuch';
-// export * as wahlfaecher from './wahlfaecher';
+// export * from './digitales-klassenbuch/utils';
+// export * from './digitales-klassenbuch/hooks';
+// export * from './wahlfaecher/utils';
+// export * from './wahlfaecher/hooks';
