@@ -669,6 +669,26 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
   const dateString = formatDateTime();
   const isToday = selectedDate.toDateString() === currentDate.toDateString();
 
+  // Format teacher name dynamically from profile
+  const getTeacherGreeting = () => {
+    if (!profile) return 'Lehrer*in';
+
+    const firstName = profile.first_name || '';
+    const lastName = profile.last_name || '';
+
+    if (firstName && lastName) {
+      // Determine title based on gender or use neutral form
+      // For now, use gender-neutral approach or could add gender field to profile
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (lastName) {
+      return lastName;
+    } else {
+      return 'Lehrer*in';
+    }
+  };
+
   // Filter lessons for mobile display
   const displayedLessons = useMemo(() => {
     if (!lessons || !Array.isArray(lessons)) {
@@ -1439,8 +1459,8 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      <Header 
-        currentTeacher={CURRENT_TEACHER}
+      <Header
+        currentTeacher={getTeacherGreeting()}
         dateString={dateString}
         onButtonClick={handleHeaderButtonClick}
       />
