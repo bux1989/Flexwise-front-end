@@ -52,7 +52,7 @@ shared/domains/
 └── management/        # Berichte, Statistiken, To-Do-List
 ```
 
-**C) Hybrid** (domains with module subfolders):
+**C) Hybrid** (domains with module subfolders): ✅ **SELECTED**
 ```
 shared/domains/
 ├── academic/
@@ -63,7 +63,29 @@ shared/domains/
 │   ├── stundenplan/
 │   ├── stundenplanung/
 │   └── vertretungsplan/
+├── attendance/
+│   ├── fehlzeiten/
+│   ├── beurlaubung/
+│   └── check-in-out/
+├── communications/
+│   ├── eltern-app/
+│   ├── elternbriefe/
+│   ├── info-board/
+│   └── steckboard/
+└── management/
+│   ├── berichte/
+│   ├── statistiken/
+│   ├── to-do-list/
+│   ├── schulinformationen/
+│   ├── termine/
+│   └── flex-planer/
 ```
+
+**Benefits:**
+- Individual module licensing (schools can buy "Stundenplan" only)
+- Domain package licensing (complete "Scheduling Suite")
+- Shared utilities within domains
+- Independent module development
 
 ### 3. Platform Architecture
 **Target Structure**:
