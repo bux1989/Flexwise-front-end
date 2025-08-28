@@ -123,7 +123,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   const handleAttendanceClick = async (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
     setSelectedLessonForAttendance(lessonId);
+
+    // Set view mode BEFORE opening dialog to prevent flash
+    setAttendanceViewMode(viewMode);
     setAttendanceDialogOpen(true);
+
     console.log(`Attendance clicked for lesson ${lessonId} in ${viewMode} mode`);
 
     try {
@@ -134,13 +138,6 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         fetchLessonAttendance(lessonId),
         fetchLessonDiaryEntry(lessonId)
       ]);
-
-      // Always respect the explicitly requested view mode
-      // The badge logic already determines the appropriate mode:
-      // - Green badge → 'overview'
-      // - Orange/Red badge → 'edit'
-      // - Edit button �� 'edit'
-      setAttendanceViewMode(viewMode);
 
       if (viewMode === 'overview') {
         // Structure data for overview mode
