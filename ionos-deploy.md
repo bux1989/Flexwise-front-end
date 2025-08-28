@@ -7,8 +7,8 @@
 # Build Command
 npm run build
 
-# Publish Directory  
-packages/react-app/dist
+# Publish Directory
+packages/web-app/dist
 
 # Node Version
 22
@@ -52,7 +52,7 @@ Your current `netlify.toml` settings translate to:
 | Netlify | Ionos Equivalent |
 |---------|------------------|
 | `command = "npm run build"` | Build Command: `npm run build` |
-| `publish = "packages/react-app/dist"` | Publish Directory: `packages/react-app/dist` |
+| `publish = "packages/web-app/dist"` | Publish Directory: `packages/web-app/dist` |
 | `NODE_VERSION = "22"` | Node Version: 22 |
 | SPA redirects | Configure redirect rules |
 
@@ -82,7 +82,7 @@ If you prefer shared hosting, you can:
    npm run build
    ```
 
-2. **Upload contents of `packages/react-app/dist/` to your web directory**
+2. **Upload contents of `packages/web-app/dist/` to your web directory**
 
 3. **Add .htaccess for SPA routing:**
    ```apache
