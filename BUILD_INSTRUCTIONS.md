@@ -7,7 +7,7 @@ Flexwise is a React 19 + TypeScript monorepo school management system using Vite
 ```
 flexwise-monorepo/
 ├── packages/
-│   ├── react-app/          # Main React application
+│   ├── web-app/          # Main React application
 │   └── shared/             # Shared utilities and types
 ├── netlify.toml            # Netlify deployment configuration
 ├── package.json            # Root workspace configuration
@@ -40,7 +40,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 **Setting Environment Variables:**
-- **Development**: Create `.env` files in `packages/react-app/`
+- **Development**: Create `.env` files in `packages/web-app/`
 - **Production (Netlify)**: Set via Netlify dashboard or use DevServerControl tool
 
 ## Development Commands
@@ -94,7 +94,7 @@ npm run preview
   - Academic domain (Klassenbuch functionality)
   - Shared utilities and types
 
-### React App (`packages/react-app/`)
+### React App (`packages/web-app/`)
 - **Purpose**: Main user interface
 - **Build Output**: `dist/` (Static assets for deployment)
 - **Key Features**:
@@ -109,7 +109,7 @@ npm run preview
 ### Netlify Configuration
 The project includes `netlify.toml` with:
 - **Build Command**: `npm run build`
-- **Publish Directory**: `packages/react-app/dist`
+- **Publish Directory**: `packages/web-app/dist`
 - **Node Version**: 22 (required for dependencies)
 - **SPA Routing**: Configured for React Router
 - **MIME Types**: Proper JavaScript module serving
@@ -188,7 +188,7 @@ find packages/shared -name "*.tsx" -o -name "*.ts"
 
 #### 3. File Placement Rules
 ```
-packages/react-app/src/
+packages/web-app/src/
 ├── components/
 │   ├── ui/              # Reusable UI components (buttons, inputs, etc.)
 │   ├── klassenbuch/     # Domain-specific components
