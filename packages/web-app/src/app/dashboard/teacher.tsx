@@ -450,6 +450,24 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         onButtonClick={handleHeaderButtonClick}
       />
 
+      {/* Real-time Status Indicator */}
+      {realtime.isConnected && (
+        <div className="bg-green-50 border-l-4 border-green-400 p-2 mx-6 mt-4">
+          <div className="flex items-center">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+            <p className="text-xs text-green-700">
+              Live-Updates aktiv ({realtime.channelCount} Kanäle)
+              <button
+                onClick={realtime.refresh}
+                className="ml-2 text-green-600 hover:text-green-800 underline"
+              >
+                Aktualisieren
+              </button>
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="p-6">
         {/* Top Row - 2 columns */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
