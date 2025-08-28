@@ -48,9 +48,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const [currentTeacher, setCurrentTeacher] = useState(user?.name || CURRENT_TEACHER || 'Lehrer');
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
-  // Lessons data from Supabase
+  // Lessons data from Supabase with real-time updates
   const { teacherId, loading: loadingTeacher } = useTeacherProfile();
-  const { lessons, loading: loadingLessons, error: lessonsError, refetch: refetchLessons } = useLessons(teacherId, selectedDate);
+  const { lessons, loading: loadingLessons, error: lessonsError, refetch: refetchLessons, realtime } = useLessons(teacherId, selectedDate);
 
   // Attendance dialog state (for lesson schedule)
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
