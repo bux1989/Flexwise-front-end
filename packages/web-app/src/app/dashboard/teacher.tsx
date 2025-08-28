@@ -280,9 +280,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         });
 
         setTempAttendance(editAttendance);
-        setLessonNote('');
+        setLessonNote(diaryEntry); // Use fetched diary entry
 
         console.log('✅ Attendance data loaded and prefilled for edit mode:', editAttendance);
+        console.log('📝 Lesson diary entry loaded:', diaryEntry);
       }
 
     } catch (error) {
