@@ -160,7 +160,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
         // Structure data for overview mode
         const structuredData = {
-          lessonNote: '', // We can add lesson note fetching later
+          lessonNote: diaryEntry, // Use fetched diary entry
           present: attendanceData.present?.map((record: any) => ({
             id: record.student_id,
             name: getUiStudentName(record)
