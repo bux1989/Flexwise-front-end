@@ -74,6 +74,11 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         const lessonsData = await fetchTodaysLessons(profile.id, selectedDate);
         console.log('📚 Raw lessons data from Supabase:', lessonsData);
 
+        // Fetch attendance badge data for all lessons
+        const lessonIds = lessonsData.map(lesson => lesson.lesson_id || lesson.id);
+        const attendanceBadges = await fetchAttendanceBadges(lessonIds);
+        console.log('🏷️ Attendance badges loaded:', attendanceBadges);
+
         // Transform Supabase data to match expected structure
         const now = new Date();
         const transformedLessons = await Promise.all(lessonsData.map(async (lesson, index) => {
