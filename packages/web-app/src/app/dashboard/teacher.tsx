@@ -166,6 +166,13 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
       } catch (error) {
         console.error('❌ Error fetching attendance data:', error);
+        console.error('❌ Error details:', {
+          message: error?.message,
+          details: error?.details,
+          hint: error?.hint,
+          code: error?.code,
+          lessonId: lessonId
+        });
         // Initialize with empty state if fetch fails
         setTempAttendance({});
         setLessonNote('');
