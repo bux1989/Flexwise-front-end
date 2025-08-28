@@ -99,27 +99,6 @@ function App() {
     }
   }, []) // Empty dependency array to prevent recreation
 
-  // Helper functions
-  const createFallbackProfile = (user, role) => ({
-    id: user.id,
-    email: user.email,
-    first_name: 'User',
-    last_name: '',
-    role
-  })
-
-  const extractUserRole = (userRoles, error) => {
-    if (!error && userRoles?.length > 0) {
-      const roleNames = userRoles.map(ur => ur.roles?.name).filter(Boolean)
-      const role = roleNames.join(', ') || DEFAULT_ROLE
-      console.log('✅ Roles found:', roleNames)
-      return role
-    } else {
-      console.log('⚠️ No roles found, using fallback')
-      return DEFAULT_ROLE
-    }
-  }
-
   const getDashboardPath = () => {
     if (!userProfile) return DEFAULT_ROUTE
     return ROLE_ROUTES[userProfile.role] || DEFAULT_ROUTE
