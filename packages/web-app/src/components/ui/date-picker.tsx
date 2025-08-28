@@ -83,28 +83,25 @@ export function DatePicker({
           </Button>
         </PopoverTrigger>
         
-        <PopoverContent className="w-64 p-4" align="start">
-          <div className="space-y-4">
-            {/* Date Input */}
-            <div>
-              <input
-                type="date"
-                value={currentValue ? currentValue.format('YYYY-MM-DD') : ''}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    handleDateSelect(new Date(e.target.value));
-                  }
-                }}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+        <PopoverContent className="w-auto p-3" align="start">
+          <div className="space-y-2">
+            <input
+              type="date"
+              value={currentValue ? currentValue.format('YYYY-MM-DD') : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleDateSelect(new Date(e.target.value));
+                }
+              }}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
 
-            {/* Quick action buttons */}
-            <div className="flex justify-between items-center">
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleDateSelect(new Date())}
+                className="flex-1"
               >
                 Heute
               </Button>
@@ -114,7 +111,7 @@ export function DatePicker({
                   variant="ghost"
                   size="sm"
                   onClick={handleClear}
-                  className="text-red-600 hover:text-red-700"
+                  className="text-red-600 hover:text-red-700 flex-1"
                 >
                   Löschen
                 </Button>
