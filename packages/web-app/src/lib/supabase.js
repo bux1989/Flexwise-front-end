@@ -34,6 +34,31 @@ export async function handleLogin(email, password) {
   }
 }
 
+// Logout function
+export async function handleLogout() {
+  try {
+    console.log('🚪 Logging out...')
+
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
+
+    if (error) {
+      console.error('❌ Logout error:', error)
+      console.log('🔄 Local session cleared despite error')
+    } else {
+      console.log('✅ Logout successful')
+    }
+
+    // Force redirect to login page
+    window.location.href = '/auth/login'
+
+  } catch (err) {
+    console.error('💥 Logout failed:', err)
+    console.log('🔄 Forcing local logout and redirect...')
+    // Force redirect even if logout fails
+    window.location.href = '/auth/login'
+  }
+}
+
 // Get current user profile using the correct connection pattern
 export async function getCurrentUserProfile() {
   try {
