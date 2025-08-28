@@ -67,6 +67,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // Klassenbuch view state
   const [showKlassenbuch, setShowKlassenbuch] = useState(false);
   const [klassenbuchView, setKlassenbuchView] = useState<'live' | 'statistics'>('live');
+  const [klassenbuchSelectedWeek, setKlassenbuchSelectedWeek] = useState(new Date());
+  const [klassenbuchSelectedClass, setKlassenbuchSelectedClass] = useState<any>(null);
+  const [klassenbuchClasses, setKlassenbuchClasses] = useState<any[]>([]);
 
   // Load user profile on component mount
   useEffect(() => {
@@ -98,6 +101,12 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     if (action === 'Ausloggen') {
       await handleLogout();
     } else if (action === 'Klassenbuch') {
+      // Initialize Klassenbuch data
+      const { getAllCoursesAndClasses } = await import('../../features/klassenbuch/data/klassenbuchDataAdapter');
+      const { classes, courses } = getAllCoursesAndClasses();
+      const allItems = [...classes, ...courses];
+      setKlassenbuchClasses(allItems);
+      setKlassenbuchSelectedClass(allItems[0]);
       setShowKlassenbuch(true);
     } else if (action === 'Klassenbuch-Close') {
       setShowKlassenbuch(false);
@@ -544,6 +553,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         showKlassenbuch={showKlassenbuch}
         klassenbuchView={klassenbuchView}
         onKlassenbuchViewChange={setKlassenbuchView}
+        selectedWeek={klassenbuchSelectedWeek}
+        onWeekChange={setKlassenbuchSelectedWeek}
+        selectedClass={klassenbuchSelectedClass}
+        onClassChange={setKlassenbuchSelectedClass}
+        klassenbuchClasses={klassenbuchClasses}
       />
 
       {/* Real-time Status Indicator */}
@@ -573,6 +587,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             hideHeader={true}
             currentView={klassenbuchView}
             onViewChange={setKlassenbuchView}
+            selectedWeek={klassenbuchSelectedWeek}
+            onWeekChange={setKlassenbuchSelectedWeek}
+            selectedClass={klassenbuchSelectedClass}
+            onClassChange={setKlassenbuchSelectedClass}
           />
         </div>
       ) : (
