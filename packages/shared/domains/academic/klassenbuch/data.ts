@@ -1,29 +1,11 @@
 // Comprehensive mock data for all classes
-
-export interface Student {
-  id: string;
-  name: string;
-  classId: string;
-}
-
-export interface Lesson {
-  id: string;
-  period: number;
-  day: string;
-  time: string;
-  subject: string;
-  teacher: string;
-  room: string;
-  attendanceStatus: 'complete' | 'missing' | 'incomplete' | 'future';
-  isPast: boolean;
-  isOngoing: boolean;
-  subjectColor: string;
-  status?: 'normal' | 'cancelled' | 'room_changed' | 'teacher_changed';
-  originalTeacher?: string;
-  originalRoom?: string;
-  adminComment?: string;
-  classId: string;
-}
+import {
+  Student,
+  Lesson,
+  ExcuseInfo,
+  ExcuseEditHistory,
+  StudentStatistics
+} from './utils';
 
 export interface Course {
   id: string;
@@ -50,19 +32,6 @@ export interface AttendanceRecord {
   date: string;
 }
 
-export interface ExcuseEditHistory {
-  editorId: string;
-  editorName: string;
-  timestamp: string;
-  previousText?: string;
-}
-
-export interface ExcuseInfo {
-  text: string;
-  createdBy: string; // 'secretary' | 'Eltern' | teacher abbreviation like 'Bug'
-  createdAt: string;
-  editHistory: ExcuseEditHistory[];
-}
 
 export interface CourseAttendanceEntry {
   code: 'A' | 'S' | 'E' | 'U';
@@ -90,33 +59,14 @@ export interface LatenessDetail {
   excuseInfo?: ExcuseInfo;
 }
 
-export interface StudentStatistics {
-  id: string;
-  name: string;
-  // Fehltage (whole days)
-  totalFehltage: number;
-  excusedFehltage: number;
-  unexcusedFehltage: number;
-  // Fehlstunden (individual lessons)
-  totalFehlstunden: number;
-  excusedFehlstunden: number;
-  unexcusedFehlstunden: number;
-  // Lateness in minutes
-  totalMinutes: number;
-  excusedLatenessMinutes: number;
-  unexcusedLatenessMinutes: number;
-  attendanceRate: number;
-  classId: string;
-  absenceDetails: AbsenceDetail[];
-  latenessDetails: LatenessDetail[];
-}
 
 // Current teacher name for filtering
 export const CURRENT_TEACHER = 'Schmidt';
 
 // Semester dates
 export const SEMESTER_START_DATE = '01.08.2024';
-export const getCurrentDate = () => new Date().toLocaleDateString('de-DE');
+// Re-export getCurrentDateString as getCurrentDate for compatibility
+export { getCurrentDateString as getCurrentDate } from './utils';
 
 // Helper function to generate excuse info
 const generateExcuseInfo = (type: 'excused' | 'unexcused'): ExcuseInfo | undefined => {
