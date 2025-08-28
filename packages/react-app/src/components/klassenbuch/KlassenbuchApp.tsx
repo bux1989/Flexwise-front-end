@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Header } from './Header';
 import { LiveView } from './LiveView';
 import { StatisticsView } from './StatisticsView';
-import { getAllCoursesAndClasses, getClassesForStatistics } from './data/mockData';
 import { useIsMobile } from '../ui/use-mobile';
-
-// Get both classes and courses
-const { classes, courses } = getAllCoursesAndClasses();
-const allItems = [...classes, ...courses];
+import { useKlassenbuchState } from '../../../shared/domains/academic/klassenbuch';
 
 export default function KlassenbuchApp() {
-  const [currentView, setCurrentView] = useState<'live' | 'statistics'>('live');
-  const [selectedWeek, setSelectedWeek] = useState(new Date());
-  // Default to teacher's personal schedule for live view
-  const [selectedClass, setSelectedClass] = useState(allItems[0]);
-  const [statisticsViewType, setStatisticsViewType] = useState<'class' | 'student' | 'course'>('class');
-  const [selectedStudent, setSelectedStudent] = useState<string>('');
   const isMobile = useIsMobile();
+
+  // Use domain hook for state management
+  const {
+    currentView,
+    selectedWeek,
+    selectedClass,
+    statisticsViewType,
+    selectedStudent,
+    allItems,
+    setCurrentView,
+    setSelectedWeek,
+    setSelectedClass,
+    setStatisticsViewType,
+    setSelectedStudent,
+    changeWeek,
+    goToCurrentWeek,
+    weekRange,
+    filteredClasses
+  } = useKlassenbuchState();
 
   const handleStudentSelect = (studentId: string) => {
     setSelectedStudent(studentId);
