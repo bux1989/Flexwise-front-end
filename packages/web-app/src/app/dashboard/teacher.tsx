@@ -46,7 +46,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // Attendance dialog state (for lesson schedule)
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [attendanceViewMode, setAttendanceViewMode] = useState<'overview' | 'edit'>('edit');
-  const [selectedLessonForAttendance, setSelectedLessonForAttendance] = useState<number | null>(null);
+  const [selectedLessonForAttendance, setSelectedLessonForAttendance] = useState<string | null>(null);
 
   // Mobile detection (simple check)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
