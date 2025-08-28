@@ -1,0 +1,85 @@
+erDiagram
+    STUDENTS {
+        uuid id PK
+        varchar student_number UK
+        varchar first_name
+        varchar last_name
+        varchar email
+        varchar phone
+        date date_of_birth
+        integer grade_level
+        date enrollment_date
+        student_status status
+        varchar guardian_name
+        varchar guardian_phone
+        varchar guardian_email
+        varchar emergency_contact
+        text medical_notes
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    
+    CLASSES {
+        uuid id PK
+        uuid subject_id FK
+        uuid teacher_id FK
+        varchar class_name
+        text description
+        integer schedule_day
+        time start_time
+        time end_time
+        varchar room_number
+        integer max_students
+        boolean active
+        varchar semester
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    
+    STUDENT_ATTENDANCE_LOGS {
+        uuid id PK
+        uuid student_id FK
+        uuid class_id FK
+        date attendance_date
+        attendance_status status
+        timestamptz check_in_time
+        timestamptz check_out_time
+        text notes
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    
+    SUBJECTS {
+        uuid id PK
+        varchar subject_name
+        varchar subject_code
+        text description
+        integer credit_hours
+        boolean active
+    }
+    
+    TEACHERS {
+        uuid id PK
+        varchar employee_id
+        varchar first_name
+        varchar last_name
+        varchar email
+        varchar phone
+        varchar department
+        boolean active
+    }
+    
+    CLASS_ENROLLMENT {
+        uuid id PK
+        uuid student_id FK
+        uuid class_id FK
+        date enrollment_date
+        varchar status
+    }
+    
+    STUDENTS ||--o{ STUDENT_ATTENDANCE_LOGS : "attends"
+    CLASSES ||--o{ STUDENT_ATTENDANCE_LOGS : "records"
+    STUDENTS ||--o{ CLASS_ENROLLMENT : "enrolls"
+    CLASSES ||--o{ CLASS_ENROLLMENT : "contains"
+    SUBJECTS ||--o{ CLASSES : "offered as"
+    TEACHERS ||--o{ CLASSES : "teaches"

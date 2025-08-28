@@ -1,0 +1,138 @@
+[
+  {
+    "name": "student_attendance_logs",
+    "type": "table",
+    "summary": "Tracks student presence, movement, and participation in classes",
+    "tags": ["attendance", "students", "logs", "tracking", "education"],
+    "links": ["tables/classes", "tables/students", "views/lesson_view_enriched"],
+    "searchTerms": ["attendance", "present", "absent", "late", "check-in", "roll-call"]
+  },
+  {
+    "name": "classes",
+    "type": "table", 
+    "summary": "Store information about individual class sessions and schedules",
+    "tags": ["classes", "schedule", "teachers", "subjects", "rooms"],
+    "links": ["tables/students", "tables/teachers", "tables/subjects", "views/lesson_view_enriched"],
+    "searchTerms": ["class", "schedule", "timetable", "room", "subject", "teacher"]
+  },
+  {
+    "name": "students",
+    "type": "table",
+    "summary": "Store student profile information and enrollment details", 
+    "tags": ["students", "profiles", "enrollment", "education", "FERPA"],
+    "links": ["tables/student_attendance_logs", "tables/class_enrollment", "policies/students__students_select_policy"],
+    "searchTerms": ["student", "enrollment", "profile", "contact", "guardian", "grade"]
+  },
+  {
+    "name": "subjects",
+    "type": "table",
+    "summary": "Store subject/course information and academic requirements",
+    "tags": ["subjects", "courses", "curriculum", "academics", "departments"],
+    "links": ["tables/classes", "tables/curriculum"],
+    "searchTerms": ["subject", "course", "curriculum", "department", "credit", "prerequisites"]
+  },
+  {
+    "name": "schedule_periods",
+    "type": "table",
+    "summary": "Define standardized time periods for class scheduling across the school",
+    "tags": ["schedule", "periods", "time", "bell", "timetable"],
+    "links": ["tables/classes", "tables/bell_schedule"],
+    "searchTerms": ["period", "schedule", "time", "bell", "timetable", "duration"]
+  },
+  {
+    "name": "vw_staff_availability_next_7_days",
+    "type": "view",
+    "summary": "Display teacher availability and schedule for the upcoming week",
+    "tags": ["teachers", "availability", "schedule", "planning", "staff"],
+    "links": ["tables/teachers", "tables/classes", "tables/teacher_availability"],
+    "searchTerms": ["teacher", "availability", "schedule", "staff", "planning", "substitute"]
+  },
+  {
+    "name": "lesson_view_enriched", 
+    "type": "view",
+    "summary": "Comprehensive lesson information with attendance and performance metrics",
+    "tags": ["lessons", "analytics", "performance", "metrics", "dashboard"],
+    "links": ["tables/classes", "tables/student_attendance_logs", "tables/subjects", "tables/teachers"],
+    "searchTerms": ["lesson", "class", "performance", "metrics", "dashboard", "analytics"]
+  },
+  {
+    "name": "daily_attendance_report",
+    "type": "function",
+    "summary": "Generate comprehensive daily attendance report for a specific class",
+    "tags": ["attendance", "reports", "daily", "teachers", "administration"],
+    "links": ["tables/student_attendance_logs", "tables/students", "tables/class_enrollment"],
+    "searchTerms": ["attendance", "report", "daily", "class", "roll-call"]
+  },
+  {
+    "name": "update_updated_at_column",
+    "type": "function", 
+    "summary": "Trigger function to automatically update the updated_at timestamp",
+    "tags": ["triggers", "timestamps", "audit", "maintenance", "utility"],
+    "links": ["triggers/update_students_timestamp"],
+    "searchTerms": ["timestamp", "updated_at", "trigger", "audit", "maintenance"]
+  },
+  {
+    "name": "update_students_timestamp",
+    "type": "trigger",
+    "summary": "Automatically updates the updated_at timestamp for student records",
+    "tags": ["timestamps", "audit", "students", "maintenance"],
+    "links": ["tables/students", "functions/update_updated_at_column"],
+    "searchTerms": ["timestamp", "student", "audit", "updated_at"]
+  },
+  {
+    "name": "log_attendance_changes",
+    "type": "trigger", 
+    "summary": "Maintains audit trail for all attendance record modifications",
+    "tags": ["audit", "attendance", "compliance", "logging"],
+    "links": ["tables/student_attendance_logs", "functions/audit_attendance_changes"],
+    "searchTerms": ["audit", "attendance", "changes", "compliance", "log"]
+  },
+  {
+    "name": "students_select_policy",
+    "type": "policy",
+    "summary": "Controls read access to student records based on user role and relationship",
+    "tags": ["RLS", "security", "students", "FERPA", "privacy"],
+    "links": ["tables/students"],
+    "searchTerms": ["RLS", "security", "student", "privacy", "access", "FERPA"]
+  },
+  {
+    "name": "attendance_insert_policy", 
+    "type": "policy",
+    "summary": "Restricts attendance record creation to authorized teachers",
+    "tags": ["RLS", "security", "attendance", "teachers", "authorization"],
+    "links": ["tables/student_attendance_logs"],
+    "searchTerms": ["RLS", "security", "attendance", "teacher", "authorization", "insert"]
+  },
+  {
+    "name": "idx_attendance_student_date",
+    "type": "index",
+    "summary": "Optimizes queries for student attendance by date",
+    "tags": ["performance", "attendance", "students", "date", "optimization"],
+    "links": ["tables/student_attendance_logs"],
+    "searchTerms": ["index", "performance", "attendance", "student", "date"]
+  },
+  {
+    "name": "idx_classes_schedule",
+    "type": "index", 
+    "summary": "Optimizes schedule-based queries for class timetables",
+    "tags": ["performance", "schedule", "classes", "timetable", "optimization"],
+    "links": ["tables/classes"],
+    "searchTerms": ["index", "performance", "schedule", "class", "timetable"]
+  },
+  {
+    "name": "unique_student_number",
+    "type": "constraint",
+    "summary": "Ensures each student has a unique identifier number",
+    "tags": ["integrity", "students", "unique", "identification"],
+    "links": ["tables/students"],
+    "searchTerms": ["constraint", "unique", "student", "number", "identifier"]
+  },
+  {
+    "name": "unique_attendance_per_day",
+    "type": "constraint",
+    "summary": "Prevents duplicate attendance records for same student/class/day",
+    "tags": ["integrity", "attendance", "unique", "duplicate-prevention"],
+    "links": ["tables/student_attendance_logs"],
+    "searchTerms": ["constraint", "unique", "attendance", "duplicate", "daily"]
+  }
+]
