@@ -121,42 +121,55 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setSelectedDate(date);
   };
 
-  const handleAttendanceClick = (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
+  const handleAttendanceClick = async (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
     setSelectedLessonForAttendance(lessonId);
     setAttendanceViewMode(viewMode);
     setAttendanceDialogOpen(true);
     console.log(`Attendance clicked for lesson ${lessonId} in ${viewMode} mode`);
 
-    // Initialize temp attendance state
-    const lesson = lessons.find(l => l.id === lessonId);
-    if (lesson && viewMode === 'edit') {
-      const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
+    if (viewMode === 'edit') {
+      try {
+        console.log('📋 Fetching existing attendance data for lesson:', lessonId);
 
-      // Initialize with existing attendance if available
-      if (lesson.attendance) {
-        lesson.attendance.present.forEach((student: any) => {
-          editAttendance[student.id] = { status: 'present' };
+        // Fetch actual attendance data from Supabase
+        const attendanceData = await fetchLessonAttendance(lessonId);
+
+        const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
+
+        // Process present students
+        attendanceData.present?.forEach((record: any) => {
+          editAttendance[record.student_id] = { status: 'present' };
         });
 
-        lesson.attendance.late.forEach((student: any) => {
-          editAttendance[student.id] = {
+        // Process late students
+        attendanceData.late?.forEach((record: any) => {
+          editAttendance[record.student_id] = {
             status: 'late',
-            minutesLate: student.minutesLate || 1,
-            arrivalTime: student.arrivalTime,
-            lateExcused: student.lateExcused || false
+            minutesLate: record.lateness_duration_minutes || 1,
+            arrivalTime: record.arrival_time || getDefaultLateTime(lessons.find(l => l.id === lessonId)),
+            lateExcused: record.is_excused || false
           };
         });
 
-        lesson.attendance.absent.forEach((student: any) => {
-          editAttendance[student.id] = {
-            status: student.excused ? 'excused' : 'unexcused',
-            excuseReason: student.reason || ''
+        // Process absent students (both excused and unexcused)
+        attendanceData.absent?.forEach((record: any) => {
+          editAttendance[record.student_id] = {
+            status: record.status === 'absent_excused' ? 'excused' : 'unexcused',
+            excuseReason: record.notes || ''
           };
         });
+
+        setTempAttendance(editAttendance);
+        setLessonNote(''); // TODO: Initialize with existing lesson note if available
+
+        console.log('✅ Attendance data loaded and prefilled:', editAttendance);
+
+      } catch (error) {
+        console.error('❌ Error fetching attendance data:', error);
+        // Initialize with empty state if fetch fails
+        setTempAttendance({});
+        setLessonNote('');
       }
-
-      setTempAttendance(editAttendance);
-      setLessonNote(''); // TODO: Initialize with existing lesson note if available
     }
   };
 
