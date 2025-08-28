@@ -1269,7 +1269,7 @@ export default function App() {
             ...l, 
             lessonNote: updatedLessonNote,
             ...(parsedNote.hasMetadata && lesson.attendanceTakenBy && lesson.attendanceTakenAt ? {
-              attendanceLastEditedBy: CURRENT_TEACHER,
+              attendanceLastEditedBy: currentTeacher,
               attendanceLastEditedAt: timestamp
             } : {})
           }
