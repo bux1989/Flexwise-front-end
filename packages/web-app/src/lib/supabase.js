@@ -398,62 +398,6 @@ export async function getLessonMeta(lessonId) {
   return data
 }
 
-// Fetch attendance badges for multiple lessons (for real-time updates)
-export async function fetchAttendanceBadges(lessonIds) {
-  try {
-    console.log('📊 Fetching attendance badges for lessons:', lessonIds)
-
-    if (!lessonIds || lessonIds.length === 0) {
-      return {}
-    }
-
-    // Query attendance logs for all lessons
-    const { data: attendanceLogs, error } = await supabase
-      .from('student_attendance_logs')
-      .select('lesson_id, status')
-      .in('lesson_id', lessonIds)
-
-    if (error) {
-      console.error('❌ Error fetching attendance badges:', error)
-      throw error
-    }
-
-    // Group attendance by lesson and count statuses
-    const badges = {}
-
-    lessonIds.forEach(lessonId => {
-      const lessonAttendance = attendanceLogs?.filter(log => log.lesson_id === lessonId) || []
-
-      const presentCount = lessonAttendance.filter(log => log.status === 'present').length
-      const lateCount = lessonAttendance.filter(log => log.status === 'late').length
-      const absentExcusedCount = lessonAttendance.filter(log => log.status === 'absent_excused').length
-      const absentUnexcusedCount = lessonAttendance.filter(log => log.status === 'absent_unexcused').length
-      const leftEarlyCount = lessonAttendance.filter(log => log.status === 'left_early').length
-
-      const absentCount = absentExcusedCount + absentUnexcusedCount
-      const totalStudents = lessonAttendance.length
-
-      badges[lessonId] = {
-        lesson_id: lessonId,
-        present_count: presentCount,
-        late_count: lateCount,
-        absent_count: absentCount,
-        absent_excused_count: absentExcusedCount,
-        absent_unexcused_count: absentUnexcusedCount,
-        left_early_count: leftEarlyCount,
-        total_students: totalStudents,
-        completion_percentage: totalStudents > 0 ? Math.round((lessonAttendance.length / totalStudents) * 100) : 0
-      }
-    })
-
-    console.log('✅ Attendance badges computed:', badges)
-    return badges
-
-  } catch (error) {
-    console.error('💥 Error in fetchAttendanceBadges:', error)
-    throw error
-  }
-}
 
 // Build student ID ↔ name pairs for a lesson
 export async function getLessonStudentNameIdPairs(lessonId) {
