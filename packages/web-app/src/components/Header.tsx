@@ -19,12 +19,12 @@ interface HeaderProps {
   klassenbuchClasses?: any[];
 }
 
-export function Header({
-  currentTeacher,
-  dateString,
-  onButtonClick,
-  showKlassenbuch = false,
-  klassenbuchView = 'live',
+export function Header({ 
+  currentTeacher, 
+  dateString, 
+  onButtonClick, 
+  showKlassenbuch = false, 
+  klassenbuchView = 'live', 
   onKlassenbuchViewChange,
   selectedWeek,
   onWeekChange,
@@ -39,16 +39,16 @@ export function Header({
     const day = startOfWeek.getDay();
     const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
     startOfWeek.setDate(diff);
-
+    
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 4);
-
-    const formatDate = (d: Date) => d.toLocaleDateString('de-DE', {
-      day: '2-digit',
+    
+    const formatDate = (d: Date) => d.toLocaleDateString('de-DE', { 
+      day: '2-digit', 
       month: '2-digit',
       year: 'numeric'
     });
-
+    
     return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
   };
 
@@ -73,93 +73,233 @@ export function Header({
 
   return (
     <header className="bg-white border-b px-3 py-2 lg:px-6 lg:py-4">
-      <div className="flex items-center justify-between">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">
-            {showKlassenbuch ? 'Klassenbuch' : `Hallo ${currentTeacher} 👋`}
-          </h1>
-          <p className="text-xs lg:text-sm text-gray-600 truncate">{dateString}</p>
-        </div>
+      {showKlassenbuch ? (
+        /* Klassenbuch Header Layout */
+        <div className="space-y-3">
+          {/* Top Row - Title and Actions */}
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg lg:text-2xl font-semibold text-gray-900">Klassenbuch</h1>
+            <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onButtonClick('Klassenbuch-Close')}
+                      className="h-8 w-8 lg:h-10 lg:w-10 p-0"
+                    >
+                      <LogOut className="h-4 w-4 lg:h-6 lg:w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Schließen</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-        {/* Klassenbuch Navigation */}
-        {showKlassenbuch && onKlassenbuchViewChange && (
-          <div className="flex items-center space-x-2 mr-4">
-            <Button
-              variant={klassenbuchView === 'live' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onKlassenbuchViewChange('live')}
-            >
-              Live Ansicht
-            </Button>
-            <Button
-              variant={klassenbuchView === 'statistics' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onKlassenbuchViewChange('statistics')}
-            >
-              Statistiken
-            </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onButtonClick('Mein Account')}
+                      className="h-8 w-8 lg:h-10 lg:w-10 p-0"
+                    >
+                      <User className="h-4 w-4 lg:h-6 lg:w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Mein Account</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onButtonClick('Ausloggen')}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 lg:h-10 lg:w-10 p-0"
+                    >
+                      <LogOut className="h-4 w-4 lg:h-6 lg:w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Ausloggen</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
-        )}
-        <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onButtonClick(showKlassenbuch ? 'Klassenbuch-Close' : 'Klassenbuch')}
-                  className="h-8 w-8 lg:h-10 lg:w-10 p-0"
-                >
-                  {showKlassenbuch ? (
-                    <LogOut className="h-4 w-4 lg:h-6 lg:w-6" />
-                  ) : (
-                    <BookOpen className="h-4 w-4 lg:h-6 lg:w-6" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{showKlassenbuch ? 'Schließen' : 'Klassenbuch'}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onButtonClick('Mein Account')}
-                  className="h-8 w-8 lg:h-10 lg:w-10 p-0"
-                >
-                  <User className="h-4 w-4 lg:h-6 lg:w-6" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Mein Account</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {/* Bottom Row - Navigation and Controls */}
+          <div className="flex items-center justify-between">
+            {/* Left side - View Navigation */}
+            <div className="flex items-center space-x-2">
+              {onKlassenbuchViewChange && (
+                <>
+                  <Button
+                    variant={klassenbuchView === 'live' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => onKlassenbuchViewChange('live')}
+                  >
+                    Live
+                  </Button>
+                  <Button
+                    variant={klassenbuchView === 'statistics' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => onKlassenbuchViewChange('statistics')}
+                  >
+                    Statistiken
+                  </Button>
+                </>
+              )}
+            </div>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
+            {/* Center - Week Navigation (only for Live view) */}
+            {klassenbuchView === 'live' && selectedWeek && onWeekChange && (
+              <div className="flex items-center space-x-4">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  onClick={() => onButtonClick('Ausloggen')}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 lg:h-10 lg:w-10 p-0"
+                  onClick={() => changeWeek('prev')}
+                  className="h-8 w-8 p-0"
                 >
-                  <LogOut className="h-4 w-4 lg:h-6 lg:w-6" />
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Ausloggen</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium min-w-48 text-center">
+                    {formatWeekRange(selectedWeek)}
+                  </span>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => changeWeek('next')}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={getCurrentWeek}
+                  className="text-xs"
+                >
+                  Heute
+                </Button>
+              </div>
+            )}
+
+            {/* Right side - Class Selection */}
+            {shouldShowClassSelection() && selectedClass && onClassChange && (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium">Klasse/Kurs:</span>
+                <Select value={selectedClass.id} onValueChange={(classId) => {
+                  const selectedClassItem = klassenbuchClasses.find(c => c.id === classId);
+                  if (selectedClassItem && onClassChange) {
+                    onClassChange(selectedClassItem);
+                  }
+                }}>
+                  <SelectTrigger className="w-64">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {klassenbuchClasses.map((classItem) => (
+                      <SelectItem key={classItem.id} value={classItem.id}>
+                        <div className="flex items-center space-x-2">
+                          <span>{classItem.name}</span>
+                          {classItem.type === 'course' && (
+                            <Badge variant="secondary" className="text-xs">
+                              Kurs
+                            </Badge>
+                          )}
+                          {classItem.type === 'teacher' && (
+                            <Badge variant="outline" className="text-xs">
+                              Eigene
+                            </Badge>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        /* Normal Dashboard Header */
+        <div className="flex items-center justify-between">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">Hallo {currentTeacher} 👋</h1>
+            <p className="text-xs lg:text-sm text-gray-600 truncate">{dateString}</p>
+          </div>
+          <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onButtonClick('Klassenbuch')}
+                    className="h-8 w-8 lg:h-10 lg:w-10 p-0"
+                  >
+                    <BookOpen className="h-4 w-4 lg:h-6 lg:w-6" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Klassenbuch</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onButtonClick('Mein Account')}
+                    className="h-8 w-8 lg:h-10 lg:w-10 p-0"
+                  >
+                    <User className="h-4 w-4 lg:h-6 lg:w-6" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Mein Account</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onButtonClick('Ausloggen')}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 lg:h-10 lg:w-10 p-0"
+                  >
+                    <LogOut className="h-4 w-4 lg:h-6 lg:w-6" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Ausloggen</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
