@@ -697,8 +697,8 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         }
         break;
       case 'Klassenbuch':
-        console.log('📖 Toggling main content visibility');
-        setShowMainContent(!showMainContent);
+        console.log('📖 Toggling between dashboard and klassenbuch');
+        setShowKlassenbuch(!showKlassenbuch);
         break;
       case 'Mein Account':
         alert(`${action} wird bald verfügbar sein`);
