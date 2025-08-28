@@ -44,7 +44,30 @@ export default function App() {
   // User profile state
   const [currentTeacher, setCurrentTeacher] = useState(CURRENT_TEACHER); // fallback to mock data
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-  
+
+  // Load user profile on component mount
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        const profile = await getCurrentUserProfile();
+        if (profile && profile.first_name && profile.last_name) {
+          // Format the teacher name (e.g., "Frau Anna Müller" or "Herr John Schmidt")
+          const salutation = profile.role === 'Teacher' ?
+            (profile.first_name.endsWith('a') || profile.first_name.endsWith('e') ? 'Frau' : 'Herr') : 'Frau';
+          const fullName = `${salutation} ${profile.first_name} ${profile.last_name}`;
+          setCurrentTeacher(fullName);
+        }
+      } catch (error) {
+        console.warn('Could not load user profile, using fallback:', error);
+        // Keep the fallback value (CURRENT_TEACHER)
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    loadUserProfile();
+  }, []);
+
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [events, setEvents] = useState(INITIAL_EVENTS);
   const [lessons, setLessons] = useState(INITIAL_LESSONS);
