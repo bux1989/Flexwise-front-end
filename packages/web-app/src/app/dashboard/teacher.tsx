@@ -29,16 +29,16 @@ import {
   getAttendanceStatus,
   getAttendanceSummary,
   getAttendanceNumbers
-} from '../../../shared/domains/attendance/fehlzeiten/utils';
+} from '../../../../shared/domains/attendance/fehlzeiten/utils';
 
 import {
   getSubstituteLessons,
   getTeacherAbbreviation
-} from '../../../shared/domains/scheduling/stundenplan/utils';
+} from '../../../../shared/domains/scheduling/stundenplan/utils';
 
 import {
   getPriorityValue
-} from '../../../shared/domains/management/to-do-list/utils';
+} from '../../../../shared/domains/management/to-do-list/utils';
 
 import {
   formatDateTime,
@@ -46,7 +46,7 @@ import {
   formatCompactTimestamp,
   createLessonNoteWithMetadata,
   parseLessonNote
-} from '../../../shared/utils/dateHelpers';
+} from '../../../../shared/utils/dateHelpers';
 
 interface TeacherDashboardProps {
   user?: any;
