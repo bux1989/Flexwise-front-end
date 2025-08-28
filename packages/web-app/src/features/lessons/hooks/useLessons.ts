@@ -101,7 +101,7 @@ export function useLessons(teacherId: string | null, selectedDate: Date): UseLes
       const supabaseLessons = await fetchTodaysLessons(teacherId, selectedDate);
       
       // Fetch attendance badges for all lessons
-      const lessonIds = supabaseLessons.map(lesson => lesson.id);
+      const lessonIds = supabaseLessons.map(lesson => lesson.lesson_id);
       const attendanceBadges = lessonIds.length > 0 ? await fetchAttendanceBadges(lessonIds) : {};
       
       // Transform data to match component expectations
