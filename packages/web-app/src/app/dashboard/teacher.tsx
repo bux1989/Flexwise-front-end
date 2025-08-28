@@ -66,6 +66,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Klassenbuch view state
   const [showKlassenbuch, setShowKlassenbuch] = useState(false);
+  const [klassenbuchView, setKlassenbuchView] = useState<'live' | 'statistics'>('live');
 
   // Load user profile on component mount
   useEffect(() => {
@@ -538,6 +539,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         currentTeacher={isLoadingProfile ? "Wird geladen..." : currentTeacher}
         dateString={loadingLessons ? "Stundenplan wird geladen..." : dateString}
         onButtonClick={handleHeaderButtonClick}
+        showKlassenbuch={showKlassenbuch}
+        klassenbuchView={klassenbuchView}
+        onKlassenbuchViewChange={setKlassenbuchView}
       />
 
       {/* Real-time Status Indicator */}
@@ -561,23 +565,12 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       {/* Klassenbuch content - show when active */}
       {showKlassenbuch ? (
         <div className="mx-6 mt-4">
-          <div className="bg-white rounded-lg border p-4 mb-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Klassenbuch</h2>
-              <Button
-                variant="outline"
-                onClick={handleKlassenbuchClose}
-                className="flex items-center space-x-2"
-              >
-                <X className="h-4 w-4" />
-                <span>Schließen</span>
-              </Button>
-            </div>
-          </div>
           <KlassenbuchApp
             onClose={handleKlassenbuchClose}
             currentTeacher={currentTeacher}
             hideHeader={true}
+            currentView={klassenbuchView}
+            onViewChange={setKlassenbuchView}
           />
         </div>
       ) : (
