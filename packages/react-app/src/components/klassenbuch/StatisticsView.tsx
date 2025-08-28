@@ -705,7 +705,7 @@ export function StatisticsView({ selectedClass, onViewTypeChange, selectedStuden
               <CardContent className="p-3">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
-                    <strong>Statistikzeitraum:</strong> {SEMESTER_START_DATE} bis {getCurrentDate()}
+                    <strong>Statistikzeitraum:</strong> {SEMESTER_START_DATE} bis {getCurrentDateString()}
                   </p>
                 </div>
               </CardContent>
