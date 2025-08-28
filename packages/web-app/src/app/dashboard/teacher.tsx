@@ -324,27 +324,43 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Function to switch to edit mode with proper data fetching
   const switchToEditMode = async () => {
-    if (!selectedLessonForAttendance) return;
+    if (!selectedLessonForAttendance || attendanceLoading) {
+      console.log('⏳ Cannot switch to edit mode - no lesson selected or loading in progress');
+      return;
+    }
+
+    const lessonId = selectedLessonForAttendance;
+    setAttendanceLoading(true);
 
     try {
-      console.log('🔄 Switching to edit mode and fetching data for lesson:', selectedLessonForAttendance);
+      console.log('🔄 Switching to edit mode for lesson:', lessonId);
 
-      // Fetch both attendance data and lesson diary entry from Supabase
+      // Fetch both attendance data and lesson diary entry
       const [attendanceData, diaryEntry] = await Promise.all([
-        fetchLessonAttendance(selectedLessonForAttendance),
-        fetchLessonDiaryEntry(selectedLessonForAttendance)
+        fetchLessonAttendance(lessonId),
+        fetchLessonDiaryEntry(lessonId)
       ]);
 
-      // Prepare tempAttendance for editing
+      // Check if lesson is still selected
+      if (selectedLessonForAttendance !== lessonId) {
+        console.log('🚫 Lesson changed during edit mode switch, discarding results');
+        return;
+      }
+
+      const lesson = lessons.find(l => l.id === lessonId);
+      if (!lesson) {
+        throw new Error(`Lesson ${lessonId} not found`);
+      }
+
       const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
 
-      // Build a lookup of display student name -> synthetic student id used in UI
-      const lesson = lessons.find(l => l.id === selectedLessonForAttendance);
+      // Build student ID lookup
       const nameToStudentId = new Map<string, string>();
-      lesson?.students?.forEach((s: any) => {
+      lesson.students?.forEach((s: any) => {
         const baseName = (s.name?.split(' (')[0] || '').trim().toLowerCase();
         if (baseName) nameToStudentId.set(baseName, s.id);
       });
+
       const getUiStudentId = (record: any): string | undefined => {
         const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
         const first = profile?.first_name || '';
@@ -353,25 +369,16 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         return nameToStudentId.get(key);
       };
 
-      // Process present students
+      // Process attendance data
       attendanceData.present?.forEach((record: any) => {
         const sid = getUiStudentId(record);
-        if (!sid) {
-          console.warn('⚠️ Could not match present record to UI student:', record);
-          return;
-        }
-        editAttendance[sid] = { status: 'present' };
+        if (sid) editAttendance[sid] = { status: 'present' };
       });
 
-      // Process late students
       attendanceData.late?.forEach((record: any) => {
         const sid = getUiStudentId(record);
-        if (!sid) {
-          console.warn('⚠️ Could not match late record to UI student:', record);
-          return;
-        }
+        if (!sid) return;
 
-        // Determine minutes late using DB value or fallback to recorded_at vs lesson start
         const startParts = (lesson?.time || '').split(':').map(Number);
         const base = new Date(selectedDate);
         if (!isNaN(startParts[0]) && !isNaN(startParts[1])) {
@@ -384,7 +391,6 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
               ? Math.max(1, Math.floor((recordedAt.getTime() - base.getTime()) / (1000 * 60)))
               : 5);
 
-        // Compute arrival time = lesson start + minutesLate
         const arrival = new Date(base.getTime() + minutesLate * 60000);
         const arrivalTime = `${arrival.getHours().toString().padStart(2, '0')}:${arrival.getMinutes().toString().padStart(2, '0')}`;
 
@@ -396,31 +402,35 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         };
       });
 
-      // Process absent students (both excused and unexcused)
       attendanceData.absent?.forEach((record: any) => {
         const sid = getUiStudentId(record);
-        if (!sid) {
-          console.warn('⚠️ Could not match absent record to UI student:', record);
-          return;
+        if (sid) {
+          editAttendance[sid] = {
+            status: record.status === 'absent_excused' ? 'excused' : 'unexcused',
+            excuseReason: record.notes || ''
+          };
         }
-        editAttendance[sid] = {
-          status: record.status === 'absent_excused' ? 'excused' : 'unexcused',
-          excuseReason: record.notes || ''
-        };
       });
 
-      setTempAttendance(editAttendance);
-      setLessonNote(diaryEntry); // Use fetched diary entry
-      setAttendanceViewMode('edit');
+      // Only update state if lesson is still selected
+      if (selectedLessonForAttendance === lessonId) {
+        setTempAttendance(editAttendance);
+        setLessonNote(diaryEntry);
+        setAttendanceViewMode('edit');
+      }
 
-      console.log('✅ Switched to edit mode with prefilled data:', editAttendance);
-      console.log('📝 Lesson diary entry loaded:', diaryEntry);
+      console.log('✅ Switched to edit mode successfully');
 
     } catch (error) {
       console.error('❌ Error switching to edit mode:', error);
-      setTempAttendance({});
-      setLessonNote(''); // Reset to empty on error
-      setAttendanceViewMode('edit');
+      // Only update state if lesson is still selected
+      if (selectedLessonForAttendance === lessonId) {
+        setTempAttendance({});
+        setLessonNote('');
+        setAttendanceViewMode('edit');
+      }
+    } finally {
+      setAttendanceLoading(false);
     }
   };
 
