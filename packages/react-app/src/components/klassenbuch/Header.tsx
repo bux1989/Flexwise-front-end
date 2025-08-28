@@ -35,9 +35,9 @@ export function Header({
   selectedClass,
   onClassChange,
   classes,
-  statisticsViewType = 'class'
+  statisticsViewType = 'class',
+  isMobile = false
 }: HeaderProps) {
-  const isMobile = useIsMobile();
 
   // Get filtered classes based on current view and statistics view type
   const getFilteredClasses = () => {
