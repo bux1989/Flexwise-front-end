@@ -91,8 +91,7 @@ export async function getCurrentUserProfile() {
       .from('user_profiles')
       .select(`
         *,
-        roles(name),
-        structure_schools(name)
+        roles(name)
       `)
       .eq('id', profileId)
       .single()
