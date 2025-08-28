@@ -558,7 +558,29 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         </div>
       )}
 
-      <div className="p-1 lg:p-6">
+      {/* Klassenbuch content - show when active */}
+      {showKlassenbuch ? (
+        <div className="mx-6 mt-4">
+          <div className="bg-white rounded-lg border p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Klassenbuch</h2>
+              <Button
+                variant="outline"
+                onClick={handleKlassenbuchClose}
+                className="flex items-center space-x-2"
+              >
+                <X className="h-4 w-4" />
+                <span>Schließen</span>
+              </Button>
+            </div>
+          </div>
+          <KlassenbuchApp
+            onClose={handleKlassenbuchClose}
+            currentTeacher={currentTeacher}
+          />
+        </div>
+      ) : (
+        <div className="p-1 lg:p-6">
         {/* Top Row - 2 columns */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6 mb-3 lg:mb-6">
           {/* Schedule/Lesson Management - Left Column */}
@@ -600,7 +622,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             isMobile={isMobile}
           />
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Attendance Dialog */}
       <Dialog open={attendanceDialogOpen} onOpenChange={(open) => {
