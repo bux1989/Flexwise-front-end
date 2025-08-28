@@ -94,6 +94,16 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
         // Transform Supabase data to match expected structure
         const now = new Date();
+
+        // Debug logging for character encoding issues
+        console.log('🔍 Raw lesson data for character check:', lessonsData.map(lesson => ({
+          subject: lesson.subject_name,
+          class: lesson.class_name,
+          room: lesson.room_name,
+          teacher_names: lesson.teacher_names,
+          student_names: lesson.student_names_with_class
+        })));
+
         const transformedLessons = await Promise.all(lessonsData.map(async (lesson, index) => {
           const startTime = lesson.start_datetime ? new Date(lesson.start_datetime) : null;
           const endTime = lesson.end_datetime ? new Date(lesson.end_datetime) : null;
@@ -145,21 +155,30 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             });
           }
 
+          // Helper function to clean text and remove problematic characters
+          const cleanText = (text: string | null | undefined): string => {
+            if (!text) return '';
+            return text
+              .replace(/[\uFFFD\u00EF\u00BF\u00BD]/g, '') // Remove replacement characters
+              .replace(/[^\u0000-\u007F\u00A0-\u017F\u0100-\u024F]/g, '') // Keep only Latin characters
+              .trim();
+          };
+
           return {
             ...lesson,
             id: lesson.lesson_id || lesson.id,
-            subject: lesson.subject_name || lesson.subject,
-            class: lesson.class_name || lesson.class,
-            room: lesson.room_name || lesson.room,
+            subject: cleanText(lesson.subject_name || lesson.subject),
+            class: cleanText(lesson.class_name || lesson.class),
+            room: cleanText(lesson.room_name || lesson.room),
             time: startTime ? startTime.toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : lesson.time,
             endTime: endTime ? endTime.toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : lesson.endTime,
             isSubstitute,
             isCancelled,
             isCurrent,
             teacherRole: 'main',
-            otherTeachers: lesson.teacher_names ? lesson.teacher_names.map(name => ({ name })) : [],
+            otherTeachers: lesson.teacher_names ? lesson.teacher_names.map(name => ({ name: cleanText(name) })) : [],
             enrolled: badgeData?.total_students || lesson.student_count || 0,
-            students: lesson.student_names_with_class ? lesson.student_names_with_class.map((name, index) => ({ id: index + 1, name })) : [],
+            students: lesson.student_names_with_class ? lesson.student_names_with_class.map((name, index) => ({ id: index + 1, name: cleanText(name) })) : [],
             attendanceTaken: lesson.attendance_taken || false,
             lessonNote: '',
             // Use real attendance data if available
