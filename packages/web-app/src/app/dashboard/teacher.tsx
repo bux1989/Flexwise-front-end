@@ -131,7 +131,6 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
       // Fetch actual attendance data from Supabase
       const attendanceData = await fetchLessonAttendance(lessonId);
-      const lesson = lessons.find(l => l.id === lessonId);
 
       // Always respect the explicitly requested view mode
       // The badge logic already determines the appropriate mode:
