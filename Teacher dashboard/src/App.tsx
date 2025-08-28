@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Calendar, Bell, MessageCircle, Menu, Info, Clock, MapPin, Plus, Check, AlertCircle, X, Edit, Trash2, HelpCircle, UserPlus, Search, Filter, Star, ChevronDown, ChevronUp, EyeOff, Eye, BookOpen, Users, UserX, User, FileText, LogOut, CalendarIcon, ClipboardList, MoreHorizontal } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import { Button } from './components/ui/button';
@@ -20,14 +20,14 @@ import { Header } from './components/Header';
 import { AddTaskDialog } from './components/AddTaskDialog';
 import { TimeInputWithArrows } from './components/TimeInputWithArrows';
 import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, INITIAL_LESSONS, ASSIGNEE_GROUPS } from './constants/mockData';
-import { 
-  getSubstituteLessons, 
-  getPriorityValue, 
-  needsAttendanceTracking, 
-  getAttendanceStatus, 
-  getAttendanceSummary, 
-  getAttendanceNumbers, 
-  formatDateTime, 
+import {
+  getSubstituteLessons,
+  getPriorityValue,
+  needsAttendanceTracking,
+  getAttendanceStatus,
+  getAttendanceSummary,
+  getAttendanceNumbers,
+  formatDateTime,
   formatTimestamp,
   formatCompactTimestamp,
   getTeacherAbbreviation,
@@ -35,8 +35,15 @@ import {
   parseLessonNote
 } from './utils/helpers';
 
+// Import Supabase helper
+import { getCurrentUserProfile } from '../../packages/shared/lib/supabaseClient';
+
 export default function App() {
   const isMobile = useIsMobile();
+
+  // User profile state
+  const [currentTeacher, setCurrentTeacher] = useState(CURRENT_TEACHER); // fallback to mock data
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [events, setEvents] = useState(INITIAL_EVENTS);
