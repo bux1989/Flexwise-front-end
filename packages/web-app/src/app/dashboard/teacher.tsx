@@ -129,8 +129,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     try {
       console.log('📋 Fetching existing attendance data for lesson:', lessonId);
 
-      // Fetch actual attendance data from Supabase
-      const attendanceData = await fetchLessonAttendance(lessonId);
+      // Fetch both attendance data and lesson diary entry from Supabase
+      const [attendanceData, diaryEntry] = await Promise.all([
+        fetchLessonAttendance(lessonId),
+        fetchLessonDiaryEntry(lessonId)
+      ]);
 
       // Always respect the explicitly requested view mode
       // The badge logic already determines the appropriate mode:
