@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
+import 'dayjs/locale/de';
 import { Calendar } from 'lucide-react';
 import { Button } from './button';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { cn } from './utils';
+
+// Set dayjs locale to German
+dayjs.locale('de');
 
 interface DatePickerProps {
   label?: string;
@@ -28,37 +35,19 @@ export function DatePicker({
 }: DatePickerProps) {
   // Internal state for uncontrolled mode
   const [internalValue, setInternalValue] = useState<Dayjs | null>(defaultValue || null);
-  const [isOpen, setIsOpen] = useState(false);
 
   // Determine if this is controlled or uncontrolled
   const isControlled = value !== undefined;
   const currentValue = isControlled ? value : internalValue;
 
-  const handleDateSelect = (date: Date | undefined) => {
-    if (!date) return;
-    
-    const dayjsDate = dayjs(date);
-    
+  const handleDateChange = (newValue: Dayjs | null) => {
     if (isControlled) {
-      onChange?.(dayjsDate);
+      onChange?.(newValue);
     } else {
-      setInternalValue(dayjsDate);
-      onChange?.(dayjsDate);
-    }
-    
-    setIsOpen(false);
-  };
-
-  const handleClear = () => {
-    if (isControlled) {
-      onChange?.(null);
-    } else {
-      setInternalValue(null);
-      onChange?.(null);
+      setInternalValue(newValue);
+      onChange?.(newValue);
     }
   };
-
-  const displayValue = currentValue ? currentValue.format(format) : '';
 
   return (
     <div className={cn("flex flex-col space-y-2", className)}>
@@ -68,58 +57,40 @@ export function DatePicker({
         </label>
       )}
       
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !currentValue && "text-muted-foreground"
-            )}
-            disabled={disabled}
-          >
-            <Calendar className="mr-2 h-4 w-4" />
-            {displayValue || placeholder}
-          </Button>
-        </PopoverTrigger>
-        
-        <PopoverContent className="w-auto p-3" align="start">
-          <div className="space-y-2">
-            <input
-              type="date"
-              value={currentValue ? currentValue.format('YYYY-MM-DD') : ''}
-              onChange={(e) => {
-                if (e.target.value) {
-                  handleDateSelect(new Date(e.target.value));
-                }
-              }}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleDateSelect(new Date())}
-                className="flex-1"
-              >
-                Heute
-              </Button>
-
-              {currentValue && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClear}
-                  className="text-red-600 hover:text-red-700 flex-1"
-                >
-                  Löschen
-                </Button>
-              )}
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
+        <MuiDatePicker
+          value={currentValue}
+          onChange={handleDateChange}
+          disabled={disabled}
+          format={format}
+          slotProps={{
+            textField: {
+              placeholder,
+              variant: 'outlined',
+              size: 'small',
+              fullWidth: true,
+              sx: {
+                '& .MuiOutlinedInput-root': {
+                  height: '40px',
+                  borderRadius: '6px',
+                  borderColor: '#d1d5db',
+                  '&:hover': {
+                    borderColor: '#9ca3af',
+                  },
+                  '&.Mui-focused': {
+                    borderColor: '#3b82f6',
+                    boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.2)',
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                },
+              },
+            },
+          }}
+        />
+      </LocalizationProvider>
     </div>
   );
 }
@@ -146,30 +117,18 @@ export function CompactDatePicker({
   const isControlled = value !== undefined;
   const currentValue = isControlled ? value : internalValue;
 
-  const handleDateSelect = (date: Date | undefined) => {
-    if (!date) return;
-    
-    const dayjsDate = dayjs(date);
-    
+  const handleDateChange = (newValue: Dayjs | null) => {
     if (isControlled) {
-      onChange?.(dayjsDate);
+      onChange?.(newValue);
     } else {
-      setInternalValue(dayjsDate);
-      onChange?.(dayjsDate);
+      setInternalValue(newValue);
+      onChange?.(newValue);
     }
-    
-    setIsOpen(false);
   };
 
   const handleToday = () => {
     const today = dayjs();
-    
-    if (isControlled) {
-      onChange?.(today);
-    } else {
-      setInternalValue(today);
-      onChange?.(today);
-    }
+    handleDateChange(today);
   };
 
   const isToday = currentValue?.isSame(dayjs(), 'day');
@@ -203,22 +162,37 @@ export function CompactDatePicker({
         </PopoverTrigger>
         
         <PopoverContent className="w-auto p-3" align="end">
-          <div className="space-y-2">
-            <input
-              type="date"
-              value={currentValue ? currentValue.format('YYYY-MM-DD') : ''}
-              onChange={(e) => {
-                if (e.target.value) {
-                  handleDateSelect(new Date(e.target.value));
-                }
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
+            <MuiDatePicker
+              value={currentValue}
+              onChange={(newValue) => {
+                handleDateChange(newValue);
+                setIsOpen(false);
               }}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              disabled={disabled}
+              slotProps={{
+                textField: {
+                  size: 'small',
+                  sx: {
+                    width: '200px',
+                    '& .MuiOutlinedInput-root': {
+                      height: '36px',
+                      borderRadius: '6px',
+                    },
+                  },
+                },
+              }}
             />
-
+          </LocalizationProvider>
+          
+          <div className="mt-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleDateSelect(new Date())}
+              onClick={() => {
+                handleToday();
+                setIsOpen(false);
+              }}
               className="w-full"
             >
               Heute
