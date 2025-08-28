@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Settings from '../../../components/Settings'
+import Settings from '../../components/Settings'
 import { AdminDashboard as AdminDashboardFeature } from '../../features/user-management/components/AdminDashboard'
 
 export default function AdminDashboard({ user }) {
