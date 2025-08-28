@@ -4,7 +4,7 @@ import { Calendar } from 'lucide-react';
 import { Button } from './button';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Calendar as CalendarComponent } from './calendar';
-import { cn } from '../../lib/utils';
+import { cn } from './utils';
 
 interface DatePickerProps {
   label?: string;
