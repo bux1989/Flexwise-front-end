@@ -64,7 +64,7 @@ export default function Login() {
 
             <div className="mb-6 flex justify-center">
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fc537084d33954bda931d75d8c7afc864?format=webp&width=800"
+                src="/logo.png"
                 alt="FlexWise - Flexible Tools for Smart Schools"
                 className="h-16 w-auto"
               />
