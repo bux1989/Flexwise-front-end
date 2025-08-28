@@ -54,6 +54,9 @@ interface TeacherDashboardProps {
 
 export default function TeacherDashboard({ user, profile }: TeacherDashboardProps) {
   const isMobile = useIsMobile();
+
+  // Debug logging to see what profile data we receive
+  console.log('🎭 TeacherDashboard received profile:', profile);
   
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [events, setEvents] = useState(INITIAL_EVENTS);

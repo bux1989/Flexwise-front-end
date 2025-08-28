@@ -60,7 +60,10 @@ function App() {
       const profileId = user.user_metadata?.profile_id
       if (!profileId) {
         console.error('❌ No profile_id in user metadata for:', user.email)
-        setUserProfile(createFallbackProfile(user, DEFAULT_ROLE))
+        console.log('🔍 User metadata:', user.user_metadata)
+        const fallbackProfile = createFallbackProfile(user, DEFAULT_ROLE)
+        console.log('🚨 Using fallback profile:', fallbackProfile)
+        setUserProfile(fallbackProfile)
         return
       }
 
@@ -84,18 +87,23 @@ function App() {
       console.log('📋 Profile query result:', { profile, profileError })
       console.log('🏷️ Profile first_name:', profile?.first_name)
 
-      setUserProfile({
+      const finalProfile = {
         ...(profile || {}),
         id: profileId,
         email: user.email,
         first_name: profile?.first_name || 'User',
         last_name: profile?.last_name || '',
         role
-      })
+      }
+
+      console.log('🎯 Final profile being set:', finalProfile)
+      setUserProfile(finalProfile)
 
     } catch (error) {
       console.error('💥 Profile load error:', error)
-      setUserProfile(createFallbackProfile(user, DEFAULT_ROLE))
+      const fallbackProfile = createFallbackProfile(user, DEFAULT_ROLE)
+      console.log('🚨 Using fallback profile due to error:', fallbackProfile)
+      setUserProfile(fallbackProfile)
     } finally {
       setLoading(false)
       setProfileLoading(false)
