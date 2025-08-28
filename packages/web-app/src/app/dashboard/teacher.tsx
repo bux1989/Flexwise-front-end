@@ -955,7 +955,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                   </div>
 
                   {/* Bottom Save Button - Duplicate of the top save button for better UX */}
-                  <div className="flex justify-end pt-4 border-t">
+                  <div className="flex justify-center lg:justify-end pt-4 border-t">
                     <Button onClick={saveAttendance} className="bg-green-600 hover:bg-green-700">
                       Anwesenheit speichern
                     </Button>
