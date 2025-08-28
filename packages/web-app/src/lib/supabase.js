@@ -117,13 +117,12 @@ export async function getCurrentUserProfile() {
     }
     
     const role = profile.roles?.name || 'Parent'
-    const school = profile.structure_schools?.name || 'Unknown School'
-    
+
     console.log('✅ Profile loaded successfully:', {
       profile_id: profile.id,
       name: `${profile.first_name} ${profile.last_name}`,
       role: role,
-      school: school
+      school_id: profile.school_id
     })
     
     return {
