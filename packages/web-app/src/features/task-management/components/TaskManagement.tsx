@@ -221,7 +221,23 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
   return (
     <Card>
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-3">
-        <CardTitle className="text-lg lg:text-xl font-bold">Task Management</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle className="text-lg lg:text-xl font-bold">Task Management</CardTitle>
+          {typeof window !== 'undefined' && window.innerWidth < 1024 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                // Create a simple toggle function for tasks section
+                const event = new CustomEvent('toggleTasksSection');
+                window.dispatchEvent(event);
+              }}
+              className="h-6 w-6 p-0"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
         {canAssignTasks && (
           <Button 
             onClick={() => setAddTaskDialogOpen(true)}
@@ -234,7 +250,8 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
         )}
       </CardHeader>
       <CardContent className="space-y-2 lg:space-y-4">
-        {/* Task Filters */}
+        {/* Task Filters - hide on mobile (original pattern shows no filters on mobile) */}
+        {typeof window !== 'undefined' && window.innerWidth >= 1024 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -280,10 +297,12 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
             <label htmlFor="hotlist" className="text-xs lg:text-sm">Hot List Only</label>
           </div>
         </div>
+        )}
 
-        {/* Task View Toggle */}
+        {/* Task View Toggle - hide on mobile */}
+        {typeof window !== 'undefined' && window.innerWidth >= 1024 && (
         <div className="flex items-center space-x-2">
-          <Checkbox 
+          <Checkbox
             id="completed"
             checked={showCompletedTasks}
             onCheckedChange={setShowCompletedTasks}
@@ -292,6 +311,7 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
             Show Completed Tasks ({tasks.filter(t => t.completed).length})
           </label>
         </div>
+        )}
 
         {/* Task List */}
         <div className="space-y-3">
