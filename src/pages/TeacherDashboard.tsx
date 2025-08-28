@@ -1424,21 +1424,14 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                 >
                   Heute
                 </Button>
-                <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <Calendar className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="end">
-                    <CalendarComponent
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={handleDateSelect}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <div className="max-w-[280px]">
+                  <DatePicker
+                    date={selectedDate}
+                    onDateChange={handleDateSelect}
+                    placeholder="Datum auswählen"
+                    className="h-8 text-sm"
+                  />
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-1">
@@ -1497,7 +1490,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                   <div className={`flex items-center gap-2 flex-wrap ${lesson.isCancelled ? 'text-red-600' : ''}`}>
                                     {lesson.isCancelled ? (
                                       <span className="text-base font-medium">
-                                        {getMobileSubjectAbbreviation(lesson.subject)} {lesson.class} ��� Entfällt
+                                        {getMobileSubjectAbbreviation(lesson.subject)} {lesson.class} – Entfällt
                                       </span>
                                     ) : (
                                       <>
