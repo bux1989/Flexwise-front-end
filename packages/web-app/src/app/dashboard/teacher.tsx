@@ -355,6 +355,40 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setTempAttendance(newAttendance);
   };
 
+  // Function to refresh attendance data for a specific lesson
+  const refreshLessonAttendanceData = async (lessonId: string) => {
+    try {
+      console.log('🔄 Refreshing attendance data for lesson:', lessonId);
+
+      // Fetch updated attendance data
+      const updatedAttendanceData = await fetchLessonAttendance(lessonId);
+
+      // Update the lessons state with fresh attendance data
+      setLessons(prevLessons =>
+        prevLessons.map(lesson => {
+          if (lesson.id === lessonId) {
+            return {
+              ...lesson,
+              attendanceData: updatedAttendanceData,
+              // Update attendance summary for badge calculations
+              attendance: {
+                present: updatedAttendanceData.present?.length || 0,
+                late: updatedAttendanceData.late?.length || 0,
+                absent: updatedAttendanceData.absent?.length || 0,
+                total: lesson.students?.length || 0
+              }
+            };
+          }
+          return lesson;
+        })
+      );
+
+      console.log('✅ Lesson attendance data refreshed');
+    } catch (error) {
+      console.error('❌ Failed to refresh attendance data:', error);
+    }
+  };
+
   const saveAttendance = async () => {
     if (!selectedLesson) return;
     try {
