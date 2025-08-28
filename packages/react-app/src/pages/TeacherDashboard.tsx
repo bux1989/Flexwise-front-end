@@ -82,7 +82,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
 
         // Fetch lessons for the selected date
         const lessonsData = await fetchTodaysLessons(profile.id, selectedDate);
-        console.log('📚 Raw lessons data from Supabase:', lessonsData);
+        console.log('�� Raw lessons data from Supabase:', lessonsData);
 
         // Fetch attendance badge data for all lessons
         const lessonIds = lessonsData.map(lesson => lesson.lesson_id || lesson.id);
@@ -404,14 +404,14 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
         ...task, 
         completed: true,
         completedAt: now,
-        completedBy: CURRENT_TEACHER,
+        completedBy: getCurrentTeacherName(),
         comments: completionComment.trim() ? [
           ...task.comments,
           {
             id: task.comments.length + 1,
             text: completionComment.trim(),
             timestamp: now,
-            author: CURRENT_TEACHER
+            author: getCurrentTeacherName()
           }
         ] : task.comments
       } : task
@@ -461,7 +461,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
       dueDate: taskData.dueDate ? taskData.dueDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       hotList: taskData.hotList,
       assignedTo: taskData.assignedTo,
-      assignedBy: CURRENT_TEACHER,
+      assignedBy: getCurrentTeacherName(),
       assignedAt: now,
       completedAt: null,
       completedBy: null,
@@ -2526,7 +2526,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 {/* Show individual assignees */}
                                 {task.assignedTo.length > 0 && !task.assignedTo.includes(CURRENT_TEACHER) && assignedGroups.length === 0 && (
                                   <span className="text-purple-600">
-                                    → {task.assignedTo.join(', ')}
+                                    ��� {task.assignedTo.join(', ')}
                                   </span>
                                 )}
                                 
