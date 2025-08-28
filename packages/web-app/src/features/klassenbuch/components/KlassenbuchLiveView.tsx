@@ -35,9 +35,9 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
 
   // Check if a time slot has any lessons across all days
   const hasLessonsInPeriod = (period: number) => {
-    const weekDays = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
-    return weekDays.some(day => {
-      const lesson = classTimetable.find(lesson => lesson.period === period && lesson.day === day);
+    return schoolDays.some(schoolDay => {
+      const dayName = schoolDay.day.name_de || schoolDay.day.name_en;
+      const lesson = classTimetable.find(lesson => lesson.period === period && lesson.day === dayName);
       return lesson !== undefined;
     });
   };
