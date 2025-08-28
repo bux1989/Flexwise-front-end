@@ -20,6 +20,7 @@ import { CURRENT_TEACHER, INITIAL_EVENTS } from '../../../../shared/data/mockDat
 import { formatDateTime } from '../../../../shared/domains/academic/klassenbuch/utils';
 import { getCurrentUserProfile, handleLogout, fetchLessonAttendance, getLessonStudentNameIdPairs, saveLessonAttendanceBulkRPC } from '../../lib/supabase';
 import { useLessons, useTeacherProfile } from '../../features/lessons/hooks/useLessons';
+import { AuthStatus } from '../../components/AuthStatus';
 
 interface TeacherDashboardProps {
   user?: {
