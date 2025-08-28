@@ -83,17 +83,24 @@ export function DatePicker({
           </Button>
         </PopoverTrigger>
         
-        <PopoverContent className="w-auto p-0" align="start">
-          <div className="p-3">
-            <CalendarComponent
-              mode="single"
-              selected={currentValue?.toDate()}
-              onSelect={handleDateSelect}
-              initialFocus
-            />
-            
+        <PopoverContent className="w-64 p-4" align="start">
+          <div className="space-y-4">
+            {/* Date Input */}
+            <div>
+              <input
+                type="date"
+                value={currentValue ? currentValue.format('YYYY-MM-DD') : ''}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    handleDateSelect(new Date(e.target.value));
+                  }
+                }}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
             {/* Quick action buttons */}
-            <div className="flex justify-between items-center mt-3 pt-3 border-t">
+            <div className="flex justify-between items-center">
               <Button
                 variant="outline"
                 size="sm"
@@ -101,7 +108,7 @@ export function DatePicker({
               >
                 Heute
               </Button>
-              
+
               {currentValue && (
                 <Button
                   variant="ghost"
