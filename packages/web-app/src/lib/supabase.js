@@ -226,6 +226,12 @@ export async function fetchAttendanceBadges(lessonIds) {
   try {
     console.log('🏷️ Fetching attendance badges for lessons:', lessonIds)
 
+    // Handle empty or null lesson IDs
+    if (!lessonIds || lessonIds.length === 0) {
+      console.log('📋 No lesson IDs provided, returning empty badges')
+      return {}
+    }
+
     const { data: badges, error } = await supabase
       .from('vw_lesson_attendance_badges')
       .select('*')
@@ -242,12 +248,12 @@ export async function fetchAttendanceBadges(lessonIds) {
       badgeLookup[badge.lesson_id] = badge
     })
 
-    console.log('✅ Attendance badges fetched:', badgeLookup)
+    console.log('✅ Attendance badges fetched:', Object.keys(badgeLookup).length, 'badges')
     return badgeLookup
 
   } catch (error) {
     console.error('💥 Error in fetchAttendanceBadges:', error)
-    return {} // Return empty object on error
+    return {} // Return empty object on error to prevent crashes
   }
 }
 
