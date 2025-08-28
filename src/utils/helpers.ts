@@ -71,6 +71,12 @@ export const needsAttendanceTracking = (lessonTime: string, lessonEndTime: strin
 };
 
 export const getAttendanceStatus = (lesson: any) => {
+  // Use real attendance badge data if available
+  if (lesson.attendanceBadge) {
+    return lesson.attendanceBadge.attendance_status;
+  }
+
+  // Fallback to old logic
   // If attendance has been taken but no attendance object, something's wrong
   if (lesson.attendanceTaken && !lesson.attendance) return 'none';
 
