@@ -296,7 +296,7 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
         {/* Task List */}
         <div className="space-y-3">
           {displayedTasks.map((task) => (
-            <div key={task.id} className="border rounded-lg p-4 space-y-3">
+            <div key={task.id} className="border rounded-lg p-3 lg:p-4 space-y-2 lg:space-y-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3 flex-1">
                   <Checkbox
@@ -304,9 +304,9 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
                     onCheckedChange={() => toggleTask(task.id)}
                     className="mt-1"
                   />
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h4 className={`font-medium ${task.completed ? 'line-through text-gray-500' : ''}`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h4 className={`font-medium text-sm lg:text-base truncate ${task.completed ? 'line-through text-gray-500' : ''}`}>
                         {task.title}
                       </h4>
                       {task.hotList && (
@@ -319,12 +319,12 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
                         {task.priority}
                       </Badge>
                     </div>
-                    <p className={`text-sm text-gray-600 mt-1 ${task.completed ? 'line-through' : ''}`}>
+                    <p className={`text-xs lg:text-sm text-gray-600 mt-1 ${task.completed ? 'line-through' : ''}`}>
                       {task.description}
                     </p>
-                    <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                      <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
-                      <span>Assigned to: {task.assignedTo.join(', ')}</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mt-2 text-xs text-gray-500 space-y-1 sm:space-y-0">
+                      <span className="flex-shrink-0">Due: {new Date(task.dueDate).toLocaleDateString()}</span>
+                      <span className="truncate" title={`Assigned to: ${task.assignedTo.join(', ')}`}>Assigned to: {task.assignedTo.join(', ')}</span>
                       {task.comments.length > 0 && (
                         <button
                           onClick={() => handleToggleComments(task.id)}
@@ -342,7 +342,7 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 lg:space-x-2 flex-shrink-0">
                   <Button
                     variant="ghost"
                     size="sm"
