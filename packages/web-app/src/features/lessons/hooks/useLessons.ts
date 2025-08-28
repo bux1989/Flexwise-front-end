@@ -16,6 +16,7 @@ interface LessonData {
   otherTeachers: any[];
   adminComment: string | null;
   students: any[];
+  enrolled: number; // Total student count for helpers
   attendance: {
     present: any[];
     late: any[];
