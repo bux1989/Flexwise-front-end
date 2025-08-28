@@ -653,7 +653,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={switchToEditMode}
+                              onClick={switchToEdit}
                               className="h-auto p-0 ml-1 underline text-blue-600"
                             >
                               hinzufügen
