@@ -233,9 +233,9 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
           </Button>
         )}
       </CardHeader>
-      <CardContent className="space-y-3 lg:space-y-4">
+      <CardContent className="space-y-2 lg:space-y-4">
         {/* Task Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -296,7 +296,7 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
         {/* Task List */}
         <div className="space-y-3">
           {displayedTasks.map((task) => (
-            <div key={task.id} className="border rounded-lg p-3 lg:p-4 space-y-2 lg:space-y-3">
+            <div key={task.id} className="border rounded-lg p-2 lg:p-4 space-y-1 lg:space-y-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3 flex-1">
                   <Checkbox
