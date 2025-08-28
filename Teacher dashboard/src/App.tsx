@@ -1118,7 +1118,7 @@ export default function App() {
         // Fallback for existing lessons without metadata
         updatedLessonNote = createLessonNoteWithMetadata(
           lessonNote,
-          CURRENT_TEACHER,
+          currentTeacher,
           timestamp
         );
       }
