@@ -1248,7 +1248,7 @@ export default function App() {
         tempLessonNote,
         lesson.attendanceTakenBy,
         lesson.attendanceTakenAt,
-        CURRENT_TEACHER,
+        currentTeacher,
         timestamp
       );
     } else if (lesson.attendanceTakenBy && lesson.attendanceTakenAt) {
