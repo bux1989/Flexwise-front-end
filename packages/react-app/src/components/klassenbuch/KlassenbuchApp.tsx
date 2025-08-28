@@ -52,9 +52,9 @@ export default function KlassenbuchApp() {
         ) : (
           <StatisticsView
             selectedClass={selectedClass}
-            onViewTypeChange={handleStatisticsViewTypeChange}
+            onViewTypeChange={setStatisticsViewType}
             selectedStudent={selectedStudent}
-            onStudentSelect={handleStudentSelect}
+            onStudentSelect={setSelectedStudent}
           />
         )}
       </main>
