@@ -51,7 +51,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
   const [isLoadingLessons, setIsLoadingLessons] = useState(true);
   const [lessonsError, setLessonsError] = useState(null);
   
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date('2025-08-28'));
   const [currentProfile, setCurrentProfile] = useState(null);
 
   // Fetch lessons from Supabase
