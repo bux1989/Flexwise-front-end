@@ -37,8 +37,25 @@ export function Header({ currentTeacher, dateString, onButtonClick }: HeaderProp
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onButtonClick('Reports')}
+                >
+                  <BarChart3 className="h-6 w-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Reports</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => onButtonClick('Mein Account')}
                 >
