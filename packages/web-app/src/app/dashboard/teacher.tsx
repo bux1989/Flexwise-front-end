@@ -4,6 +4,7 @@ import { TaskManagement } from '../../features/task-management/components/TaskMa
 import { LessonSchedule } from '../../features/lessons/components/LessonSchedule';
 import { InfoBoard } from '../../features/communications/components/InfoBoard';
 import { Events } from '../../features/communications/components/Events';
+import { AttendanceModal } from '../../features/attendance/components/AttendanceModal';
 
 // Import mock data and utilities
 import { CURRENT_TEACHER, INITIAL_EVENTS } from '../../../../shared/data/mockData';
