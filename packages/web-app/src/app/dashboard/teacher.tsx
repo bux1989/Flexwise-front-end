@@ -577,6 +577,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           <KlassenbuchApp
             onClose={handleKlassenbuchClose}
             currentTeacher={currentTeacher}
+            hideHeader={true}
           />
         </div>
       ) : (
