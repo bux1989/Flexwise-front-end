@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
-import Settings from '../components/Settings'
+import { supabase } from '../../lib/supabase'
+import Settings from '../../components/Settings'
 
 export default function AdminDashboard({ user }) {
   const [adminData, setAdminData] = useState(null)
