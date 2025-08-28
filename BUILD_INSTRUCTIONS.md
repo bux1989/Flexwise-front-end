@@ -171,10 +171,10 @@ The project includes `netlify.toml` with:
 **ALWAYS** understand the existing codebase first:
 ```bash
 # Check existing components
-find packages/react-app/src/components -name "*.jsx" -o -name "*.tsx"
+find packages/web-app/src/components -name "*.jsx" -o -name "*.tsx"
 
 # Check existing pages
-find packages/react-app/src/pages -name "*.jsx" -o -name "*.tsx"
+find packages/web-app/src/pages -name "*.jsx" -o -name "*.tsx"
 
 # Check shared components
 find packages/shared -name "*.tsx" -o -name "*.ts"
@@ -183,7 +183,7 @@ find packages/shared -name "*.tsx" -o -name "*.ts"
 #### 2. Component Naming & Organization
 - **NEVER** create duplicate components
 - **ALWAYS** check if similar functionality exists
-- **USE** existing design system components from `packages/react-app/src/components/ui/`
+- **USE** existing design system components from `packages/web-app/src/components/ui/`
 - **FOLLOW** existing naming conventions (PascalCase for components)
 
 #### 3. File Placement Rules
@@ -199,7 +199,7 @@ packages/web-app/src/
 
 #### 4. Import Strategy
 **BEFORE** creating new files:
-1. **Check existing UI components**: `ls packages/react-app/src/components/ui/`
+1. **Check existing UI components**: `ls packages/web-app/src/components/ui/`
 2. **Check shared utilities**: `ls packages/shared/`
 3. **Grep for similar functionality**: `grep -r "similar-feature" packages/`
 
@@ -262,8 +262,8 @@ Before creating ANY new component from Figma:
 ### Example: Proper Figma Import Process
 ```bash
 # 1. Research existing code
-grep -r "dashboard" packages/react-app/src/
-ls packages/react-app/src/components/ui/
+grep -r "dashboard" packages/web-app/src/
+ls packages/web-app/src/components/ui/
 
 # 2. Plan new component
 # - Does it extend existing Dashboard?
@@ -285,7 +285,7 @@ npm run build
 npm run preview
 
 # Check build output
-ls -la packages/react-app/dist/
+ls -la packages/web-app/dist/
 ```
 
 ## Support & Documentation
