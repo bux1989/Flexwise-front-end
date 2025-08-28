@@ -64,17 +64,56 @@ export async function getCurrentUserProfile() {
   return profile
 }
 
+// Authentication functions
+export async function handleLogin(email: string, password: string) {
+  try {
+    console.log('🔐 Attempting login for:', email)
+
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    })
+
+    if (error) {
+      console.error('❌ Auth error:', error)
+      throw error
+    }
+
+    console.log('✅ Authentication successful for:', authData.user.email)
+
+    return {
+      user: authData.user
+      // Note: profile and role are handled by App component
+    }
+
+  } catch (error) {
+    console.error('💥 Login error:', error)
+    throw error
+  }
+}
+
+export async function handleLogout() {
+  try {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+    console.log('✅ Logout successful')
+  } catch (error) {
+    console.error('💥 Logout error:', error)
+    throw error
+  }
+}
+
 // Role-based routing helper
 export function getRouteByRole(role: string): string {
   const routes: Record<string, string> = {
     'Parent': '/dashboard/parent',
-    'Teacher': '/dashboard/teacher', 
+    'Teacher': '/dashboard/teacher',
     'Admin': '/dashboard/admin',
     'Student': '/dashboard/student',
     'Erzieher*innen': '/dashboard/teacher',
     'Externe': '/dashboard/external',
     'Super Admin': '/dashboard/admin'
   }
-  
+
   return routes[role] || '/dashboard/parent'
 }
