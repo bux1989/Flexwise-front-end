@@ -386,3 +386,99 @@ export async function bulkSaveAttendance(lessonId, attendanceRecords) {
 }
 
 export const isDemo = false // Always use real authentication now
+
+// Fetch lesson meta from course_lessons
+export async function getLessonMeta(lessonId) {
+  const { data, error } = await supabase
+    .from('course_lessons')
+    .select('id, school_id, course_id, class_id, start_datetime, end_datetime')
+    .eq('id', lessonId)
+    .single()
+  if (error) throw error
+  return data
+}
+
+// Build student ID ↔ name pairs for a lesson
+export async function getLessonStudentNameIdPairs(lessonId) {
+  const lesson = await getLessonMeta(lessonId)
+  if (!lesson) return { students: [], schoolId: null }
+
+  // Helper to fetch profiles and classes
+  const fetchProfilesAndClasses = async (studentIds, classIdOverride = null) => {
+    if (!studentIds.length) return []
+    const { data: profiles, error: pErr } = await supabase
+      .from('user_profiles')
+      .select('id, first_name, last_name')
+      .in('id', studentIds)
+    if (pErr) throw pErr
+
+    // Map profile_id -> class_id
+    let classMap = {}
+    if (classIdOverride) {
+      profiles.forEach(p => { classMap[p.id] = classIdOverride })
+    } else {
+      const { data: pis, error: pisErr } = await supabase
+        .from('profile_info_student')
+        .select('profile_id, class_id')
+        .in('profile_id', studentIds)
+      if (pisErr) throw pisErr
+      classMap = (pis || []).reduce((acc, r) => { acc[r.profile_id] = r.class_id; return acc }, {})
+    }
+
+    const classIds = Array.from(new Set(Object.values(classMap).filter(Boolean)))
+    let classNameById = {}
+    if (classIds.length) {
+      const { data: classes, error: cErr } = await supabase
+        .from('structure_classes')
+        .select('id, name')
+        .in('id', classIds)
+      if (cErr) throw cErr
+      classNameById = (classes || []).reduce((acc, c) => { acc[c.id] = c.name; return acc }, {})
+    }
+
+    return profiles.map(p => {
+      const className = classNameById[classMap[p.id]] || ''
+      const displayName = `${p.first_name || ''} ${p.last_name || ''}${className ? ` (${className})` : ''}`.trim()
+      return { id: p.id, displayName }
+    })
+  }
+
+  if (lesson.course_id) {
+    const { data: enrollments, error: eErr } = await supabase
+      .from('course_enrollments')
+      .select('student_id')
+      .eq('course_id', lesson.course_id)
+    if (eErr) throw eErr
+    const studentIds = (enrollments || []).map(e => e.student_id).filter(Boolean)
+    const students = await fetchProfilesAndClasses(studentIds)
+    return { students, schoolId: lesson.school_id }
+  }
+
+  if (lesson.class_id) {
+    const { data: pis, error: pisErr } = await supabase
+      .from('profile_info_student')
+      .select('profile_id')
+      .eq('class_id', lesson.class_id)
+    if (pisErr) throw pisErr
+    const studentIds = (pis || []).map(r => r.profile_id).filter(Boolean)
+    const students = await fetchProfilesAndClasses(studentIds, lesson.class_id)
+    return { students, schoolId: lesson.school_id }
+  }
+
+  return { students: [], schoolId: lesson.school_id }
+}
+
+// RPC call to save attendance via DB function
+export async function saveLessonAttendanceBulkRPC({ lessonId, schoolId, attendance, diaryText, diaryType = 'attendance', diaryPrivate = false }) {
+  const payload = {
+    p_lesson_id: lessonId,
+    p_school_id: schoolId,
+    p_attendance: attendance,
+    p_diary_entry_text: diaryText || null,
+    p_diary_entry_type: diaryType,
+    p_diary_is_private: !!diaryPrivate
+  }
+  const { data, error } = await supabase.rpc('save_lesson_attendance_bulk', payload)
+  if (error) throw error
+  return data
+}
