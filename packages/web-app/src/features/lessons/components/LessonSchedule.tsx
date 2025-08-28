@@ -267,7 +267,6 @@ export function LessonSchedule({
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-gray-400">ID: {lesson.id}</span>
                     {lesson.isCurrent && !isMobile && (
                       <span className="text-xs text-blue-600">Aktuell</span>
                     )}
