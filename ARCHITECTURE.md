@@ -72,7 +72,7 @@ shared/domains/
 │   ├── elternbriefe/
 │   ├── info-board/
 │   └── steckboard/
-└── management/
+└─�� management/
 │   ├── berichte/
 │   ├── statistiken/
 │   ├── to-do-list/
@@ -96,7 +96,7 @@ packages/
 │   ├── api/                  # Supabase API calls
 │   ├── hooks/                # Custom React hooks
 │   ├── utils/                # Utility functions
-��   └── types/                # TypeScript definitions
+│   └── types/                # TypeScript definitions
 ├── web-app/                  # Web-specific React components
 │   ├── dashboards/           # Role-specific dashboard layouts
 │   ├── components/           # Web UI components
@@ -191,6 +191,8 @@ Mobile Structure:
 - Quick access to key info (overview dashboard)
 - Organized access to all 19 modules (drawer)
 - Familiar mobile pattern (hamburger menu)
+
+**Note**: Admin dashboard needs quick select actions (TBD what these are)
 
 ## Next Questions to Address
 
