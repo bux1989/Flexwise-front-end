@@ -12,12 +12,12 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
-    "dev": "npm run dev --workspace=@flexwise/react-app",
-    "dev:react": "npm run dev --workspace=@flexwise/react-app",
-    "build": "npm ci --if-present || npm install && npm run build --workspace=@flexwise/shared && npm run build --workspace=@flexwise/react-app",
+    "dev": "npm run dev --workspace=@flexwise/web-app",
+    "dev:react": "npm run dev --workspace=@flexwise/web-app",
+    "build": "npm ci --if-present || npm install && npm run build --workspace=@flexwise/shared && npm run build --workspace=@flexwise/web-app",
     "build:shared": "npm run build --workspace=@flexwise/shared",
-    "build:react": "npm run build --workspace=@flexwise/react-app",
-    "preview": "npm run preview --workspace=@flexwise/react-app",
+    "build:react": "npm run build --workspace=@flexwise/web-app",
+    "preview": "npm run preview --workspace=@flexwise/web-app",
     "install:all": "npm install",
     "clean": "npm run clean --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
