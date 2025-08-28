@@ -33,13 +33,14 @@ export default function KlassenbuchApp() {
     <div className="min-h-screen bg-background">
       <Header
         currentView={currentView}
-        onViewChange={handleViewChange}
+        onViewChange={setCurrentView}
         selectedWeek={selectedWeek}
         onWeekChange={setSelectedWeek}
         selectedClass={selectedClass}
         onClassChange={setSelectedClass}
         classes={allItems}
         statisticsViewType={statisticsViewType}
+        isMobile={isMobile}
       />
       
       <main className={`mx-auto ${isMobile ? 'px-2 py-4' : 'container px-6 py-8'}`}>
