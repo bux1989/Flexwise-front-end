@@ -77,10 +77,10 @@ function App() {
 
       const role = extractUserRole(userRoles, rolesError)
 
-      // Fetch profile details
+      // Fetch profile details - specify school relationship explicitly
       const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
-        .select('*, structure_schools(name)')
+        .select('*, structure_schools!profiles_school_id_fkey(name)')
         .eq('id', profileId)
         .single()
 
