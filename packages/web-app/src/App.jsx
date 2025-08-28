@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase, getCurrentUserProfile, getRouteByRole } from './lib/supabase'
 
 // Components
-import Login from './pages/Login'
+import Login from './app/auth/login'
 import TeacherDashboard from './app/dashboard/teacher'
 import ParentDashboard from './app/dashboard/parent'
 import ExternalDashboard from './app/dashboard/external'

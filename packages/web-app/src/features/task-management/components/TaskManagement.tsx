@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
 import { Textarea } from '../../../components/ui/textarea';
 import { AddTaskDialog } from '../../../components/AddTaskDialog';
-import { INITIAL_TASKS, ASSIGNEE_GROUPS } from '../../../constants/mockData';
+import { INITIAL_TASKS, ASSIGNEE_GROUPS } from '../../../../../shared/data/mockData';
 import { formatTimestamp, getPriorityValue } from '../../../../../shared/utils/dateHelpers';
 
 interface TaskManagementProps {
