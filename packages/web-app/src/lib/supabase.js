@@ -265,7 +265,8 @@ export async function fetchLessonAttendance(lessonId) {
       .eq('lesson_id', lessonId)
 
     if (error) {
-      console.error('❌ Error fetching attendance:', {
+      console.error('❌ Error fetching attendance:', error)
+      console.error('❌ Error details:', {
         message: error.message,
         details: error.details,
         hint: error.hint,
@@ -334,7 +335,7 @@ export async function saveAttendanceRecord(lessonId, studentId, status, addition
 
 export async function bulkSaveAttendance(lessonId, attendanceRecords) {
   try {
-    console.log('�� Bulk saving attendance for lesson:', lessonId, attendanceRecords)
+    console.log('📚 Bulk saving attendance for lesson:', lessonId, attendanceRecords)
 
     const records = attendanceRecords.map(record => ({
       lesson_id: lessonId,
