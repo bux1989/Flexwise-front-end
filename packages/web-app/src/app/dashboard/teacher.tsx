@@ -504,9 +504,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           />
 
           {/* Task Management - Right Column */}
-          <TaskManagement 
+          <TaskManagement
             currentTeacher={currentTeacher}
             canAssignTasks={true}
+            isMobile={isMobile}
           />
         </div>
       </div>
