@@ -130,7 +130,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     <div className="min-h-screen bg-gray-50">
       <Header
         currentTeacher={isLoadingProfile ? "Wird geladen..." : currentTeacher}
-        dateString={dateString}
+        dateString={loadingLessons ? "Stundenplan wird geladen..." : dateString}
         onButtonClick={handleHeaderButtonClick}
       />
 
