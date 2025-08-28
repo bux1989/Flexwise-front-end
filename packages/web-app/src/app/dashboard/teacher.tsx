@@ -568,12 +568,12 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                 </div>
 
                 {/* Grid Header */}
-                <div className="grid grid-cols-5 gap-2 border-b pb-3">
-                  <div className="font-medium text-sm">{isMobile ? 'SuS' : 'Schüler'}</div>
-                  <div className="font-medium text-sm text-center">{isMobile ? 'Anw' : 'Anwesend'}</div>
-                  <div className="font-medium text-sm text-center">{isMobile ? 'Spät' : 'Verspätet'}</div>
-                  <div className="font-medium text-sm text-center">{isMobile ? 'Abw. E' : 'Abwesend (E)'}</div>
-                  <div className="font-medium text-sm text-center">{isMobile ? 'Abw. U' : 'Abwesend (U)'}</div>
+                <div className="grid grid-cols-5 gap-1 lg:gap-2 border-b pb-3">
+                  <div className="font-medium text-xs lg:text-sm">{isMobile ? 'SuS' : 'Schüler'}</div>
+                  <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Anw' : 'Anwesend'}</div>
+                  <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Spät' : 'Verspätet'}</div>
+                  <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Abw. E' : 'Abwesend (E)'}</div>
+                  <div className="font-medium text-xs lg:text-sm text-center">{isMobile ? 'Abw. U' : 'Abwesend (U)'}</div>
                 </div>
 
                 {/* Alle Buttons */}
