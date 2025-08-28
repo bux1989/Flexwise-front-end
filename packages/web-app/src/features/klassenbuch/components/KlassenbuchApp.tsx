@@ -15,17 +15,34 @@ interface KlassenbuchAppProps {
   hideHeader?: boolean;
   currentView?: 'live' | 'statistics';
   onViewChange?: (view: 'live' | 'statistics') => void;
+  selectedWeek?: Date;
+  onWeekChange?: (week: Date) => void;
+  selectedClass?: any;
+  onClassChange?: (classItem: any) => void;
 }
 
-export function KlassenbuchApp({ onClose, currentTeacher, hideHeader = false, currentView: externalCurrentView, onViewChange: externalOnViewChange }: KlassenbuchAppProps) {
+export function KlassenbuchApp({
+  onClose,
+  currentTeacher,
+  hideHeader = false,
+  currentView: externalCurrentView,
+  onViewChange: externalOnViewChange,
+  selectedWeek: externalSelectedWeek,
+  onWeekChange: externalOnWeekChange,
+  selectedClass: externalSelectedClass,
+  onClassChange: externalOnClassChange
+}: KlassenbuchAppProps) {
   const [internalCurrentView, setInternalCurrentView] = useState<'live' | 'statistics'>('live');
+  const [internalSelectedWeek, setInternalSelectedWeek] = useState(new Date());
+  const [internalSelectedClass, setInternalSelectedClass] = useState(allItems[0]);
 
-  // Use external view control if provided, otherwise use internal state
+  // Use external control if provided, otherwise use internal state
   const currentView = externalCurrentView !== undefined ? externalCurrentView : internalCurrentView;
   const setCurrentView = externalOnViewChange || setInternalCurrentView;
-  const [selectedWeek, setSelectedWeek] = useState(new Date());
-  // Default to teacher's personal schedule for live view
-  const [selectedClass, setSelectedClass] = useState(allItems[0]);
+  const selectedWeek = externalSelectedWeek !== undefined ? externalSelectedWeek : internalSelectedWeek;
+  const setSelectedWeek = externalOnWeekChange || setInternalSelectedWeek;
+  const selectedClass = externalSelectedClass !== undefined ? externalSelectedClass : internalSelectedClass;
+  const setSelectedClass = externalOnClassChange || setInternalSelectedClass;
   const [statisticsViewType, setStatisticsViewType] = useState<'class' | 'student' | 'course'>('class');
   const [selectedStudent, setSelectedStudent] = useState<string>('');
 
@@ -37,9 +54,9 @@ export function KlassenbuchApp({ onClose, currentTeacher, hideHeader = false, cu
 
   const handleViewChange = (view: 'live' | 'statistics') => {
     setCurrentView(view);
-    
+
     // When switching to statistics view, default to first actual class if needed
-    if (view === 'statistics') {
+    if (view === 'statistics' && selectedClass) {
       const classesForStats = getClassesForStatistics();
       if (selectedClass.type === 'teacher' && classesForStats.length > 0) {
         setSelectedClass(classesForStats[0]);
