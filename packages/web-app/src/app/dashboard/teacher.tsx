@@ -401,7 +401,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     } catch (error) {
       console.error('❌ Error switching to edit mode:', error);
       setTempAttendance({});
-      setLessonNote('');
+      setLessonNote(''); // Reset to empty on error
       setAttendanceViewMode('edit');
     }
   };
