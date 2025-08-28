@@ -3,14 +3,7 @@ import { Header } from './Header';
 import { LiveView } from './LiveView';
 import { StatisticsView } from './StatisticsView';
 import { getAllCoursesAndClasses, getClassesForStatistics } from './data/mockData';
-
-interface Class {
-  id: string;
-  name: string;
-  subject: string;
-  grade: string;
-  type?: 'class' | 'course' | 'teacher';
-}
+import { useIsMobile } from '../ui/use-mobile';
 
 // Get both classes and courses
 const { classes, courses } = getAllCoursesAndClasses();
@@ -20,9 +13,10 @@ export default function KlassenbuchApp() {
   const [currentView, setCurrentView] = useState<'live' | 'statistics'>('live');
   const [selectedWeek, setSelectedWeek] = useState(new Date());
   // Default to teacher's personal schedule for live view
-  const [selectedClass, setSelectedClass] = useState<Class>(allItems[0]);
+  const [selectedClass, setSelectedClass] = useState(allItems[0]);
   const [statisticsViewType, setStatisticsViewType] = useState<'class' | 'student' | 'course'>('class');
   const [selectedStudent, setSelectedStudent] = useState<string>('');
+  const isMobile = useIsMobile();
 
   const handleStudentSelect = (studentId: string) => {
     setSelectedStudent(studentId);
@@ -64,7 +58,7 @@ export default function KlassenbuchApp() {
         statisticsViewType={statisticsViewType}
       />
       
-      <main className="mx-auto container px-6 py-8">
+      <main className={`mx-auto ${isMobile ? 'px-2 py-4' : 'container px-6 py-8'}`}>
         {currentView === 'live' ? (
           <LiveView
             selectedWeek={selectedWeek}
