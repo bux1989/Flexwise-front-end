@@ -320,11 +320,11 @@ export default function App() {
     setTasks(tasks.map(task => 
       task.id === taskId ? { 
         ...task, 
-        comments: [...task.comments, { 
-          id: task.comments.length + 1, 
-          text: commentText, 
+        comments: [...task.comments, {
+          id: task.comments.length + 1,
+          text: commentText,
           timestamp,
-          author: CURRENT_TEACHER
+          author: currentTeacher
         }] 
       } : task
     ));
