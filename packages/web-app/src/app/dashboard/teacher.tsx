@@ -690,7 +690,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         setAttendanceDialogOpen(open);
         if (!open) {
           setSelectedLessonForAttendance(null);
-          setAttendanceViewMode('edit');
+          setAttendanceViewMode('edit'); // Reset to edit as default
           setTempAttendance({});
           setLessonNote('');
         }
