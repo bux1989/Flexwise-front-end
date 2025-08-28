@@ -27,16 +27,18 @@ interface LessonScheduleProps {
   isMobile?: boolean;
 }
 
-export function LessonSchedule({ 
-  lessons, 
-  selectedDate, 
-  onDateChange, 
+export function LessonSchedule({
+  lessons,
+  selectedDate,
+  onDateChange,
   onAttendanceClick,
-  isMobile = false 
+  isMobile = false
 }: LessonScheduleProps) {
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [showAllLessonsOnMobile, setShowAllLessonsOnMobile] = useState(false);
   const [expandedMobileLessonDetails, setExpandedMobileLessonDetails] = useState<Set<number>>(new Set());
+
+  // Convert Date to dayjs for the DatePicker
+  const selectedDayjs = dayjs(selectedDate);
 
   // Helper function for mobile lesson abbreviations
   const getMobileSubjectAbbreviation = (subject: string): string => {
