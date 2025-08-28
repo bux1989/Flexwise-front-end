@@ -278,7 +278,9 @@ export async function fetchLessonAttendance(lessonId) {
     const grouped = {
       present: attendance?.filter(record => record.status === 'present') || [],
       late: attendance?.filter(record => record.status === 'late') || [],
-      absent: attendance?.filter(record => record.status === 'absent') || []
+      absent: attendance?.filter(record =>
+        record.status === 'absent_excused' || record.status === 'absent_unexcused'
+      ) || []
     }
 
     console.log('✅ Attendance fetched:', grouped)
@@ -332,7 +334,7 @@ export async function saveAttendanceRecord(lessonId, studentId, status, addition
 
 export async function bulkSaveAttendance(lessonId, attendanceRecords) {
   try {
-    console.log('📚 Bulk saving attendance for lesson:', lessonId, attendanceRecords)
+    console.log('�� Bulk saving attendance for lesson:', lessonId, attendanceRecords)
 
     const records = attendanceRecords.map(record => ({
       lesson_id: lessonId,
