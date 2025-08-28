@@ -476,6 +476,34 @@ export async function getLessonStudentNameIdPairs(lessonId) {
 }
 
 // RPC call to save attendance via DB function
+export async function fetchLessonDiaryEntry(lessonId) {
+  try {
+    console.log('📝 Fetching lesson diary entry for lesson:', lessonId)
+
+    const { data: diaryEntries, error } = await supabase
+      .from('lesson_diary_entries')
+      .select('*')
+      .eq('lesson_id', lessonId)
+      .eq('entry_type', 'attendance')
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (error) {
+      console.error('❌ Error fetching lesson diary entry:', error)
+      throw error
+    }
+
+    const latestEntry = diaryEntries?.[0]
+    console.log('✅ Lesson diary entry fetched:', latestEntry?.entry_text || 'No entry found')
+
+    return latestEntry?.entry_text || ''
+
+  } catch (error) {
+    console.error('💥 Error in fetchLessonDiaryEntry:', error)
+    return '' // Return empty string on error to prevent crashes
+  }
+}
+
 export async function saveLessonAttendanceBulkRPC({ lessonId, schoolId, attendance, diaryText, diaryType = 'attendance', diaryPrivate = false }) {
   const payload = {
     p_lesson_id: lessonId,
