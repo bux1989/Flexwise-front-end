@@ -75,11 +75,14 @@ function App() {
       const role = extractUserRole(userRoles, rolesError)
 
       // Fetch profile details
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
         .select('*, structure_schools(name)')
         .eq('id', profileId)
         .single()
+
+      console.log('📋 Profile query result:', { profile, profileError })
+      console.log('🏷️ Profile first_name:', profile?.first_name)
 
       setUserProfile({
         ...(profile || {}),
