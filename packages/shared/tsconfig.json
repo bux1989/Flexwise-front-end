@@ -17,7 +17,8 @@
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "types": ["vite/client"]
   },
   "include": [
     "**/*.ts",
