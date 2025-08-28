@@ -242,7 +242,12 @@ export async function fetchLessonAttendance(lessonId) {
       .eq('lesson_id', lessonId)
 
     if (error) {
-      console.error('❌ Error fetching attendance:', error)
+      console.error('❌ Error fetching attendance:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
       throw error
     }
 
@@ -257,7 +262,13 @@ export async function fetchLessonAttendance(lessonId) {
     return grouped
 
   } catch (error) {
-    console.error('💥 Error in fetchLessonAttendance:', error)
+    console.error('💥 Error in fetchLessonAttendance:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+      lessonId: lessonId
+    })
     throw error
   }
 }
