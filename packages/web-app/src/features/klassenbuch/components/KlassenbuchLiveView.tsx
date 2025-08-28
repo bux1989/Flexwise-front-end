@@ -221,24 +221,28 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
                   </tr>
                 </thead>
                 <tbody>
-                  {timeSlots.map((slot) => {
-                    const hasLessons = hasLessonsInPeriod(slot.period);
+                  {schedulePeriods.map((period) => {
+                    const hasLessons = hasLessonsInPeriod(period.block_number);
                     const rowHeight = hasLessons ? (isMobile ? 'min-h-20' : 'min-h-16') : 'h-8';
-                    
+                    const timeSlot = formatTimeSlot(period);
+
                     return (
-                      <tr key={slot.period} className="border-b hover:bg-muted/30">
+                      <tr key={period.block_number} className="border-b hover:bg-muted/30">
                         <td className={`p-3 border-r bg-muted/50 ${!hasLessons ? 'py-1' : ''}`}>
                           <div className="text-center">
-                            <div className="font-semibold">{slot.period}</div>
+                            <div className="font-semibold">{period.block_number}</div>
                             {!isMobile && hasLessons && (
-                              <div className="text-xs text-muted-foreground">{slot.time}</div>
+                              <div className="text-xs text-muted-foreground">{timeSlot}</div>
+                            )}
+                            {!isMobile && period.group_label && (
+                              <div className="text-xs text-blue-600">{period.group_label}</div>
                             )}
                           </div>
                         </td>
                         {weekDays.map((day, dayIndex) => {
-                          const lesson = getLessonForSlot(slot.period, day);
+                          const lesson = getLessonForSlot(period.block_number, day);
                           return (
-                            <td key={`${slot.period}-${day}`} className={`border-r ${isMobile ? 'p-1' : 'p-2'} ${!hasLessons ? 'py-1' : ''}`}>
+                            <td key={`${period.block_number}-${day}`} className={`border-r ${isMobile ? 'p-1' : 'p-2'} ${!hasLessons ? 'py-1' : ''}`}>
                               {lesson ? (
                                 <div
                                   className={`p-2 rounded-md transition-all border ${
