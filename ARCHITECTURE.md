@@ -96,7 +96,7 @@ packages/
 │   ├── api/                  # Supabase API calls
 │   ├── hooks/                # Custom React hooks
 │   ├── utils/                # Utility functions
-│   └── types/                # TypeScript definitions
+��   └── types/                # TypeScript definitions
 ├── web-app/                  # Web-specific React components
 │   ├── dashboards/           # Role-specific dashboard layouts
 │   ├── components/           # Web UI components
@@ -161,6 +161,36 @@ Example:
 - Users can try basic functionality
 - Clear upgrade path within familiar interface
 - No jarring "module not available" experiences
+
+### 4. Mobile Navigation Structure ✅
+
+**Decision**: Drawer navigation with overview dashboard
+- **Overview dashboard**: Key metrics, recent activity, quick actions (like current web dashboards)
+- **Drawer menu**: Side menu with all 19 modules organized by domain
+- **Role-based filtering**: Teachers see relevant modules, Parents see their modules
+
+Mobile Structure:
+```
+┌─────────────────┐
+│ ☰ Dashboard    │ ← Overview screen (default)
+│                │
+│ 📊 Key Metrics │
+│ 📋 Recent      │
+│ ⚡ Quick Actions│
+│                │
+│ [Drawer Menu]  │ ← Side menu with modules:
+│ Academic       │   - Academic (Klassenbuch, etc.)
+│ Scheduling     │   - Scheduling (Stundenplan, etc.)
+│ Attendance     │   - Attendance (Fehlzeiten, etc.)
+│ Communication  │   - Communication (Eltern-App, etc.)
+│ Management     │   - Management (Berichte, etc.)
+└─────────────────┘
+```
+
+**Benefits:**
+- Quick access to key info (overview dashboard)
+- Organized access to all 19 modules (drawer)
+- Familiar mobile pattern (hamburger menu)
 
 ## Next Questions to Address
 
