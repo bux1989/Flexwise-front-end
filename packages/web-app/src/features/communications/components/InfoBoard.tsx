@@ -9,13 +9,17 @@ import { Label } from '../../../components/ui/label';
 import { useInfoBoardRealtime, formatSubstitutionText } from '../../../hooks/useInfoBoardRealtime';
 
 interface InfoBoardProps {
+  schoolId?: string;
   isMobile?: boolean;
 }
 
-export function InfoBoard({ isMobile = false }: InfoBoardProps) {
+export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
   const [expandedInfoItems, setExpandedInfoItems] = useState<Set<string>>(new Set());
   const [expandedInfoBoardPosts, setExpandedInfoBoardPosts] = useState<Set<string>>(new Set());
   const [showSubstituteLessons, setShowSubstituteLessons] = useState(!isMobile);
+
+  // Real-time data fetching
+  const { bulletinPosts, substitutions, loading, error, refresh } = useInfoBoardRealtime(schoolId);
 
   const toggleInfoItemExpansion = (itemId: string) => {
     setExpandedInfoItems(prev => {
@@ -40,8 +44,6 @@ export function InfoBoard({ isMobile = false }: InfoBoardProps) {
       return newExpanded;
     });
   };
-
-  const substituteLessons = getSubstituteLessons();
 
   return (
     <Card>
