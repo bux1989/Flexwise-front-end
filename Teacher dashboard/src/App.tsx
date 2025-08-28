@@ -1062,15 +1062,15 @@ export default function App() {
           });
           break;
         case 'excused':
-          absent.push({ 
-            name: student.name, 
-            id: student.id, 
-            excused: true, 
+          absent.push({
+            name: student.name,
+            id: student.id,
+            excused: true,
             reason: attendance.excuseReason || 'Entschuldigt',
-            excusedBy: CURRENT_TEACHER,
+            excusedBy: currentTeacher,
             excusedAt: new Date().toLocaleString('de-DE', {
               day: '2-digit',
-              month: '2-digit', 
+              month: '2-digit',
               year: 'numeric',
               hour: '2-digit',
               minute: '2-digit'
