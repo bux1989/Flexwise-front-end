@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Checkbox } from '../../components/ui/checkbox';
-import { Avatar, AvatarFallback } from '../components/ui/avatar';
-import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { Calendar as CalendarComponent } from '../components/ui/calendar';
-import { DatePicker } from '../components/ui/date-picker';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Avatar, AvatarFallback } from '../../components/ui/avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
+import { Calendar as CalendarComponent } from '../../components/ui/calendar';
+import { DatePicker } from '../../components/ui/date-picker';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
