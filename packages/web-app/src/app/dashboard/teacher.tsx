@@ -8,7 +8,7 @@ import { Events } from '../../features/communications/components/Events';
 // Import mock data and utilities
 import { CURRENT_TEACHER, INITIAL_LESSONS, INITIAL_EVENTS } from '../../../../shared/data/mockData';
 import { formatDateTime } from '../../../../shared/domains/academic/klassenbuch/utils';
-import { getCurrentUserProfile } from '../../lib/supabase';
+import { getCurrentUserProfile, handleLogout } from '../../lib/supabase';
 
 interface TeacherDashboardProps {
   user?: {
