@@ -267,14 +267,15 @@ export function LessonSchedule({
                   </div>
                   
                   <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-gray-400">ID: {lesson.id}</span>
                     {lesson.isCurrent && !isMobile && (
                       <span className="text-xs text-blue-600">Aktuell</span>
                     )}
-                    
+
                     {!lesson.isCancelled && needsAttendanceTracking(lesson.time, lesson.endTime, selectedDate, lesson.isCurrent) && (
                       <>
                         {attendanceStatus === 'complete' ? (
-                          <Badge 
+                          <Badge
                             className="cursor-pointer bg-green-50 hover:bg-green-100 text-green-700 border-green-200 flex items-center gap-1 px-2 py-1"
                             onClick={() => onAttendanceClick(lesson.id, 'overview')}
                           >
@@ -284,7 +285,7 @@ export function LessonSchedule({
                             </span>
                           </Badge>
                         ) : attendanceStatus === 'incomplete' ? (
-                          <Badge 
+                          <Badge
                             className="cursor-pointer bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200 flex items-center gap-1 px-2 py-1"
                             onClick={() => onAttendanceClick(lesson.id, 'edit')}
                           >
@@ -294,7 +295,7 @@ export function LessonSchedule({
                             </span>
                           </Badge>
                         ) : (
-                          <Badge 
+                          <Badge
                             className="cursor-pointer bg-red-50 hover:bg-red-100 text-red-600 border-red-200 flex items-center gap-1 px-2 py-1"
                             onClick={() => onAttendanceClick(lesson.id, 'edit')}
                           >
