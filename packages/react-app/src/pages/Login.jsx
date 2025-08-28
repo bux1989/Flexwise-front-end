@@ -28,8 +28,35 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Subtle school-themed background icons */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Top left area */}
+        <BookOpen className="absolute top-16 left-16 w-16 h-16 text-white/20 rotate-12" />
+        <PenTool className="absolute top-32 left-32 w-12 h-12 text-white/15 -rotate-6" />
+        <Calculator className="absolute top-24 left-64 w-14 h-14 text-white/20 rotate-45" />
+
+        {/* Top right area */}
+        <GraduationCap className="absolute top-20 right-20 w-20 h-20 text-white/25 -rotate-12" />
+        <Globe className="absolute top-40 right-32 w-16 h-16 text-white/20 rotate-30" />
+        <Apple className="absolute top-60 right-16 w-12 h-12 text-white/15 rotate-15" />
+
+        {/* Bottom left area */}
+        <Backpack className="absolute bottom-32 left-20 w-18 h-18 text-white/20 rotate-6" />
+        <Palette className="absolute bottom-16 left-40 w-14 h-14 text-white/15 -rotate-20" />
+
+        {/* Bottom right area */}
+        <BookOpen className="absolute bottom-28 right-28 w-16 h-16 text-white/20 -rotate-30" />
+        <PenTool className="absolute bottom-12 right-12 w-12 h-12 text-white/15 rotate-45" />
+
+        {/* Center scattered - very subtle */}
+        <Calculator className="absolute top-1/3 left-8 w-10 h-10 text-white/10 rotate-12" />
+        <Globe className="absolute bottom-1/3 right-8 w-12 h-12 text-white/10 -rotate-12" />
+        <Apple className="absolute top-2/3 left-12 w-8 h-8 text-white/10 rotate-30" />
+        <GraduationCap className="absolute bottom-2/3 right-6 w-10 h-10 text-white/10 -rotate-15" />
+      </div>
+
+      <div className="max-w-md w-full space-y-8 relative z-10">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <div className="text-lg text-gray-600 mb-6">Herzlich willkommen bei</div>
