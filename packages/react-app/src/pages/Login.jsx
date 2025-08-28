@@ -1,3 +1,4 @@
+// Push test comment - verifying branch sync functionality
 import { useState } from 'react'
 import { handleLogin } from '../lib/supabase'
 import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, Palette } from 'lucide-react'
