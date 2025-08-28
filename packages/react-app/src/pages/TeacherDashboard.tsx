@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Calendar, Bell, MessageCircle, Menu, Info, Clock, MapPin, Plus, Check, AlertCircle, X, Edit, Trash2, HelpCircle, UserPlus, Search, Filter, Star, ChevronDown, ChevronUp, EyeOff, Eye, BookOpen, Users, UserX, User, FileText, LogOut, CalendarIcon, ClipboardList, MoreHorizontal } from 'lucide-react';
+import KlassenbuchApp from '../components/klassenbuch/KlassenbuchApp';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
