@@ -96,8 +96,8 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
           </div>
         )}
 
-        {/* Real-time Bulletin Posts */}
-        {bulletinPosts.length > 0 && (
+        {/* Real-time Bulletin Posts - only show if not mobile or section is expanded */}
+        {bulletinPosts.length > 0 && (!isMobile || expandedInfoItems.has('info-board')) && (
           <div className="space-y-2">
             {bulletinPosts.map((post) => (
               <div
@@ -117,8 +117,8 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
           </div>
         )}
 
-        {/* Vertretungsstunden section */}
-        {substitutions.length > 0 && (
+        {/* Vertretungsstunden section - only show if not mobile or section is expanded */}
+        {substitutions.length > 0 && (!isMobile || expandedInfoItems.has('info-board')) && (
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-semibold flex items-center gap-2">
@@ -187,8 +187,8 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
           </div>
         )}
 
-        {/* Empty state when no data is available */}
-        {!loading && !error && substitutions.length === 0 && bulletinPosts.length === 0 && (
+        {/* Empty state when no data is available - only show if not mobile or section is expanded */}
+        {!loading && !error && substitutions.length === 0 && bulletinPosts.length === 0 && (!isMobile || expandedInfoItems.has('info-board')) && (
           <div className="p-4 text-center text-gray-500">
             <Info className="h-8 w-8 mx-auto mb-2 text-gray-400" />
             <div className="text-sm">Keine aktuellen Informationen verfügbar</div>
