@@ -113,8 +113,14 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
             otherTeachers: lesson.teacher_names ? lesson.teacher_names.map(name => ({ name })) : [],
             enrolled: lesson.student_count || 0,
             students: lesson.student_names_with_class ? lesson.student_names_with_class.map((name, index) => ({ id: index + 1, name })) : [],
-            attendanceTaken: false,
-            lessonNote: ''
+            attendanceTaken: lesson.attendance_taken || false,
+            lessonNote: '',
+            // Create attendance structure if attendance has been taken
+            attendance: lesson.attendance_taken ? {
+              present: [], // Would be populated from actual attendance records
+              late: [],    // Would be populated from actual attendance records
+              absent: []   // Would be populated from actual attendance records
+            } : null
           };
         });
 
