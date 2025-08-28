@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchTodaysLessons, fetchAttendanceBadges } from '../../../lib/supabase';
+import { useSchoolRealtime } from '../../../hooks/useSchoolRealtime';
 import dayjs from 'dayjs';
 
 interface LessonData {
