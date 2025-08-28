@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from '../../../components/ui/button';
 import { KlassenbuchHeader } from './KlassenbuchHeader';
 import { KlassenbuchLiveView } from './KlassenbuchLiveView';
 import { KlassenbuchStatisticsView } from './KlassenbuchStatisticsView';
