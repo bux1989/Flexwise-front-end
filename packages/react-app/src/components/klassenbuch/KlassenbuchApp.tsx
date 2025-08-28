@@ -3,7 +3,7 @@ import { Header } from './Header';
 import { LiveView } from './LiveView';
 import { StatisticsView } from './StatisticsView';
 import { useIsMobile } from '../ui/use-mobile';
-import { useKlassenbuchState } from '../../../shared/domains/academic';
+import { useKlassenbuchState } from '@flexwise/shared/domains/academic';
 
 export default function KlassenbuchApp() {
   const isMobile = useIsMobile();
