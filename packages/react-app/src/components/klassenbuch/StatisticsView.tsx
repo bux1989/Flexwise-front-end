@@ -11,7 +11,7 @@ import { getStudentStatisticsForClass, getCourseDataForClass, getCourseStudentsF
 import { ExcuseEditModal } from './ExcuseEditModal';
 import { AddExcuseModal } from './AddExcuseModal';
 import { useIsMobile } from '../ui/use-mobile';
-import type { AbsenceDetail, LatenessDetail, ExcuseInfo, CourseAttendanceEntry } from '../../../shared/domains/academic/klassenbuch';
+import type { AbsenceDetail, LatenessDetail, ExcuseInfo, CourseAttendanceEntry } from '../../../shared/domains/academic';
 
 interface Class {
   id: string;
