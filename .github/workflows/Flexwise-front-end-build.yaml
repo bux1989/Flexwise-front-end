@@ -37,8 +37,8 @@ jobs:
           CI: true
           SITE_URL: ${{ inputs.site-url }}
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzQ2MzA5NjAwLCJleHAiOjE5MDQwNzYwMDB9.mhTQEJi2po9vvM_sjtKzKUrYYQEbFyvykOwkE_gya-Q
-          VITE_SUPABASE_URL: https://api.schulflex.app
-        run: npm run build
+          VITE_SUPABASE_URL: your-supabase-url
+        run: npm ci && npm run build
 
 # Please do not touch the following action
       - name: Store deployment content
@@ -46,7 +46,7 @@ jobs:
         with:
           api-key: ${{ secrets.IONOS_API_KEY }}
           service-host: api-eu.ionos.space
-          project-id: 38aab189-04f6-486b-96b0-c08a642399b4
+          project-id: c4fefa73-a10f-4ab4-8d82-8599e9182b6a
           branch-id: ${{ inputs.branch-id }}
           version: ${{ github.sha }}
           folder: ${{ env.DEPLOYMENT_FOLDER }}
