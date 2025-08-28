@@ -530,15 +530,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     ));
   };
 
-  // If Klassenbuch is active, render only that
-  if (showKlassenbuch) {
-    return (
-      <KlassenbuchApp
-        onClose={handleKlassenbuchClose}
-        currentTeacher={currentTeacher}
-      />
-    );
-  }
+  // No early return for Klassenbuch - show it under the header instead
 
   return (
     <div className="min-h-screen bg-gray-50">
