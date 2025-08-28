@@ -5,9 +5,9 @@ import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { Checkbox } from '../../../components/ui/checkbox';
 import { Label } from '../../../components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/popover';
-import { Calendar as CalendarComponent } from '../../../components/ui/calendar';
+import { CompactDatePicker } from '../../../components/ui/date-picker';
 import { TooltipProvider } from '../../../components/ui/tooltip';
+import dayjs, { Dayjs } from 'dayjs';
 
 // Import from shared domains
 import { 
