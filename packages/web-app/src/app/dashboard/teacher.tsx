@@ -313,9 +313,13 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Main handler that routes to the right function
   const handleAttendanceClick = (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
+    console.log('🎯 ATTENDANCE CLICKED:', { lessonId, viewMode });
+
     if (viewMode === 'overview') {
+      console.log('🟢 Routing to OVERVIEW mode');
       openOverviewMode(lessonId);
     } else {
+      console.log('🟠 Routing to EDIT mode');
       openEditMode(lessonId);
     }
   };
