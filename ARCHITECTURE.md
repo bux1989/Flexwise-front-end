@@ -48,7 +48,7 @@ shared/domains/
 ├── academic/          # Klassenbuch, Digitales Klassenbuch, Wahlfächer
 ├── scheduling/        # Stundenplan, Stundenplanung, Vertretungsplan
 ├── attendance/        # Fehlzeiten, Beurlaubung, Check-In/Out
-├── communications/    # Eltern-App, Elternbriefe, Info-Board
+├���─ communications/    # Eltern-App, Elternbriefe, Info-Board
 └── management/        # Berichte, Statistiken, To-Do-List
 ```
 
@@ -226,6 +226,72 @@ const { lessons, syncStatus, isOnline } = useOfflineLessons(teacherId);
 - Conflict resolution: Last write wins with timestamps
 
 ## Architecture Summary
+
+### Complete Structure ✅
+```
+packages/
+├── shared/                           # Platform-agnostic business logic
+│   ├── domains/                      # 19 modules organized by business domain
+│   │   ├── academic/
+│   │   │   ├── klassenbuch/          # Individual module folders
+│   │   │   ├── digitales-klassenbuch/
+│   │   │   └── wahlfächer/
+│   │   ├── scheduling/
+│   │   │   ├── stundenplan/
+│   │   │   ├── stundenplanung/
+│   │   │   └── vertretungsplan/
+│   │   ├── attendance/
+│   │   │   ├── fehlzeiten/
+│   │   │   ├── beurlaubung/
+│   │   │   └── check-in-out/
+│   │   ├── communications/
+│   │   │   ├── eltern-app/
+│   │   │   ├── elternbriefe/
+│   │   │   ├── info-board/
+│   │   │   └── steckboard/
+│   │   └── management/
+│   │       ├── berichte/
+│   │       ├── statistiken/
+│   │       ├── to-do-list/
+│   │       ├── termine/
+│   │       └── flex-planer/
+│   ├── api/                          # Supabase API calls
+│   ├── hooks/                        # Custom React hooks (web + mobile)
+│   ├── utils/                        # Utility functions
+│   └── types/                        # TypeScript definitions
+├── web-app/                          # React web application
+│   ├── dashboards/
+│   │   ├── teacher/                  # Role-specific layouts
+│   │   ├── parent/
+│   │   ├── admin/
+│   │   └── student/
+│   ├── components/                   # Web-specific UI
+│   └── pages/                        # Web routing
+└── mobile-app/                       # React Native application
+    ├── screens/
+    │   ├── dashboards/               # Overview dashboards per role
+    │   └── modules/                  # Individual module screens
+    ├── navigation/
+    │   ├── DrawerNavigator.tsx       # Side menu with 19 modules
+    │   └── RoleNavigator.tsx         # Role-based navigation
+    └── components/                   # Mobile-specific UI
+```
+
+### Key Architectural Decisions ✅
+1. **Platform**: Single React Native app (not separate apps per role)
+2. **Organization**: Hybrid domains with individual module folders
+3. **Licensing**: Basic functionality + premium add-ons within modules
+4. **Mobile UX**: Drawer navigation + overview dashboards
+5. **Data Sync**: Real-time when online + offline capability with warnings
+
+### Implementation Benefits
+- **Scalable**: Easy to add new modules or modify existing ones
+- **Maintainable**: Shared business logic between web and mobile
+- **Flexible licensing**: Schools can upgrade individual modules
+- **User-friendly**: Works offline, syncs when connected
+- **Role-appropriate**: Each user sees relevant modules and features
+
+## Next Steps
 
 ---
 
