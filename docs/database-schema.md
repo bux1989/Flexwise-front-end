@@ -257,6 +257,41 @@ CREATE TABLE student_absence_notes (
 );
 ```
 
+### lesson_diary_entries
+**Purpose**: Klassenbuch entries (lesson diary/notes)
+
+```sql
+CREATE TABLE public.lesson_diary_entries (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  lesson_id uuid NOT NULL,
+  school_id uuid NOT NULL,
+  entry_text text NOT NULL,
+  entry_type text NOT NULL DEFAULT 'general'::text,
+  is_private boolean NOT NULL DEFAULT false,
+  created_by uuid NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_by uuid,
+  CONSTRAINT lesson_diary_entries_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_lesson_diary_entries_lesson FOREIGN KEY (lesson_id) REFERENCES course_lessons (id) ON DELETE CASCADE,
+  CONSTRAINT fk_lesson_diary_entries_school FOREIGN KEY (school_id) REFERENCES structure_schools (id) ON DELETE CASCADE,
+  CONSTRAINT fk_lesson_diary_entries_created_by FOREIGN KEY (created_by) REFERENCES user_profiles (id) ON DELETE CASCADE,
+  CONSTRAINT fk_lesson_diary_entries_updated_by FOREIGN KEY (updated_by) REFERENCES user_profiles (id) ON DELETE SET NULL,
+  CONSTRAINT lesson_diary_entries_entry_type_check CHECK (
+    entry_type = ANY (ARRAY['general','attendance','behavior','curriculum','special_event','substitute'])
+  )
+);
+
+CREATE INDEX IF NOT EXISTS idx_lesson_diary_entries_lesson_id ON public.lesson_diary_entries (lesson_id);
+CREATE INDEX IF NOT EXISTS idx_lesson_diary_entries_school_id ON public.lesson_diary_entries (school_id);
+CREATE INDEX IF NOT EXISTS idx_lesson_diary_entries_created_by ON public.lesson_diary_entries (created_by);
+CREATE INDEX IF NOT EXISTS idx_lesson_diary_entries_lesson_created ON public.lesson_diary_entries (lesson_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_lesson_diary_entries_type ON public.lesson_diary_entries (entry_type);
+CREATE INDEX IF NOT EXISTS idx_lesson_diary_entries_school_created ON public.lesson_diary_entries (school_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_lesson_diary_entries_teacher_created ON public.lesson_diary_entries (created_by, created_at);
+CREATE INDEX IF NOT EXISTS idx_lesson_diary_entries_privacy ON public.lesson_diary_entries (is_private);
+```
+
 ## Course & Lesson Management
 
 ### course_list
@@ -334,6 +369,118 @@ CREATE TABLE contacts (
     created_at timestamp DEFAULT now()
 );
 ```
+
+## Stored Procedures
+
+### save_lesson_attendance_bulk
+Records lesson-level attendance in bulk, upserting the student daily log and creating a Klassenbuch diary entry when provided.
+
+```sql
+CREATE OR REPLACE FUNCTION public.save_lesson_attendance_bulk(
+  p_lesson_id uuid,
+  p_school_id uuid,
+  p_attendance jsonb,                -- [{ "student_id": uuid, "status": text, "note": text }, ...]
+  p_recorded_by uuid DEFAULT auth.uid(),
+  p_date date DEFAULT NULL,
+  p_diary_entry_text text DEFAULT NULL,
+  p_diary_entry_type text DEFAULT 'attendance',
+  p_diary_is_private boolean DEFAULT false
+) RETURNS TABLE(student_id uuid, daily_log_id uuid, attendance_log_id uuid, status public.attendance_status)
+LANGUAGE plpgsql SECURITY DEFINER AS $$
+DECLARE
+  v_day date;
+  v_rec jsonb;
+  v_student_id uuid;
+  v_status_text text;
+  v_status public.attendance_status;
+  v_note text;
+  v_daily_log_id uuid;
+  v_attendance_log_id uuid;
+BEGIN
+  SELECT date_trunc('day', cl.start_datetime)::date
+  INTO v_day
+  FROM public.course_lessons cl
+  WHERE cl.id = p_lesson_id AND cl.school_id = p_school_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Lesson % does not exist in school %', p_lesson_id, p_school_id;
+  END IF;
+  IF p_date IS NOT NULL THEN v_day := p_date; END IF;
+
+  IF COALESCE(trim(p_diary_entry_text), '') <> '' THEN
+    INSERT INTO public.lesson_diary_entries
+      (lesson_id, school_id, entry_text, entry_type, is_private, created_by, updated_by)
+    VALUES
+      (p_lesson_id, p_school_id, p_diary_entry_text, COALESCE(p_diary_entry_type,'attendance'), COALESCE(p_diary_is_private,false), p_recorded_by, p_recorded_by);
+  END IF;
+
+  FOR v_rec IN SELECT jsonb_array_elements(p_attendance)
+  LOOP
+    v_student_id := (v_rec->>'student_id')::uuid;
+    v_status_text := v_rec->>'status';
+    v_note := v_rec->>'note';
+
+    IF NOT EXISTS (
+      SELECT 1 FROM unnest(enum_range(NULL::public.attendance_status)) e(s) WHERE e.s::text = v_status_text
+    ) THEN
+      RAISE EXCEPTION 'Invalid attendance status: %', v_status_text;
+    END IF;
+    v_status := v_status_text::public.attendance_status;
+
+    INSERT INTO public.student_daily_log (
+      student_id, school_id, date, created_at, updated_at, last_updated_by, presence_status, is_late
+    ) VALUES (
+      v_student_id, p_school_id, v_day, NOW(), NOW(), p_recorded_by,
+      CASE
+        WHEN v_status IN ('present','late') THEN 'present'::public.presence_status
+        WHEN v_status = 'absent_excused' THEN 'absent_excused'::public.presence_status
+        WHEN v_status = 'absent_unexcused' THEN 'absent_unexcused'::public.presence_status
+        WHEN v_status = 'left_early' THEN 'left_early'::public.presence_status
+        WHEN v_status = 'temporarily_offsite' THEN 'temporarily_offsite'::public.presence_status
+        WHEN v_status = 'left_without_notice' THEN 'left_without_notice'::public.presence_status
+        ELSE 'unmarked'::public.presence_status
+      END,
+      CASE WHEN v_status = 'late' THEN TRUE ELSE FALSE END
+    )
+    ON CONFLICT (student_id, school_id, date)
+    DO UPDATE SET
+      updated_at = NOW(),
+      last_updated_by = p_recorded_by,
+      presence_status = CASE
+        WHEN EXCLUDED.presence_status IN ('present','absent_excused','absent_unexcused','left_early','temporarily_offsite','left_without_notice')::public.presence_status[] THEN EXCLUDED.presence_status
+        ELSE student_daily_log.presence_status
+      END,
+      is_late = student_daily_log.is_late OR EXCLUDED.is_late
+    RETURNING id INTO v_daily_log_id;
+
+    INSERT INTO public.student_attendance_logs (
+      lesson_id, student_id, daily_log_id, notes, recorded_by, "timestamp", status, school_id
+    ) VALUES (
+      p_lesson_id, v_student_id, v_daily_log_id, v_note, p_recorded_by, NOW(), v_status, p_school_id
+    )
+    ON CONFLICT (student_id, lesson_id)
+    DO UPDATE SET
+      daily_log_id = EXCLUDED.daily_log_id,
+      notes = EXCLUDED.notes,
+      recorded_by = EXCLUDED.recorded_by,
+      "timestamp" = NOW(),
+      status = EXCLUDED.status,
+      school_id = EXCLUDED.school_id
+    RETURNING id INTO v_attendance_log_id;
+
+    student_id := v_student_id;
+    daily_log_id := v_daily_log_id;
+    attendance_log_id := v_attendance_log_id;
+    status := v_status;
+    RETURN NEXT;
+  END LOOP;
+END;
+$$;
+```
+
+**Notes:**
+- Uses UNIQUE (student_id, school_id, date) on `student_daily_log` to upsert daily records.
+- Upserts `student_attendance_logs` on UNIQUE (student_id, lesson_id).
+- When `p_diary_entry_text` is provided, a `lesson_diary_entries` record is created (entry_type defaults to 'attendance').
 
 ## Key Auth Functions
 
