@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Badge } from '../ui/badge';
 import { Calendar, ChevronLeft, ChevronRight, BarChart3, CalendarCheck } from 'lucide-react';
-import { getClassesForStatistics, getCoursesForStatistics } from '../../../shared/domains/academic';
+import { getClassesForStatistics, getCoursesForStatistics } from '@flexwise/shared/domains/academic';
 
 interface Class {
   id: string;
