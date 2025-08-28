@@ -222,25 +222,9 @@ export function TaskManagement({ currentTeacher, canAssignTasks, isMobile = fals
   return (
     <Card>
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-3">
-        <div className="flex items-center gap-2">
-          <CardTitle className="text-lg lg:text-xl font-bold">Task Management</CardTitle>
-          {typeof window !== 'undefined' && window.innerWidth < 1024 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                // Create a simple toggle function for tasks section
-                const event = new CustomEvent('toggleTasksSection');
-                window.dispatchEvent(event);
-              }}
-              className="h-6 w-6 p-0"
-            >
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
+        <CardTitle className="text-lg lg:text-xl font-bold">Task Management</CardTitle>
         {canAssignTasks && (
-          <Button 
+          <Button
             onClick={() => setAddTaskDialogOpen(true)}
             size="sm"
             className="h-8"
