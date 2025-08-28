@@ -97,16 +97,16 @@ export const getAttendanceSummary = (lesson: any) => {
 
 export const getAttendanceNumbers = (lesson: any) => {
   const preExistingAbsentCount = lesson.preExistingAbsences?.length || 0;
-  
+
   if (!lesson.attendance) {
     return {
       potentialPresent: lesson.enrolled - preExistingAbsentCount,
       absent: preExistingAbsentCount,
       present: 0,
-      missing: 0
+      missing: lesson.enrolled - preExistingAbsentCount
     };
   }
-  
+
   const { present, late, absent } = lesson.attendance;
   const recordedPresent = present.length + late.length;
   const recordedAbsent = absent.length;
