@@ -102,6 +102,21 @@ export const getAttendanceSummary = (lesson: any) => {
 };
 
 export const getAttendanceNumbers = (lesson: any) => {
+  // Use real attendance badge data if available
+  if (lesson.attendanceBadge) {
+    const { total_students, present_count, late_count, absent_count } = lesson.attendanceBadge;
+    const recordedPresent = present_count + late_count;
+    const missing = total_students - recordedPresent - absent_count;
+
+    return {
+      present: recordedPresent,
+      missing: missing,
+      absent: absent_count,
+      potentialPresent: total_students - absent_count
+    };
+  }
+
+  // Fallback to old logic
   const preExistingAbsentCount = lesson.preExistingAbsences?.length || 0;
 
   if (!lesson.attendance) {
