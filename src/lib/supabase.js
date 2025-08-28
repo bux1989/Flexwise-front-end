@@ -198,6 +198,36 @@ export async function fetchTodaysLessons(teacherId, date = new Date()) {
   }
 }
 
+// Fetch attendance badge data for lessons
+export async function fetchAttendanceBadges(lessonIds) {
+  try {
+    console.log('🏷️ Fetching attendance badges for lessons:', lessonIds)
+
+    const { data: badges, error } = await supabase
+      .from('vw_lesson_attendance_badges')
+      .select('*')
+      .in('lesson_id', lessonIds)
+
+    if (error) {
+      console.error('❌ Error fetching attendance badges:', error)
+      throw error
+    }
+
+    // Convert to lookup object for easy access
+    const badgeLookup = {}
+    badges?.forEach(badge => {
+      badgeLookup[badge.lesson_id] = badge
+    })
+
+    console.log('✅ Attendance badges fetched:', badgeLookup)
+    return badgeLookup
+
+  } catch (error) {
+    console.error('💥 Error in fetchAttendanceBadges:', error)
+    return {} // Return empty object on error
+  }
+}
+
 // Attendance tracking functions
 export async function fetchLessonAttendance(lessonId) {
   try {
