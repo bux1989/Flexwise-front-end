@@ -21,7 +21,8 @@ import { Header } from '../components/Header';
 import { AddTaskDialog } from '../components/AddTaskDialog';
 import { TimeInputWithArrows } from '../components/TimeInputWithArrows';
 import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, ASSIGNEE_GROUPS } from '../constants/mockData';
-import { fetchTodaysLessons, fetchLessonAttendance, fetchAttendanceBadges, supabase } from '../lib/supabase';
+import { supabase } from '@flexwise/shared/supabase';
+import { fetchTodaysLessons, fetchLessonAttendance, fetchAttendanceBadges } from '../lib/supabase';
 import { 
   getSubstituteLessons, 
   getPriorityValue, 
