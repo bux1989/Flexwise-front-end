@@ -170,9 +170,16 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         </div>
       </div>
 
-      {/* TODO: Add Attendance Dialog Component */}
-      {/* This would be the complex attendance tracking dialog from the original */}
-      {/* For now, we're focusing on the component extraction and layout */}
+      {/* Attendance Modal */}
+      <AttendanceModal
+        lessonId={selectedLessonForAttendance}
+        isOpen={attendanceDialogOpen}
+        onClose={() => {
+          setAttendanceDialogOpen(false);
+          setSelectedLessonForAttendance(null);
+        }}
+        viewMode={attendanceViewMode}
+      />
     </div>
   );
 }
