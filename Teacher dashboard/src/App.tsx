@@ -1132,10 +1132,10 @@ export default function App() {
             attendance: totalStudentsWithAttendance > 0 ? { present, late, absent } : undefined,
             lessonNote: updatedLessonNote,
             ...(wasFirstTime ? {
-              attendanceTakenBy: CURRENT_TEACHER,
+              attendanceTakenBy: currentTeacher,
               attendanceTakenAt: timestamp
             } : {
-              attendanceLastEditedBy: CURRENT_TEACHER,
+              attendanceLastEditedBy: currentTeacher,
               attendanceLastEditedAt: timestamp
             })
           }
