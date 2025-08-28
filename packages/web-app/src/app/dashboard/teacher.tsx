@@ -133,23 +133,12 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       const attendanceData = await fetchLessonAttendance(lessonId);
       const lesson = lessons.find(l => l.id === lessonId);
 
-      // Check if attendance is complete
-      const totalStudents = lesson?.students?.length || 0;
-      const recordedStudents = (attendanceData.present?.length || 0) +
-                              (attendanceData.late?.length || 0) +
-                              (attendanceData.absent?.length || 0);
-      const isComplete = totalStudents > 0 && recordedStudents === totalStudents;
-
-      // Respect the explicitly requested view mode
-      // Only auto-determine if no explicit mode preference
-      let finalViewMode = viewMode;
-      if (viewMode === 'edit' && isComplete && recordedStudents === 0) {
-        // Only default to overview if clicking on a completely empty lesson
-        // This case shouldn't happen, but just in case
-        finalViewMode = 'edit';
-      }
-
-      setAttendanceViewMode(finalViewMode);
+      // Always respect the explicitly requested view mode
+      // The badge logic already determines the appropriate mode:
+      // - Green badge → 'overview'
+      // - Orange/Red badge → 'edit'
+      // - Edit button → 'edit'
+      setAttendanceViewMode(viewMode);
 
       if (finalViewMode === 'overview' && isComplete) {
         // Structure data for overview mode
