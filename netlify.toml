@@ -3,7 +3,7 @@
   command = "npm run build"
   
   # Publish directory where the built files are located
-  publish = "packages/react-app/dist"
+  publish = "packages/web-app/dist"
   
   # Base directory for the build (optional, helps with relative paths)
   base = "."
