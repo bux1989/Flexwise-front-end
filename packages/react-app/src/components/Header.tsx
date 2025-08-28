@@ -1,4 +1,4 @@
-import { BookOpen, User, LogOut } from 'lucide-react';
+import { BookOpen, User, LogOut, BarChart3 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
