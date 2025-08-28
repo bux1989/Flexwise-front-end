@@ -1767,7 +1767,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 >
                                   <AlertCircle className="h-3 w-3" />
                                   <span className="text-xs">
-                                    {attendanceNumbers.present}/<span className="text-red-600">{attendanceNumbers.missing}</span>?/{attendanceNumbers.absent}
+                                    {attendanceNumbers.present}/<span className="text-red-600">{attendanceNumbers.missing}</span>/{attendanceNumbers.absent}
                                   </span>
                                 </Badge>
                               ) : (
@@ -1777,7 +1777,7 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
                                 >
                                   <AlertCircle className="h-3 w-3" />
                                   <span className="text-xs">
-                                    ({attendanceNumbers.potentialPresent}?/{attendanceNumbers.absent})
+                                    ({attendanceNumbers.potentialPresent}/{attendanceNumbers.absent})
                                   </span>
                                 </Badge>
                               )}
