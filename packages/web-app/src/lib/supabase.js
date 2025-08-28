@@ -255,7 +255,27 @@ export async function fetchAttendanceBadges(lessonIds) {
 export async function fetchLessonAttendance(lessonId) {
   try {
     console.log('📋 Fetching attendance for lesson:', lessonId)
+    console.log('📋 Lesson ID type:', typeof lessonId)
 
+    // First, let's try a simple query to see if the table exists
+    console.log('🔍 Testing table access...')
+    const { data: testData, error: testError } = await supabase
+      .from('student_attendance_logs')
+      .select('*')
+      .limit(1)
+
+    if (testError) {
+      console.error('❌ Table access failed:', testError)
+      console.error('❌ Error message:', testError.message || 'No message')
+      console.error('❌ Error code:', testError.code || 'No code')
+      console.error('❌ Error details:', testError.details || 'No details')
+      console.error('❌ Error hint:', testError.hint || 'No hint')
+      throw new Error(`Table access failed: ${testError.message}`)
+    }
+
+    console.log('✅ Table access successful, test data:', testData)
+
+    // Now try the actual query
     const { data: attendance, error } = await supabase
       .from('student_attendance_logs')
       .select(`
@@ -265,13 +285,15 @@ export async function fetchLessonAttendance(lessonId) {
       .eq('lesson_id', lessonId)
 
     if (error) {
-      console.error('❌ Error fetching attendance:', JSON.stringify(error, null, 2))
-      console.error('❌ Error message:', error.message)
-      console.error('❌ Error code:', error.code)
-      console.error('❌ Error details:', error.details)
-      console.error('❌ Error hint:', error.hint)
-      throw error
+      console.error('❌ Error fetching attendance:', error)
+      console.error('❌ Error message:', error.message || 'No message')
+      console.error('❌ Error code:', error.code || 'No code')
+      console.error('❌ Error details:', error.details || 'No details')
+      console.error('❌ Error hint:', error.hint || 'No hint')
+      throw new Error(`Attendance fetch failed: ${error.message}`)
     }
+
+    console.log('📋 Raw attendance data:', attendance)
 
     // Group attendance by status
     const grouped = {
@@ -282,18 +304,14 @@ export async function fetchLessonAttendance(lessonId) {
       ) || []
     }
 
-    console.log('✅ Attendance fetched:', grouped)
+    console.log('✅ Attendance fetched and grouped:', grouped)
     return grouped
 
   } catch (error) {
     console.error('💥 Error in fetchLessonAttendance:', error)
-    console.error('💥 Error details:', {
-      message: error?.message,
-      details: error?.details,
-      hint: error?.hint,
-      code: error?.code,
-      lessonId: lessonId
-    })
+    console.error('💥 Error name:', error.name || 'No name')
+    console.error('💥 Error message:', error.message || 'No message')
+    console.error('💥 Error stack:', error.stack || 'No stack')
     throw error
   }
 }
