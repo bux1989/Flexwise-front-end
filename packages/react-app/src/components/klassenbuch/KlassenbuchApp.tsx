@@ -27,32 +27,7 @@ export default function KlassenbuchApp() {
     filteredClasses
   } = useKlassenbuchState();
 
-  const handleStudentSelect = (studentId: string) => {
-    setSelectedStudent(studentId);
-    setCurrentView('statistics');
-    setStatisticsViewType('student');
-  };
-
-  const handleViewChange = (view: 'live' | 'statistics') => {
-    setCurrentView(view);
-    
-    // When switching to statistics view, default to first actual class if needed
-    if (view === 'statistics') {
-      const classesForStats = getClassesForStatistics();
-      if (selectedClass.type === 'teacher' && classesForStats.length > 0) {
-        setSelectedClass(classesForStats[0]);
-      }
-    }
-  };
-
-  const handleStatisticsViewTypeChange = (viewType: 'class' | 'student' | 'course') => {
-    setStatisticsViewType(viewType);
-    
-    // Clear selected student when changing away from student view
-    if (viewType !== 'student') {
-      setSelectedStudent('');
-    }
-  };
+  // Domain hook provides all the handler functions
 
   return (
     <div className="min-h-screen bg-background">
