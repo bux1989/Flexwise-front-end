@@ -29,20 +29,45 @@ export const getPriorityValue = (priority: string) => {
 };
 
 export const needsAttendanceTracking = (lessonTime: string, lessonEndTime: string, selectedDate: Date, isCurrent: boolean = false) => {
+  // For testing: always show attendance button if we have valid lesson time
+  if (!lessonTime || !lessonTime.includes(':')) {
+    console.log('❌ No valid lesson time:', lessonTime);
+    return false;
+  }
+
   const isToday = selectedDate.toDateString() === new Date().toDateString();
-  if (!isToday) return false;
-  
+  console.log('📅 Date check:', {
+    selectedDate: selectedDate.toDateString(),
+    today: new Date().toDateString(),
+    isToday
+  });
+
+  // For now, allow attendance tracking for any date (for testing)
+  // if (!isToday) return false;
+
   const currentTime = new Date();
   const [startHours, startMinutes] = lessonTime.split(':').map(Number);
-  
+
   const lessonStartTime = new Date();
   lessonStartTime.setHours(startHours, startMinutes, 0, 0);
-  
+
+  console.log('⏰ Time check:', {
+    lessonTime,
+    currentTime: currentTime.toLocaleTimeString(),
+    lessonStartTime: lessonStartTime.toLocaleTimeString(),
+    isCurrent,
+    shouldShow: isCurrent || currentTime >= lessonStartTime
+  });
+
   if (isCurrent) {
     return true;
   }
-  
-  return currentTime >= lessonStartTime;
+
+  // For testing: always show attendance buttons
+  return true;
+
+  // Original logic (commented out for testing):
+  // return currentTime >= lessonStartTime;
 };
 
 export const getAttendanceStatus = (lesson: any) => {
