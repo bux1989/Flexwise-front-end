@@ -4,10 +4,10 @@ import { supabase, getCurrentUserProfile, getRouteByRole } from './lib/supabase'
 
 // Components
 import Login from './pages/Login'
-import TeacherDashboard from './pages/TeacherDashboard'
-import ParentDashboard from './pages/ParentDashboard'
-import ExternalDashboard from './pages/ExternalDashboard'
-import AdminDashboard from './pages/AdminDashboard'
+import TeacherDashboard from './app/dashboard/teacher'
+import ParentDashboard from './app/dashboard/parent'
+import ExternalDashboard from './app/dashboard/external'
+import AdminDashboard from './app/dashboard/admin'
 
 // Constants
 const ROLE_ROUTES = {
