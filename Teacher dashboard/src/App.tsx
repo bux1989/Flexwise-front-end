@@ -1177,11 +1177,11 @@ export default function App() {
             ...lesson.attendance,
             absent: lesson.attendance.absent.map(student => 
               student.id === selectedStudentForExcuse.studentId 
-                ? { 
-                    ...student, 
-                    excused: true, 
+                ? {
+                    ...student,
+                    excused: true,
                     reason: excuseReason || 'Entschuldigt',
-                    excusedBy: CURRENT_TEACHER,
+                    excusedBy: currentTeacher,
                     excusedAt: timestamp
                   }
                 : student
