@@ -179,23 +179,41 @@ export const INITIAL_EVENTS = [
 
 export const ASSIGNEE_GROUPS = [
   {
+    id: 'all-teachers',
     name: 'Alle Lehrer',
     members: ['Frau Müller', 'Herr Schmidt', 'Frau Wagner', 'Herr Koch', 'Frau Hoffmann']
   },
   {
+    id: 'class-teachers-5',
     name: 'Klassenlehrer 5. Klassen',
     members: ['Frau Müller', 'Herr Schmidt']
   },
   {
+    id: 'math-department',
     name: 'Fachbereich Mathematik',
     members: ['Herr Wagner', 'Frau Koch']
   },
   {
+    id: 'school-management',
     name: 'Schulleitung',
     members: ['Frau Direktor', 'Herr Konrektor']
   },
   {
+    id: 'administration',
     name: 'Verwaltung',
     members: ['Frau Sekretariat', 'Herr Hausmeister']
   }
+];
+
+export const INDIVIDUAL_ASSIGNEES = [
+  'Frau Müller',
+  'Herr Schmidt',
+  'Frau Wagner',
+  'Herr Koch',
+  'Frau Hoffmann',
+  'Dr. Bauer',
+  'Frau Fischer',
+  'Herr Weber',
+  'Frau Klein',
+  'Herr Neumann'
 ];
