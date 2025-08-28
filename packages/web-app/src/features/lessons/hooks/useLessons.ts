@@ -97,6 +97,7 @@ export function useLessons(teacherId: string | null, selectedDate: Date): UseLes
   const [lessons, setLessons] = useState<LessonData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [schoolId, setSchoolId] = useState<string | null>(null);
 
   const fetchLessons = async () => {
     if (!teacherId) {
@@ -108,22 +109,29 @@ export function useLessons(teacherId: string | null, selectedDate: Date): UseLes
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log('📚 Fetching lessons for teacher:', teacherId, 'date:', selectedDate);
-      
+
       // Fetch lessons for the selected date
       const supabaseLessons = await fetchTodaysLessons(teacherId, selectedDate);
-      
+
+      // Extract school ID for real-time subscriptions
+      if (supabaseLessons.length > 0 && !schoolId) {
+        const lessonSchoolId = supabaseLessons[0].school_id;
+        setSchoolId(lessonSchoolId);
+        console.log('🏫 School ID detected for real-time:', lessonSchoolId);
+      }
+
       // Fetch attendance badges for all lessons
       const lessonIds = supabaseLessons.map(lesson => lesson.lesson_id);
       const attendanceBadges = lessonIds.length > 0 ? await fetchAttendanceBadges(lessonIds) : {};
-      
+
       // Transform data to match component expectations
       const transformedLessons = transformLessonData(supabaseLessons, attendanceBadges);
-      
+
       console.log('✅ Lessons loaded:', transformedLessons.length, 'lessons');
       setLessons(transformedLessons);
-      
+
     } catch (err) {
       console.error('❌ Error fetching lessons:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch lessons');
@@ -132,6 +140,67 @@ export function useLessons(teacherId: string | null, selectedDate: Date): UseLes
       setLoading(false);
     }
   };
+
+  // Handle real-time updates
+  const handleRealtimeUpdates = useCallback(async (groupedUpdates: any) => {
+    console.log('📡 Processing real-time updates for lessons:', groupedUpdates);
+
+    // Check if any updates affect our lessons
+    const relevantUpdates = ['attendance', 'lesson', 'daily_log', 'diary', 'substitution'];
+    const hasRelevantUpdates = relevantUpdates.some(type => groupedUpdates[type]);
+
+    if (hasRelevantUpdates) {
+      console.log('🔄 Relevant updates detected, refreshing lesson data...');
+
+      // For attendance updates, try to update just the affected lessons
+      if (groupedUpdates.attendance) {
+        try {
+          // Refresh attendance badges for current lessons
+          const currentLessonIds = lessons.map(l => l.id);
+          if (currentLessonIds.length > 0) {
+            const updatedBadges = await fetchAttendanceBadges(currentLessonIds);
+
+            setLessons(prevLessons =>
+              prevLessons.map(lesson => {
+                const badge = updatedBadges[lesson.id];
+                if (badge) {
+                  return {
+                    ...lesson,
+                    attendance: {
+                      present: Array(badge.present_count || 0).fill(null).map((_, i) => ({ id: `present_${i}`, name: `Student ${i + 1}` })),
+                      late: Array(badge.late_count || 0).fill(null).map((_, i) => ({ id: `late_${i}`, name: `Student ${i + 1}` })),
+                      absent: Array(badge.absent_count || 0).fill(null).map((_, i) => ({ id: `absent_${i}`, name: `Student ${i + 1}` }))
+                    },
+                    enrolled: badge.total_students || lesson.enrolled
+                  };
+                }
+                return lesson;
+              })
+            );
+
+            console.log('✅ Attendance badges updated via real-time');
+            return;
+          }
+        } catch (error) {
+          console.error('❌ Error updating attendance badges:', error);
+        }
+      }
+
+      // For other updates, do a full refresh
+      await fetchLessons();
+    }
+  }, [lessons, schoolId]);
+
+  // Get lesson IDs for real-time subscriptions
+  const teacherLessonIds = lessons.map(lesson => lesson.id);
+
+  // Set up real-time subscriptions
+  const realtimeStatus = useSchoolRealtime({
+    schoolId,
+    teacherLessonIds,
+    onUpdate: handleRealtimeUpdates,
+    enabled: !!schoolId && !!teacherId
+  });
 
   // Fetch lessons when teacher ID or date changes
   useEffect(() => {
