@@ -529,7 +529,6 @@ export default function TeacherDashboard({ user, profile }: TeacherDashboardProp
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
-      setIsDatePickerOpen(false);
     }
   };
 
