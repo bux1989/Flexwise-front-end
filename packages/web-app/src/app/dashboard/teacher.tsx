@@ -139,7 +139,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       // The badge logic already determines the appropriate mode:
       // - Green badge → 'overview'
       // - Orange/Red badge → 'edit'
-      // - Edit button → 'edit'
+      // - Edit button �� 'edit'
       setAttendanceViewMode(viewMode);
 
       if (viewMode === 'overview') {
@@ -297,7 +297,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       });
       setAttendanceViewMode('edit');
       setTempAttendance({});
-      setLessonNote('');
+      setLessonNote(''); // Reset to empty on error
     }
   };
 
