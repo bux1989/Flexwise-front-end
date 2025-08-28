@@ -77,8 +77,6 @@ export function LessonSchedule({
     });
   };
 
-  const currentDate = new Date();
-  const isToday = selectedDate.toDateString() === currentDate.toDateString();
 
   // Filter lessons for mobile display
   const displayedLessons = useMemo(() => {
