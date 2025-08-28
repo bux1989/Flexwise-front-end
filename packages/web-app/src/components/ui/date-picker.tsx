@@ -1,87 +1,231 @@
-"use client"
-
-import * as React from "react"
-import { format } from "date-fns"
-import { de } from "date-fns/locale"
-import { CalendarIcon } from "lucide-react"
-
-import { cn } from "./utils"
-import { Button } from "./button"
-import { Calendar } from "./calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "./popover"
+import React, { useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import { Calendar } from 'lucide-react';
+import { Button } from './button';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { Calendar as CalendarComponent } from './calendar';
+import { cn } from '../../lib/utils';
 
 interface DatePickerProps {
-  date?: Date
-  onDateChange?: (date: Date | undefined) => void
-  placeholder?: string
-  className?: string
-  disabled?: boolean
+  label?: string;
+  value?: Dayjs | null;
+  defaultValue?: Dayjs;
+  onChange?: (newValue: Dayjs | null) => void;
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
+  format?: string;
 }
 
 export function DatePicker({
-  date,
-  onDateChange,
-  placeholder = "MM/DD/YYYY",
+  label,
+  value,
+  defaultValue,
+  onChange,
+  placeholder = "Datum auswählen",
   className,
   disabled = false,
+  format = "DD.MM.YYYY"
 }: DatePickerProps) {
-  console.log('🔍 REAL DatePicker rendered with props:', { date, disabled, placeholder, className });
-  const [open, setOpen] = React.useState(false)
+  // Internal state for uncontrolled mode
+  const [internalValue, setInternalValue] = useState<Dayjs | null>(defaultValue || null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // FORCE DISABLE THE POPUP
-  const forceDisabled = true;
-  console.log('🚫 DatePicker popup DISABLED');
+  // Determine if this is controlled or uncontrolled
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? value : internalValue;
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date) return;
+    
+    const dayjsDate = dayjs(date);
+    
+    if (isControlled) {
+      onChange?.(dayjsDate);
+    } else {
+      setInternalValue(dayjsDate);
+      onChange?.(dayjsDate);
+    }
+    
+    setIsOpen(false);
+  };
+
+  const handleClear = () => {
+    if (isControlled) {
+      onChange?.(null);
+    } else {
+      setInternalValue(null);
+      onChange?.(null);
+    }
+  };
+
+  const displayValue = currentValue ? currentValue.format(format) : '';
 
   return (
-    <Popover open={false} onOpenChange={() => console.log('🚫 Popover prevented from opening')}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "w-full justify-start text-left font-normal h-10 px-3 py-2 bg-white border border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200",
-            !date && "text-gray-500",
-            disabled && "opacity-50 cursor-not-allowed",
-            className
-          )}
-          disabled={disabled}
-        >
-          <div className="flex items-center gap-2 w-full">
-            <span className="flex-1 text-left text-sm">
-              {date ? (
-                format(date, "MM/dd/yyyy")
-              ) : (
-                <span className="text-gray-500">{placeholder}</span>
+    <div className={cn("flex flex-col space-y-2", className)}>
+      {label && (
+        <label className="text-sm font-medium text-gray-700">
+          {label}
+        </label>
+      )}
+      
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn(
+              "w-full justify-start text-left font-normal",
+              !currentValue && "text-muted-foreground"
+            )}
+            disabled={disabled}
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            {displayValue || placeholder}
+          </Button>
+        </PopoverTrigger>
+        
+        <PopoverContent className="w-auto p-0" align="start">
+          <div className="p-3">
+            <CalendarComponent
+              mode="single"
+              selected={currentValue?.toDate()}
+              onSelect={handleDateSelect}
+              initialFocus
+            />
+            
+            {/* Quick action buttons */}
+            <div className="flex justify-between items-center mt-3 pt-3 border-t">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDateSelect(new Date())}
+              >
+                Heute
+              </Button>
+              
+              {currentValue && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClear}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  Löschen
+                </Button>
               )}
-            </span>
-            <CalendarIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
-          </div>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="w-auto p-0 border shadow-lg rounded-lg"
-        align="start"
-        sideOffset={4}
-      >
-        <div className="bg-white rounded-lg">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={(selectedDate) => {
-              onDateChange?.(selectedDate)
-              setOpen(false)
-            }}
-            initialFocus
-            className="border-0"
-          />
-          {date && (
-            <div className="px-4 pb-3 pt-0 border-t bg-gray-50 rounded-b-lg">
-              <p className="text-sm font-medium text-gray-900">
-                {format(date, "EEE, MMM d", { locale: de })}
-              </p>
             </div>
-          )}
-        </div>
-      </PopoverContent>
-    </Popover>
-  )
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
+// Compact version for use in headers/toolbars
+interface CompactDatePickerProps {
+  value?: Dayjs | null;
+  defaultValue?: Dayjs;
+  onChange?: (newValue: Dayjs | null) => void;
+  className?: string;
+  disabled?: boolean;
+}
+
+export function CompactDatePicker({
+  value,
+  defaultValue,
+  onChange,
+  className,
+  disabled = false
+}: CompactDatePickerProps) {
+  const [internalValue, setInternalValue] = useState<Dayjs | null>(defaultValue || null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? value : internalValue;
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date) return;
+    
+    const dayjsDate = dayjs(date);
+    
+    if (isControlled) {
+      onChange?.(dayjsDate);
+    } else {
+      setInternalValue(dayjsDate);
+      onChange?.(dayjsDate);
+    }
+    
+    setIsOpen(false);
+  };
+
+  const handleToday = () => {
+    const today = dayjs();
+    
+    if (isControlled) {
+      onChange?.(today);
+    } else {
+      setInternalValue(today);
+      onChange?.(today);
+    }
+  };
+
+  const isToday = currentValue?.isSame(dayjs(), 'day');
+
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <Button 
+        size="sm" 
+        className={cn(
+          "h-8 px-3 text-black",
+          isToday 
+            ? "bg-cyan-400 hover:bg-cyan-500" 
+            : "bg-gray-200 hover:bg-gray-300"
+        )}
+        onClick={handleToday}
+        disabled={disabled}
+      >
+        Heute
+      </Button>
+      
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0"
+            disabled={disabled}
+          >
+            <Calendar className="h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        
+        <PopoverContent className="w-auto p-0" align="end">
+          <div className="p-3">
+            <CalendarComponent
+              mode="single"
+              selected={currentValue?.toDate()}
+              onSelect={handleDateSelect}
+              initialFocus
+            />
+            
+            <div className="flex justify-between items-center mt-3 pt-3 border-t">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDateSelect(new Date())}
+              >
+                Heute
+              </Button>
+              
+              {currentValue && (
+                <div className="text-xs text-gray-500">
+                  {currentValue.format("DD.MM.YYYY")}
+                </div>
+              )}
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
 }
