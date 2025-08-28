@@ -118,200 +118,187 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setSelectedDate(date);
   };
 
-  const handleAttendanceClick = async (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
-    // Prevent multiple concurrent operations
-    if (attendanceLoading) {
-      console.log('⏳ Attendance operation already in progress, ignoring click');
-      return;
-    }
+  // Simple function: Open overview mode (for green badges - complete attendance)
+  const openOverviewMode = async (lessonId: string) => {
+    console.log('👁️ Opening overview mode for lesson:', lessonId);
 
-    console.log(`🎯 Attendance clicked for lesson ${lessonId} in ${viewMode} mode`);
-
-    // Set loading state and clear previous data immediately
-    setAttendanceLoading(true);
-    setTempAttendance({});
-    setLessonNote('');
-
-    // Set state for the new lesson
     setSelectedLessonForAttendance(lessonId);
-    setAttendanceViewMode(viewMode);
+    setAttendanceViewMode('overview');
     setAttendanceDialogOpen(true);
 
     try {
-      console.log('📋 Fetching attendance data for lesson:', lessonId);
-
-      // Fetch both attendance data and lesson diary entry
+      // Fetch data for overview mode
       const [attendanceData, diaryEntry] = await Promise.all([
         fetchLessonAttendance(lessonId),
         fetchLessonDiaryEntry(lessonId)
       ]);
 
-      // Check if this is still the selected lesson (user might have clicked another)
-      if (selectedLessonForAttendance !== lessonId) {
-        console.log('🚫 Lesson changed during fetch, discarding results');
-        return;
+      const lesson = lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      const getUiStudentName = (record: any): string => {
+        const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
+        const first = profile?.first_name || '';
+        const last = profile?.last_name || '';
+        return `${first} ${last}`.trim();
+      };
+
+      // Structure data for overview mode
+      const structuredData = {
+        lessonNote: diaryEntry,
+        present: attendanceData.present?.map((record: any) => ({
+          id: record.student_id,
+          name: getUiStudentName(record)
+        })) || [],
+        late: attendanceData.late?.map((record: any) => ({
+          id: record.student_id,
+          name: getUiStudentName(record),
+          minutesLate: record.late_minutes || 5,
+          arrivalTime: '08:05', // simplified for now
+          lateExcused: false
+        })) || [],
+        absent: attendanceData.absent?.map((record: any) => ({
+          id: record.student_id,
+          name: getUiStudentName(record),
+          excused: record.status === 'absent_excused',
+          reason: record.notes || ''
+        })) || []
+      };
+
+      // Attach to lesson
+      const lessonIndex = lessons.findIndex(l => l.id === lessonId);
+      if (lessonIndex !== -1) {
+        lessons[lessonIndex].attendanceData = structuredData;
       }
 
-      if (viewMode === 'overview') {
-        // Structure data for overview mode
-        const lesson = lessons.find(l => l.id === lessonId);
-        if (!lesson) {
-          throw new Error(`Lesson ${lessonId} not found in lessons array`);
-        }
+      console.log('✅ Overview mode ready');
+    } catch (error) {
+      console.error('❌ Error loading overview:', error);
+    }
+  };
 
-        const getUiStudentName = (record: any): string => {
-          const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
-          const first = profile?.first_name || '';
-          const last = profile?.last_name || '';
-          return `${first} ${last}`.trim();
-        };
+  // Simple function: Open edit mode (for orange/red badges - incomplete/no attendance)
+  const openEditMode = async (lessonId: string) => {
+    console.log('✏️ Opening edit mode for lesson:', lessonId);
 
-        // Structure data for overview mode
-        const structuredData = {
-          lessonNote: diaryEntry,
-          present: attendanceData.present?.map((record: any) => ({
-            id: record.student_id,
-            name: getUiStudentName(record)
-          })) || [],
-          late: attendanceData.late?.map((record: any) => {
-            const startParts = (lesson?.time || '').split(':').map(Number);
-            const base = new Date(selectedDate);
-            if (!isNaN(startParts[0]) && !isNaN(startParts[1])) {
-              base.setHours(startParts[0], startParts[1], 0, 0);
-            }
-            const recordedAt = record.recorded_at ? new Date(record.recorded_at) : null;
-            let minutesLate = typeof record.late_minutes === 'number' && record.late_minutes > 0
-              ? record.late_minutes
-              : (recordedAt && !isNaN(base.getTime())
-                  ? Math.max(1, Math.floor((recordedAt.getTime() - base.getTime()) / (1000 * 60)))
-                  : 5);
+    setSelectedLessonForAttendance(lessonId);
+    setAttendanceViewMode('edit');
+    setAttendanceDialogOpen(true);
 
-            const arrival = new Date(base.getTime() + minutesLate * 60000);
-            const arrivalTime = `${arrival.getHours().toString().padStart(2, '0')}:${arrival.getMinutes().toString().padStart(2, '0')}`;
+    // Clear previous data
+    setTempAttendance({});
+    setLessonNote('');
 
-            return {
-              id: record.student_id,
-              name: getUiStudentName(record),
-              minutesLate,
-              arrivalTime,
-              lateExcused: false
-            };
-          }) || [],
-          absent: attendanceData.absent?.map((record: any) => ({
-            id: record.student_id,
-            name: getUiStudentName(record),
-            excused: record.status === 'absent_excused',
-            reason: record.notes || ''
-          })) || []
-        };
+    try {
+      // Fetch and prefill data
+      const [attendanceData, diaryEntry] = await Promise.all([
+        fetchLessonAttendance(lessonId),
+        fetchLessonDiaryEntry(lessonId)
+      ]);
 
-        // Attach structured data to lesson for overview mode
-        const lessonIndex = lessons.findIndex(l => l.id === lessonId);
-        if (lessonIndex !== -1) {
-          lessons[lessonIndex].attendanceData = structuredData;
-        }
+      const lesson = lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
 
-        console.log('✅ Overview mode data structured:', structuredData);
-      } else {
-        // Edit mode - prepare tempAttendance for editing
-        const lesson = lessons.find(l => l.id === lessonId);
-        if (!lesson) {
-          throw new Error(`Lesson ${lessonId} not found in lessons array`);
-        }
+      const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
 
-        const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
+      // Build student lookup
+      const nameToStudentId = new Map<string, string>();
+      lesson.students?.forEach((s: any) => {
+        const baseName = (s.name?.split(' (')[0] || '').trim().toLowerCase();
+        if (baseName) nameToStudentId.set(baseName, s.id);
+      });
 
-        // Build a lookup of display student name -> synthetic student id used in UI
-        const nameToStudentId = new Map<string, string>();
-        lesson.students?.forEach((s: any) => {
-          const baseName = (s.name?.split(' (')[0] || '').trim().toLowerCase();
-          if (baseName) nameToStudentId.set(baseName, s.id);
-        });
+      const getUiStudentId = (record: any): string | undefined => {
+        const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
+        const first = profile?.first_name || '';
+        const last = profile?.last_name || '';
+        const key = `${first} ${last}`.trim().toLowerCase();
+        return nameToStudentId.get(key);
+      };
 
-        const getUiStudentId = (record: any): string | undefined => {
-          const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
-          const first = profile?.first_name || '';
-          const last = profile?.last_name || '';
-          const key = `${first} ${last}`.trim().toLowerCase();
-          return nameToStudentId.get(key);
-        };
+      // Process attendance data
+      attendanceData.present?.forEach((record: any) => {
+        const sid = getUiStudentId(record);
+        if (sid) editAttendance[sid] = { status: 'present' };
+      });
 
-        // Process present students
-        attendanceData.present?.forEach((record: any) => {
-          const sid = getUiStudentId(record);
-          if (!sid) {
-            console.warn('⚠️ Could not match present record to UI student:', record);
-            return;
-          }
-          editAttendance[sid] = { status: 'present' };
-        });
-
-        // Process late students
-        attendanceData.late?.forEach((record: any) => {
-          const sid = getUiStudentId(record);
-          if (!sid) {
-            console.warn('⚠️ Could not match late record to UI student:', record);
-            return;
-          }
-
-          const startParts = (lesson?.time || '').split(':').map(Number);
-          const base = new Date(selectedDate);
-          if (!isNaN(startParts[0]) && !isNaN(startParts[1])) {
-            base.setHours(startParts[0], startParts[1], 0, 0);
-          }
-          const recordedAt = record.recorded_at ? new Date(record.recorded_at) : null;
-          let minutesLate = typeof record.late_minutes === 'number' && record.late_minutes > 0
-            ? record.late_minutes
-            : (recordedAt && !isNaN(base.getTime())
-                ? Math.max(1, Math.floor((recordedAt.getTime() - base.getTime()) / (1000 * 60)))
-                : 5);
-
-          const arrival = new Date(base.getTime() + minutesLate * 60000);
-          const arrivalTime = `${arrival.getHours().toString().padStart(2, '0')}:${arrival.getMinutes().toString().padStart(2, '0')}`;
-
+      attendanceData.late?.forEach((record: any) => {
+        const sid = getUiStudentId(record);
+        if (sid) {
           editAttendance[sid] = {
             status: 'late',
-            minutesLate,
-            arrivalTime,
+            minutesLate: record.late_minutes || 5,
+            arrivalTime: '08:05', // simplified
             lateExcused: false
           };
-        });
+        }
+      });
 
-        // Process absent students
-        attendanceData.absent?.forEach((record: any) => {
-          const sid = getUiStudentId(record);
-          if (!sid) {
-            console.warn('⚠️ Could not match absent record to UI student:', record);
-            return;
-          }
+      attendanceData.absent?.forEach((record: any) => {
+        const sid = getUiStudentId(record);
+        if (sid) {
           editAttendance[sid] = {
             status: record.status === 'absent_excused' ? 'excused' : 'unexcused',
             excuseReason: record.notes || ''
           };
-        });
-
-        // Only set state if this is still the selected lesson
-        if (selectedLessonForAttendance === lessonId) {
-          setTempAttendance(editAttendance);
-          setLessonNote(diaryEntry);
         }
+      });
 
-        console.log('✅ Edit mode data loaded:', editAttendance);
-        console.log('📝 Diary entry loaded:', diaryEntry);
-      }
+      setTempAttendance(editAttendance);
+      setLessonNote(diaryEntry);
 
+      console.log('✅ Edit mode ready, prefilled:', Object.keys(editAttendance).length, 'students');
     } catch (error) {
-      console.error('❌ Error fetching attendance data:', error);
+      console.error('❌ Error loading edit mode:', error);
+    }
+  };
 
-      // Only handle error if this is still the selected lesson
-      if (selectedLessonForAttendance === lessonId) {
-        setAttendanceViewMode('edit');
-        setTempAttendance({});
-        setLessonNote('');
-      }
-    } finally {
-      // Always clear loading state
-      setAttendanceLoading(false);
+  // Simple function: Switch from overview to edit (for edit button)
+  const switchToEdit = async () => {
+    if (!selectedLessonForAttendance) return;
+
+    console.log('🔄 Switching to edit mode');
+
+    setAttendanceViewMode('edit');
+    setTempAttendance({});
+    setLessonNote('');
+
+    try {
+      // Fetch and prefill data
+      const [attendanceData, diaryEntry] = await Promise.all([
+        fetchLessonAttendance(selectedLessonForAttendance),
+        fetchLessonDiaryEntry(selectedLessonForAttendance)
+      ]);
+
+      // Same prefill logic as openEditMode but simplified
+      const lesson = lessons.find(l => l.id === selectedLessonForAttendance);
+      if (!lesson) return;
+
+      const editAttendance: {[studentId: string]: any} = {};
+
+      // Simple processing - just map the data
+      attendanceData.present?.forEach((record: any) => {
+        const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
+        const name = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
+        const student = lesson.students?.find((s: any) => s.name.toLowerCase().includes(name.toLowerCase()));
+        if (student) editAttendance[student.id] = { status: 'present' };
+      });
+
+      setTempAttendance(editAttendance);
+      setLessonNote(diaryEntry);
+
+      console.log('✅ Switched to edit mode');
+    } catch (error) {
+      console.error('❌ Error switching to edit:', error);
+    }
+  };
+
+  // Main handler that routes to the right function
+  const handleAttendanceClick = (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
+    if (viewMode === 'overview') {
+      openOverviewMode(lessonId);
+    } else {
+      openEditMode(lessonId);
     }
   };
 
