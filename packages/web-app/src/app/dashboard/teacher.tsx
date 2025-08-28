@@ -52,14 +52,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const { teacherId, loading: loadingTeacher } = useTeacherProfile();
   const { lessons, loading: loadingLessons, error: lessonsError, refetch: refetchLessons, schoolId, realtime } = useLessons(teacherId, selectedDate);
 
-  // Attendance dialog state (for lesson schedule)
+  // Attendance dialog state - simplified
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [attendanceViewMode, setAttendanceViewMode] = useState<'overview' | 'edit'>('edit');
   const [selectedLessonForAttendance, setSelectedLessonForAttendance] = useState<string | null>(null);
-  const [attendanceLoading, setAttendanceLoading] = useState(false);
-  const [excuseDialogOpen, setExcuseDialogOpen] = useState(false);
-  const [selectedStudentForExcuse, setSelectedStudentForExcuse] = useState<{lessonId: string, studentId: string, isEdit?: boolean} | null>(null);
-  const [excuseReason, setExcuseReason] = useState('');
   const [tempAttendance, setTempAttendance] = useState<{[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}}>({});
   const [lessonNote, setLessonNote] = useState('');
 
