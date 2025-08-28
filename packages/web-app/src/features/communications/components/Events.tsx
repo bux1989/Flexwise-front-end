@@ -156,6 +156,8 @@ export function Events({ events, onEventRSVP, isMobile = false }: EventsProps) {
         )}
       </CardHeader>
       <CardContent>
+        {/* Only show event list on desktop or when mobile section is expanded */}
+        {(!isMobile || expandedInfoItems.has('events')) && (
         <div className="space-y-3">
           {displayedEvents.map((event) => {
             const isExpanded = expandedEventDescriptions.has(event.id);
@@ -424,6 +426,7 @@ export function Events({ events, onEventRSVP, isMobile = false }: EventsProps) {
             </div>
           )}
         </div>
+        )}
       </CardContent>
     </Card>
   );
