@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Check, AlertTriangle, AlertCircle, X, RefreshCw, MessageSquare } from 'lucide-react';
-import { getTimetableForClass, getStudentsForClass, Lesson } from './data/mockData';
+import { getTimetableForClass, getStudentsForClass, Lesson, TIME_SLOTS } from '../../../shared/domains/academic/klassenbuch';
 import { useIsMobile } from '../ui/use-mobile';
 
 interface Class {
