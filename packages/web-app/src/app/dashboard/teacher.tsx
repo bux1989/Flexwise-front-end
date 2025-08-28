@@ -67,34 +67,20 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   useEffect(() => {
     const loadUserProfile = async () => {
       try {
-        console.log('🔄 Starting profile load for teacher dashboard');
-        console.log('📝 Current fallback teacher name:', currentTeacher);
-
         const profile = await getCurrentUserProfile();
-        console.log('📊 Raw profile data received:', profile);
 
         if (profile && profile.first_name && profile.last_name) {
           // Format the teacher name without salutation
           const firstName = profile.first_name;
           const lastName = profile.last_name;
-
-          console.log('🏷️ Profile names found:', { firstName, lastName });
-
           const fullName = `${firstName} ${lastName}`;
-          console.log('🎯 Setting teacher name to:', fullName);
           setCurrentTeacher(fullName);
-
-          console.log('✅ Teacher profile loaded successfully:', fullName);
-        } else {
-          console.log('⚠️ Profile missing first_name or last_name, using fallback');
-          console.log('📋 Profile structure:', profile);
         }
       } catch (error) {
-        console.warn('❌ Could not load user profile, using fallback:', error);
+        console.warn('Could not load user profile, using fallback:', error);
         // Keep the fallback value
       } finally {
         setIsLoadingProfile(false);
-        console.log('🏁 Profile loading completed, current teacher:', currentTeacher);
       }
     };
 
@@ -104,15 +90,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const dateString = formatDateTime();
 
   const handleHeaderButtonClick = async (action: string) => {
-    console.log(`Header button clicked: ${action}`);
-
     if (action === 'Ausloggen') {
-      console.log('🚪 Logout button clicked, signing out...');
       await handleLogout();
-    } else {
-      // Handle other actions in the future
-      console.log(`Action "${action}" not implemented yet`);
     }
+    // Handle other actions in the future
   };
 
   const handleDateChange = (date: Date) => {
@@ -121,31 +102,21 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Simple function: Open overview mode (for green badges - complete attendance)
   const openOverviewMode = async (lessonId: string) => {
-    console.log('🟢 GREEN BADGE CLICKED - Opening overview mode for lesson:', lessonId);
-
     // Set lesson but DON'T open dialog yet - load data first
     setSelectedLessonForAttendance(lessonId);
     setAttendanceViewMode('overview');
     setOverviewData(null); // Clear previous data
 
     try {
-      console.log('📋 Fetching attendance data for overview...');
       // Fetch data for overview mode
       const [attendanceData, diaryEntry] = await Promise.all([
         fetchLessonAttendance(lessonId),
         fetchLessonDiaryEntry(lessonId)
       ]);
 
-      console.log('📊 Raw attendance data received:', {
-        present: attendanceData.present?.length || 0,
-        late: attendanceData.late?.length || 0,
-        absent: attendanceData.absent?.length || 0
-      });
-      console.log('📝 Diary entry received:', diaryEntry ? 'Yes' : 'No');
-
       const lesson = lessons.find(l => l.id === lessonId);
       if (!lesson) {
-        console.error('❌ Lesson not found in lessons array:', lessonId);
+        console.error('Lesson not found in lessons array:', lessonId);
         return;
       }
 
@@ -180,18 +151,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
       // Store data in state instead of mutating lessons array
       setOverviewData(structuredData);
-      console.log('💾 Structured data stored in state:', {
-        present: structuredData.present.length,
-        late: structuredData.late.length,
-        absent: structuredData.absent.length,
-        hasNote: !!structuredData.lessonNote
-      });
 
       // THEN open dialog with data ready
       setAttendanceDialogOpen(true);
-      console.log('✅ Overview mode ready and dialog opened with data');
     } catch (error) {
-      console.error('❌ Error loading overview:', error);
+      console.error('Error loading overview:', error);
       // Still open dialog even on error
       setAttendanceDialogOpen(true);
     }
@@ -199,8 +163,6 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Simple function: Open edit mode (for orange/red badges - incomplete/no attendance)
   const openEditMode = async (lessonId: string) => {
-    console.log('🟠 ORANGE BADGE CLICKED - Opening edit mode for lesson:', lessonId);
-
     // Set lesson but DON'T open dialog yet - load data first to prevent lag
     setSelectedLessonForAttendance(lessonId);
     setAttendanceViewMode('edit');
@@ -210,23 +172,15 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setLessonNote('');
 
     try {
-      console.log('📋 Fetching data for edit mode...');
       // Fetch and prefill data BEFORE opening dialog
       const [attendanceData, diaryEntry] = await Promise.all([
         fetchLessonAttendance(lessonId),
         fetchLessonDiaryEntry(lessonId)
       ]);
 
-      console.log('📊 Raw data received:', {
-        present: attendanceData.present?.length || 0,
-        late: attendanceData.late?.length || 0,
-        absent: attendanceData.absent?.length || 0,
-        hasNote: !!diaryEntry
-      });
-
       const lesson = lessons.find(l => l.id === lessonId);
       if (!lesson) {
-        console.error('❌ Lesson not found:', lessonId);
+        console.error('Lesson not found:', lessonId);
         return;
       }
 
@@ -281,10 +235,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
       // THEN open dialog - should now appear instantly with data
       setAttendanceDialogOpen(true);
-
-      console.log('✅ Edit mode ready and dialog opened with prefilled data:', Object.keys(editAttendance).length, 'students');
     } catch (error) {
-      console.error('❌ Error loading edit mode:', error);
+      console.error('Error loading edit mode:', error);
       // Still open dialog even on error
       setAttendanceDialogOpen(true);
     }
@@ -293,15 +245,13 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // Simple function: Switch from overview to edit (for edit button) - reuse existing data
   const switchToEdit = () => {
     if (!selectedLessonForAttendance || !overviewData) {
-      console.error('❌ Cannot switch to edit - no lesson or data available');
+      console.error('Cannot switch to edit - no lesson or data available');
       return;
     }
 
-    console.log('🔄 EDIT BUTTON CLICKED - Switching to edit mode instantly using overview data');
-
     const lesson = lessons.find(l => l.id === selectedLessonForAttendance);
     if (!lesson) {
-      console.error('❌ Lesson not found:', selectedLessonForAttendance);
+      console.error('Lesson not found:', selectedLessonForAttendance);
       return;
     }
 
@@ -351,22 +301,13 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setTempAttendance(editAttendance);
     setLessonNote(overviewData.lessonNote || '');
     setAttendanceViewMode('edit');
-
-    console.log('✅ Instantly switched to edit mode with converted data:', {
-      studentsProcessed: Object.keys(editAttendance).length,
-      hasNote: !!overviewData.lessonNote
-    });
   };
 
   // Main handler that routes to the right function
   const handleAttendanceClick = (lessonId: string, viewMode: 'overview' | 'edit' = 'edit') => {
-    console.log('🎯 ATTENDANCE CLICKED:', { lessonId, viewMode });
-
     if (viewMode === 'overview') {
-      console.log('🟢 Routing to OVERVIEW mode');
       openOverviewMode(lessonId);
     } else {
-      console.log('🟠 Routing to EDIT mode');
       openEditMode(lessonId);
     }
   };
@@ -503,22 +444,16 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // Function to refresh attendance data (real-time will handle automatically, but keep for manual refresh)
   const refreshLessonAttendanceData = async (lessonId: string) => {
     try {
-      console.log('🔄 Manual refresh requested for lesson:', lessonId);
-
       // Real-time should handle this automatically, but provide manual fallback
       await refetchLessons();
-
-      console.log('✅ Manual lesson data refresh completed');
     } catch (error) {
-      console.error('❌ Failed to refresh attendance data:', error);
+      console.error('Failed to refresh attendance data:', error);
     }
   };
 
   const saveAttendance = async () => {
     if (!selectedLesson) return;
     try {
-      console.log('💾 Saving attendance via RPC...', { lessonId: selectedLesson.id });
-
       // Map UI student names to real profile IDs
       const { students, schoolId } = await getLessonStudentNameIdPairs(selectedLesson.id);
       const nameToId = new Map(students.map(s => [s.displayName.trim().toLowerCase(), s.id]));
@@ -538,7 +473,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         if (!a) return;
         const studentId = nameToId.get((stu.name || '').trim().toLowerCase());
         if (!studentId) {
-          console.warn('⚠️ Could not resolve student ID for', stu.name);
+          console.warn('Could not resolve student ID for', stu.name);
           return;
         }
         let note = null;
@@ -563,8 +498,6 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         diaryPrivate: false,
       });
 
-      console.log('✅ Attendance saved');
-
       // Refetch attendance data for the lesson to update badges
       await refreshLessonAttendanceData(selectedLesson.id);
 
@@ -574,7 +507,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       setSelectedLessonForAttendance(null);
       setAttendanceViewMode('edit');
     } catch (err) {
-      console.error('❌ Failed to save attendance:', err);
+      console.error('Failed to save attendance:', err);
       alert(`Speichern fehlgeschlagen: ${err?.message || err}`);
     }
   };
