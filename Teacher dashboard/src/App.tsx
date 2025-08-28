@@ -348,7 +348,7 @@ export default function App() {
       dueDate: taskData.dueDate ? taskData.dueDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       hotList: taskData.hotList,
       assignedTo: taskData.assignedTo,
-      assignedBy: CURRENT_TEACHER,
+      assignedBy: currentTeacher,
       assignedAt: now,
       completedAt: null,
       completedBy: null,
