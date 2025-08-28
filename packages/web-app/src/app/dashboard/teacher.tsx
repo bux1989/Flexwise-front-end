@@ -583,7 +583,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs px-2 py-1 h-7"
+                      className="text-xs px-1 lg:px-2 py-1 h-6 lg:h-7"
                       onClick={() => setAllStudentsStatus('present')}
                     >
                       Alle
