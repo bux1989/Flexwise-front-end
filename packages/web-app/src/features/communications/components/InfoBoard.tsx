@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Info, Clock, UserPlus, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { Info, Clock, UserPlus, ChevronUp, ChevronDown, Eye, EyeOff, Wifi } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { Checkbox } from '../../../components/ui/checkbox';
 import { Label } from '../../../components/ui/label';
 
-// Import substitute lessons from shared domains
-import { getSubstituteLessons } from '../../../../../shared/domains/academic/klassenbuch/utils';
+// Import real-time hook for Info-Board data
+import { useInfoBoardRealtime, formatSubstitutionText } from '../../../hooks/useInfoBoardRealtime';
 
 interface InfoBoardProps {
   isMobile?: boolean;
