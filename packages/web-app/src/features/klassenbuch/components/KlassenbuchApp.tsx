@@ -11,9 +11,10 @@ const allItems = [...classes, ...courses];
 interface KlassenbuchAppProps {
   onClose?: () => void;
   currentTeacher?: string;
+  hideHeader?: boolean;
 }
 
-export function KlassenbuchApp({ onClose, currentTeacher }: KlassenbuchAppProps) {
+export function KlassenbuchApp({ onClose, currentTeacher, hideHeader = false }: KlassenbuchAppProps) {
   const [currentView, setCurrentView] = useState<'live' | 'statistics'>('live');
   const [selectedWeek, setSelectedWeek] = useState(new Date());
   // Default to teacher's personal schedule for live view
@@ -49,20 +50,22 @@ export function KlassenbuchApp({ onClose, currentTeacher }: KlassenbuchAppProps)
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <KlassenbuchHeader
-        currentView={currentView}
-        onViewChange={handleViewChange}
-        selectedWeek={selectedWeek}
-        onWeekChange={setSelectedWeek}
-        selectedClass={selectedClass}
-        onClassChange={setSelectedClass}
-        classes={allItems}
-        statisticsViewType={statisticsViewType}
-        onClose={onClose}
-      />
-      
-      <main className="mx-auto container px-6 py-8">
+    <div className={hideHeader ? "" : "min-h-screen bg-background"}>
+      {!hideHeader && (
+        <KlassenbuchHeader
+          currentView={currentView}
+          onViewChange={handleViewChange}
+          selectedWeek={selectedWeek}
+          onWeekChange={setSelectedWeek}
+          selectedClass={selectedClass}
+          onClassChange={setSelectedClass}
+          classes={allItems}
+          statisticsViewType={statisticsViewType}
+          onClose={onClose}
+        />
+      )}
+
+      <main className={hideHeader ? "" : "mx-auto container px-6 py-8"}>
         {currentView === 'live' ? (
           <KlassenbuchLiveView
             selectedWeek={selectedWeek}
