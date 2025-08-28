@@ -1,0 +1,38 @@
+[build]
+  # Build command that runs the monorepo build
+  command = "npm run build"
+  
+  # Publish directory where the built files are located
+  publish = "packages/react-app/dist"
+  
+  # Base directory for the build (optional, helps with relative paths)
+  base = "."
+
+[build.environment]
+  # Use Node 18+ as specified in package.json
+  NODE_VERSION = "18"
+  
+  # Enable npm workspaces
+  NPM_FLAGS = "--prefer-offline --no-audit"
+
+# Headers for proper MIME types (backup in case needed)
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
+    
+[[headers]]
+  for = "*.jsx"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
+
+[[headers]]
+  for = "*.mjs"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
+
+# SPA fallback for React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
