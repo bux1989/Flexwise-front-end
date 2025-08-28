@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Calendar as CalendarComponent } from './ui/calendar';
 import { Checkbox } from './ui/checkbox';
-import { ASSIGNEE_GROUPS, INDIVIDUAL_ASSIGNEES } from '../constants/mockData';
+import { ASSIGNEE_GROUPS, INDIVIDUAL_ASSIGNEES } from '../../../shared/data/mockData';
 
 interface AddTaskDialogProps {
   open: boolean;
