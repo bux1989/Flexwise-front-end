@@ -31,6 +31,7 @@ interface UseLessonsResult {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
+  schoolId: string | null;
   realtime: {
     isConnected: boolean;
     channelCount: number;
