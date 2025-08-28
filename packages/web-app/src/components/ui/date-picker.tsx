@@ -205,79 +205,27 @@ export function CompactDatePicker({
           </Button>
         </PopoverTrigger>
         
-        <PopoverContent className="w-64 p-4" align="end">
-          <div className="space-y-4">
-            {/* Current Date Display */}
-            {currentValue && (
-              <div className="text-center text-lg font-semibold text-gray-900">
-                {currentValue.format("DD.MM.YYYY")}
-              </div>
-            )}
+        <PopoverContent className="w-auto p-3" align="end">
+          <div className="space-y-2">
+            <input
+              type="date"
+              value={currentValue ? currentValue.format('YYYY-MM-DD') : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleDateSelect(new Date(e.target.value));
+                }
+              }}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
 
-            {/* Date Input */}
-            <div>
-              <input
-                type="date"
-                value={currentValue ? currentValue.format('YYYY-MM-DD') : ''}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    handleDateSelect(new Date(e.target.value));
-                  }
-                }}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Quick buttons */}
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleDateSelect(new Date())}
-                className="flex-1"
-              >
-                Heute
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const yesterday = dayjs().subtract(1, 'day');
-                  handleDateSelect(yesterday.toDate());
-                }}
-                className="flex-1"
-              >
-                Gestern
-              </Button>
-            </div>
-
-            {/* Week buttons */}
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  const nextWeek = dayjs().add(7, 'day');
-                  handleDateSelect(nextWeek.toDate());
-                }}
-                className="flex-1 text-xs"
-              >
-                +1 Woche
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  const lastWeek = dayjs().subtract(7, 'day');
-                  handleDateSelect(lastWeek.toDate());
-                }}
-                className="flex-1 text-xs"
-              >
-                -1 Woche
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleDateSelect(new Date())}
+              className="w-full"
+            >
+              Heute
+            </Button>
           </div>
         </PopoverContent>
       </Popover>
