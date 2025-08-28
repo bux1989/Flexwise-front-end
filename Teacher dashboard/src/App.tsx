@@ -1100,7 +1100,7 @@ export default function App() {
       // First time taking attendance - create new format
       updatedLessonNote = createLessonNoteWithMetadata(
         lessonNote,
-        CURRENT_TEACHER,
+        currentTeacher,
         timestamp
       );
     } else {
