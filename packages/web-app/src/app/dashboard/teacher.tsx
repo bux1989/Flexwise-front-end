@@ -32,12 +32,15 @@ interface Event {
 export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // State management for the dashboard
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [lessons, setLessons] = useState(INITIAL_LESSONS);
   const [events, setEvents] = useState<Event[]>(INITIAL_EVENTS);
 
   // User profile state
   const [currentTeacher, setCurrentTeacher] = useState(user?.name || CURRENT_TEACHER || 'Lehrer');
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  // Lessons data from Supabase
+  const { teacherId, loading: loadingTeacher } = useTeacherProfile();
+  const { lessons, loading: loadingLessons, error: lessonsError } = useLessons(teacherId, selectedDate);
 
   // Attendance dialog state (for lesson schedule)
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
