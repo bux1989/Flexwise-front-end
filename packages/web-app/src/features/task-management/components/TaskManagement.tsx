@@ -417,7 +417,8 @@ export function TaskManagement({ currentTeacher, canAssignTasks }: TaskManagemen
         open={addTaskDialogOpen}
         onOpenChange={setAddTaskDialogOpen}
         onCreateTask={createNewTask}
-        assigneeGroups={ASSIGNEE_GROUPS}
+        currentTeacher={currentTeacher}
+        canAssignTasks={canAssignTasks}
       />
 
       {/* Comment Dialog */}
