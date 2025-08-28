@@ -1,5 +1,7 @@
-import { BookOpen, User, LogOut } from 'lucide-react';
+import { BookOpen, User, LogOut, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Badge } from './ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface HeaderProps {
@@ -9,9 +11,27 @@ interface HeaderProps {
   showKlassenbuch?: boolean;
   klassenbuchView?: 'live' | 'statistics';
   onKlassenbuchViewChange?: (view: 'live' | 'statistics') => void;
+  // Klassenbuch specific props
+  selectedWeek?: Date;
+  onWeekChange?: (week: Date) => void;
+  selectedClass?: any;
+  onClassChange?: (classItem: any) => void;
+  klassenbuchClasses?: any[];
 }
 
-export function Header({ currentTeacher, dateString, onButtonClick, showKlassenbuch = false, klassenbuchView = 'live', onKlassenbuchViewChange }: HeaderProps) {
+export function Header({
+  currentTeacher,
+  dateString,
+  onButtonClick,
+  showKlassenbuch = false,
+  klassenbuchView = 'live',
+  onKlassenbuchViewChange,
+  selectedWeek,
+  onWeekChange,
+  selectedClass,
+  onClassChange,
+  klassenbuchClasses = []
+}: HeaderProps) {
   return (
     <header className="bg-white border-b px-3 py-2 lg:px-6 lg:py-4">
       <div className="flex items-center justify-between">
