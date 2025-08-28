@@ -392,10 +392,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       });
 
       setTempAttendance(editAttendance);
-      setLessonNote(''); // Reset lesson note for now
+      setLessonNote(diaryEntry); // Use fetched diary entry
       setAttendanceViewMode('edit');
 
       console.log('✅ Switched to edit mode with prefilled data:', editAttendance);
+      console.log('📝 Lesson diary entry loaded:', diaryEntry);
 
     } catch (error) {
       console.error('❌ Error switching to edit mode:', error);
