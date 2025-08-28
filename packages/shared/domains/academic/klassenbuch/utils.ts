@@ -61,6 +61,8 @@ export interface StudentStatistics {
   unexcusedLatenessMinutes: number;
   attendanceRate: number;
   classId: string;
+  absenceDetails: AbsenceDetail[];
+  latenessDetails: LatenessDetail[];
 }
 
 // Utility functions for week navigation
