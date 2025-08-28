@@ -126,6 +126,180 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     setAttendanceViewMode(viewMode);
     setAttendanceDialogOpen(true);
     console.log(`Attendance clicked for lesson ${lessonId} in ${viewMode} mode`);
+
+    // Initialize temp attendance state
+    const lesson = lessons.find(l => l.id === lessonId);
+    if (lesson && viewMode === 'edit') {
+      const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
+
+      // Initialize with existing attendance if available
+      if (lesson.attendance) {
+        lesson.attendance.present.forEach((student: any) => {
+          editAttendance[student.id] = { status: 'present' };
+        });
+
+        lesson.attendance.late.forEach((student: any) => {
+          editAttendance[student.id] = {
+            status: 'late',
+            minutesLate: student.minutesLate || 1,
+            arrivalTime: student.arrivalTime,
+            lateExcused: student.lateExcused || false
+          };
+        });
+
+        lesson.attendance.absent.forEach((student: any) => {
+          editAttendance[student.id] = {
+            status: student.excused ? 'excused' : 'unexcused',
+            excuseReason: student.reason || ''
+          };
+        });
+      }
+
+      setTempAttendance(editAttendance);
+      setLessonNote(''); // TODO: Initialize with existing lesson note if available
+    }
+  };
+
+  // Helper function to get selected lesson
+  const selectedLesson = lessons.find(l => l.id === selectedLessonForAttendance);
+
+  // Helper function to get default late time
+  const getDefaultLateTime = (lesson: any): string => {
+    if (!lesson) return '';
+
+    const now = new Date();
+    const [startHours, startMinutes] = lesson.time.split(':').map(Number);
+
+    const lessonStart = new Date();
+    lessonStart.setHours(startHours, startMinutes, 0, 0);
+
+    // Default to 5 minutes after lesson start
+    const defaultTime = new Date(lessonStart.getTime() + (5 * 60000));
+    return defaultTime.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Attendance management functions
+  const setStudentStatus = (studentId: string, status: 'present' | 'late' | 'excused' | 'unexcused') => {
+    setTempAttendance(prev => {
+      const current = prev[studentId];
+      let minutesLate: number | undefined;
+      let arrivalTime: string | undefined;
+      let lateExcused: boolean | undefined;
+
+      if (status === 'late') {
+        arrivalTime = current?.arrivalTime || getDefaultLateTime(selectedLesson);
+        minutesLate = current?.minutesLate || 5;
+        lateExcused = current?.lateExcused || false;
+      }
+
+      return {
+        ...prev,
+        [studentId]: {
+          status,
+          minutesLate,
+          arrivalTime,
+          lateExcused,
+          excuseReason: status === 'excused' ? (current?.excuseReason || '') : undefined
+        }
+      };
+    });
+  };
+
+  const setStudentExcuseReason = (studentId: string, reason: string) => {
+    setTempAttendance(prev => ({
+      ...prev,
+      [studentId]: {
+        ...prev[studentId],
+        excuseReason: reason
+      }
+    }));
+  };
+
+  const setStudentArrivalTime = (studentId: string, time: string) => {
+    setTempAttendance(prev => {
+      const current = prev[studentId];
+      if (!current || current.status !== 'late') return prev;
+
+      // Calculate minutes late
+      let minutesLate = 1;
+      if (selectedLesson && time) {
+        try {
+          const [lessonHours, lessonMinutes] = selectedLesson.time.split(':').map(Number);
+          const [arrivalHours, arrivalMinutesStr] = time.split(':').map(Number);
+
+          const lessonStart = new Date();
+          lessonStart.setHours(lessonHours, lessonMinutes, 0, 0);
+
+          const arrival = new Date();
+          arrival.setHours(arrivalHours, arrivalMinutesStr, 0, 0);
+
+          minutesLate = Math.max(1, Math.floor((arrival.getTime() - lessonStart.getTime()) / (1000 * 60)));
+        } catch (error) {
+          console.warn('Error calculating minutes late:', error);
+        }
+      }
+
+      return {
+        ...prev,
+        [studentId]: {
+          ...current,
+          arrivalTime: time,
+          minutesLate
+        }
+      };
+    });
+  };
+
+  const setStudentLateExcused = (studentId: string, excused: boolean) => {
+    setTempAttendance(prev => ({
+      ...prev,
+      [studentId]: {
+        ...prev[studentId],
+        lateExcused: excused
+      }
+    }));
+  };
+
+  const setAllStudentsStatus = (status: 'present' | 'late' | 'excused' | 'unexcused') => {
+    if (!selectedLesson) return;
+
+    const newAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
+
+    selectedLesson.students?.forEach((student: any) => {
+      let minutesLate: number | undefined;
+      let arrivalTime: string | undefined;
+      let lateExcused: boolean | undefined;
+
+      if (status === 'late') {
+        arrivalTime = getDefaultLateTime(selectedLesson);
+        minutesLate = 5;
+        lateExcused = false;
+      }
+
+      newAttendance[student.id] = {
+        status,
+        minutesLate,
+        arrivalTime,
+        lateExcused,
+        excuseReason: status === 'excused' ? '' : undefined
+      };
+    });
+
+    setTempAttendance(newAttendance);
+  };
+
+  const saveAttendance = () => {
+    if (!selectedLesson) return;
+
+    console.log('💾 Saving attendance to Supabase...', { lessonId: selectedLesson.id, tempAttendance, lessonNote });
+
+    // TODO: Implement actual Supabase save using bulkSaveAttendance
+    // For now, just close the dialog
+    setTempAttendance({});
+    setLessonNote('');
+    setAttendanceDialogOpen(false);
+    setSelectedLessonForAttendance(null);
+    setAttendanceViewMode('edit');
   };
 
   const handleEventRSVP = (eventId: number, response: 'attending' | 'maybe' | 'not_attending') => {
