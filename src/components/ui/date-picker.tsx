@@ -70,9 +70,6 @@ export function DatePicker({
             className
           )}
           disabled={disabled}
-          role="combobox"
-          aria-expanded={open}
-          aria-label={`Datum auswählen. ${isValidDate ? `Aktuell ausgewählt: ${formatDisplayDate(date)}` : 'Kein Datum ausgewählt'}`}
         >
           <div className="flex items-center gap-2 w-full">
             <span className="flex-1 text-left text-sm">
@@ -87,11 +84,12 @@ export function DatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-0 border shadow-lg rounded-lg"
+        className="w-auto p-0 border shadow-lg rounded-lg z-[1000]"
         align="start"
         sideOffset={4}
+        style={{ zIndex: 1000 }}
       >
-        <div className="bg-white rounded-lg">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-xl">
           <Calendar
             mode="single"
             selected={isValidDate ? date : undefined}
@@ -100,9 +98,9 @@ export function DatePicker({
               setOpen(false)
             }}
             initialFocus
-            className="border-0"
+            className="border-0 p-3"
             locale={de}
-            weekStartsOn={1} // Monday start for German calendar
+            weekStartsOn={1}
             showOutsideDays={true}
           />
           {isValidDate && (
