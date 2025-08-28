@@ -58,3 +58,89 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Gentle floating and falling animations for background icons */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+  }
+  50% {
+    transform: translateY(-10px) translateX(2px) rotate(var(--tw-rotate));
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+  }
+  50% {
+    transform: translateY(-8px) translateX(-3px) rotate(var(--tw-rotate));
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+  }
+  50% {
+    transform: translateY(-12px) translateX(1px) rotate(var(--tw-rotate));
+  }
+}
+
+@keyframes fall-gentle {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+  }
+  50% {
+    transform: translateY(8px) translateX(-2px) rotate(var(--tw-rotate));
+  }
+}
+
+@keyframes fall-slow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+  }
+  50% {
+    transform: translateY(6px) translateX(3px) rotate(var(--tw-rotate));
+  }
+}
+
+@keyframes fall-medium {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(var(--tw-rotate));
+  }
+  50% {
+    transform: translateY(10px) translateX(-1px) rotate(var(--tw-rotate));
+  }
+}
+
+/* Animation classes */
+.animate-float-gentle {
+  animation: float-gentle 8s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.animate-float-slow {
+  animation: float-slow 10s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-float-medium {
+  animation: float-medium 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-fall-gentle {
+  animation: fall-gentle 9s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.animate-fall-slow {
+  animation: fall-slow 11s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-fall-medium {
+  animation: fall-medium 7s ease-in-out infinite;
+  animation-delay: 3s;
+}
