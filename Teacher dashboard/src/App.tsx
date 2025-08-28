@@ -135,9 +135,9 @@ export default function App() {
   const [completionComment, setCompletionComment] = useState('');
   const [expandedGroupAssignees, setExpandedGroupAssignees] = useState<Set<number>>(new Set());
   
-  // Mock user permissions - Frau Müller can assign tasks
+  // Mock user permissions - user can assign tasks if they are a teacher
   const canAssignTasks = true;
-  
+
   const substituteLessons = getSubstituteLessons();
 
   // Mobile-specific toggle functions
