@@ -1,8 +1,9 @@
 {
-  "name": "react-school",
+  "name": "@flexwise/react-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "React 19 application for Flexwise school management",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
