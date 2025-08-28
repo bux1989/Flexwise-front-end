@@ -21,17 +21,49 @@ Flexwise is a school management system with role-based dashboards that needs to 
 - **Alternative rejected**: Separate apps per role (would create 4 codebases to maintain)
 - **Implementation**: Mirror current web routing pattern (`/dashboard/teacher`, `/dashboard/parent`, etc.)
 
-### 2. Code Organization Strategy ✅  
-**Decision**: Domain-based structure for shared business logic
-- **Rationale**: Organize by business domains rather than technical features
-- **Structure**: 
-  ```
-  shared/domains/lessons/     # Lesson management, scheduling, attendance
-  shared/domains/students/    # Student data, profiles, enrollment
-  shared/domains/communications/ # Messaging, notifications, announcements
-  shared/domains/tasks/       # Task management, assignments
-  shared/domains/analytics/   # Reporting, insights, dashboard metrics
-  ```
+### 2. Code Organization Strategy ❓ (IN DISCUSSION)
+**ACTUAL MODULES DISCOVERED** (19 active modules from admin dashboard):
+- **Academic & Records**: Digitales Klassenbuch, Klassenbuch, Wahlfächer
+- **Scheduling & Planning**: Stundenplan, Stundenplanung, Vertretungsplan, Termine, Flex-Planer
+- **Attendance & Absence**: Fehlzeiten, Beurlaubung, Check-In/Out
+- **Communication**: Eltern-App, Elternbriefe, Info-Board, Steckboard
+- **Management & Reporting**: Berichte, Statistiken, To-Do-List, Schulinformationen
+
+**OPTIONS FOR 19 MODULES:**
+
+**A) Feature-based** (each module = separate folder):
+```
+shared/features/
+├── digitales-klassenbuch/
+├── stundenplan/
+├── fehlzeiten/
+├── eltern-app/
+├── berichte/
+... (19 separate modules)
+```
+
+**B) Domain-based** (group related modules):
+```
+shared/domains/
+├── academic/          # Klassenbuch, Digitales Klassenbuch, Wahlfächer
+├── scheduling/        # Stundenplan, Stundenplanung, Vertretungsplan
+├── attendance/        # Fehlzeiten, Beurlaubung, Check-In/Out
+├── communications/    # Eltern-App, Elternbriefe, Info-Board
+└── management/        # Berichte, Statistiken, To-Do-List
+```
+
+**C) Hybrid** (domains with module subfolders):
+```
+shared/domains/
+├── academic/
+│   ├── klassenbuch/
+│   ├── digitales-klassenbuch/
+│   └── wahlfächer/
+├── scheduling/
+│   ├── stundenplan/
+│   ├── stundenplanung/
+│   └── vertretungsplan/
+```
 
 ### 3. Platform Architecture
 **Target Structure**:
