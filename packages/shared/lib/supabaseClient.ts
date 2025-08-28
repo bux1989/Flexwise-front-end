@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../supabase-types'
+// For comprehensive types with better documentation, see: ../../types/database.ts
 
 // Environment variable validation
 const supabaseUrl = (import.meta as any)?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL
