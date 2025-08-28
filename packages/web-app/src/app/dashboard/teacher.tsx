@@ -488,7 +488,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           )}
 
           {/* Info Board - Right Column */}
-          <InfoBoard isMobile={isMobile} />
+          <InfoBoard
+            schoolId={lessons.length > 0 ? lessons[0]?.id?.split('-')[0] : undefined}
+            isMobile={isMobile}
+          />
         </div>
 
         {/* Bottom Row - 2 columns */}
