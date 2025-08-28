@@ -23,7 +23,7 @@ interface LessonScheduleProps {
   lessons: any[];
   selectedDate: Date;
   onDateChange: (date: Date) => void;
-  onAttendanceClick: (lessonId: number, viewMode?: 'overview' | 'edit') => void;
+  onAttendanceClick: (lessonId: string, viewMode?: 'overview' | 'edit') => void;
   isMobile?: boolean;
 }
 
