@@ -20,6 +20,7 @@ import { CURRENT_TEACHER, INITIAL_EVENTS } from '../../../../shared/data/mockDat
 import { formatDateTime } from '../../../../shared/domains/academic/klassenbuch/utils';
 import { getCurrentUserProfile, handleLogout, fetchLessonAttendance, fetchLessonDiaryEntry, getLessonStudentNameIdPairs, saveLessonAttendanceBulkRPC } from '../../lib/supabase';
 import { useLessons, useTeacherProfile } from '../../features/lessons/hooks/useLessons';
+import { KlassenbuchApp } from '../../features/klassenbuch';
 
 interface TeacherDashboardProps {
   user?: {
@@ -63,6 +64,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // Mobile detection (simple check)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
+  // Klassenbuch view state
+  const [showKlassenbuch, setShowKlassenbuch] = useState(false);
+
   // Load user profile on component mount
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -92,8 +96,14 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const handleHeaderButtonClick = async (action: string) => {
     if (action === 'Ausloggen') {
       await handleLogout();
+    } else if (action === 'Klassenbuch') {
+      setShowKlassenbuch(true);
     }
     // Handle other actions in the future
+  };
+
+  const handleKlassenbuchClose = () => {
+    setShowKlassenbuch(false);
   };
 
   const handleDateChange = (date: Date) => {
