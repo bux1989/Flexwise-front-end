@@ -25,10 +25,15 @@ export function DatePicker({
   className,
   disabled = false,
 }: DatePickerProps) {
+  console.log('🔍 REAL DatePicker rendered with props:', { date, disabled, placeholder, className });
   const [open, setOpen] = React.useState(false)
 
+  // FORCE DISABLE THE POPUP
+  const forceDisabled = true;
+  console.log('🚫 DatePicker popup DISABLED');
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={false} onOpenChange={() => console.log('🚫 Popover prevented from opening')}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
