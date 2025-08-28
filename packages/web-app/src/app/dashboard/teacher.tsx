@@ -4,7 +4,16 @@ import { TaskManagement } from '../../features/task-management/components/TaskMa
 import { LessonSchedule } from '../../features/lessons/components/LessonSchedule';
 import { InfoBoard } from '../../features/communications/components/InfoBoard';
 import { Events } from '../../features/communications/components/Events';
-import { AttendanceModal } from '../../features/attendance/components/AttendanceModal';
+
+// Import UI components for attendance dialog
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import { Checkbox } from '../../components/ui/checkbox';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Textarea } from '../../components/ui/textarea';
+import { Check, Clock, X, Edit } from 'lucide-react';
 
 // Import mock data and utilities
 import { CURRENT_TEACHER, INITIAL_EVENTS } from '../../../../shared/data/mockData';
