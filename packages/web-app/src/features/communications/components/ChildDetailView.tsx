@@ -670,11 +670,11 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
         </section>
 
         {/* Authorized Pickup Section */}
-        <section className="bg-white rounded-lg border border-gray-200 p-4">
+        <section className="bg-card rounded-lg border border-border p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <UsersIcon className="h-6 w-6 text-blue-600" />
-              <h3 className="text-xl font-semibold leading-tight">Abholberechtigt</h3>
+              <UsersIcon className="h-6 w-6 text-primary" />
+              <h3 className="text-lg font-semibold leading-tight text-foreground">Abholberechtigt</h3>
             </div>
             {!editingAuthorizedPickup ? (
               <Button 
@@ -699,7 +699,7 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
                   variant="default" 
                   size="sm" 
                   onClick={handleSaveAuthorizedPickup}
-                  className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                  className="bg-primary hover:bg-primary/90 flex items-center gap-2"
                 >
                   <Save className="h-4 w-4" />
                   Speichern
