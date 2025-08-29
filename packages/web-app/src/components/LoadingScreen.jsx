@@ -70,12 +70,6 @@ export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
           <p className="app-subtitle">Flexible Tools for Smart Schools</p>
         </div>
 
-        {/* Animated loading bar */}
-        <div className="loading-bar-container">
-          <div className="loading-bar">
-            <div className="loading-progress"></div>
-          </div>
-        </div>
 
         {/* Loading dots */}
         <div className="loading-dots">
