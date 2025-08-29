@@ -288,17 +288,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         skills: staffData?.skills || ['Mathematik', 'Deutsch', 'Klassenleitung'],
         kurzung: staffData?.kurzung || 'CD',
         subjects_stud: staffData?.subjects_stud || ['Mathematik', 'Physik'],
-        contacts: organizedContacts.emails.length > 0 ? organizedContacts : {
-          emails: [
-            { id: '1', type: 'Arbeit', value: 'c.doebel@flexwise-schule.de', is_primary: true }
-          ],
-          phones: [
-            { id: '1', type: 'Mobil', value: '+49 171 123 4567', is_primary: true }
-          ],
-          addresses: [
-            { id: '1', type: 'Wohnadresse', value: 'Musterstraße 123\n12345 Berlin', is_primary: true }
-          ]
-        }
+        contacts: organizedContacts
       });
 
     } catch (error) {
@@ -1203,7 +1193,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         size="sm"
                         className="border-red-200 text-red-700 hover:bg-red-100"
                         onClick={async () => {
-                          console.log('��� Password reset button clicked');
+                          console.log('🔑 Password reset button clicked');
                           try {
                             console.log('🔍 Getting current user...');
                             const { data: { user: authUser } } = await supabase.auth.getUser();
