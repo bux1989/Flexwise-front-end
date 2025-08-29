@@ -540,7 +540,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
     setIsEnrollingTotp(true);
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) return;
+      if (!authUser) {
+        alert('Kein authentifizierter Benutzer gefunden. Bitte melden Sie sich erneut an.');
+        return;
+      }
+
+      console.log('Setting up TOTP for user:', authUser.email);
 
       // Generate TOTP factor
       const { data, error } = await supabase.auth.mfa.enroll({
@@ -548,21 +553,47 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         friendlyName: `Flexwise 2FA - ${authUser.email}`
       });
 
+      console.log('TOTP enrollment result:', { data, error });
+
       if (error) {
         console.error('Error enrolling TOTP:', error);
-        alert('Fehler beim Einrichten der Authenticator-App: ' + error.message);
+        console.error('Error details:', {
+          message: error.message,
+          status: error.status,
+          statusCode: error.statusCode
+        });
+
+        if (error.message.includes('already enrolled') || error.message.includes('factor already exists')) {
+          alert('Sie haben bereits eine Authenticator-App eingerichtet. Deaktivieren Sie zuerst die bestehende 2FA und versuchen Sie es erneut.');
+        } else if (error.message.includes('not allowed') || error.message.includes('disabled')) {
+          alert('2FA ist für dieses Konto nicht verfügbar. Kontaktieren Sie den Administrator.');
+        } else {
+          alert('Fehler beim Einrichten der Authenticator-App: ' + error.message);
+        }
         return;
       }
+
+      if (!data || !data.totp) {
+        console.error('No TOTP data received:', data);
+        alert('Keine TOTP-Daten erhalten. Bitte versuchen Sie es erneut.');
+        return;
+      }
+
+      console.log('TOTP data received:', {
+        hasSecret: !!data.totp.secret,
+        hasQrCode: !!data.totp.qr_code,
+        secretLength: data.totp.secret?.length
+      });
 
       setTotpSecret(data.totp.secret);
       setTotpQrCode(data.totp.qr_code);
       setOtpMethod('totp');
 
-      alert('QR-Code generiert! Scannen Sie ihn mit Ihrer Authenticator-App und geben Sie dann den 6-stelligen Code ein.');
+      alert('QR-Code generiert! Scannen Sie ihn mit Ihrer Authenticator-App (Google Authenticator, Authy, etc.) und geben Sie dann den 6-stelligen Code ein.');
 
     } catch (error) {
       console.error('Error setting up TOTP:', error);
-      alert('Fehler beim Einrichten der Authenticator-App: ' + error.message);
+      alert('Unerwarteter Fehler beim Einrichten der Authenticator-App. Bitte versuchen Sie es erneut.');
     } finally {
       setIsEnrollingTotp(false);
     }
