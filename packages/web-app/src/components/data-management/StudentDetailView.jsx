@@ -122,7 +122,32 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
                     <p className="text-sm text-blue-600/70">{student.class}</p>
                   </div>
                 </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-blue-900">Einstieg (Schulbeginn)</p>
+                    <p className="text-sm text-blue-600/70">
+                      {student.einstieg ? new Date(student.einstieg).toLocaleDateString('de-DE') : 'Nicht angegeben'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-blue-900">Ausstieg (Schulende)</p>
+                    <p className="text-sm text-blue-600/70">
+                      {student.ausstieg ? new Date(student.ausstieg).toLocaleDateString('de-DE') : 'Noch aktiv'}
+                    </p>
+                  </div>
+                </div>
               </div>
+              {student.ausstieg && new Date(student.ausstieg) < new Date() && (
+                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-700 font-medium">
+                    ⚠️ Dieser Schüler hat die Schule verlassen und kann nicht mehr in Kurse eingeschrieben werden.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
