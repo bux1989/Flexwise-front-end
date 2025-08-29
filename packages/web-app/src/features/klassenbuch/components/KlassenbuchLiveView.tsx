@@ -26,12 +26,10 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
   const [commentModalLesson, setCommentModalLesson] = useState<Lesson | null>(null);
   const [schedulePeriods, setSchedulePeriods] = useState<SchedulePeriod[]>([]);
   const [schoolDays, setSchoolDays] = useState<SchoolDay[]>([]);
+  const [classTimetable, setClassTimetable] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [schoolId, setSchoolId] = useState<string>('');
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-
-  // Get class-specific data
-  const classTimetable = getTimetableForClass(selectedClass.id);
 
   // Fetch database-driven periods and school days
   useEffect(() => {
