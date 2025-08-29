@@ -244,6 +244,9 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
   const getLessonForSlot = (period: number, day: string) => {
     const found = classTimetable.find(lesson => lesson.period === period && lesson.day === day);
 
+    // Test alternative period numbers to detect patterns
+    const foundWithOffset = classTimetable.find(lesson => lesson.period === (period - 1) && lesson.day === day);
+
     // Only log for the first few searches to avoid console spam
     if (period <= 3) {
       console.log(`🔍 Searching period ${period}, day ${day}:`, {
@@ -252,7 +255,9 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
         availablePeriods: [...new Set(classTimetable.map(l => l.period))],
         availableDays: [...new Set(classTimetable.map(l => l.day))],
         found: !!found,
-        foundLesson: found ? { period: found.period, day: found.day, subject: found.subject } : null
+        foundWithMinusOne: !!foundWithOffset,
+        foundLesson: found ? { period: found.period, day: found.day, subject: found.subject } : null,
+        foundWithOffsetLesson: foundWithOffset ? { period: foundWithOffset.period, day: foundWithOffset.day, subject: foundWithOffset.subject } : null
       });
     }
 
