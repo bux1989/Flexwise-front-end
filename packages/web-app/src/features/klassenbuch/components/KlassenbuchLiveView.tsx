@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../compo
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../components/ui/tooltip';
 import { Check, AlertTriangle, AlertCircle, X, RefreshCw, MessageSquare, Loader2 } from 'lucide-react';
 import { KlassenbuchAttendanceModal } from './KlassenbuchAttendanceModal';
-import { getTimetableForClass, getStudentsForClass, getSchedulePeriods, getSchoolDays, formatTimeSlot, type Lesson, type SchedulePeriod, type SchoolDay } from '../data/klassenbuchDataAdapter';
+import { getTimetableForClass, getStudentsForClass, getSchedulePeriods, getSchoolDays, formatTimeSlot, getLessonsForWeek, type Lesson, type SchedulePeriod, type SchoolDay } from '../data/klassenbuchDataAdapter';
 import { getCurrentUserProfile } from '../../../lib/supabase.js';
 
 interface Class {
