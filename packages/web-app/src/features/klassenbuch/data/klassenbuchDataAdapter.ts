@@ -277,13 +277,20 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
 
+    const weekStartStr = weekStart.toISOString().split('T')[0];
+    const weekEndStr = weekEnd.toISOString().split('T')[0];
+
+    console.log('📅 Date range:', { weekStartStr, weekEndStr });
+
     let query = supabase
       .from('vw_react_lesson_details')
       .select('*')
       .eq('school_id', schoolId)
-      .gte('lesson_date', weekStart.toISOString().split('T')[0])
-      .lte('lesson_date', weekEnd.toISOString().split('T')[0])
+      .gte('lesson_date', weekStartStr)
+      .lte('lesson_date', weekEndStr)
       .order('start_datetime', { ascending: true });
+
+    console.log('🔍 Base query setup for school:', schoolId);
 
     // Filter by class or teacher depending on the view
     if (classId === 'teacher') {
