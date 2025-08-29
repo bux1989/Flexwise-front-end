@@ -465,6 +465,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           value={profile.first_name}
                           onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
                           disabled={!isEditing}
+                          className={!isEditing ? "bg-gray-50 text-gray-900 font-medium" : ""}
                         />
                       </div>
                       <div className="space-y-2">
@@ -474,6 +475,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           value={profile.last_name}
                           onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
                           disabled={!isEditing}
+                          className={!isEditing ? "bg-gray-50 text-gray-900 font-medium" : ""}
                         />
                       </div>
                     </div>
@@ -487,6 +489,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           value={profile.date_of_birth}
                           onChange={(e) => setProfile(prev => ({ ...prev, date_of_birth: e.target.value }))}
                           disabled={!isEditing}
+                          className={!isEditing ? "bg-gray-50 text-gray-900 font-medium" : ""}
                         />
                       </div>
                       <div className="space-y-2">
@@ -507,7 +510,11 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                             </SelectContent>
                           </Select>
                         ) : (
-                          <Input value={profile.gender} disabled />
+                          <Input
+                            value={profile.gender}
+                            disabled
+                            className="bg-gray-50 text-gray-900 font-medium"
+                          />
                         )}
                       </div>
                     </div>
@@ -550,7 +557,11 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                   </SelectContent>
                                 </Select>
                               ) : (
-                                <Input value={email.type} disabled className="h-9" />
+                                <Input
+                                  value={email.type}
+                                  disabled
+                                  className="h-9 bg-gray-50 text-gray-900 font-medium"
+                                />
                               )}
                             </div>
                             <div className="space-y-2">
@@ -560,7 +571,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 value={email.value}
                                 onChange={(e) => updateContact('emails', email.id, 'value', e.target.value)}
                                 disabled={!isEditing}
-                                className="h-9"
+                                className={`h-9 ${!isEditing ? "bg-gray-50 text-gray-900 font-medium" : ""}`}
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -639,7 +650,11 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                   </SelectContent>
                                 </Select>
                               ) : (
-                                <Input value={phone.type} disabled className="h-9" />
+                                <Input
+                                  value={phone.type}
+                                  disabled
+                                  className="h-9 bg-gray-50 text-gray-900 font-medium"
+                                />
                               )}
                             </div>
                             <div className="space-y-2">
@@ -649,7 +664,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 value={phone.value}
                                 onChange={(e) => updateContact('phones', phone.id, 'value', e.target.value)}
                                 disabled={!isEditing}
-                                className="h-9"
+                                className={`h-9 ${!isEditing ? "bg-gray-50 text-gray-900 font-medium" : ""}`}
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -716,7 +731,11 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                   </SelectContent>
                                 </Select>
                               ) : (
-                                <Input value={address.type} disabled className="h-9" />
+                                <Input
+                                  value={address.type}
+                                  disabled
+                                  className="h-9 bg-gray-50 text-gray-900 font-medium"
+                                />
                               )}
                             </div>
                             <div className="space-y-2">
@@ -726,7 +745,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 onChange={(e) => updateContact('addresses', address.id, 'value', e.target.value)}
                                 disabled={!isEditing}
                                 rows={2}
-                                className="min-h-[70px]"
+                                className={`min-h-[70px] ${!isEditing ? "bg-gray-50 text-gray-900 font-medium" : ""}`}
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -780,7 +799,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         onChange={(e) => setProfile(prev => ({ ...prev, kurzung: e.target.value }))}
                         disabled={!isEditing}
                         placeholder="z.B. MU, DE, EN"
-                        className="max-w-xs"
+                        className={`max-w-xs ${!isEditing ? "bg-gray-50 text-gray-900 font-medium" : ""}`}
                       />
                       <p className="text-sm text-gray-500">
                         Ihr persönliches Kürzel für Stundenpläne und Listen
