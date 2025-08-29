@@ -215,7 +215,70 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       console.log('📊 Actual contacts data from DB:', contactsData);
       console.log('📊 Organized contacts:', organizedContacts);
 
-      // Set profile state with fallback mock data if needed
+      // Auto-create contact record from auth email if none exist
+      if (!contactsData || contactsData.length === 0) {
+        console.log('📧 No contacts found, creating from auth email:', authUser.email);
+
+        try {
+          const { error: insertError } = await supabase
+            .from('contacts')
+            .insert({
+              profile_id: profileId,
+              profile_type: 'staff',
+              type: 'email',
+              label: 'Arbeit',
+              value: authUser.email,
+              is_primary: true,
+              school_id: profileData?.school_id
+            });
+
+          if (insertError) {
+            console.error('❌ Error creating contact from auth email:', insertError);
+          } else {
+            console.log('✅ Contact created from auth email');
+            // Reload contacts after creating
+            const { data: newContactsData } = await supabase
+              .from('contacts')
+              .select('*')
+              .eq('profile_id', profileId)
+              .eq('school_id', profileData?.school_id)
+              .order('created_at', { ascending: true });
+
+            // Re-organize contacts with new data
+            if (newContactsData) {
+              organizedContacts.emails = [];
+              organizedContacts.phones = [];
+              organizedContacts.addresses = [];
+
+              newContactsData.forEach(contact => {
+                let contactCategory: 'emails' | 'phones' | 'addresses';
+                if (contact.type === 'email') {
+                  contactCategory = 'emails';
+                } else if (contact.type === 'phone') {
+                  contactCategory = 'phones';
+                } else if (contact.type === 'address') {
+                  contactCategory = 'addresses';
+                } else {
+                  return;
+                }
+
+                const contactItem = {
+                  id: contact.id,
+                  type: getContactTypeLabel(contact.label || contact.type, contactCategory),
+                  value: contact.value,
+                  is_primary: contact.is_primary
+                };
+
+                organizedContacts[contactCategory].push(contactItem);
+              });
+            }
+          }
+        } catch (error) {
+          console.error('💥 Error auto-creating contact:', error);
+        }
+      }
+
+      // Set profile state with real or fallback data
       setProfile({
         first_name: profileData?.first_name || 'Clarissa',
         last_name: profileData?.last_name || 'Döbel',
@@ -1140,7 +1203,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         size="sm"
                         className="border-red-200 text-red-700 hover:bg-red-100"
                         onClick={async () => {
-                          console.log('🔑 Password reset button clicked');
+                          console.log('��� Password reset button clicked');
                           try {
                             console.log('🔍 Getting current user...');
                             const { data: { user: authUser } } = await supabase.auth.getUser();
