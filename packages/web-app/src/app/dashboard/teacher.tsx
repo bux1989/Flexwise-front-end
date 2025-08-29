@@ -24,6 +24,9 @@ import { getCurrentUserProfile, handleLogout, fetchLessonAttendance, fetchLesson
 import { useLessons, useTeacherProfile } from '../../features/lessons/hooks/useLessons';
 import { KlassenbuchApp } from '../../features/klassenbuch';
 
+// Debug system
+import { DebugOverlay } from '../../debug';
+
 interface TeacherDashboardProps {
   user?: {
     name: string;
