@@ -21,6 +21,7 @@ export default function StudentManagement({ onBack }) {
   const [selectedClass, setSelectedClass] = useState('all')
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [showDetailView, setShowDetailView] = useState(false)
 
   // Mock student data - replace with real data from Supabase
   const [students] = useState([
