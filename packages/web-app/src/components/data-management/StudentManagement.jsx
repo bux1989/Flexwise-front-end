@@ -498,31 +498,133 @@ export default function StudentManagement({ onBack }) {
             </Badge>
           </div>
 
-          {/* Class Filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-blue-900">Filter nach Klasse:</span>
-            <Button
-              variant={selectedClass === 'all' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedClass('all')}
-              className={selectedClass === 'all' ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-50'}
-            >
-              Alle ({students.length})
-            </Button>
-            {availableClasses.map((className) => {
-              const classCount = students.filter(s => s.class === className).length
-              return (
-                <Button
-                  key={className}
-                  variant={selectedClass === className ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedClass(className)}
-                  className={selectedClass === className ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-50'}
+          {/* Filter Dropdowns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Class Filter */}
+            <div>
+              <label className="text-sm font-medium text-blue-900 block mb-2">Klasse</label>
+              <select
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+              >
+                <option value="all">Alle Klassen ({students.length})</option>
+                {availableClasses.map((className) => {
+                  const classCount = students.filter(s => s.class === className).length
+                  return (
+                    <option key={className} value={className}>
+                      {className} ({classCount})
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+
+            {/* BuT Status Filter */}
+            <div>
+              <label className="text-sm font-medium text-blue-900 block mb-2">BuT Status</label>
+              <select
+                value={selectedButStatus}
+                onChange={(e) => setSelectedButStatus(e.target.value)}
+                className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+              >
+                <option value="all">Alle</option>
+                <option value="gueltig">BuT gültig</option>
+                <option value="abgelaufen">BuT abgelaufen</option>
+              </select>
+            </div>
+
+            {/* Photo Permission Filter */}
+            <div>
+              <label className="text-sm font-medium text-blue-900 block mb-2">Fotoerlaubnis</label>
+              <select
+                value={selectedPhotoStatus}
+                onChange={(e) => setSelectedPhotoStatus(e.target.value)}
+                className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+              >
+                <option value="all">Alle</option>
+                <option value="gueltig">Gültige Fotoerlaubnis</option>
+                <option value="keine">Keine Fotoerlaubnis</option>
+              </select>
+            </div>
+
+            {/* Active Status Filter */}
+            <div>
+              <label className="text-sm font-medium text-blue-900 block mb-2">Status</label>
+              <select
+                value={selectedActiveStatus}
+                onChange={(e) => setSelectedActiveStatus(e.target.value)}
+                className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+              >
+                <option value="all">Alle</option>
+                <option value="active">Aktiv</option>
+                <option value="inactive">Inaktiv</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Filter Summary */}
+          <div className="flex items-center gap-2 pt-2">
+            <span className="text-sm text-muted-foreground">Aktive Filter:</span>
+            {selectedClass !== 'all' && (
+              <Badge variant="outline" className="text-xs">
+                Klasse: {selectedClass}
+                <button
+                  onClick={() => setSelectedClass('all')}
+                  className="ml-1 hover:text-red-600"
                 >
-                  {className} ({classCount})
-                </Button>
-              )
-            })}
+                  ×
+                </button>
+              </Badge>
+            )}
+            {selectedButStatus !== 'all' && (
+              <Badge variant="outline" className="text-xs">
+                BuT: {selectedButStatus === 'gueltig' ? 'Gültig' : 'Abgelaufen'}
+                <button
+                  onClick={() => setSelectedButStatus('all')}
+                  className="ml-1 hover:text-red-600"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {selectedPhotoStatus !== 'all' && (
+              <Badge variant="outline" className="text-xs">
+                Foto: {selectedPhotoStatus === 'gueltig' ? 'Gültig' : 'Keine'}
+                <button
+                  onClick={() => setSelectedPhotoStatus('all')}
+                  className="ml-1 hover:text-red-600"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {selectedActiveStatus !== 'all' && (
+              <Badge variant="outline" className="text-xs">
+                Status: {selectedActiveStatus === 'active' ? 'Aktiv' : 'Inaktiv'}
+                <button
+                  onClick={() => setSelectedActiveStatus('all')}
+                  className="ml-1 hover:text-red-600"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {(selectedClass !== 'all' || selectedButStatus !== 'all' || selectedPhotoStatus !== 'all' || selectedActiveStatus !== 'all') && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedClass('all')
+                  setSelectedButStatus('all')
+                  setSelectedPhotoStatus('all')
+                  setSelectedActiveStatus('all')
+                }}
+                className="text-xs h-6 px-2"
+              >
+                Alle Filter zurücksetzen
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
