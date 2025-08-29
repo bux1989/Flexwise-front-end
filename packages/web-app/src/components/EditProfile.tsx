@@ -917,7 +917,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       Berufliche Informationen
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="kurzung">Kürzel</Label>
                       <Input
