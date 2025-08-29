@@ -1159,11 +1159,10 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                       Persönliche Informationen
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    {/* Profile Picture and Name Fields - Side by Side Layout */}
-                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-                      {/* Profile Picture Section */}
-                      <div className="flex flex-col items-center lg:items-start space-y-3">
+                  <CardContent className="space-y-4">
+                    {/* Profile Picture Section */}
+                    <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4">
+                      <div className="flex flex-col items-center space-y-3">
                         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
                           {profile.profile_picture_url ? (
                             <img
@@ -1182,32 +1181,9 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                           </Button>
                         )}
                       </div>
-
-                      {/* Name Fields Section */}
-                      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="space-y-2">
-                          <Label htmlFor="first_name">Vorname</Label>
-                          <Input
-                            id="first_name"
-                            value={profile.first_name}
-                            onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
-                            disabled={!isEditing}
-                            className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="last_name">Nachname</Label>
-                          <Input
-                            id="last_name"
-                            value={profile.last_name}
-                            onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
-                            disabled={!isEditing}
-                            className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
-                          />
-                        </div>
-                      </div>
                     </div>
 
+                    {/* All Input Fields in Aligned Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="date_of_birth">Geburtsdatum</Label>
