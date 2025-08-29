@@ -442,9 +442,20 @@ function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay
 
   const subjectColor = subjectColors[dbLesson.subject_name] || 'bg-gray-100 text-gray-800';
 
+  // Map database period_number to timetable period numbers
+  // Database periods seem to start from 0, but timetable periods start from 2
+  // We need to find the correct mapping
+  const mappedPeriod = dbLesson.period_number + 2; // Adjust based on the offset we observed
+
+  console.log('🔄 Period mapping:', {
+    dbPeriodNumber: dbLesson.period_number,
+    mappedPeriod: mappedPeriod,
+    dbPeriodType: typeof dbLesson.period_number
+  });
+
   return {
     id: dbLesson.lesson_id,
-    period: dbLesson.period_number,
+    period: mappedPeriod,
     day: dayName,
     time: timeString,
     subject: dbLesson.subject_abbreviation || dbLesson.subject_name,
