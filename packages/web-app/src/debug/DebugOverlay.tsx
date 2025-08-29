@@ -11,22 +11,50 @@ export function DebugOverlay({ id, name, children, className }: DebugOverlayProp
   const debugId = id || generateDebugId(name);
 
   const handleCopyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(debugId);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000); // Reset after 1 second
-    } catch (err) {
-      console.error('Failed to copy debug ID:', err);
-      // Fallback for older browsers
+    const copyWithFallback = () => {
+      // Legacy fallback method for environments where Clipboard API is blocked
       const textArea = document.createElement('textarea');
       textArea.value = debugId;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
       document.body.appendChild(textArea);
+      textArea.focus();
       textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
+
+      try {
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        if (successful) {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1000);
+        } else {
+          console.warn('Legacy copy method failed');
+        }
+      } catch (err) {
+        document.body.removeChild(textArea);
+        console.error('All copy methods failed:', err);
+      }
+    };
+
+    // Check if Clipboard API is available and permissions allow it
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(debugId);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1000);
+        return;
+      } catch (err) {
+        // If modern clipboard fails (permissions, etc), fall back to legacy method
+        console.warn('Clipboard API failed, using fallback:', err);
+        copyWithFallback();
+        return;
+      }
     }
+
+    // If Clipboard API not available, use fallback directly
+    copyWithFallback();
   };
 
   if (!isDebugMode) {
