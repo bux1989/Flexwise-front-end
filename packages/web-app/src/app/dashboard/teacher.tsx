@@ -287,9 +287,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       return;
     }
 
-    const lesson = lessons.find(l => l.id === selectedLessonForAttendance);
+    let lesson = lessons.find(l => l.id === selectedLessonForAttendance);
     if (!lesson) {
-      console.error('Lesson not found:', selectedLessonForAttendance);
+      console.error('Lesson not found in switchToEdit - this should not happen as we should have fetched it already');
       return;
     }
 
