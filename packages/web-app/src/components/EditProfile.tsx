@@ -435,11 +435,8 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         throw new Error('Failed to update staff info: ' + staffError.message);
       }
 
-      // Save contacts (check if we have school_id first)
-      if (!userSchoolId) {
-        throw new Error('School ID not available from profile data');
-      }
-      await saveContacts(profileId);
+      // Save using PostgreSQL function (includes contacts)
+      await saveProfileWithFunction(profileId);
 
       setIsEditing(false);
 
