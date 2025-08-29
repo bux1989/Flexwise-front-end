@@ -92,7 +92,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
         console.log('📚 Lessons data:', lessonsData);
 
         if (lessonsData.length === 0) {
-          console.warn('⚠️ No lessons found for:', {
+          console.warn('⚠�� No lessons found for:', {
             classId: selectedClass.id,
             className: selectedClass.name,
             schoolId: currentSchoolId,
@@ -273,11 +273,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
   const displayWeekDays = isMobile ? mobileWeekDays : weekDays;
   const weekDates = getWeekDates(selectedWeek);
 
-  // Debug day names
-  if (schoolDays.length > 0 && classTimetable.length > 0) {
-    console.log('🗓️ School day names from DB:', weekDays);
-    console.log('📚 Lesson day names:', [...new Set(classTimetable.map(l => l.day))]);
-  }
+  // Day names and lessons loaded successfully
 
   // Show loading state while fetching data
   if (isLoading) {
