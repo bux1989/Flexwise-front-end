@@ -5,6 +5,7 @@ import { LessonSchedule } from '../../features/lessons/components/LessonSchedule
 import { InfoBoard } from '../../features/communications/components/InfoBoard';
 import { Events } from '../../features/communications/components/Events';
 import PWANotifications from '../../components/PWANotifications';
+import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner';
 
 // Import UI components for attendance dialog
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
