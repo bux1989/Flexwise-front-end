@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../components/ui/tooltip';
-import { Check, AlertTriangle, AlertCircle, X, RefreshCw, MessageSquare } from 'lucide-react';
+import { Check, AlertTriangle, AlertCircle, X, RefreshCw, MessageSquare, Loader2 } from 'lucide-react';
 import { KlassenbuchAttendanceModal } from './KlassenbuchAttendanceModal';
 import { getTimetableForClass, getStudentsForClass, getSchedulePeriods, getSchoolDays, formatTimeSlot, type Lesson, type SchedulePeriod, type SchoolDay } from '../data/klassenbuchDataAdapter';
+import { getCurrentUserProfile } from '../../../lib/supabase.js';
 
 interface Class {
   id: string;
