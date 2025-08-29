@@ -384,6 +384,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         subjects_stud: profile.subjects_stud
       };
 
+      // Find primary phone number for auth user sync
+      const primaryPhone = profile.contacts.phones.find(phone => phone.is_primary);
+
       // Prepare contacts data with IDs and proper format
       const contactsData = [];
 
@@ -420,7 +423,24 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         });
       });
 
-      // Call the PostgreSQL function
+      // Step 1: Update auth user's phone number if there's a primary phone
+      if (primaryPhone?.value) {
+        const formattedPhone = formatPhoneNumber(primaryPhone.value);
+        console.log('Syncing auth user phone number:', formattedPhone);
+
+        const { error: phoneUpdateError } = await supabase.auth.updateUser({
+          phone: formattedPhone
+        });
+
+        if (phoneUpdateError) {
+          console.warn('Warning: Could not update auth user phone number:', phoneUpdateError);
+          // Don't fail the entire save operation, just warn
+        } else {
+          console.log('✅ Auth user phone number synced successfully');
+        }
+      }
+
+      // Step 2: Call the PostgreSQL function to save profile and contacts
       const { data, error } = await supabase.rpc('save_user_profile_complete_react', {
         p_profile_id: profileId,
         p_profile_data: profileData,
