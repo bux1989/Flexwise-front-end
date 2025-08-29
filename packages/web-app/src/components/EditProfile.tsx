@@ -614,6 +614,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       // Format phone number to E.164 format
       const formattedPhone = formatPhoneNumber(rawPhone);
 
+      console.log('Debug SMS OTP:', {
+        rawPhone,
+        formattedPhone,
+        isValidFormat: /^\+[1-9]\d{1,14}$/.test(formattedPhone)
+      });
+
       // Validate phone number format
       if (!/^\+[1-9]\d{1,14}$/.test(formattedPhone)) {
         alert('Ungültiges Telefonnummer-Format. Bitte verwenden Sie das internationale Format (z.B. +49123456789).');
@@ -629,13 +635,21 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
       if (error) {
         console.error('Error sending SMS OTP:', error);
+        console.error('Error details:', {
+          message: error.message,
+          status: error.status,
+          statusCode: error.statusCode
+        });
+
         // Provide more specific error messages
-        if (error.message.includes('422')) {
-          alert('Ungültiges Telefonnummer-Format. Bitte verwenden Sie das internationale Format (z.B. +49123456789).');
+        if (error.message.includes('422') || error.message.includes('Phone number is invalid')) {
+          alert('SMS-Funktion ist möglicherweise nicht konfiguriert. Bitte verwenden Sie stattdessen E-Mail-OTP oder kontaktieren Sie den Administrator.');
         } else if (error.message.includes('rate limit')) {
           alert('Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
+        } else if (error.message.includes('SMS provider')) {
+          alert('SMS-Service ist nicht verfügbar. Bitte verwenden Sie E-Mail-OTP.');
         } else {
-          alert('Fehler beim Senden der SMS: ' + error.message);
+          alert('SMS-OTP ist nicht verfügbar. Bitte verwenden Sie E-Mail-OTP oder kontaktieren Sie den Administrator.');
         }
       } else {
         alert(`OTP-Code wurde an ${formattedPhone} gesendet!`);
@@ -643,7 +657,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       }
     } catch (error) {
       console.error('Error sending SMS OTP:', error);
-      alert('Fehler beim Senden der SMS: ' + error.message);
+      alert('SMS-OTP ist nicht verfügbar. Bitte verwenden Sie E-Mail-OTP.');
     } finally {
       setIsSendingOtp(false);
     }
