@@ -446,19 +446,42 @@ function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay
 
   const subjectColor = subjectColors[dbLesson.subject_name] || 'bg-gray-100 text-gray-800';
 
-  // Try to get the period from available fields - period_number seems to be null
-  // Let's try block_number or use period_number directly if it's valid
-  const rawPeriod = dbLesson.period_number ?? dbLesson.block_number ?? 1;
+  // Since period_id is missing from lessons, map based on start time
+  // Extract hour from lesson start time to determine period
+  const lessonHour = lessonStart.getHours();
+  const lessonMinute = lessonStart.getMinutes();
+  const timeInMinutes = lessonHour * 60 + lessonMinute;
 
-  console.log('🔄 Period mapping debug:', {
-    period_number: dbLesson.period_number,
-    block_number: dbLesson.block_number,
-    rawPeriod: rawPeriod,
-    allFields: Object.keys(dbLesson)
+  // Map common German school schedule times to periods
+  // This is a fallback when database period_id is missing
+  let mappedPeriod = 1; // default
+
+  if (timeInMinutes >= 480 && timeInMinutes < 525) { // 08:00-08:45
+    mappedPeriod = 2; // 1. Stunde in timetable
+  } else if (timeInMinutes >= 525 && timeInMinutes < 570) { // 08:45-09:30
+    mappedPeriod = 3; // 2. Stunde
+  } else if (timeInMinutes >= 590 && timeInMinutes < 635) { // 09:50-10:35
+    mappedPeriod = 5; // 3. Stunde (after break)
+  } else if (timeInMinutes >= 635 && timeInMinutes < 680) { // 10:35-11:20
+    mappedPeriod = 6; // 4. Stunde
+  } else if (timeInMinutes >= 680 && timeInMinutes < 735) { // 11:20-12:15
+    mappedPeriod = 7; // 5. Stunde
+  } else if (timeInMinutes >= 735 && timeInMinutes < 780) { // 12:15-13:00
+    mappedPeriod = 8; // 6. Stunde
+  } else if (timeInMinutes >= 825 && timeInMinutes < 870) { // 13:45-14:30
+    mappedPeriod = 9; // 7. Stunde (after lunch)
+  } else if (timeInMinutes >= 870 && timeInMinutes < 915) { // 14:30-15:15
+    mappedPeriod = 10; // 8. Stunde
+  } else if (timeInMinutes >= 915 && timeInMinutes < 960) { // 15:15-16:00
+    mappedPeriod = 11; // 9. Stunde / Flexband
+  }
+
+  console.log('🔄 Time-based period mapping:', {
+    startTime: timeString.split('-')[0],
+    timeInMinutes,
+    mappedPeriod,
+    originalPeriodNumber: dbLesson.period_number
   });
-
-  // Use the period directly - it should match the timetable periods
-  const mappedPeriod = rawPeriod;
 
   return {
     id: dbLesson.lesson_id,
