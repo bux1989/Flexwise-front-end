@@ -1,10 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { DebugOverlay } from '../debug';
 import { CheckSquare } from 'lucide-react';
 
 export function TodosPlaceholder() {
   return (
-    <Card className="h-full relative overflow-hidden">
+    <DebugOverlay name="TodosPlaceholder">
+      <Card className="h-full relative overflow-hidden">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CheckSquare className="h-5 w-5" />
@@ -24,6 +26,7 @@ export function TodosPlaceholder() {
           <div className="h-4 bg-muted rounded w-2/3"></div>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </DebugOverlay>
   );
 }
