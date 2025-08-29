@@ -34,18 +34,33 @@
 ```typescript
 // packages/web-app/src/features/your-feature/components/NewComponent.tsx
 import { YourFeatureProps } from '../types/yourFeature';
+import { DebugOverlay } from '../../../debug';
 
 export function NewComponent({ prop1, prop2 }: YourFeatureProps) {
   return (
-    <div>
-      {/* Your component implementation */}
-    </div>
+    <DebugOverlay id="NEW-014" name="NewComponent">
+      <div className="new-component">
+        <DebugOverlay id="NEW-001" name="NewComponent.Header">
+          {/* Header content */}
+        </DebugOverlay>
+
+        <DebugOverlay id="NEW-002" name="NewComponent.Content">
+          {/* Main content */}
+        </DebugOverlay>
+      </div>
+    </DebugOverlay>
   );
 }
 
 // Don't forget to export in components/index.ts
 export * from './NewComponent';
 ```
+
+**Debug Overlay Requirements:**
+- **MANDATORY** for all new components
+- Use systematic ID format: `{PREFIX}-014` for main component, `{PREFIX}-001`, `{PREFIX}-002` for sections
+- Include descriptive names: `{ComponentName}.{SectionDescription}`
+- Import from `../../../debug` (adjust path as needed)
 
 ### Adding a Custom Hook
 
@@ -168,17 +183,26 @@ import { helper } from '../../../../../../shared/utils/helper';
 
 ### Component Styling
 ```typescript
-// Use Tailwind classes consistently
+// Use Tailwind classes consistently + debug overlays
+import { DebugOverlay } from '../../../debug';
+
 export function FeatureCard({ title, children }: FeatureCardProps) {
   return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">
-        {title}
-      </h3>
-      <div className="space-y-4">
-        {children}
+    <DebugOverlay id="FCD-014" name="FeatureCard">
+      <div className="bg-white shadow rounded-lg p-6">
+        <DebugOverlay id="FCD-001" name="FeatureCard.Header">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            {title}
+          </h3>
+        </DebugOverlay>
+
+        <DebugOverlay id="FCD-002" name="FeatureCard.Content">
+          <div className="space-y-4">
+            {children}
+          </div>
+        </DebugOverlay>
       </div>
-    </div>
+    </DebugOverlay>
   );
 }
 ```
@@ -264,6 +288,8 @@ console.groupEnd();
 Before submitting a PR, verify:
 
 - [ ] Feature follows the established directory structure
+- [ ] **Debug overlays added to all new components**
+- [ ] **Debug overlay IDs follow systematic naming convention**
 - [ ] TypeScript types are properly defined
 - [ ] Components are properly exported
 - [ ] No direct cross-feature imports (use shared types instead)
@@ -271,6 +297,7 @@ Before submitting a PR, verify:
 - [ ] Loading and error states are handled
 - [ ] Console logs are removed or made conditional
 - [ ] Tests are added for new functionality
+- [ ] **Debug overlays tested in debug mode**
 - [ ] Documentation is updated if needed
 
 ## 🎯 Quick Reference Commands
