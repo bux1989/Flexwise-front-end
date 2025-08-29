@@ -124,10 +124,17 @@ export async function getSchedulePeriods(schoolId: string, blockTypes: string[] 
 
     if (error) {
       console.error('❌ Error fetching schedule periods:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       throw error;
     }
 
     console.log('✅ Schedule periods fetched:', periods?.length || 0, 'periods');
+    console.log('📋 Raw periods data:', periods);
     return periods || [];
 
   } catch (error) {
