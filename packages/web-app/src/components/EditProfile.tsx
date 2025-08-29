@@ -265,6 +265,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
           if (insertError) {
             console.error('❌ Error creating contact from auth email:', insertError);
+            setIsCreatingContact(false);
           } else {
             console.log('✅ Contact created from auth email');
             // Reload contacts after creating
@@ -303,9 +304,11 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                 organizedContacts[contactCategory].push(contactItem);
               });
             }
+            setIsCreatingContact(false);
           }
         } catch (error) {
           console.error('💥 Error auto-creating contact:', error);
+          setIsCreatingContact(false);
         }
       }
 
