@@ -527,7 +527,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           <Input
                             value={profile.gender}
                             disabled
-                            className="bg-gray-50 text-gray-900 font-medium"
+                            className="bg-gray-50 text-black font-semibold"
                           />
                         )}
                       </div>
@@ -764,7 +764,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 onChange={(e) => updateContact('addresses', address.id, 'value', e.target.value)}
                                 disabled={!isEditing}
                                 rows={2}
-                                className={`min-h-[70px] ${!isEditing ? "bg-gray-50 text-gray-900 font-medium" : "text-gray-900 font-medium"}`}
+                                className={`min-h-[70px] ${!isEditing ? "bg-gray-50 text-black font-semibold" : "text-black font-semibold"}`}
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -823,7 +823,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         onChange={(e) => setProfile(prev => ({ ...prev, kurzung: e.target.value }))}
                         disabled={!isEditing}
                         placeholder="z.B. MU, DE, EN"
-                        className={`max-w-xs ${!isEditing ? "bg-gray-50 text-gray-900 font-medium" : "text-gray-900 font-medium"}`}
+                        className={`max-w-xs ${!isEditing ? "bg-gray-50 text-black font-semibold" : "text-black font-semibold"}`}
                       />
                       <p className="text-sm text-gray-500">
                         Ihr persönliches Kürzel für Stundenpläne und Listen
