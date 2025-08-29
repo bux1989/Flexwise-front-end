@@ -187,14 +187,7 @@ function App() {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="text-lg text-gray-900">Loading...</div>
-          <div className="text-sm text-gray-500 mt-2">Initializing FlexWise</div>
-        </div>
-      </div>
-    )
+    return <LoadingScreen onComplete={() => setLoading(false)} />
   }
 
   // Main render
