@@ -701,21 +701,25 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         return;
       }
 
-      // Try with shouldCreateUser: true first (for OTP-only flow)
-      let { error } = await supabase.auth.signInWithOtp({
-        phone: formattedPhone,
-        options: {
-          shouldCreateUser: true // Allow OTP signup
-        }
+      // Step 1: First update the user's phone number in their auth profile
+      console.log('Step 1: Updating user phone number in auth profile...');
+      const { error: updateError } = await supabase.auth.updateUser({
+        phone: formattedPhone
       });
 
-      // If that fails, try without the option
-      if (error && error.message.includes('Signups not allowed')) {
-        console.log('Retrying SMS OTP without shouldCreateUser option...');
-        ({ error } = await supabase.auth.signInWithOtp({
-          phone: formattedPhone
-        }));
+      if (updateError) {
+        console.error('Error updating user phone:', updateError);
+        alert(`Fehler beim Aktualisieren der Telefonnummer: ${updateError.message}`);
+        return;
       }
+
+      console.log('✅ Phone number updated in auth profile');
+
+      // Step 2: Now send OTP to the updated phone number
+      console.log('Step 2: Sending SMS OTP to updated phone number...');
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: formattedPhone
+      });
 
       if (error) {
         console.error('Error sending SMS OTP:', error);
@@ -738,12 +742,13 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           alert(`SMS-OTP Fehler: ${error.message}\nBitte kontaktieren Sie den Administrator.`);
         }
       } else {
+        console.log('✅ SMS OTP sent successfully');
         alert(`✅ SMS OTP-Code wurde an ${formattedPhone} gesendet!`);
         setOtpMethod('sms');
       }
     } catch (error) {
-      console.error('Error sending SMS OTP:', error);
-      alert('SMS-OTP ist nicht verfügbar. Bitte verwenden Sie E-Mail-OTP.');
+      console.error('Error in SMS OTP process:', error);
+      alert(`Unerwarteter Fehler: ${error.message}`);
     } finally {
       setIsSendingOtp(false);
     }
