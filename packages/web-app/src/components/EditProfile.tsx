@@ -182,7 +182,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       }
 
       // Load contacts (include school_id for RLS compliance)
-      console.log('🔍 Querying contacts for profile_id:', profileId, 'school_id:', profileData?.school_id);
       const { data: contactsData, error: contactsError } = await supabase
         .from('contacts')
         .select('*')
