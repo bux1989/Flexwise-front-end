@@ -226,8 +226,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         contact.type === 'email' && contact.value === authUser.email
       );
 
-      if (!authEmailExists && authUser.email) {
+      if (!authEmailExists && authUser.email && !isCreatingContact) {
         console.log('📧 Auth email not found in contacts, creating:', authUser.email);
+        setIsCreatingContact(true);
 
         try {
           // Double-check for duplicates before inserting
@@ -240,11 +241,13 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
           if (checkError) {
             console.error('💥 Error checking existing contacts:', checkError);
+            setIsCreatingContact(false);
             return;
           }
 
           if (existingContacts && existingContacts.length > 0) {
             console.log('📧 Auth email already exists, skipping creation');
+            setIsCreatingContact(false);
             return;
           }
 
@@ -1273,7 +1276,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                               }
                             });
 
-                            console.log('���� Reset email result:', { error });
+                            console.log('📨 Reset email result:', { error });
 
                             if (error) {
                               console.error('❌ Reset email error:', error);
