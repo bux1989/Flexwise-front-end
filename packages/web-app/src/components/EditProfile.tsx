@@ -862,9 +862,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       Sicherheitseinstellungen
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3">
                     {/* Password Reset */}
-                    <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
+                    <div className="flex items-center justify-between p-2 bg-red-50 rounded-lg border border-red-100">
                       <div>
                         <h4 className="font-medium text-red-800">Passwort zurücksetzen</h4>
                         <p className="text-sm text-red-600 mt-1">
