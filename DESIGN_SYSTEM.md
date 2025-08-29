@@ -81,6 +81,69 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
 
 ---
 
+## 🏢 Logo & Branding
+
+### Logo Requirements
+**Logo must always be present in the header** across all dashboards and components.
+
+#### Standard Logo Implementation
+```jsx
+<img
+  src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fb0814f7ff5d24c7a9970474123112e62?format=webp&width=800"
+  alt="FlexWise"
+  className="h-8 w-auto lg:h-10 flex-shrink-0"
+/>
+```
+
+#### Logo Specifications
+- **Source**: Builder.io CDN (no tagline version)
+- **Alt Text**: "FlexWise" (concise)
+- **Size**: `h-8` on mobile, `lg:h-10` on desktop
+- **Width**: `w-auto` to maintain aspect ratio
+- **Flex**: `flex-shrink-0` to prevent compression
+
+#### Header Logo Pattern
+```jsx
+// Standard header with logo
+<header className="bg-background border-b border-border">
+  <div className="flex items-center justify-between px-4 py-3">
+    <div className="flex items-center gap-3">
+      <img
+        src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fb0814f7ff5d24c7a9970474123112e62?format=webp&width=800"
+        alt="FlexWise"
+        className="h-8 w-auto lg:h-10 flex-shrink-0"
+      />
+      <span className="font-semibold text-2xl text-primary">FlexWise</span>
+    </div>
+    {/* Header actions */}
+  </div>
+</header>
+```
+
+#### ✅ Logo DO's
+- Always use the Builder.io CDN source for consistency
+- Always include in header of every dashboard/page
+- Use responsive sizing (`h-8 lg:h-10`)
+- Maintain aspect ratio with `w-auto`
+- Keep alt text simple: "FlexWise"
+
+#### ❌ Logo DON'T's
+```jsx
+// ❌ Don't use local files
+<img src="/logo.png" alt="..." />
+
+// ❌ Don't use extended alt text
+<img alt="FlexWise - Flexible Tools for Smart Schools" />
+
+// ❌ Don't use fixed width
+<img className="h-8 w-20" />
+
+// ❌ Don't omit flex-shrink-0
+<img className="h-8 w-auto" />  // Missing flex-shrink-0
+```
+
+---
+
 ## 🧩 Component Patterns
 
 ### Card Pattern
