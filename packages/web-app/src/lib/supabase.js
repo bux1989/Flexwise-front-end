@@ -475,6 +475,56 @@ export async function getLessonStudentNameIdPairs(lessonId) {
   return { students: [], schoolId: lesson.school_id }
 }
 
+// Fetch single lesson by ID for attendance modal fallback
+export async function fetchSingleLesson(lessonId) {
+  try {
+    console.log('📚 Fetching single lesson:', lessonId);
+
+    const { data: lesson, error } = await supabase
+      .from('vw_react_lesson_details')
+      .select('*')
+      .eq('lesson_id', lessonId)
+      .single();
+
+    if (error) {
+      console.error('❌ Error fetching lesson:', error);
+      return null;
+    }
+
+    if (!lesson) {
+      console.warn('⚠️ No lesson found with ID:', lessonId);
+      return null;
+    }
+
+    // Transform to teacher dashboard lesson format
+    const startTime = new Date(lesson.start_datetime);
+    const endTime = new Date(lesson.end_datetime);
+
+    return {
+      id: lesson.lesson_id,
+      time: startTime.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+      endTime: endTime.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+      subject: lesson.subject_name || 'Unbekannt',
+      class: lesson.class_name || 'Unbekannte Klasse',
+      room: lesson.room_name,
+      location: lesson.room_name,
+      isCurrent: false, // Will be calculated if needed
+      isSubstitute: lesson.lesson_type === 'substitute',
+      isCancelled: lesson.is_cancelled || false,
+      otherTeachers: [],
+      adminComment: lesson.notes,
+      students: [], // Will be populated when needed
+      enrolled: lesson.student_count || 0,
+      attendance: { present: [], late: [], absent: [] },
+      attendanceTaken: lesson.attendance_taken || false
+    };
+
+  } catch (error) {
+    console.error('💥 Error in fetchSingleLesson:', error);
+    return null;
+  }
+}
+
 // RPC call to save attendance via DB function
 export async function fetchLessonDiaryEntry(lessonId) {
   try {
