@@ -218,15 +218,33 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       console.log('📊 Actual contacts data from DB:', contactsData);
       console.log('📊 Organized contacts:', organizedContacts);
 
-      // Auto-create contact record from auth email if it doesn't exist
+      // Auto-create contact record from auth email if it doesn't exist (with duplicate prevention)
       const authEmailExists = contactsData?.some(contact =>
         contact.type === 'email' && contact.value === authUser.email
       );
 
-      if (!authEmailExists) {
+      if (!authEmailExists && authUser.email) {
         console.log('📧 Auth email not found in contacts, creating:', authUser.email);
 
         try {
+          // Double-check for duplicates before inserting
+          const { data: existingContacts, error: checkError } = await supabase
+            .from('contacts')
+            .select('*')
+            .eq('profile_id', profileId)
+            .eq('type', 'email')
+            .eq('value', authUser.email);
+
+          if (checkError) {
+            console.error('💥 Error checking existing contacts:', checkError);
+            return;
+          }
+
+          if (existingContacts && existingContacts.length > 0) {
+            console.log('📧 Auth email already exists, skipping creation');
+            return;
+          }
+
           const { error: insertError } = await supabase
             .from('contacts')
             .insert({
@@ -408,7 +426,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       console.log('📞 Saving contacts for profile:', profileId);
 
       // Use school_id from profile data (secure)
-      console.log('🏫 Using school_id from profile:', userSchoolId);
+      console.log('���� Using school_id from profile:', userSchoolId);
 
       if (!userSchoolId) {
         throw new Error('School ID not found in user profile data');
@@ -722,7 +740,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   };
 
   const removeContact = async (type: 'emails' | 'phones' | 'addresses', id: string) => {
-    // Prevent deletion of auth user email and primary email
+    // Enhanced 2FA-integrated email protection
     if (type === 'emails') {
       const emailToDelete = profile.contacts.emails.find(email => email.id === id);
 
@@ -733,6 +751,22 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       if (emailToDelete?.value === authUser?.email) {
         alert('Diese E-Mail-Adresse kann nicht gelöscht werden, da sie für die Anmeldung verwendet wird.');
         return;
+      }
+
+      // Check 2FA status for additional protection
+      if (isOtpEnabled && emailToDelete?.is_primary) {
+        const confirmMessage = `Achtung: Sie haben Zwei-Faktor-Authentifizierung aktiviert.\n\nDas Löschen der primären E-Mail-Adresse kann Ihre 2FA-Einstellungen beeinträchtigen.\n\nSind Sie sicher, dass Sie fortfahren möchten?`;
+        if (!confirm(confirmMessage)) {
+          return;
+        }
+
+        // Log the security event for audit purposes
+        console.warn('🔒 User deleted primary email while 2FA is enabled:', {
+          deletedEmail: emailToDelete.value,
+          authEmail: authUser?.email,
+          mfaEnabled: isOtpEnabled,
+          timestamp: new Date().toISOString()
+        });
       }
 
       // Prevent deletion of primary email
