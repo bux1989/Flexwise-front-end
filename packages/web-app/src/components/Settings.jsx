@@ -130,15 +130,15 @@ export default function Settings() {
               <DebugOverlay id="SET-001" name="Settings.GeneralData">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 {[
-                  { name: 'Schüler*innen', icon: Users },
-                  { name: 'Mitarbeiter*innen', icon: User },
-                  { name: 'Fächer', icon: Book },
-                  { name: 'Räume', icon: DoorClosed },
-                  { name: 'Klassen', icon: Users },
-                  { name: 'Zugangscodes', icon: Key },
-                  { name: 'Kooperationspartner', icon: Building },
-                  { name: 'Gruppen', icon: UsersRound },
-                  { name: 'Benutzer*innen', icon: User }
+                  { name: 'Schüler*innen', icon: Users, key: 'students' },
+                  { name: 'Mitarbeiter*innen', icon: User, key: 'staff' },
+                  { name: 'Fächer', icon: Book, key: 'subjects' },
+                  { name: 'Räume', icon: DoorClosed, key: 'rooms' },
+                  { name: 'Klassen', icon: Users, key: 'classes' },
+                  { name: 'Zugangscodes', icon: Key, key: 'access-codes' },
+                  { name: 'Kooperationspartner', icon: Building, key: 'partners' },
+                  { name: 'Gruppen', icon: UsersRound, key: 'groups' },
+                  { name: 'Benutzer*innen', icon: User, key: 'users' }
                 ].map((item, index) => {
                   const IconComponent = item.icon;
                   return (
@@ -146,6 +146,7 @@ export default function Settings() {
                       key={index}
                       variant="outline"
                       className="flex items-center gap-3 p-4 h-auto hover:bg-blue-50 hover:border-blue-300 transition-colors justify-start border-gray-200"
+                      onClick={() => setActiveDataComponent(item.key)}
                     >
                       <IconComponent className="w-6 h-6 text-blue-600" />
                       <span className="font-medium">{item.name}</span>
