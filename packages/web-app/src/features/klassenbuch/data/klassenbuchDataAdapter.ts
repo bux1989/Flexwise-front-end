@@ -95,18 +95,41 @@ export function getKlassenbuchSummary() {
 // Import Supabase client
 import { supabase, getCurrentUserProfile } from '../../../lib/supabase.js';
 
+// Cache for user profile to avoid repeated fetches
+let cachedUserProfile: any = null;
+let profileCacheTime: number = 0;
+const PROFILE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 /**
- * Get the current user's school ID
+ * Get the current user's school ID with caching
  * @returns Promise<string | null> - The school ID or null if not found
  */
 export async function getCurrentSchoolId(): Promise<string | null> {
   try {
-    const userProfile = await getCurrentUserProfile();
+    const userProfile = await getCachedUserProfile();
     return userProfile?.school_id || null;
   } catch (error) {
     console.error('💥 Error getting current school ID:', error);
     return null;
   }
+}
+
+/**
+ * Get user profile with caching to avoid repeated database calls
+ */
+async function getCachedUserProfile() {
+  const now = Date.now();
+  
+  // Return cached profile if it's still valid (within 5 minutes)
+  if (cachedUserProfile && (now - profileCacheTime) < PROFILE_CACHE_DURATION) {
+    return cachedUserProfile;
+  }
+  
+  // Fetch fresh profile and cache it
+  cachedUserProfile = await getCurrentUserProfile();
+  profileCacheTime = now;
+  
+  return cachedUserProfile;
 }
 
 /**
@@ -117,8 +140,6 @@ export async function getCurrentSchoolId(): Promise<string | null> {
  */
 export async function getSchedulePeriods(schoolId: string, blockTypes: string[] = ['instructional', 'flex']): Promise<SchedulePeriod[]> {
   try {
-    console.log('📅 Fetching schedule periods for school:', schoolId, 'with block types:', blockTypes);
-
     const { data: periods, error } = await supabase
       .from('schedule_periods')
       .select('*')
@@ -128,17 +149,9 @@ export async function getSchedulePeriods(schoolId: string, blockTypes: string[] 
 
     if (error) {
       console.error('❌ Error fetching schedule periods:', error);
-      console.error('❌ Error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint
-      });
       throw error;
     }
 
-    console.log('✅ Schedule periods fetched:', periods?.length || 0, 'periods');
-    console.log('📋 Raw periods data:', periods);
     return periods || [];
 
   } catch (error) {
@@ -162,8 +175,6 @@ export async function getSchedulePeriods(schoolId: string, blockTypes: string[] 
  */
 export async function getSchoolDays(schoolId: string): Promise<SchoolDay[]> {
   try {
-    console.log('📅 Fetching school days for school:', schoolId);
-
     const { data: schoolDays, error } = await supabase
       .from('structure_school_days')
       .select(`
@@ -182,17 +193,8 @@ export async function getSchoolDays(schoolId: string): Promise<SchoolDay[]> {
 
     if (error) {
       console.error('❌ Error fetching school days:', error);
-      console.error('❌ Error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint
-      });
       throw error;
     }
-
-    console.log('✅ School days fetched:', schoolDays?.length || 0, 'days');
-    console.log('📋 Raw school days data:', schoolDays);
 
     // Transform the data to match our SchoolDay interface
     const transformedDays: SchoolDay[] = (schoolDays || []).map(schoolDay => ({
@@ -278,8 +280,6 @@ interface AttendanceCompletion {
 // Optimized: Batch attendance checking for all lessons at once
 async function batchCheckAttendanceCompletion(lessonIds: string[]): Promise<Map<string, number>> {
   try {
-    console.log('🚀 Batch checking attendance for', lessonIds.length, 'lessons');
-
     if (lessonIds.length === 0) {
       return new Map();
     }
@@ -291,12 +291,7 @@ async function batchCheckAttendanceCompletion(lessonIds: string[]): Promise<Map<
       .in('lesson_id', lessonIds);
 
     if (attendanceError) {
-      console.error('❌ Error fetching batch attendance records:', {
-        message: attendanceError.message,
-        code: attendanceError.code,
-        details: attendanceError.details,
-        hint: attendanceError.hint
-      });
+      console.error('❌ Error fetching batch attendance records:', attendanceError);
       return new Map();
     }
 
@@ -312,7 +307,6 @@ async function batchCheckAttendanceCompletion(lessonIds: string[]): Promise<Map<
       attendanceMap.set(record.lesson_id, current + 1);
     });
 
-    console.log('✅ Batch attendance check completed:', attendanceMap.size, 'lessons processed');
     return attendanceMap;
 
   } catch (error) {
@@ -327,13 +321,11 @@ async function transformDatabaseLessonsOptimized(dbLessons: DatabaseLesson[], sc
     return [];
   }
 
-  console.log('🚀 Starting optimized lesson transformation for', dbLessons.length, 'lessons');
-
-  // Batch attendance checking for lessons that have attendance_taken = true
+  // Only batch attendance checking if we have lessons that need it
   const lessonsWithAttendance = dbLessons.filter(lesson => lesson.attendance_taken);
-  const attendanceCounts = await batchCheckAttendanceCompletion(
-    lessonsWithAttendance.map(lesson => lesson.lesson_id)
-  );
+  const attendanceCounts = lessonsWithAttendance.length > 0 
+    ? await batchCheckAttendanceCompletion(lessonsWithAttendance.map(lesson => lesson.lesson_id))
+    : new Map();
 
   // Transform all lessons using the batched attendance data
   return dbLessons.map(dbLesson => {
@@ -368,8 +360,6 @@ async function transformDatabaseLessonsOptimized(dbLessons: DatabaseLesson[], sc
         } else {
           attendanceStatus = 'incomplete';
         }
-
-        console.log(`📊 ${dbLesson.lesson_id} (${dbLesson.subject_name}): ${studentsWithAttendance}/${totalStudents} = ${attendanceStatus}`);
       } else {
         attendanceStatus = 'missing';
       }
@@ -435,26 +425,31 @@ async function checkAttendanceCompletion(lessonId: string, totalStudents: number
 }
 
 /**
- * Get lessons for a specific class/course for the current week
+ * OPTIMIZED: Get lessons for a specific class/course for the current week
  * @param classId - The class ID (can be 'teacher' for teacher view)
  * @param schoolId - The school ID
  * @param weekStart - Start date of the week
+ * @param schoolDaysData - Pre-fetched school days data (optional)
+ * @param userProfile - Pre-fetched user profile (optional)
  * @returns Promise<Array of lessons>
  */
-export async function getLessonsForWeek(classId: string, schoolId: string, weekStart: Date): Promise<Lesson[]> {
-  // First get the school days to map day numbers to names correctly
-  const schoolDaysData = await getSchoolDays(schoolId);
+export async function getLessonsForWeek(
+  classId: string, 
+  schoolId: string, 
+  weekStart: Date,
+  schoolDaysData?: SchoolDay[],
+  userProfile?: any
+): Promise<Lesson[]> {
   try {
-    console.log('📚 Fetching lessons for class:', classId, 'school:', schoolId, 'week:', weekStart);
-
+    // Use pre-fetched school days or fetch if not provided
+    const schoolDays = schoolDaysData || await getSchoolDays(schoolId);
+    
     // Calculate week range
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
 
     const weekStartStr = weekStart.toISOString().split('T')[0];
     const weekEndStr = weekEnd.toISOString().split('T')[0];
-
-    console.log('📅 Date range:', { weekStartStr, weekEndStr });
 
     let query = supabase
       .from('vw_react_lesson_details')
@@ -464,33 +459,15 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
       .lte('lesson_date', weekEndStr)
       .order('start_datetime', { ascending: true });
 
-    console.log('🔍 Base query setup for school:', schoolId);
-
-    // First, let's check if there are ANY lessons in the database for this school
-    console.log('🧪 Testing if lessons exist in database...');
-    const { data: testLessons, error: testError } = await supabase
-      .from('vw_react_lesson_details')
-      .select('lesson_id, subject_name, class_name, lesson_date')
-      .eq('school_id', schoolId)
-      .limit(5);
-
-    if (testError) {
-      console.error('❌ Test query failed:', testError);
-    } else {
-      console.log('✅ Test query result - total lessons found:', testLessons?.length || 0);
-      console.log('📋 Sample lessons:', testLessons);
-    }
-
     // Filter by class or teacher depending on the view
     if (classId === 'teacher') {
-      // For teacher view, get current user's profile to filter by teacher
-      const userProfile = await getCurrentUserProfile();
-      if (userProfile?.id) {
-        query = query.eq('assigned_teacher_id', userProfile.id);
+      // Use pre-fetched user profile or get from cache
+      const profile = userProfile || await getCachedUserProfile();
+      if (profile?.id) {
+        query = query.eq('assigned_teacher_id', profile.id);
       }
     } else if (classId && !classId.startsWith('course-')) {
       // For class view, filter by class_id
-      // Map our mock class IDs to actual class names or IDs
       const classNameMap: Record<string, string> = {
         '1': '9A',
         '2': '9B',
@@ -507,44 +484,13 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
 
     if (error) {
       console.error('❌ Error fetching lessons:', error);
-      console.error('❌ Error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint
-      });
       throw error;
     }
 
-    console.log('✅ Lessons fetched:', lessons?.length || 0, 'lessons');
-  console.log('📋 Raw lessons data:', lessons);
-  console.log('🔢 Raw lesson periods from DB:', lessons?.map(l => ({
-    lesson_id: l.lesson_id,
-    period_number: l.period_number,
-    block_number: l.block_number,
-    period_label: l.period_label,
-    period_start_time: l.period_start_time,
-    period_end_time: l.period_end_time,
-    day_number: l.lesson_start ? new Date(l.lesson_start).getDay() : 'unknown',
-    lesson_start: l.lesson_start,
-    subject_name: l.subject_name,
-    allAvailableFields: Object.keys(l)
-  })).slice(0, 3)); // Show first 3 lessons to avoid console spam
-
     // Transform database lessons to our Lesson interface with optimized attendance checking
-    const transformedLessons: Lesson[] = await transformDatabaseLessonsOptimized(lessons || [], schoolDaysData);
-
-    console.log('🔄 Transformed lessons:', transformedLessons);
-  console.log('🔢 Transformed lesson periods:', transformedLessons.map(l => ({
-    id: l.id,
-    period: l.period,
-    periodType: typeof l.period,
-    day: l.day,
-    subject: l.subject,
-    startTime: l.startTime,
-    endTime: l.endTime
-  })));
-  return transformedLessons;
+    const transformedLessons: Lesson[] = await transformDatabaseLessonsOptimized(lessons || [], schoolDays);
+    
+    return transformedLessons;
 
   } catch (error) {
     console.error('💥 Error in getLessonsForWeek:', error);
