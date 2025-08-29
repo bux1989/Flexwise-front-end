@@ -312,12 +312,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
   const addContact = (type: 'emails' | 'phones' | 'addresses') => {
     const newContact = {
-      id: Date.now().toString(),
-      type: type === 'emails' ? 'Privat' : type === 'phones' ? 'Mobil' : 'Privat',
+      id: `temp_${Date.now()}`, // Temporary ID for new contacts
+      type: type === 'emails' ? 'Privat' : type === 'phones' ? 'Mobil' : 'Wohnadresse',
       value: '',
-      is_primary: false
+      is_primary: profile.contacts[type].length === 0 // First contact is primary by default
     };
-    
+
     setProfile(prev => ({
       ...prev,
       contacts: {
@@ -332,9 +332,15 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       ...prev,
       contacts: {
         ...prev.contacts,
-        [type]: prev.contacts[type].map(contact => 
-          contact.id === id ? { ...contact, [field]: value } : contact
-        )
+        [type]: prev.contacts[type].map(contact => {
+          // If setting this contact as primary, unset all others as primary
+          if (field === 'is_primary' && value === true) {
+            return contact.id === id
+              ? { ...contact, [field]: value }
+              : { ...contact, is_primary: false };
+          }
+          return contact.id === id ? { ...contact, [field]: value } : contact;
+        })
       }
     }));
   };
@@ -545,8 +551,19 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                {email.is_primary && (
-                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                {isEditing ? (
+                                  <Button
+                                    onClick={() => updateContact('emails', email.id, 'is_primary', !email.is_primary)}
+                                    size="sm"
+                                    variant={email.is_primary ? "default" : "outline"}
+                                    className="h-7 text-xs"
+                                  >
+                                    {email.is_primary ? 'Primär' : 'Als Primär setzen'}
+                                  </Button>
+                                ) : (
+                                  email.is_primary && (
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                  )
                                 )}
                               </div>
                               {isEditing && (
@@ -611,8 +628,19 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                {phone.is_primary && (
-                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                {isEditing ? (
+                                  <Button
+                                    onClick={() => updateContact('phones', phone.id, 'is_primary', !phone.is_primary)}
+                                    size="sm"
+                                    variant={phone.is_primary ? "default" : "outline"}
+                                    className="h-7 text-xs"
+                                  >
+                                    {phone.is_primary ? 'Primär' : 'Als Primär setzen'}
+                                  </Button>
+                                ) : (
+                                  phone.is_primary && (
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                  )
                                 )}
                               </div>
                               {isEditing && (
@@ -677,8 +705,19 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                {address.is_primary && (
-                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                {isEditing ? (
+                                  <Button
+                                    onClick={() => updateContact('addresses', address.id, 'is_primary', !address.is_primary)}
+                                    size="sm"
+                                    variant={address.is_primary ? "default" : "outline"}
+                                    className="h-7 text-xs"
+                                  >
+                                    {address.is_primary ? 'Primär' : 'Als Primär setzen'}
+                                  </Button>
+                                ) : (
+                                  address.is_primary && (
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                  )
                                 )}
                               </div>
                               {isEditing && (
