@@ -389,4 +389,54 @@ When building new functionality, always ask:
 
 ---
 
+## 🎯 Quick Reference Commands
+
+### Create New Feature Structure
+```bash
+# Create new feature directory structure
+mkdir -p packages/web-app/src/features/new-feature/{components,hooks,services,types}
+
+# Move components during migration
+mv src/components/ComponentName.tsx src/features/feature-name/components/
+```
+
+### Development Commands
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Type checking across features
+npm run type-check
+
+# Run specific feature tests
+npm test -- --testPathPattern=features/task-management
+
+# Run all tests
+npm test
+```
+
+### Feature Development Workflow
+```bash
+# 1. Create feature structure
+mkdir -p packages/web-app/src/features/your-feature/{components,hooks,services,types}
+
+# 2. Create main component with debug overlays
+# Edit: packages/web-app/src/features/your-feature/components/YourFeature.tsx
+
+# 3. Create feature exports
+# Edit: packages/web-app/src/features/your-feature/index.ts
+
+# 4. Update main features index
+# Edit: packages/web-app/src/features/index.ts
+
+# 5. Test the feature
+npm run dev
+npm run type-check
+```
+
+---
+
 **The application is now ready for scalable, maintainable development and smooth beta-to-paywall transition!** 🎉
