@@ -255,8 +255,8 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       // Update or insert staff info
       console.log('🏫 Attempting to save staff info:', {
         profile_id: profileId,
-        school_id: authUser.user_metadata?.school_id,
-        user_role: authUser.user_metadata?.role,
+        school_id: userSchoolId,
+        user_role: 'from-profile-data',
         skills: profile.skills,
         kurzung: profile.kurzung || null,
         subjects_stud: profile.subjects_stud
