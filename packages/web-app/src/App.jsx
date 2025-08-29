@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import { supabase, getCurrentUserProfile, getRouteByRole } from './lib/supabase'
+import { shouldShowLoadingScreen, debugPWAStatus } from './utils/pwaHelpers'
 
 // Components
 import Login from './app/auth/login'
@@ -51,8 +52,13 @@ function App() {
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [profileLoading, setProfileLoading] = useState(false)
-  const [showStartupScreen, setShowStartupScreen] = useState(true)
+  const [showStartupScreen, setShowStartupScreen] = useState(shouldShowLoadingScreen())
   const [showLoginTransition, setShowLoginTransition] = useState(false)
+
+  // Debug PWA status on mount
+  useEffect(() => {
+    debugPWAStatus();
+  }, []);
 
   // Profile loading logic
   const loadUserProfile = useCallback(async (user) => {
@@ -125,9 +131,17 @@ function App() {
   }
 
   const renderDashboard = () => {
-    // If profile is loading, show loading state instead of redirecting
+    // If profile is loading, show loading state instead of redirecting (PWA only)
     if (!userProfile && profileLoading) {
-      return <LoadingScreen onComplete={() => setProfileLoading(false)} minDisplayTime={1500} />
+      if (shouldShowLoadingScreen()) {
+        return <LoadingScreen onComplete={() => setProfileLoading(false)} minDisplayTime={1500} />
+      }
+      // For browser, just show a simple loading without full screen
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-lg">Loading...</div>
+        </div>
+      )
     }
 
     // If no profile and not loading, redirect to login
@@ -151,6 +165,13 @@ function App() {
 
   // PWA Startup screen
   useEffect(() => {
+    // Only run startup screen logic if this is a PWA
+    if (!shouldShowLoadingScreen()) {
+      setShowStartupScreen(false)
+      setShowLoginTransition(true)
+      return
+    }
+
     // Start login transition before startup screen ends for crossfade effect
     const loginTransitionTimer = setTimeout(() => {
       setShowLoginTransition(true)
@@ -201,12 +222,12 @@ function App() {
     return () => subscription.unsubscribe()
   }, [loadUserProfile, showLoginTransition])
 
-  // PWA Startup screen
+  // PWA Startup screen (only show on PWA)
   if (showStartupScreen && !showLoginTransition) {
     return <LoadingScreen onComplete={() => setShowStartupScreen(false)} minDisplayTime={2500} />
   }
 
-  // Crossfade transition period - show both screens
+  // Crossfade transition period - show both screens (PWA only)
   if (showStartupScreen && showLoginTransition) {
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
@@ -218,9 +239,17 @@ function App() {
     )
   }
 
-  // Loading state
+  // Loading state (PWA only)
   if (loading) {
-    return <LoadingScreen onComplete={() => setLoading(false)} />
+    if (shouldShowLoadingScreen()) {
+      return <LoadingScreen onComplete={() => setLoading(false)} />
+    }
+    // For browser, just show a simple loading without full screen
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    )
   }
 
   // Main render
