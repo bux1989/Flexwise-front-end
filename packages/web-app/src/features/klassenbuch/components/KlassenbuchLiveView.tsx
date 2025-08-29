@@ -227,7 +227,17 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
   };
 
   const getLessonForSlot = (period: number, day: string) => {
-    return classTimetable.find(lesson => lesson.period === period && lesson.day === day);
+    if (classTimetable.length > 0) {
+      console.log('🔍 Looking for lesson with period:', period, 'day:', day);
+      console.log('📚 Available lessons:', classTimetable.map(l => ({ period: l.period, day: l.day, subject: l.subject })));
+    }
+    const found = classTimetable.find(lesson => lesson.period === period && lesson.day === day);
+    if (found) {
+      console.log('✅ Found lesson:', found);
+    } else {
+      console.log('❌ No lesson found for period:', period, 'day:', day);
+    }
+    return found;
   };
 
   // Handle lesson click - mobile vs desktop behavior
