@@ -390,7 +390,7 @@ async function transformDatabaseLessonsOptimized(dbLessons: DatabaseLesson[], sc
       period: dbLesson.period_number || 1,
       day: dayName,
       time: timeString,
-      subject: dbLesson.subject_abbreviation || (dbLesson.subject_name ? dbLesson.subject_name.substring(0, 2).toUpperCase() : ''),
+      subject: dbLesson.subject_abbreviation || (dbLesson.subject_name ? dbLesson.subject_name.substring(0, 2).toUpperCase() : dbLesson.course_name || ''),
       teacher: (Array.isArray(dbLesson.teacher_names) && dbLesson.teacher_names.length > 0 ? dbLesson.teacher_names[0] : 'N/A'),
       room: dbLesson.room_name || '',
       attendanceStatus,
