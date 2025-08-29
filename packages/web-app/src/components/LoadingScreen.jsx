@@ -38,15 +38,6 @@ export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
         <div className="gradient-orb orb-3"></div>
       </div>
 
-      {/* Floating school icons - Behind main content */}
-      <div className="floating-icons">
-        <div className="floating-icon icon-book">📚</div>
-        <div className="floating-icon icon-pencil">✏️</div>
-        <div className="floating-icon icon-calc">🧮</div>
-        <div className="floating-icon icon-globe">🌍</div>
-        <div className="floating-icon icon-graduate">🎓</div>
-        <div className="floating-icon icon-apple">🍎</div>
-      </div>
 
       {/* Main content */}
       <div className="loading-content">
