@@ -422,7 +422,8 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
   }
 
   return (
-    <TooltipProvider>
+    <DebugOverlay name="KlassenbuchLiveView">
+      <TooltipProvider>
       <div className="space-y-6">
         <div className={`flex items-center ${isMobile ? 'flex-col space-y-4' : 'justify-between'}`}>
           <div className={isMobile ? 'w-full text-center' : ''}>
@@ -681,6 +682,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
           </Dialog>
         )}
       </div>
-    </TooltipProvider>
+      </TooltipProvider>
+    </DebugOverlay>
   );
 }
