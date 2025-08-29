@@ -209,12 +209,12 @@ function App() {
   // Crossfade transition period - show both screens
   if (showStartupScreen && showLoginTransition) {
     return (
-      <>
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
         <LoadingScreen onComplete={() => setShowStartupScreen(false)} minDisplayTime={2500} />
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10000 }}>
           <Login />
         </div>
-      </>
+      </div>
     )
   }
 
