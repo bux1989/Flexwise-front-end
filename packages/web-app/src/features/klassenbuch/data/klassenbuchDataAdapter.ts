@@ -349,11 +349,15 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
   console.log('🔢 Raw lesson periods from DB:', lessons?.map(l => ({
     lesson_id: l.lesson_id,
     period_number: l.period_number,
-    period_number_type: typeof l.period_number,
+    block_number: l.block_number,
+    period_label: l.period_label,
+    period_start_time: l.period_start_time,
+    period_end_time: l.period_end_time,
     day_number: l.lesson_start ? new Date(l.lesson_start).getDay() : 'unknown',
     lesson_start: l.lesson_start,
-    subject_name: l.subject_name
-  })));
+    subject_name: l.subject_name,
+    allAvailableFields: Object.keys(l)
+  })).slice(0, 3)); // Show first 3 lessons to avoid console spam
 
     // Transform database lessons to our Lesson interface
     const transformedLessons: Lesson[] = (lessons || []).map(dbLesson => transformDatabaseLesson(dbLesson, schoolDaysData));
