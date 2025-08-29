@@ -199,6 +199,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         organizedContacts[contactCategory].push(contactItem);
       });
 
+      // Debug logging after all data is loaded
+      console.log('📊 Actual profile data from DB:', profileData);
+      console.log('📊 Actual staff data from DB:', staffData);
+      console.log('📊 Actual contacts data from DB:', contactsData);
+      console.log('📊 Organized contacts:', organizedContacts);
+
       // Set profile state with fallback mock data if needed
       setProfile({
         first_name: profileData?.first_name || 'Clarissa',
