@@ -85,6 +85,23 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   // Track if we're currently creating contact to prevent race conditions
   const [isCreatingContact, setIsCreatingContact] = useState(false);
 
+  // Global contact creation tracker to prevent multiple instances from creating duplicates
+  const getContactCreationKey = (profileId: string, email: string) => `creating_${profileId}_${email}`;
+
+  const isGloballyCreatingContact = (profileId: string, email: string) => {
+    const key = getContactCreationKey(profileId, email);
+    return localStorage.getItem(key) === 'true';
+  };
+
+  const setGloballyCreatingContact = (profileId: string, email: string, isCreating: boolean) => {
+    const key = getContactCreationKey(profileId, email);
+    if (isCreating) {
+      localStorage.setItem(key, 'true');
+    } else {
+      localStorage.removeItem(key);
+    }
+  };
+
   // Load profile data from Supabase
   useEffect(() => {
     loadProfileData();
