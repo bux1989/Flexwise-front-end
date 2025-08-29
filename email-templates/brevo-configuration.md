@@ -23,11 +23,11 @@
 ## 🎨 Template Variables in Brevo
 
 **Required Variables:**
-- `{{contact.EMAIL}}` - User's email address
+- `{{params.USER_NAME}}` - User's full name (e.g., "Clarissa Döbel")
 - `{{params.RESET_URL}}` - Password reset URL from Supabase
 
 **Make sure to configure these in your Brevo template settings:**
-- Contact attribute: `EMAIL` 
+- Template parameter: `USER_NAME`
 - Template parameter: `RESET_URL`
 
 ## 🔧 Supabase Integration
