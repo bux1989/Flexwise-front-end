@@ -451,6 +451,94 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
     }
   };
 
+  const saveProfileWithFunction = async (profileId: string) => {
+    try {
+      console.log('📞 Saving profile with PostgreSQL function:', profileId);
+
+      // Get auth user email to preserve login connection
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const authEmail = authUser?.email;
+
+      // Prepare profile data
+      const profileData = {
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        date_of_birth: profile.date_of_birth || null,
+        gender: profile.gender || null,
+        profile_picture_url: profile.profile_picture_url || null
+      };
+
+      // Prepare staff data
+      const staffData = {
+        skills: profile.skills,
+        kurzung: profile.kurzung || null,
+        subjects_stud: profile.subjects_stud
+      };
+
+      // Prepare contacts data with IDs and proper format
+      const contactsData = [];
+
+      profile.contacts.emails.forEach(email => {
+        contactsData.push({
+          id: email.id,
+          type: 'email',
+          label: email.type,
+          value: email.value,
+          is_primary: email.is_primary,
+          is_linked_to_user_login: email.value === authEmail
+        });
+      });
+
+      profile.contacts.phones.forEach(phone => {
+        contactsData.push({
+          id: phone.id,
+          type: 'phone',
+          label: phone.type,
+          value: phone.value,
+          is_primary: phone.is_primary,
+          is_linked_to_user_login: false
+        });
+      });
+
+      profile.contacts.addresses.forEach(address => {
+        contactsData.push({
+          id: address.id,
+          type: 'address',
+          label: address.type,
+          value: address.value,
+          is_primary: address.is_primary,
+          is_linked_to_user_login: false
+        });
+      });
+
+      console.log('📝 Calling PostgreSQL function with data:', {
+        profileData,
+        staffData,
+        contactsCount: contactsData.length
+      });
+
+      // Call the PostgreSQL function
+      const { data, error } = await supabase.rpc('save_user_profile_complete_react', {
+        p_profile_id: profileId,
+        p_profile_data: profileData,
+        p_staff_data: staffData,
+        p_contacts: contactsData
+      });
+
+      if (error) {
+        console.error('❌ PostgreSQL function error:', error);
+        throw new Error('Failed to save profile: ' + error.message);
+      }
+
+      console.log('✅ Profile saved successfully via PostgreSQL function:', data);
+      return data;
+
+    } catch (error) {
+      console.error('💥 Error in saveProfileWithFunction:', error);
+      throw error;
+    }
+  };
+
   const saveContacts = async (profileId: string) => {
     try {
       console.log('📞 Saving contacts for profile:', profileId);
