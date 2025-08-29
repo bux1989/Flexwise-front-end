@@ -231,7 +231,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
               <span className="font-semibold text-2xl text-primary">FlexWise</span>
             </button>
             <div className="hidden md:block">
-              <span className="text-lg text-foreground">Hallo {user?.name || 'Father Müller'}</span>
+              <span className="text-lg text-foreground">Hallo {user?.name || 'Father M��ller'}</span>
             </div>
           </div>
           
@@ -263,12 +263,12 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                 onClick={() => setParentProfileModalOpen(true)}
                 title="Mein Profil"
               >
-                <User className="h-5 w-5 text-gray-600" />
+                <User className="h-5 w-5 text-muted-foreground" />
               </Button>
               
               {/* Logout Icon */}
-              <Button variant="ghost" size="sm" className="hover:bg-red-100">
-                <LogOut className="h-5 w-5 text-red-600" />
+              <Button variant="ghost" size="sm" className="hover:bg-destructive/10">
+                <LogOut className="h-5 w-5 text-destructive" />
               </Button>
             </div>
           </div>
