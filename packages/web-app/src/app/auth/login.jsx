@@ -69,7 +69,8 @@ export default function Login() {
               <img
                 src="/logo.png"
                 alt="FlexWise - Flexible Tools for Smart Schools"
-                className="h-16 w-auto"
+                className="w-auto"
+                style={{ height: '114px' }}
               />
             </div>
 
