@@ -79,7 +79,8 @@ export function ExcuseEditModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <DebugOverlay name="ExcuseEditModal">
+      <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
@@ -167,6 +168,7 @@ export function ExcuseEditModal({
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+    </DebugOverlay>
   );
 }
