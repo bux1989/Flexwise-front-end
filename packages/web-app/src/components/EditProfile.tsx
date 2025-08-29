@@ -379,63 +379,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         throw new Error('Failed to update profile: ' + profileError.message);
       }
 
-      // Update or insert staff info
-      console.log('🏫 Attempting to save staff info:', {
-        profile_id: profileId,
-        school_id: userSchoolId,
-        user_role: 'from-profile-data',
-        skills: profile.skills,
-        kurzung: profile.kurzung || null,
-        subjects_stud: profile.subjects_stud
-      });
-
-      // Check if staff record exists first
-      const { data: existingStaff, error: checkError } = await supabase
-        .from('profile_info_staff')
-        .select('profile_id')
-        .eq('profile_id', profileId)
-        .single();
-
-      if (checkError && checkError.code !== 'PGRST116') {
-        console.error('❌ Error checking existing staff record:', checkError);
-        throw new Error('Failed to check staff info: ' + checkError.message);
-      }
-
-      const staffData = {
-        profile_id: profileId,
-        school_id: userSchoolId,
-        skills: profile.skills,
-        kurzung: profile.kurzung || null,
-        subjects_stud: profile.subjects_stud
-      };
-
-      let staffError;
-      if (existingStaff) {
-        // Update existing record
-        const result = await supabase
-          .from('profile_info_staff')
-          .update(staffData)
-          .eq('profile_id', profileId);
-        staffError = result.error;
-      } else {
-        // Insert new record
-        const result = await supabase
-          .from('profile_info_staff')
-          .insert(staffData);
-        staffError = result.error;
-      }
-
-      if (staffError) {
-        console.error('❌ Staff info save error:', {
-          code: staffError.code,
-          message: staffError.message,
-          details: staffError.details,
-          hint: staffError.hint
-        });
-        throw new Error('Failed to update staff info: ' + staffError.message);
-      }
-
-      // Save using PostgreSQL function (includes contacts)
+      // Save everything using PostgreSQL function (profile, staff, and contacts)
       await saveProfileWithFunction(profileId);
 
       setIsEditing(false);
