@@ -75,7 +75,7 @@ function App() {
         console.error('❌ No profile_id in user metadata for:', user.email)
         console.log('🔍 User metadata:', user.user_metadata)
         const fallbackProfile = createFallbackProfile(user, DEFAULT_ROLE)
-        console.log('��� Using fallback profile:', fallbackProfile)
+        console.log('🚨 Using fallback profile:', fallbackProfile)
         setUserProfile(fallbackProfile)
         return
       }
@@ -121,7 +121,7 @@ function App() {
     } catch (error) {
       console.error('💥 Profile load error:', error)
       const fallbackProfile = createFallbackProfile(user, DEFAULT_ROLE)
-      console.log('🚨 Using fallback profile due to error:', fallbackProfile)
+      console.log('���� Using fallback profile due to error:', fallbackProfile)
       setUserProfile(fallbackProfile)
     } finally {
       setLoading(false)
@@ -264,6 +264,7 @@ function App() {
           {!session ? (
             <Routes>
               <Route path="/auth/login" element={<Login />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/auth/reset-password" element={<ResetPassword />} />
               <Route path="/" element={<Login />} />
               <Route path="*" element={<Navigate to="/auth/login" replace />} />
