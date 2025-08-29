@@ -25,6 +25,7 @@ import {
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('contact')
+  const [activeDataComponent, setActiveDataComponent] = useState(null)
 
   return (
     <div className="space-y-6">
