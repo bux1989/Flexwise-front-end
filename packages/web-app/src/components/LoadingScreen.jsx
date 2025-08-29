@@ -66,8 +66,8 @@ export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
         <div className="logo-container">
           <div className="logo-wrapper">
             <img
-              src="/logo.png"
-              alt="FlexWise"
+              src="/flexwise-logo-with-tagline.png"
+              alt="FlexWise - Flexible Tools for Smart Schools"
               className="main-logo"
             />
           </div>
