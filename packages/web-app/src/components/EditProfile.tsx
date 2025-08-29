@@ -1186,6 +1186,26 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                     {/* All Input Fields in Aligned Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="space-y-2">
+                        <Label htmlFor="first_name">Vorname</Label>
+                        <Input
+                          id="first_name"
+                          value={profile.first_name}
+                          onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
+                          disabled={!isEditing}
+                          className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="last_name">Nachname</Label>
+                        <Input
+                          id="last_name"
+                          value={profile.last_name}
+                          onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
+                          disabled={!isEditing}
+                          className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
+                        />
+                      </div>
+                      <div className="space-y-2">
                         <Label htmlFor="date_of_birth">Geburtsdatum</Label>
                         <Input
                           id="date_of_birth"
@@ -1207,7 +1227,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                               <SelectValue placeholder="Geschlecht auswählen" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Männlich">Männlich</SelectItem>
+                              <SelectItem value="M��nnlich">Männlich</SelectItem>
                               <SelectItem value="Weiblich">Weiblich</SelectItem>
                               <SelectItem value="Divers">Divers</SelectItem>
                               <SelectItem value="Keine Angabe">Keine Angabe</SelectItem>
@@ -1641,7 +1661,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                                 <div className="space-y-2 opacity-75">
                                   <Label htmlFor="otp-email">E-Mail OTP</Label>
                                   <p className="text-xs text-orange-600 mb-1">
-                                    ⚠️ Möglicherweise nicht verfügbar (Konfigurationsproblem)
+                                    ⚠��� Möglicherweise nicht verfügbar (Konfigurationsproblem)
                                   </p>
                                   <div className="flex gap-2">
                                     <Input
