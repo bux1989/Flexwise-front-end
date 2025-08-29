@@ -346,6 +346,20 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   };
 
   const removeContact = (type: 'emails' | 'phones' | 'addresses', id: string) => {
+    // Prevent deletion of primary email
+    if (type === 'emails') {
+      const emailToDelete = profile.contacts.emails.find(email => email.id === id);
+      if (emailToDelete?.is_primary) {
+        alert('Die primäre E-Mail-Adresse kann nicht gelöscht werden. Setzen Sie zunächst eine andere E-Mail als primär.');
+        return;
+      }
+      // Also prevent deletion if it's the only email
+      if (profile.contacts.emails.length <= 1) {
+        alert('Sie müssen mindestens eine E-Mail-Adresse haben.');
+        return;
+      }
+    }
+
     setProfile(prev => ({
       ...prev,
       contacts: {
@@ -567,14 +581,26 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 )}
                               </div>
                               {isEditing && (
-                                <Button
-                                  onClick={() => removeContact('emails', email.id)}
-                                  size="sm"
-                                  variant="ghost"
-                                  className="text-red-600 hover:text-red-700 h-8 w-8 p-0"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                                email.is_primary || profile.contacts.emails.length <= 1 ? (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="text-gray-400 h-8 w-8 p-0 cursor-not-allowed"
+                                    disabled
+                                    title={email.is_primary ? "Primäre E-Mail kann nicht gelöscht werden" : "Mindestens eine E-Mail ist erforderlich"}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    onClick={() => removeContact('emails', email.id)}
+                                    size="sm"
+                                    variant="ghost"
+                                    className="text-red-600 hover:text-red-700 h-8 w-8 p-0"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                )
                               )}
                             </div>
                           </div>
