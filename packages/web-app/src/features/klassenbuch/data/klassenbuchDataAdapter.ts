@@ -235,3 +235,204 @@ export function formatTime(timeString: string): string {
 export function formatTimeSlot(period: SchedulePeriod): string {
   return `${formatTime(period.start_time)}-${formatTime(period.end_time)}`;
 }
+
+// Interface for database lesson data
+interface DatabaseLesson {
+  lesson_id: string;
+  subject_name: string;
+  class_name: string;
+  room_name: string;
+  start_datetime: string;
+  end_datetime: string;
+  lesson_type: 'regular' | 'cancelled' | 'substitute';
+  is_cancelled: boolean;
+  teacher_names: string[];
+  period_number: number;
+  period_label: string;
+  attendance_taken: boolean;
+  school_id: string;
+  lesson_date: string;
+  subject_abbreviation?: string;
+  subject_color?: string;
+  class_id?: string;
+  course_id?: string;
+}
+
+/**
+ * Get lessons for a specific class/course for the current week
+ * @param classId - The class ID (can be 'teacher' for teacher view)
+ * @param schoolId - The school ID
+ * @param weekStart - Start date of the week
+ * @returns Promise<Array of lessons>
+ */
+export async function getLessonsForWeek(classId: string, schoolId: string, weekStart: Date): Promise<Lesson[]> {
+  try {
+    console.log('📚 Fetching lessons for class:', classId, 'school:', schoolId, 'week:', weekStart);
+
+    // Calculate week range
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    let query = supabase
+      .from('vw_react_lesson_details')
+      .select('*')
+      .eq('school_id', schoolId)
+      .gte('lesson_date', weekStart.toISOString().split('T')[0])
+      .lte('lesson_date', weekEnd.toISOString().split('T')[0])
+      .order('start_datetime', { ascending: true });
+
+    // Filter by class or teacher depending on the view
+    if (classId === 'teacher') {
+      // For teacher view, get current user's profile to filter by teacher
+      const userProfile = await getCurrentUserProfile();
+      if (userProfile?.id) {
+        query = query.eq('assigned_teacher_id', userProfile.id);
+      }
+    } else if (classId && !classId.startsWith('course-')) {
+      // For class view, filter by class_id
+      // Map our mock class IDs to actual class names or IDs
+      const classNameMap: Record<string, string> = {
+        '1': '9A',
+        '2': '9B',
+        '3': '10A'
+      };
+      const className = classNameMap[classId] || classId;
+      query = query.eq('class_name', className);
+    } else if (classId.startsWith('course-')) {
+      // For course view, filter by course_id
+      query = query.eq('course_id', classId);
+    }
+
+    const { data: lessons, error } = await query;
+
+    if (error) {
+      console.error('❌ Error fetching lessons:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      throw error;
+    }
+
+    console.log('✅ Lessons fetched:', lessons?.length || 0, 'lessons');
+    console.log('📋 Raw lessons data:', lessons);
+
+    // Transform database lessons to our Lesson interface
+    const transformedLessons: Lesson[] = (lessons || []).map(dbLesson => transformDatabaseLesson(dbLesson));
+
+    console.log('🔄 Transformed lessons:', transformedLessons);
+    return transformedLessons;
+
+  } catch (error) {
+    console.error('💥 Error in getLessonsForWeek:', error);
+    return []; // Return empty array on error to prevent UI from breaking
+  }
+}
+
+/**
+ * Transform database lesson to our Lesson interface
+ * @param dbLesson - Database lesson from vw_react_lesson_details
+ * @returns Transformed lesson
+ */
+function transformDatabaseLesson(dbLesson: DatabaseLesson): Lesson {
+  const now = new Date();
+  const lessonStart = new Date(dbLesson.start_datetime);
+  const lessonEnd = new Date(dbLesson.end_datetime);
+
+  // Determine if lesson is past, ongoing, or future
+  const isPast = lessonEnd < now;
+  const isOngoing = lessonStart <= now && lessonEnd >= now;
+
+  // Get day name in German
+  const dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  const dayName = dayNames[lessonStart.getDay()];
+
+  // Format time
+  const timeString = `${lessonStart.toTimeString().substring(0, 5)}-${lessonEnd.toTimeString().substring(0, 5)}`;
+
+  // Determine attendance status
+  let attendanceStatus: 'complete' | 'missing' | 'incomplete' | 'future' = 'future';
+  if (isPast) {
+    attendanceStatus = dbLesson.attendance_taken ? 'complete' : 'missing';
+  } else if (isOngoing) {
+    attendanceStatus = dbLesson.attendance_taken ? 'complete' : 'incomplete';
+  }
+
+  // Determine status
+  let status: 'normal' | 'cancelled' | 'room_changed' | 'teacher_changed' = 'normal';
+  if (dbLesson.is_cancelled) {
+    status = 'cancelled';
+  } else if (dbLesson.lesson_type === 'substitute') {
+    status = 'teacher_changed';
+  }
+
+  // Get subject color (fallback to default colors)
+  const subjectColors: Record<string, string> = {
+    'Deutsch': 'bg-emerald-100 text-emerald-800',
+    'Mathematik': 'bg-green-100 text-green-800',
+    'Englisch': 'bg-blue-100 text-blue-800',
+    'DAZ': 'bg-red-100 text-red-800',
+    'Sport': 'bg-yellow-100 text-yellow-800',
+    'Physik': 'bg-cyan-100 text-cyan-800',
+    'Chemie': 'bg-violet-100 text-violet-800',
+    'Biologie': 'bg-lime-100 text-lime-800',
+    'Geschichte': 'bg-amber-100 text-amber-800',
+    'Musik': 'bg-pink-100 text-pink-800',
+    'Kunst': 'bg-orange-100 text-orange-800',
+    'Ethik': 'bg-teal-100 text-teal-800',
+    'Französisch': 'bg-rose-100 text-rose-800',
+    'Politik': 'bg-red-100 text-red-800'
+  };
+
+  const subjectColor = subjectColors[dbLesson.subject_name] || 'bg-gray-100 text-gray-800';
+
+  return {
+    id: dbLesson.lesson_id,
+    period: dbLesson.period_number,
+    day: dayName,
+    time: timeString,
+    subject: dbLesson.subject_abbreviation || dbLesson.subject_name,
+    teacher: dbLesson.teacher_names.join(', ') || '',
+    room: dbLesson.room_name || '',
+    attendanceStatus,
+    isPast,
+    isOngoing,
+    subjectColor,
+    status,
+    adminComment: undefined, // Could be added from lesson notes if needed
+    classId: dbLesson.class_id || dbLesson.course_id || ''
+  };
+}
+
+/**
+ * Replace the mock getTimetableForClass function with database-driven version
+ * @param classId - The class ID
+ * @param weekStart - Optional week start date (defaults to current week)
+ * @returns Promise<Array of lessons>
+ */
+export async function getTimetableForClassFromDB(classId: string, weekStart?: Date): Promise<Lesson[]> {
+  const schoolId = await getCurrentSchoolId();
+  if (!schoolId) {
+    console.error('❌ No school ID found');
+    return [];
+  }
+
+  const week = weekStart || getStartOfWeek(new Date());
+  return getLessonsForWeek(classId, schoolId, week);
+}
+
+/**
+ * Get start of week (Monday) for a given date
+ * @param date - The date to get the week start for
+ * @returns Date representing the start of the week (Monday)
+ */
+function getStartOfWeek(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+  d.setDate(diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
