@@ -779,6 +779,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         const rawPhone = otpPhone || profile.contacts.phones.find(p => p.is_primary)?.value;
         const formattedPhone = formatPhoneNumber(rawPhone);
 
+        console.log('Verifying SMS OTP:', {
+          rawPhone,
+          formattedPhone,
+          code: otpCode
+        });
+
         const { error } = await supabase.auth.verifyOtp({
           phone: formattedPhone,
           token: otpCode,
@@ -787,15 +793,24 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
         if (error) {
           console.error('Error verifying SMS OTP:', error);
+          console.error('SMS verification error details:', {
+            message: error.message,
+            status: error.status,
+            statusCode: error.statusCode
+          });
+
           if (error.message.includes('expired')) {
-            alert('Der Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.');
-          } else if (error.message.includes('invalid')) {
-            alert('Ungültiger Code. Bitte überprüfen Sie Ihre Eingabe.');
+            alert('Der SMS-Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.');
+          } else if (error.message.includes('invalid') || error.message.includes('Invalid')) {
+            alert('Ungültiger SMS-Code. Bitte überprüfen Sie:\n• Den 6-stelligen Code korrekt eingegeben\n• Der Code ist noch gültig (nicht älter als 10 Minuten)');
+          } else if (error.message.includes('too many')) {
+            alert('Zu viele Versuche. Bitte warten Sie und fordern Sie einen neuen Code an.');
           } else {
-            alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
+            alert(`SMS-Verifizierung fehlgeschlagen: ${error.message}`);
           }
         } else {
-          alert('SMS-OTP erfolgreich aktiviert!');
+          console.log('SMS OTP verification successful');
+          alert('🎉 SMS-OTP erfolgreich aktiviert! Zwei-Faktor-Authentifizierung ist jetzt über SMS aktiv.');
           setIsOtpEnabled(true);
           setShowOtpSetup(false);
           setOtpCode('');
