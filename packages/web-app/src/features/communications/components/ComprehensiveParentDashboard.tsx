@@ -224,10 +224,10 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <img
-                src="/logo.png"
-                alt="FlexWise - Flexible Tools for Smart Schools"
-                className="h-10 w-auto"
-              />
+              src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fb0814f7ff5d24c7a9970474123112e62?format=webp&width=800"
+              alt="FlexWise"
+              className="h-8 w-auto lg:h-10 flex-shrink-0"
+            />
               <span className="font-semibold text-2xl text-primary">FlexWise</span>
             </button>
             <div className="hidden md:block">
