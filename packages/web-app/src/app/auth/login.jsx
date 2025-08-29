@@ -32,7 +32,7 @@ export default function Login() {
   return (
     <>
       <PWAInstallBannerWithInstructions />
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden animate-fade-in">
       {/* Subtle school-themed background icons */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top left area */}
