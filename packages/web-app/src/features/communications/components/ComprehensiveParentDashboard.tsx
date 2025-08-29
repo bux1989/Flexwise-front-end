@@ -14,6 +14,9 @@ import { ParentProfileModal } from './ParentProfileModal';
 // Import mock data from shared package
 import { PARENT_CHILDREN, PARENT_NEWS, PARENT_APPOINTMENTS } from '../../../../../shared/data/mockData';
 
+// Debug system
+import { DebugOverlay } from '../../../debug';
+
 interface PendingRequest {
   id: number;
   name: string;
@@ -206,9 +209,10 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <DebugOverlay name="ComprehensiveParentDashboard" className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-50">
+      <DebugOverlay name="Header">
+        <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <Button
@@ -272,9 +276,11 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
             </div>
           </div>
         </div>
-      </header>
+        </header>
+      </DebugOverlay>
 
-      <div className="flex">
+      <DebugOverlay name="MainContent">
+        <div className="flex">
         {/* Sidebar */}
         <aside className={`
           fixed lg:static inset-y-0 left-0 z-40 w-80 bg-card border-r border-border transform transition-transform duration-300 ease-in-out shadow-lg lg:shadow-none
@@ -878,7 +884,8 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
             )}
           </div>
         </main>
-      </div>
+        </div>
+      </DebugOverlay>
 
       {/* Add Child Modal */}
       <AddChildModal 
@@ -909,7 +916,8 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
       />
 
       {/* Footer */}
-      <footer className="bg-background border-t border-border py-6">
+      <DebugOverlay name="Footer">
+        <footer className="bg-background border-t border-border py-6">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-end">
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -923,7 +931,8 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
             </div>
           </div>
         </div>
-      </footer>
-    </div>
+        </footer>
+      </DebugOverlay>
+    </DebugOverlay>
   );
 }
