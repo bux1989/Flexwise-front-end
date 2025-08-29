@@ -269,16 +269,10 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
           {/* Parents */}
           <Card className="border-l-4 border-l-blue-500">
             <CardHeader className="bg-blue-50 border-b border-blue-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-blue-600" />
-                  Eltern / Erziehungsberechtigte
-                </CardTitle>
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Hinzufügen
-                </Button>
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-blue-600" />
+                Eltern / Erziehungsberechtigte
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {student.parents && student.parents.length > 0 ? (
