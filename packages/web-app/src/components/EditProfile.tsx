@@ -564,18 +564,50 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
     }
   };
 
+  // Helper function to format phone number to E.164 format
+  const formatPhoneNumber = (phone: string) => {
+    // Remove all non-digit characters
+    const cleaned = phone.replace(/\D/g, '');
+
+    // If it starts with 00, replace with +
+    if (cleaned.startsWith('00')) {
+      return '+' + cleaned.substring(2);
+    }
+
+    // If it starts with 0 (German format), add German country code
+    if (cleaned.startsWith('0') && cleaned.length >= 10) {
+      return '+49' + cleaned.substring(1);
+    }
+
+    // If it doesn't start with +, assume German number and add country code
+    if (!phone.startsWith('+')) {
+      return '+49' + cleaned;
+    }
+
+    return phone;
+  };
+
   // Send OTP code via SMS
   const sendSmsOtp = async () => {
     setIsSendingOtp(true);
     try {
-      const phone = otpPhone || profile.contacts.phones.find(p => p.is_primary)?.value;
-      if (!phone) {
+      const rawPhone = otpPhone || profile.contacts.phones.find(p => p.is_primary)?.value;
+      if (!rawPhone) {
         alert('Keine Telefonnummer gefunden. Bitte geben Sie eine Telefonnummer ein.');
         return;
       }
 
+      // Format phone number to E.164 format
+      const formattedPhone = formatPhoneNumber(rawPhone);
+
+      // Validate phone number format
+      if (!/^\+[1-9]\d{1,14}$/.test(formattedPhone)) {
+        alert('Ungültiges Telefonnummer-Format. Bitte verwenden Sie das internationale Format (z.B. +49123456789).');
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithOtp({
-        phone: phone,
+        phone: formattedPhone,
         options: {
           shouldCreateUser: false
         }
@@ -583,9 +615,16 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
       if (error) {
         console.error('Error sending SMS OTP:', error);
-        alert('Fehler beim Senden der SMS: ' + error.message);
+        // Provide more specific error messages
+        if (error.message.includes('422')) {
+          alert('Ungültiges Telefonnummer-Format. Bitte verwenden Sie das internationale Format (z.B. +49123456789).');
+        } else if (error.message.includes('rate limit')) {
+          alert('Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
+        } else {
+          alert('Fehler beim Senden der SMS: ' + error.message);
+        }
       } else {
-        alert(`OTP-Code wurde an ${phone} gesendet!`);
+        alert(`OTP-Code wurde an ${formattedPhone} gesendet!`);
         setOtpMethod('sms');
       }
     } catch (error) {
