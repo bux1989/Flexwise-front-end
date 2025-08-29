@@ -224,6 +224,7 @@ packages/web-app/src/
 - Import fonts when Tailwind fonts are configured
 - Create new input components when `components/ui/input.tsx` exists
 - Duplicate existing layout patterns
+- **FORGET debug overlays on new components**
 
 ✅ **DO:**
 - Reuse existing components from `components/ui/`
@@ -232,6 +233,7 @@ packages/web-app/src/
 - Follow existing responsive patterns
 - Check shared package for utilities before creating new ones
 - Maintain consistent spacing and sizing
+- **ADD debug overlays to ALL new components**
 
 #### 8. Pre-Import Checklist
 Before creating ANY new component from Figma:
@@ -242,14 +244,17 @@ Before creating ANY new component from Figma:
 - [ ] Plan component hierarchy and props interface
 - [ ] Identify reusable patterns vs one-off designs
 - [ ] Map Figma design to existing Tailwind classes
+- [ ] **Plan debug overlay structure and IDs**
 
 #### 9. Integration Process
 1. **Analyze** the Figma design for existing patterns
 2. **Map** design elements to existing components
 3. **Identify** new components that are actually needed
 4. **Create** only net-new functionality
-5. **Test** responsive behavior matches existing patterns
-6. **Verify** accessibility standards are maintained
+5. **Add debug overlays** with systematic IDs
+6. **Test** responsive behavior matches existing patterns
+7. **Verify** accessibility standards are maintained
+8. **Test debug overlays** are working correctly
 
 #### 10. Design System Consistency
 - **Button variants**: Use existing button component with new variants
@@ -269,14 +274,63 @@ ls packages/web-app/src/components/ui/
 # - Does it extend existing Dashboard?
 # - Can I reuse existing Card component?
 # - Are the buttons using existing Button component?
+# - What debug ID prefix should I use?
 
 # 3. Create only what's needed
 # - Reuse components/ui/card.tsx
 # - Reuse components/ui/button.tsx
 # - Create new DashboardStats.tsx that composes existing components
+# - Add DebugOverlay with DST-014 (DashboardStats main) and DST-001, DST-002 for sections
 ```
 
+## 🐛 Debug Overlay Requirements
+
+**MANDATORY**: All new components must include debug overlays
+
+```tsx
+// Import debug overlay in every new component
+import { DebugOverlay } from '../debug';
+
+// Example: DashboardStats.tsx
+export function DashboardStats() {
+  return (
+    <DebugOverlay id="DST-014" name="DashboardStats">
+      <div className="dashboard-stats">
+        <DebugOverlay id="DST-001" name="DashboardStats.Header">
+          <header>Statistics Header</header>
+        </DebugOverlay>
+
+        <DebugOverlay id="DST-002" name="DashboardStats.Grid">
+          <div className="stats-grid">
+            {/* Stats grid content */}
+          </div>
+        </DebugOverlay>
+
+        <DebugOverlay id="DST-003" name="DashboardStats.Actions">
+          <div className="actions">
+            {/* Action buttons */}
+          </div>
+        </DebugOverlay>
+      </div>
+    </DebugOverlay>
+  );
+}
+```
+
+**Debug ID Convention:**
+- Main component: `{PREFIX}-014` (component identifier)
+- Sections: `{PREFIX}-001`, `{PREFIX}-002`, etc.
+- Prefixes: 3-letter codes based on component name
+- Names: `{ComponentName}.{SectionDescription}`
+
 **Remember**: The goal is to EXTEND the existing design system, not replace it!
+
+**Debug Overlay Checklist for Figma Imports:**
+- [ ] Main component wrapped with debug overlay
+- [ ] Major sections have individual debug overlays
+- [ ] Systematic ID naming used
+- [ ] Debug overlays tested in debug mode
+- [ ] No layout disruption from debug overlays
 
 ## Testing the Build
 ```bash
