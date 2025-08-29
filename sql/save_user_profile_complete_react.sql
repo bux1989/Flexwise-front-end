@@ -59,17 +59,17 @@ BEGIN
     ) VALUES (
       p_profile_id,
       v_school_id,
-      COALESCE((p_staff_data->'skills')::TEXT[], ARRAY[]::TEXT[]),
+      COALESCE(ARRAY(SELECT jsonb_array_elements_text(p_staff_data->'skills')), ARRAY[]::TEXT[]),
       p_staff_data->>'kurzung',
-      COALESCE((p_staff_data->'subjects_stud')::TEXT[], ARRAY[]::TEXT[]),
+      COALESCE(ARRAY(SELECT jsonb_array_elements_text(p_staff_data->'subjects_stud')), ARRAY[]::TEXT[]),
       NOW(),
       NOW()
     )
     ON CONFLICT (profile_id)
     DO UPDATE SET
-      skills = COALESCE((p_staff_data->'skills')::TEXT[], ARRAY[]::TEXT[]),
+      skills = COALESCE(ARRAY(SELECT jsonb_array_elements_text(p_staff_data->'skills')), ARRAY[]::TEXT[]),
       kurzung = p_staff_data->>'kurzung',
-      subjects_stud = COALESCE((p_staff_data->'subjects_stud')::TEXT[], ARRAY[]::TEXT[]),
+      subjects_stud = COALESCE(ARRAY(SELECT jsonb_array_elements_text(p_staff_data->'subjects_stud')), ARRAY[]::TEXT[]),
       updated_at = NOW();
 
     -- 3. Surgical contact updates (preserve important fields like is_linked_to_user_login)
