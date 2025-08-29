@@ -82,7 +82,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
     };
 
     fetchScheduleData();
-  }, [selectedClass.id]);
+  }, [selectedClass.id, selectedWeek]);
 
   // Check if a time slot has any lessons across all days
   const hasLessonsInPeriod = (period: number) => {
