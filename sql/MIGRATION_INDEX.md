@@ -10,6 +10,7 @@ This document tracks all database schema changes and migrations applied to the p
 |------|------|-------------|----------------|--------|
 | 2025-08-29 | `add_updated_at_to_user_profiles.sql` | Add `updated_at` timestamp column with auto-update trigger | `user_profiles` | ✅ Applied |
 | 2025-08-29 | `add_timestamps_to_profile_info_staff.sql` | Add `created_at` and `updated_at` timestamp columns with auto-update trigger | `profile_info_staff` | ✅ Applied |
+| 2025-08-29 | `add_timestamps_to_contacts.sql` | Add `created_at` and `updated_at` timestamp columns with auto-update trigger | `contacts` | 🟡 Pending |
 
 ### Function Changes
 
