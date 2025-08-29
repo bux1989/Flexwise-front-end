@@ -5,6 +5,7 @@ import { shouldShowLoadingScreen, debugPWAStatus } from './utils/pwaHelpers'
 
 // Components
 import Login from './app/auth/login'
+import ResetPassword from './app/auth/reset-password'
 import TeacherDashboard from './app/dashboard/teacher'
 import ParentDashboard from './app/dashboard/parent'
 import ExternalDashboard from './app/dashboard/external'
@@ -44,7 +45,7 @@ const extractUserRole = (userRoles, error) => {
     console.log('✅ Roles found:', roleNames)
     return role
   } else {
-    console.log('⚠️ No roles found, using fallback')
+    console.log('⚠�� No roles found, using fallback')
     return DEFAULT_ROLE
   }
 }
