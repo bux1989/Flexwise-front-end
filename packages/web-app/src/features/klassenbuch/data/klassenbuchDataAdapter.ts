@@ -178,10 +178,17 @@ export async function getSchoolDays(schoolId: string): Promise<SchoolDay[]> {
 
     if (error) {
       console.error('❌ Error fetching school days:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       throw error;
     }
 
     console.log('✅ School days fetched:', schoolDays?.length || 0, 'days');
+    console.log('📋 Raw school days data:', schoolDays);
 
     // Transform the data to match our SchoolDay interface
     const transformedDays: SchoolDay[] = (schoolDays || []).map(schoolDay => ({
