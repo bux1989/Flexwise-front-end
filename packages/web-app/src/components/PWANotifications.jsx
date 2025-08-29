@@ -255,6 +255,16 @@ export default function PWANotifications() {
             <li>• Clicking notifications can open specific app sections</li>
             <li>• Perfect for attendance reminders, task alerts, and lesson schedules</li>
           </ul>
+
+          {!import.meta.env.PROD && (
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <h5 className="font-medium text-amber-800 mb-1">Development Mode</h5>
+              <p className="text-sm text-amber-700">
+                Service worker is disabled in development to prevent conflicts with HMR.
+                For full PWA functionality including persistent notifications, test in production build.
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
