@@ -374,55 +374,62 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
 
         {/* Abholinfos Tab */}
         <TabsContent value="abholinfos" className="space-y-6">
-          <Card className="border-l-4 border-l-orange-500">
-            <CardHeader className="bg-orange-50 border-b border-orange-200">
+          {/* Regelung zur Heimgehzeit */}
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="bg-blue-50 border-b border-blue-200">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Car className="w-5 h-5 text-orange-600" />
-                  Wöchentliche Abholinfos
+                  <Car className="w-5 h-5 text-blue-600" />
+                  Regelung zur Heimgehzeit
                 </CardTitle>
-                <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                   <Edit className="w-4 h-4 mr-2" />
                   Bearbeiten
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-6">
               {student.pickupSchedule ? (
-                <div className="grid grid-cols-1 gap-4">
-                  {Object.entries(student.pickupSchedule).map(([day, info]) => (
-                    <div key={day} className="p-4 border border-orange-200 rounded-lg bg-orange-50">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium text-orange-900 capitalize">{day}</h3>
-                          <div className="flex items-center gap-4 text-sm text-orange-600/70 mt-1">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {info.time}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Car className="w-3 h-3" />
-                              {info.method}
-                            </span>
-                            {info.authorizedPersons && info.authorizedPersons.length > 0 && (
-                              <span className="flex items-center gap-1">
-                                <User className="w-3 h-3" />
-                                Abholberechtigt: {info.authorizedPersons.join(', ')}
-                              </span>
-                            )}
-                          </div>
-                          {info.notes && (
-                            <p className="text-sm text-orange-600/70 mt-2">
-                              Hinweise: {info.notes}
-                            </p>
-                          )}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {Object.entries(student.pickupSchedule).map(([day, info]) => {
+                    const dayNames = {
+                      'montag': 'Montag',
+                      'dienstag': 'Dienstag',
+                      'mittwoch': 'Mittwoch',
+                      'donnerstag': 'Donnerstag',
+                      'freitag': 'Freitag'
+                    }
+
+                    const getIcon = (method) => {
+                      if (method?.includes('Schulbus') || method?.includes('Bus')) return '🚌'
+                      if (method?.includes('Abholung')) return '👥'
+                      if (method?.includes('allein') || method?.includes('selbstständig')) return '🚶'
+                      return '🏠'
+                    }
+
+                    return (
+                      <div key={day} className="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                        <div className="text-sm font-medium text-gray-600 mb-2">
+                          {dayNames[day] || day}
                         </div>
-                        <Button variant="ghost" size="sm" className="p-2 hover:bg-orange-100">
-                          <Edit className="w-4 h-4 text-orange-600" />
-                        </Button>
+                        <div className="text-2xl mb-2">
+                          {getIcon(info.method)}
+                        </div>
+                        <div className="text-sm font-medium text-gray-900 mb-1">
+                          {info.method || 'Nicht festgelegt'}
+                        </div>
+                        <div className="flex items-center justify-center gap-1 text-xs text-gray-500">
+                          <Clock className="w-3 h-3" />
+                          {info.time || '--:--'} Uhr
+                        </div>
+                        {info.notes && (
+                          <div className="text-xs text-gray-400 mt-2 truncate" title={info.notes}>
+                            {info.notes}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               ) : (
                 <p className="text-muted-foreground text-center py-8">
@@ -432,51 +439,54 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
             </CardContent>
           </Card>
 
-          {/* Authorized Pickup Persons */}
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="bg-blue-50 border-b border-blue-200">
+          {/* Abholberechtigte */}
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader className="bg-green-50 border-b border-green-200">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-blue-600" />
-                  Abholberechtigte Personen
+                  <Users className="w-5 h-5 text-green-600" />
+                  Abholberechtigte
                 </CardTitle>
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Person hinzufügen
+                <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                  <Edit className="w-4 h-4 mr-2" />
+                  Bearbeiten
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="p-6">
               {student.authorizedPersons && student.authorizedPersons.length > 0 ? (
-                student.authorizedPersons.map((person, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border border-blue-200 rounded-lg bg-blue-50">
-                    <div>
-                      <p className="font-medium text-blue-900">{person.name}</p>
-                      <div className="flex items-center gap-4 text-sm text-blue-600/70">
-                        <span>Beziehung: {person.relationship}</span>
-                        {person.phone && (
-                          <span className="flex items-center gap-1">
-                            <Phone className="w-3 h-3" />
-                            {person.phone}
-                          </span>
-                        )}
-                        {person.idRequired && (
-                          <Badge className="bg-yellow-100 text-yellow-700">Ausweis erforderlich</Badge>
-                        )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {student.authorizedPersons.map((person, index) => (
+                    <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <User className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-gray-900 truncate">
+                            {person.name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {person.relationship}
+                          </div>
+                          {person.phone && (
+                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                              <Phone className="w-3 h-3" />
+                              {person.phone}
+                            </div>
+                          )}
+                          {person.idRequired && (
+                            <Badge className="bg-yellow-100 text-yellow-700 text-xs mt-2">
+                              Ausweis erforderlich
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" className="p-2 hover:bg-blue-100">
-                        <Edit className="w-4 h-4 text-blue-600" />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
-                        <Trash2 className="w-4 h-4 text-red-600" />
-                      </Button>
-                    </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               ) : (
-                <p className="text-muted-foreground text-center py-4">
+                <p className="text-muted-foreground text-center py-8">
                   Keine abholberechtigten Personen eingetragen
                 </p>
               )}
