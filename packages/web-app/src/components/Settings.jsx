@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
+import { DebugOverlay } from '../debug'
 import { Badge } from './ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { 
@@ -118,7 +119,8 @@ export default function Settings() {
               <p className="text-muted-foreground">Allgemeine Schuldaten bearbeiten und importieren</p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              <DebugOverlay id="SET-001" name="Settings.GeneralData">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 {[
                   { name: 'Schüler*innen', icon: Users },
                   { name: 'Mitarbeiter*innen', icon: User },
@@ -158,7 +160,8 @@ export default function Settings() {
                   <Download className="w-4 h-4" />
                   Daten aus der LUSD importieren
                 </Button>
-              </div>
+                </div>
+              </DebugOverlay>
             </CardContent>
           </Card>
         </TabsContent>
