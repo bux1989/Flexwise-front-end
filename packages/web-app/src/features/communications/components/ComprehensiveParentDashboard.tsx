@@ -390,7 +390,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                         </div>
                       </div>
                       <div className="w-full bg-orange-100 border-orange-300 text-orange-700 text-xs px-2 py-1 rounded">
-                        🕐 Wird von der Schule geprüft
+                        🕐 Wird von der Schule gepr��ft
                       </div>
                     </div>
                   ))}
@@ -645,7 +645,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                                                           {isEarly ? (
                                                             <>
                                                               <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-sm">
-                                                                ���� Frühe Entlassung
+                                                                🏃 Frühe Entlassung
                                                               </Badge>
                                                               <span className="text-sm text-gray-600">um 13:00 Uhr</span>
                                                               {group.pickupMethod && (
@@ -790,12 +790,12 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between">
                               <div className="flex gap-3 flex-1">
-                                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                  <Calendar className="h-4 w-4 text-blue-600" />
+                                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                  <Calendar className="h-4 w-4 text-primary" />
                                 </div>
                                 <div className="flex-1">
-                                  <h3 className="font-medium mb-2 leading-tight">{appointment.title}</h3>
-                                  <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 leading-tight">
+                                  <h3 className="font-medium mb-2 leading-tight text-foreground">{appointment.title}</h3>
+                                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground leading-tight">
                                     <span className="flex items-center gap-1">
                                       <Calendar className="h-3 w-3" />
                                       {new Date(appointment.date).toLocaleDateString('de-DE')}
@@ -826,14 +826,14 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                                   {isExpanded && (
                                     <div className="mt-4 space-y-3 pt-3 border-t border-gray-200">
                                       {/* Room Information */}
-                                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                      <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
                                         <div className="flex items-center gap-2 mb-2">
-                                          <svg className="h-4 w-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                          <svg className="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clipRule="evenodd" />
                                           </svg>
-                                          <span className="font-medium text-blue-800 text-sm">Raum/Ort</span>
+                                          <span className="font-medium text-primary text-sm">Raum/Ort</span>
                                         </div>
-                                        <p className="text-sm text-blue-700 leading-tight">
+                                        <p className="text-sm text-foreground leading-tight">
                                           {appointment.room}
                                         </p>
                                       </div>
