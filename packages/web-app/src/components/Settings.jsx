@@ -33,12 +33,18 @@ export default function Settings() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="contact" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 bg-white border border-gray-200">
+          <TabsTrigger
+            value="contact"
+            className="flex items-center gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200"
+          >
             <Building className="w-4 h-4" />
             Kontaktinformationen
           </TabsTrigger>
-          <TabsTrigger value="modules" className="flex items-center gap-2">
+          <TabsTrigger
+            value="modules"
+            className="flex items-center gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:border-blue-200"
+          >
             <SettingsIcon className="w-4 h-4" />
             Module
           </TabsTrigger>
