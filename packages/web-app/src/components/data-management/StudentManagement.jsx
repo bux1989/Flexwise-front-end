@@ -59,7 +59,118 @@ export default function StudentManagement({ onBack }) {
         enabled: true,
         type: 'B1',
         validUntil: '2024-08-31'
-      }
+      },
+      parents: [
+        {
+          firstName: 'Maria',
+          lastName: 'Mustermann',
+          relationship: 'Mutter',
+          email: 'maria.mustermann@email.de',
+          phone: '+49 123 456789',
+          address: 'Musterstraße 123, 12345 Berlin',
+          isPrimary: true
+        },
+        {
+          firstName: 'Peter',
+          lastName: 'Mustermann',
+          relationship: 'Vater',
+          email: 'peter.mustermann@email.de',
+          phone: '+49 123 456788',
+          address: 'Musterstraße 123, 12345 Berlin',
+          isPrimary: false
+        }
+      ],
+      siblings: [
+        {
+          firstName: 'Anna',
+          lastName: 'Mustermann',
+          class: '8B',
+          birthDate: '2010-03-20'
+        }
+      ],
+      pickupSchedule: {
+        'montag': {
+          time: '16:00',
+          method: 'Abholung durch Eltern',
+          authorizedPersons: ['Maria Mustermann', 'Peter Mustermann'],
+          notes: 'Nur durch Eltern'
+        },
+        'dienstag': {
+          time: '15:30',
+          method: 'Abholung durch Großeltern',
+          authorizedPersons: ['Oma Gertrude'],
+          notes: 'Dienstags bei den Großeltern'
+        },
+        'mittwoch': {
+          time: '17:00',
+          method: 'Selbstständig nach Hause',
+          authorizedPersons: [],
+          notes: 'Geht allein nach AG'
+        },
+        'donnerstag': {
+          time: '16:00',
+          method: 'Abholung durch Eltern',
+          authorizedPersons: ['Maria Mustermann', 'Peter Mustermann'],
+          notes: ''
+        },
+        'freitag': {
+          time: '14:00',
+          method: 'Selbstständig nach Hause',
+          authorizedPersons: [],
+          notes: 'Früher Schulschluss'
+        }
+      },
+      authorizedPersons: [
+        {
+          name: 'Gertrude Mustermann',
+          relationship: 'Großmutter',
+          phone: '+49 123 456700',
+          idRequired: false
+        },
+        {
+          name: 'Klaus Weber',
+          relationship: 'Nachbar',
+          phone: '+49 123 456701',
+          idRequired: true
+        }
+      ],
+      activeCourses: [
+        {
+          name: 'Robotik AG',
+          instructor: 'Herr Dr. Tech',
+          schedule: 'Mittwoch 15:00-17:00',
+          location: 'Informatikraum',
+          type: 'AG',
+          startDate: '2024-01-10',
+          description: 'Programmierung und Bau von Robotern'
+        },
+        {
+          name: 'Schach Club',
+          instructor: 'Frau Weise',
+          schedule: 'Freitag 14:00-15:30',
+          location: 'Klassenzimmer 201',
+          type: 'AG',
+          startDate: '2023-09-01',
+          description: 'Strategisches Schachspiel für Anfänger und Fortgeschrittene'
+        }
+      ],
+      waitingList: [
+        {
+          name: 'Theater AG',
+          instructor: 'Herr Drama',
+          schedule: 'Donnerstag 16:00-18:00',
+          waitingPosition: 3,
+          registrationDate: '2024-01-20'
+        }
+      ],
+      pastCourses: [
+        {
+          name: 'Fußball AG',
+          instructor: 'Herr Sport',
+          period: '2023-2024',
+          completed: true
+        }
+      ]
     },
     {
       id: 2,
