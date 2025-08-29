@@ -160,6 +160,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       }
 
       // Load contacts
+      console.log('🔍 Querying contacts for profile_id:', profileId);
       const { data: contactsData, error: contactsError } = await supabase
         .from('contacts')
         .select('*')
@@ -167,7 +168,15 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         .order('created_at', { ascending: true });
 
       if (contactsError) {
-        console.error('Error loading contacts:', contactsError);
+        console.error('❌ Error loading contacts:', {
+          code: contactsError.code,
+          message: contactsError.message,
+          details: contactsError.details,
+          hint: contactsError.hint
+        });
+      } else {
+        console.log('📞 Contacts query result:', contactsData);
+        console.log('📞 Number of contacts found:', contactsData?.length || 0);
       }
 
       // Organize contacts by type
