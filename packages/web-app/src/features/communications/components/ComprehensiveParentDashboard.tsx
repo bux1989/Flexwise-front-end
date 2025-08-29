@@ -219,15 +219,15 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <button 
+            <button
               onClick={() => setSelectedChild(null)}
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
+              <img
+                src="/logo.png"
+                alt="FlexWise - Flexible Tools for Smart Schools"
+                className="h-10 w-auto"
+              />
               <span className="font-semibold text-2xl text-primary">FlexWise</span>
             </button>
             <div className="hidden md:block">
