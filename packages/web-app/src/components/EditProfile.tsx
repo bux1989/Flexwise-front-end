@@ -82,6 +82,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   // Store auth user email to protect it from deletion
   const [authUserEmail, setAuthUserEmail] = useState<string | null>(null);
 
+  // Track if we're currently creating contact to prevent race conditions
+  const [isCreatingContact, setIsCreatingContact] = useState(false);
+
   // Load profile data from Supabase
   useEffect(() => {
     loadProfileData();
@@ -1270,7 +1273,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                               }
                             });
 
-                            console.log('📨 Reset email result:', { error });
+                            console.log('���� Reset email result:', { error });
 
                             if (error) {
                               console.error('❌ Reset email error:', error);
