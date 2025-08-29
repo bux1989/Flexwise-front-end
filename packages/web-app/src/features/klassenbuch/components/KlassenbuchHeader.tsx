@@ -148,16 +148,15 @@ export function KlassenbuchHeader({
               <CalendarCheck className="h-4 w-4" />
               <span>Live</span>
             </Button>
-            {/* Statistics tab hidden for now - can be re-enabled later
             <Button
               variant={currentView === 'statistics' ? 'default' : 'outline'}
               onClick={() => onViewChange('statistics')}
-              className="flex items-center space-x-2"
+              className="hidden flex items-center space-x-2"
+              style={{ display: 'none' }}
             >
               <BarChart3 className="h-4 w-4" />
               <span>Statistiken</span>
             </Button>
-            */}
           </div>
         </div>
 
