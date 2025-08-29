@@ -537,17 +537,17 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
 
       <div className="space-y-6">
         {/* Schedule Section */}
-        <section className="bg-white rounded-lg border border-gray-200 p-4">
+        <section className="bg-card rounded-lg border border-border p-4">
           <div className="flex items-center gap-2 mb-4">
-            <Clock className="h-6 w-6 text-blue-600" />
-            <h3 className="text-xl font-semibold leading-tight">Stundenplan</h3>
+            <Clock className="h-6 w-6 text-primary" />
+            <h3 className="text-lg font-semibold leading-tight text-foreground">Stundenplan</h3>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full border border-gray-200 rounded-lg">
+            <table className="w-full border border-border rounded-lg">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="p-2 text-left border-r border-gray-200 font-medium">Zeit</th>
+                <tr className="bg-muted/30">
+                  <th className="p-2 text-left border-r border-border font-medium text-foreground">Zeit</th>
                   {dayNames.map((day) => (
                     <th key={day} className="p-2 text-center border-r border-gray-200 font-medium last:border-r-0">
                       {day}
