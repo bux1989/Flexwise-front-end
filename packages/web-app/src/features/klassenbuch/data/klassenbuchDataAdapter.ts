@@ -57,7 +57,6 @@ export {
   mockStudentStatistics,
   mockCourseData,
   getStudentsForClass,
-  getTimetableForClass,
   getTeacherLessons,
   getStudentStatisticsForClass,
   getAllStudentStatistics,
@@ -74,6 +73,11 @@ export {
   getStudentIdFromCourseName,
   getClassNameById
 } from './mockData';
+
+// Override getTimetableForClass to use database data
+export async function getTimetableForClass(classId: string, weekStart?: Date): Promise<Lesson[]> {
+  return getTimetableForClassFromDB(classId, weekStart);
+}
 
 // Additional adapter functions can be added here to bridge any gaps
 // between the Klassen Buch data structure and the web-app requirements
