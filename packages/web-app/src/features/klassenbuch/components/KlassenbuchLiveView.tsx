@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
+import { DebugOverlay } from '../../../debug';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
@@ -150,7 +151,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
           });
 
           // For testing - add a dummy lesson to verify the UI is working
-          console.log('🧪 Adding test lesson to verify UI functionality');
+          console.log('�� Adding test lesson to verify UI functionality');
           const testLesson = {
             id: 'test-1',
             period: 1,
