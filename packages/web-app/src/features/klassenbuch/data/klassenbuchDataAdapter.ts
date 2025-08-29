@@ -524,14 +524,29 @@ async function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: Sch
 
   // Determine attendance status with proper completion checking
   let attendanceStatus: 'complete' | 'missing' | 'incomplete' | 'future' = 'future';
+
+  console.log(`📅 Determining attendance status for lesson ${dbLesson.lesson_id}:`, {
+    subject: dbLesson.subject_name,
+    startTime: dbLesson.start_datetime,
+    isPast,
+    isOngoing,
+    attendance_taken: dbLesson.attendance_taken
+  });
+
   if (isPast || isOngoing) {
+    console.log('🕒 Lesson is past or ongoing, checking attendance...');
     if (dbLesson.attendance_taken) {
+      console.log('📝 Attendance has been taken, checking completion level...');
       // If attendance has been taken, check if it's complete or incomplete
       const completion = await checkAttendanceCompletion(dbLesson.lesson_id);
       attendanceStatus = completion.status;
+      console.log(`🎯 Final attendance status: ${attendanceStatus}`, completion);
     } else {
+      console.log('❌ No attendance taken - marking as missing');
       attendanceStatus = 'missing';
     }
+  } else {
+    console.log('⏭️ Future lesson - marking as future');
   }
 
   // Determine status
