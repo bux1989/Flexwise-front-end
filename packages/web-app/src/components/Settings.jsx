@@ -236,7 +236,7 @@ export default function Settings() {
               <User className="w-4 h-4 text-blue-600" />
               Kurse aus der LUSD importieren
             </Button>
-            <Button className="w-full gap-2 bg-green-600 hover:bg-green-700">
+            <Button className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white">
               <Download className="w-4 h-4" />
               Daten sichern
             </Button>
@@ -278,12 +278,12 @@ export default function Settings() {
               <p className="text-sm text-amber-700 font-medium mb-2">Aus Datenschutzgründen empfehlen wir, die personenbezogenen Daten des vergangenen Schuljahres zu löschen.</p>
             </div>
 
-            <Button className="w-full gap-2 bg-green-600 hover:bg-green-700">
+            <Button className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white">
               <Download className="w-4 h-4" />
               Daten sichern
             </Button>
 
-            <Button className="w-full gap-2 bg-red-600 hover:bg-red-700">
+            <Button className="w-full gap-2 bg-red-600 hover:bg-red-700 text-white">
               <X className="w-4 h-4" />
               Zum Löschen/Entfernen
             </Button>
