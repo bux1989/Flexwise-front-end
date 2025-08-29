@@ -112,16 +112,20 @@ For a centralized view of all template migration progress:
 ## 📋 Pre-Migration Checklist
 
 ### 1. Analyze the Figma Template
+- [ ] **Read Template Guide**: Review `figma_*/TEMPLATE_GUIDE.md` for comprehensive template analysis
+- [ ] **Check Migration Status**: Review `figma_*/MIGRATION_CHECKLIST.md` for current progress
 - [ ] **Identify main components**: What are the primary UI sections?
 - [ ] **Map to existing features**: Which feature folders should receive components?
 - [ ] **Check for overlaps**: Does functionality already exist in current features?
 - [ ] **Evaluate data structure**: What mock data is used?
+- [ ] **Review known issues**: Check template guide for migration challenges
 
 ### 2. Plan the Migration Strategy
 - [ ] **Choose strategy**: Wholesale replacement vs. selective extraction
-- [ ] **Define target features**: Which `packages/web-app/src/features/` folders to update
+- [ ] **Define target features**: Which `packages/web-app/src/features/` folders to update (see template guide)
 - [ ] **Plan debug IDs**: What systematic debug overlay IDs to use
-- [ ] **Data migration plan**: Mock data → Supabase transition strategy
+- [ ] **Data migration plan**: Mock data → Supabase transition strategy (see migration checklist)
+- [ ] **Update migration checklist**: Mark components as "in_progress" before starting work
 
 ---
 
