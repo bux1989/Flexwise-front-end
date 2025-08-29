@@ -152,6 +152,20 @@ export default function StudentManagement({ onBack }) {
     setSelectedStudent(null)
   }
 
+  // Show detailed view when student is selected for viewing
+  if (selectedStudent && showDetailView && !isEditing) {
+    return (
+      <StudentDetailView
+        student={selectedStudent}
+        onBack={handleBackToList}
+        onEdit={(student) => {
+          setIsEditing(true)
+          setShowDetailView(false)
+        }}
+      />
+    )
+  }
+
   if (selectedStudent && isEditing) {
     return (
       <div className="space-y-6">
