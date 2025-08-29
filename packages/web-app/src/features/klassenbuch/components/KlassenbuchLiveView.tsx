@@ -86,17 +86,23 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
   };
 
   const getWeekDates = (selectedWeek: Date) => {
+    if (schoolDays.length === 0) return [];
+
     const startOfWeek = new Date(selectedWeek);
     const day = startOfWeek.getDay();
     const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
     startOfWeek.setDate(diff);
-    
+
     const dates = [];
-    for (let i = 0; i < 5; i++) {
+    // Generate dates based on the actual school days
+    schoolDays.forEach((schoolDay, index) => {
+      // schoolDay.day.day_number: 1=Monday, 2=Tuesday, ..., 6=Saturday, 0=Sunday
+      const dayOffset = schoolDay.day.day_number === 0 ? 6 : schoolDay.day.day_number - 1; // Convert to 0-6 where 0=Monday
       const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
+      date.setDate(startOfWeek.getDate() + dayOffset);
       dates.push(date);
-    }
+    });
+
     return dates;
   };
 
