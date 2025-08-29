@@ -772,9 +772,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                     </div>
 
                     {/* Addresses Section */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="text-base font-medium">Adressen</Label>
+                        <Label className="text-sm font-medium">Adressen</Label>
                         {isEditing && (
                           <Button onClick={() => addContact('addresses')} size="sm" variant="outline">
                             <Plus className="h-4 w-4 mr-2" />
