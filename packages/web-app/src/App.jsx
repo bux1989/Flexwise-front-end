@@ -192,9 +192,6 @@ function App() {
     return () => subscription.unsubscribe()
   }, [loadUserProfile, showStartupScreen])
 
-  // Demo: Show loading screen for 1 minute
-  return <LoadingScreen onComplete={() => {}} minDisplayTime={60000} />
-
   // PWA Startup screen
   if (showStartupScreen) {
     return <LoadingScreen onComplete={() => setShowStartupScreen(false)} minDisplayTime={2500} />
