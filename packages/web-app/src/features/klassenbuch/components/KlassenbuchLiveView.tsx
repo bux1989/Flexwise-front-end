@@ -86,6 +86,15 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
           label: p.label
         })));
 
+        console.log('🔢 Period matching analysis:', {
+          schedulePeriodNumbers: periodsData.map(p => p.block_number),
+          lessonPeriodNumbers: [...new Set(lessonsData.map(l => l.period))],
+          periodsDataMin: Math.min(...periodsData.map(p => p.block_number)),
+          periodsDataMax: Math.max(...periodsData.map(p => p.block_number)),
+          lessonPeriodsMin: lessonsData.length > 0 ? Math.min(...lessonsData.map(l => l.period)) : 'N/A',
+          lessonPeriodsMax: lessonsData.length > 0 ? Math.max(...lessonsData.map(l => l.period)) : 'N/A'
+        });
+
         console.log('📚 Lessons data:', lessonsData);
 
         if (lessonsData.length === 0) {
