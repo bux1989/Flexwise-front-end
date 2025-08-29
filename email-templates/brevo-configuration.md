@@ -15,9 +15,37 @@
   "templateId": YOUR_TEMPLATE_ID,
   "subject": "Passwort zurücksetzen - FlexWise",
   "params": {
+    "USER_NAME": "Clarissa Döbel",
     "RESET_URL": "https://yourdomain.com/auth/reset-password?token=..."
   }
 }
+```
+
+## 📝 Getting User Name in Your Code
+
+Update your password reset function to get the user's full name:
+
+```javascript
+// In EditProfile.tsx password reset function:
+const { data: { user: authUser } } = await supabase.auth.getUser();
+
+// Get user profile for name
+const profileId = authUser.user_metadata?.profile_id;
+const { data: profile } = await supabase
+  .from('user_profiles')
+  .select('first_name, last_name')
+  .eq('id', profileId)
+  .single();
+
+const fullName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
+
+// Send reset email with name
+const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
+  redirectTo: `${window.location.origin}/auth/reset-password`,
+  data: {
+    USER_NAME: fullName || authUser.email  // Fallback to email if no name
+  }
+});
 ```
 
 ## 🎨 Template Variables in Brevo
