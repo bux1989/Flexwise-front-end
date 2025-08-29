@@ -235,7 +235,8 @@ export function MissingStaff() {
   };
 
   return (
-    <Card className="h-full">
+    <DebugOverlay name="MissingStaff">
+      <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <CardTitle className="flex items-center gap-2">
           Fehlende Fachkräfte
@@ -320,6 +321,7 @@ export function MissingStaff() {
           </TabsContent>
         </Tabs>
       </CardContent>
-    </Card>
+      </Card>
+    </DebugOverlay>
   );
 }
