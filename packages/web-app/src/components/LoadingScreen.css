@@ -475,10 +475,11 @@
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.75rem;
-  opacity: 0.7;
+  font-size: 1rem;
+  opacity: 0.8;
   animation: versionAppear 0.5s ease-out 2s forwards;
   opacity: 0;
+  font-weight: 500;
 }
 
 @keyframes versionAppear {
