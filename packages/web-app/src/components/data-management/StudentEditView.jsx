@@ -603,80 +603,65 @@ export default function StudentEditView({ student, onBack, onSave }) {
           {/* Siblings */}
           <Card className="border-l-4 border-l-green-500">
             <CardHeader className="bg-green-50 border-b border-green-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-green-600" />
-                  Geschwister
-                </CardTitle>
-                <Button 
-                  size="sm" 
-                  className="bg-green-600 hover:bg-green-700"
-                  onClick={() => addItemToArray('siblings', {
-                    firstName: '',
-                    lastName: '',
-                    class: '',
-                    birthDate: ''
-                  })}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Hinzufügen
-                </Button>
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-green-600" />
+                Geschwister
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {editedStudent.siblings.map((sibling, index) => (
-                <div key={index} className="p-3 border border-green-200 rounded-lg bg-green-50 space-y-3">
+                <div
+                  key={index}
+                  className="p-4 border border-green-200 rounded-lg bg-green-50 hover:bg-green-100 transition-colors cursor-pointer"
+                  onClick={() => {
+                    // TODO: Navigate to sibling's profile page
+                    console.log('Navigate to sibling profile:', sibling.firstName, sibling.lastName)
+                  }}
+                  title="Klicken um zum Schülerprofil zu gelangen"
+                >
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-green-900">Geschwister #{index + 1}</h4>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-2 hover:bg-red-50"
-                      onClick={() => removeItemFromArray('siblings', index)}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Vorname</label>
-                      <Input
-                        value={sibling.firstName}
-                        onChange={(e) => updateNestedField('siblings', index, 'firstName', e.target.value)}
-                        className="mt-1"
-                      />
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-green-900">
+                          {sibling.firstName} {sibling.lastName}
+                        </h3>
+                        <div className="flex items-center gap-4 text-sm text-green-600/70">
+                          <span>Klasse: {sibling.class || 'Nicht an der Schule'}</span>
+                          <span>Geboren: {new Date(sibling.birthDate).toLocaleDateString('de-DE')}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Nachname</label>
-                      <Input
-                        value={sibling.lastName}
-                        onChange={(e) => updateNestedField('siblings', index, 'lastName', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Klasse (optional)</label>
-                      <Input
-                        value={sibling.class}
-                        onChange={(e) => updateNestedField('siblings', index, 'class', e.target.value)}
-                        className="mt-1"
-                        placeholder="z.B. 8B oder leer wenn nicht an der Schule"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Geburtsdatum</label>
-                      <Input
-                        type="date"
-                        value={sibling.birthDate}
-                        onChange={(e) => updateNestedField('siblings', index, 'birthDate', e.target.value)}
-                        className="mt-1"
-                      />
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-green-100 text-green-700">
+                        Geschwister
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-2 hover:bg-orange-50"
+                        onClick={(e) => {
+                          e.stopPropagation() // Prevent navigation when clicking disconnect
+                          if (confirm('Geschwisterverbindung entfernen? (Der Schüler bleibt bestehen, wird nur aus der Familie entfernt)')) {
+                            removeItemFromArray('siblings', index)
+                          }
+                        }}
+                        title="Geschwisterverbindung entfernen"
+                      >
+                        <X className="w-4 h-4 text-orange-600" />
+                      </Button>
                     </div>
                   </div>
                 </div>
               ))}
               {editedStudent.siblings.length === 0 && (
-                <p className="text-muted-foreground text-center py-4">Keine Geschwister verzeichnet</p>
+                <div className="text-center py-8">
+                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">Keine Geschwister verzeichnet</p>
+                  <p className="text-gray-400 text-xs mt-1">Geschwister werden über deren eigene Profile verknüpft</p>
+                </div>
               )}
             </CardContent>
           </Card>
