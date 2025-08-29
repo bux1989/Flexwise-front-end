@@ -442,16 +442,19 @@ function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay
 
   const subjectColor = subjectColors[dbLesson.subject_name] || 'bg-gray-100 text-gray-800';
 
-  // Map database period_number to timetable period numbers
-  // Database periods seem to start from 0, but timetable periods start from 2
-  // We need to find the correct mapping
-  const mappedPeriod = dbLesson.period_number + 2; // Adjust based on the offset we observed
+  // Try to get the period from available fields - period_number seems to be null
+  // Let's try block_number or use period_number directly if it's valid
+  const rawPeriod = dbLesson.period_number ?? dbLesson.block_number ?? 1;
 
-  console.log('🔄 Period mapping:', {
-    dbPeriodNumber: dbLesson.period_number,
-    mappedPeriod: mappedPeriod,
-    dbPeriodType: typeof dbLesson.period_number
+  console.log('🔄 Period mapping debug:', {
+    period_number: dbLesson.period_number,
+    block_number: dbLesson.block_number,
+    rawPeriod: rawPeriod,
+    allFields: Object.keys(dbLesson)
   });
+
+  // Use the period directly - it should match the timetable periods
+  const mappedPeriod = rawPeriod;
 
   return {
     id: dbLesson.lesson_id,
