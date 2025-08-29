@@ -351,7 +351,16 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
     const transformedLessons: Lesson[] = (lessons || []).map(dbLesson => transformDatabaseLesson(dbLesson, schoolDaysData));
 
     console.log('🔄 Transformed lessons:', transformedLessons);
-    return transformedLessons;
+  console.log('🔢 Transformed lesson periods:', transformedLessons.map(l => ({
+    id: l.id,
+    period: l.period,
+    periodType: typeof l.period,
+    day: l.day,
+    subject: l.subject,
+    startTime: l.startTime,
+    endTime: l.endTime
+  })));
+  return transformedLessons;
 
   } catch (error) {
     console.error('💥 Error in getLessonsForWeek:', error);
