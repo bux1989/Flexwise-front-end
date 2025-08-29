@@ -501,7 +501,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       Persönliche Informationen
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3">
                     {/* Profile Picture */}
                     <div className="flex items-center gap-4">
                       <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
