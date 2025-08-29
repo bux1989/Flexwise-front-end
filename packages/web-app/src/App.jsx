@@ -11,6 +11,9 @@ import ExternalDashboard from './app/dashboard/external'
 import AdminDashboard from './app/dashboard/admin'
 import LoadingScreen from './components/LoadingScreen'
 
+// Debug system
+import { DebugProvider, DebugModal } from './debug'
+
 // Constants
 const ROLE_ROUTES = {
   'Admin': '/dashboard/admin',
@@ -254,23 +257,26 @@ function App() {
 
   // Main render
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
-        {!session ? (
-          <Login />
-        ) : (
-          <Routes>
-            <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
-            <Route path="/dashboard/admin" element={renderDashboard()} />
-            <Route path="/dashboard/teacher" element={renderDashboard()} />
-            <Route path="/dashboard/parent" element={renderDashboard()} />
-            <Route path="/dashboard/external" element={renderDashboard()} />
-            <Route path="/" element={<Navigate to={getDashboardPath()} replace />} />
-            <Route path="*" element={<Navigate to={getDashboardPath()} replace />} />
-          </Routes>
-        )}
-      </div>
-    </Router>
+    <DebugProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          {!session ? (
+            <Login />
+          ) : (
+            <Routes>
+              <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
+              <Route path="/dashboard/admin" element={renderDashboard()} />
+              <Route path="/dashboard/teacher" element={renderDashboard()} />
+              <Route path="/dashboard/parent" element={renderDashboard()} />
+              <Route path="/dashboard/external" element={renderDashboard()} />
+              <Route path="/" element={<Navigate to={getDashboardPath()} replace />} />
+              <Route path="*" element={<Navigate to={getDashboardPath()} replace />} />
+            </Routes>
+          )}
+        </div>
+        <DebugModal />
+      </Router>
+    </DebugProvider>
   )
 }
 
