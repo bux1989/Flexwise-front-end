@@ -292,6 +292,21 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
 
     console.log('🔍 Base query setup for school:', schoolId);
 
+    // First, let's check if there are ANY lessons in the database for this school
+    console.log('🧪 Testing if lessons exist in database...');
+    const { data: testLessons, error: testError } = await supabase
+      .from('vw_react_lesson_details')
+      .select('lesson_id, subject_name, class_name, lesson_date')
+      .eq('school_id', schoolId)
+      .limit(5);
+
+    if (testError) {
+      console.error('❌ Test query failed:', testError);
+    } else {
+      console.log('✅ Test query result - total lessons found:', testLessons?.length || 0);
+      console.log('📋 Sample lessons:', testLessons);
+    }
+
     // Filter by class or teacher depending on the view
     if (classId === 'teacher') {
       // For teacher view, get current user's profile to filter by teacher
