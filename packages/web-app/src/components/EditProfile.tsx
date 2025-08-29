@@ -1615,7 +1615,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
                               <div className="border-t pt-3 mt-3">
                                 <p className="text-sm text-gray-600 mb-3">
-                                  Alternative Methoden (falls Authenticator-App nicht funktioniert):
+                                  Alternative Methoden:
                                 </p>
 
                                 {/* Email OTP Option */}
