@@ -435,15 +435,15 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg border border-gray-200 px-4 py-3">
+      <div className="bg-card rounded-lg border border-border px-4 py-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <UsersIcon className="h-5 w-5 text-blue-600" />
+            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+              <UsersIcon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold leading-tight">Aktuelle Informationen: {child.name}</h2>
-              <p className="text-sm text-gray-500 leading-tight -mt-1">Klasse {child.class}</p>
+              <h2 className="text-2xl font-semibold leading-tight text-foreground">Aktuelle Informationen: {child.name}</h2>
+              <p className="text-sm text-muted-foreground leading-tight -mt-1">Klasse {child.class}</p>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
