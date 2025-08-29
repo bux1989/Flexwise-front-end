@@ -791,13 +791,26 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         }
       } else if (otpMethod === 'totp') {
         // Verify TOTP enrollment
-        const { data: factors } = await supabase.auth.mfa.listFactors();
+        console.log('Verifying TOTP with code:', otpCode);
+
+        const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
+
+        if (factorsError) {
+          console.error('Error listing factors:', factorsError);
+          alert('Fehler beim Abrufen der 2FA-Faktoren: ' + factorsError.message);
+          return;
+        }
+
+        console.log('Available factors:', factors);
         const totpFactor = factors?.totp.find(factor => factor.status === 'unverified');
 
         if (!totpFactor) {
-          alert('Kein TOTP-Faktor zum Verifizieren gefunden.');
+          console.error('No unverified TOTP factor found. Available factors:', factors?.totp);
+          alert('Kein TOTP-Faktor zum Verifizieren gefunden. Bitte starten Sie den Einrichtungsprozess erneut.');
           return;
         }
+
+        console.log('Verifying factor:', totpFactor.id);
 
         const { error } = await supabase.auth.mfa.verify({
           factorId: totpFactor.id,
@@ -806,15 +819,22 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
         if (error) {
           console.error('Error verifying TOTP:', error);
+          console.error('Error details:', {
+            message: error.message,
+            status: error.status,
+            statusCode: error.statusCode
+          });
+
           if (error.message.includes('expired')) {
             alert('Der Code ist abgelaufen. Generieren Sie einen neuen Code in Ihrer Authenticator-App.');
-          } else if (error.message.includes('invalid')) {
-            alert('Ungültiger Code. Bitte überprüfen Sie Ihre Authenticator-App.');
+          } else if (error.message.includes('invalid') || error.message.includes('Invalid code')) {
+            alert('Ungültiger Code. Stellen Sie sicher, dass:\n• Die Uhrzeit auf Ihrem Gerät korrekt ist\n• Sie den aktuellsten 6-stelligen Code verwenden\n• Die App korrekt eingerichtet wurde');
           } else {
-            alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
+            alert('Fehler bei der Verifizierung: ' + error.message);
           }
         } else {
-          alert('Authenticator-App erfolgreich eingerichtet!');
+          console.log('TOTP verification successful');
+          alert('🎉 Authenticator-App erfolgreich eingerichtet! Ihre Zwei-Faktor-Authentifizierung ist jetzt aktiv.');
           setIsOtpEnabled(true);
           setShowOtpSetup(false);
           setOtpCode('');
