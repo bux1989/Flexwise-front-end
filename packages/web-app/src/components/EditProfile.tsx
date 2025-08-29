@@ -1160,86 +1160,86 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* Profile Picture Section */}
-                    <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4">
-                      <div className="flex flex-col items-center space-y-3">
-                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                    {/* Profile Picture and Inputs - Combined Flex Layout */}
+                    <div className="flex flex-col lg:flex-row items-start gap-4 mb-4">
+                      <div className="flex flex-col items-center justify-start my-auto">
+                        <div className="w-[119px] h-[117px] bg-gray-100 rounded-full flex items-center justify-center">
                           {profile.profile_picture_url ? (
                             <img
                               src={profile.profile_picture_url}
                               alt="Profilbild"
-                              className="w-20 h-20 rounded-full object-cover"
+                              className="w-[119px] h-[117px] rounded-full object-cover"
                             />
                           ) : (
                             <User className="h-8 w-8 text-gray-400" />
                           )}
                         </div>
                         {isEditing && (
-                          <Button variant="outline" size="sm" className="w-full lg:w-auto">
+                          <Button variant="outline" size="sm" className="w-full lg:w-auto mt-3">
                             <Camera className="h-4 w-4 mr-2" />
                             Foto ändern
                           </Button>
                         )}
                       </div>
-                    </div>
 
-                    {/* All Input Fields in Aligned Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <Label htmlFor="first_name">Vorname</Label>
-                        <Input
-                          id="first_name"
-                          value={profile.first_name}
-                          onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
-                          disabled={!isEditing}
-                          className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="last_name">Nachname</Label>
-                        <Input
-                          id="last_name"
-                          value={profile.last_name}
-                          onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
-                          disabled={!isEditing}
-                          className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="date_of_birth">Geburtsdatum</Label>
-                        <Input
-                          id="date_of_birth"
-                          type="date"
-                          value={profile.date_of_birth}
-                          onChange={(e) => setProfile(prev => ({ ...prev, date_of_birth: e.target.value }))}
-                          disabled={!isEditing}
-                          className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="gender">Geschlecht</Label>
-                        {isEditing ? (
-                          <Select
-                            value={profile.gender}
-                            onValueChange={(value) => setProfile(prev => ({ ...prev, gender: value }))}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Geschlecht auswählen" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="M��nnlich">Männlich</SelectItem>
-                              <SelectItem value="Weiblich">Weiblich</SelectItem>
-                              <SelectItem value="Divers">Divers</SelectItem>
-                              <SelectItem value="Keine Angabe">Keine Angabe</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        ) : (
+                      {/* All Input Fields in Aligned Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-grow w-auto -mr-[3px]">
+                        <div className="space-y-2">
+                          <Label htmlFor="first_name">Vorname</Label>
                           <Input
-                            value={profile.gender}
-                            disabled
-                            className="bg-gray-50 text-slate-600 font-semibold"
+                            id="first_name"
+                            value={profile.first_name}
+                            onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
+                            disabled={!isEditing}
+                            className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
                           />
-                        )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="last_name">Nachname</Label>
+                          <Input
+                            id="last_name"
+                            value={profile.last_name}
+                            onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
+                            disabled={!isEditing}
+                            className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="date_of_birth">Geburtsdatum</Label>
+                          <Input
+                            id="date_of_birth"
+                            type="date"
+                            value={profile.date_of_birth}
+                            onChange={(e) => setProfile(prev => ({ ...prev, date_of_birth: e.target.value }))}
+                            disabled={!isEditing}
+                            className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="gender">Geschlecht</Label>
+                          {isEditing ? (
+                            <Select
+                              value={profile.gender}
+                              onValueChange={(value) => setProfile(prev => ({ ...prev, gender: value }))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Geschlecht auswählen" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Männlich">Männlich</SelectItem>
+                                <SelectItem value="Weiblich">Weiblich</SelectItem>
+                                <SelectItem value="Divers">Divers</SelectItem>
+                                <SelectItem value="Keine Angabe">Keine Angabe</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input
+                              value={profile.gender}
+                              disabled
+                              className="bg-gray-50 text-slate-600 font-semibold"
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
                   </CardContent>
