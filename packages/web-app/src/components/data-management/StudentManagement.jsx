@@ -3,18 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Badge } from '../ui/badge'
-import { 
-  ArrowLeft, 
-  Search, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  User, 
-  Mail, 
+import {
+  ArrowLeft,
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  User,
+  Mail,
   Phone,
   Users,
   Calendar
 } from 'lucide-react'
+import StudentDetailView from './StudentDetailView'
 
 export default function StudentManagement({ onBack }) {
   const [searchTerm, setSearchTerm] = useState('')
