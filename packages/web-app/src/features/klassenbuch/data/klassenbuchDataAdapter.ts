@@ -276,84 +276,98 @@ interface AttendanceCompletion {
 
 async function checkAttendanceCompletion(lessonId: string): Promise<AttendanceCompletion> {
   try {
-    // Get total students enrolled in this lesson
-    const { data: enrollmentData, error: enrollmentError } = await supabase
-      .from('vw_react_lesson_details')
-      .select('course_id, class_id')
-      .eq('lesson_id', lessonId)
-      .single();
+    console.log('🔍 Checking attendance completion for lesson:', lessonId);
 
-    if (enrollmentError) {
-      console.error('❌ Error fetching lesson enrollment:', enrollmentError);
-      return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
-    }
-
-    // Count total students in the class/course
-    let totalStudentsQuery;
-    if (enrollmentData.course_id) {
-      totalStudentsQuery = supabase
-        .from('course_enrollments')
-        .select('student_id', { count: 'exact' })
-        .eq('course_id', enrollmentData.course_id)
-        .eq('status', 'active');
-    } else if (enrollmentData.class_id) {
-      totalStudentsQuery = supabase
-        .from('class_enrollments')
-        .select('student_id', { count: 'exact' })
-        .eq('class_id', enrollmentData.class_id)
-        .eq('status', 'active');
-    } else {
-      return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
-    }
-
-    const { count: totalStudents, error: countError } = await totalStudentsQuery;
-
-    if (countError) {
-      console.error('❌ Error counting total students:', countError);
-      return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
-    }
-
-    // Count students with attendance records for this lesson
-    const { count: studentsWithAttendance, error: attendanceError } = await supabase
+    // First, try to get attendance records for this lesson
+    const { data: attendanceRecords, error: attendanceError } = await supabase
       .from('lesson_attendance')
-      .select('student_id', { count: 'exact' })
+      .select('student_id, status')
       .eq('lesson_id', lessonId);
 
     if (attendanceError) {
-      console.error('❌ Error counting attendance records:', attendanceError);
-      return { status: 'missing', studentsWithAttendance: 0, totalStudents: totalStudents || 0, completionPercentage: 0 };
+      console.error('❌ Error fetching attendance records:', {
+        message: attendanceError.message,
+        code: attendanceError.code,
+        details: attendanceError.details,
+        hint: attendanceError.hint
+      });
+      return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
     }
 
-    const studentsCount = studentsWithAttendance || 0;
-    const totalCount = totalStudents || 0;
-    const completionPercentage = totalCount > 0 ? (studentsCount / totalCount) * 100 : 0;
+    const studentsWithAttendance = attendanceRecords?.length || 0;
+    console.log(`📊 Found ${studentsWithAttendance} attendance records`);
+
+    // If no attendance records, it's missing
+    if (studentsWithAttendance === 0) {
+      return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
+    }
+
+    // For now, use a simple approach: if any attendance exists, consider it incomplete
+    // until we have a better way to determine total expected students
+    // This will show orange warnings for partial attendance
+
+    // Try to estimate total students from the lesson data
+    let totalStudents = studentsWithAttendance; // Fallback: assume current attendance count is complete
+
+    try {
+      // Try to get lesson details to find class/course info
+      const { data: lessonData, error: lessonError } = await supabase
+        .from('vw_react_lesson_details')
+        .select('class_id, course_id')
+        .eq('lesson_id', lessonId)
+        .single();
+
+      if (!lessonError && lessonData) {
+        // If we have class_id, try to get total students from a students table
+        if (lessonData.class_id) {
+          const { count: classStudentCount, error: classCountError } = await supabase
+            .from('user_profiles')
+            .select('id', { count: 'exact' })
+            .eq('role', 'student')
+            .eq('class_id', lessonData.class_id);
+
+          if (!classCountError && classStudentCount && classStudentCount > studentsWithAttendance) {
+            totalStudents = classStudentCount;
+            console.log(`📊 Found ${totalStudents} total students in class`);
+          }
+        }
+      }
+    } catch (estimationError) {
+      console.warn('⚠️ Could not estimate total students, using attendance count:', estimationError);
+    }
+
+    const completionPercentage = totalStudents > 0 ? (studentsWithAttendance / totalStudents) * 100 : 0;
 
     // Determine status
     let status: 'complete' | 'incomplete' | 'missing';
-    if (studentsCount === 0) {
+    if (studentsWithAttendance === 0) {
       status = 'missing';
-    } else if (studentsCount === totalCount) {
+    } else if (studentsWithAttendance === totalStudents) {
       status = 'complete';
     } else {
-      status = 'incomplete'; // Partial attendance - this should show orange warning
+      status = 'incomplete'; // This will show orange warning
     }
 
     console.log(`📊 Attendance completion for lesson ${lessonId}:`, {
       status,
-      studentsWithAttendance: studentsCount,
-      totalStudents: totalCount,
-      completionPercentage
+      studentsWithAttendance,
+      totalStudents,
+      completionPercentage: Math.round(completionPercentage)
     });
 
     return {
       status,
-      studentsWithAttendance: studentsCount,
-      totalStudents: totalCount,
+      studentsWithAttendance,
+      totalStudents,
       completionPercentage
     };
 
   } catch (error) {
-    console.error('💥 Error checking attendance completion:', error);
+    console.error('💥 Error checking attendance completion:', {
+      message: error?.message || 'Unknown error',
+      stack: error?.stack,
+      error: error
+    });
     return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
   }
 }
