@@ -493,7 +493,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
               </TabsList>
 
               {/* Personal Information Tab */}
-              <TabsContent value="personal" className="space-y-6">
+              <TabsContent value="personal" className="space-y-4">
                 <Card className="border-l-4 border-l-blue-500">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
