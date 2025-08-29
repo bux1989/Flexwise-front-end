@@ -230,11 +230,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         organizedContacts[contactCategory].push(contactItem);
       });
 
-      // Debug logging after all data is loaded
-      console.log('📊 Actual profile data from DB:', profileData);
-      console.log('📊 Actual staff data from DB:', staffData);
-      console.log('📊 Actual contacts data from DB:', contactsData);
-      console.log('📊 Organized contacts:', organizedContacts);
 
       // Auto-create contact record from auth email if it doesn't exist (with duplicate prevention)
       const authEmailExists = contactsData?.some(contact =>
@@ -474,7 +469,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
   const saveContacts = async (profileId: string) => {
     try {
-      console.log('📞 Saving contacts for profile:', profileId);
+      console.log('��� Saving contacts for profile:', profileId);
 
       // Use school_id from profile data (secure)
       console.log('���� Using school_id from profile:', userSchoolId);
