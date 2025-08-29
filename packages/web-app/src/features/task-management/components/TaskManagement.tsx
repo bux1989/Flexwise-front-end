@@ -290,7 +290,8 @@ export function TaskManagement({ currentTeacher, canAssignTasks, isMobile = fals
   };
 
   return (
-    <Card>
+    <DebugOverlay name="TaskManagement">
+      <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl flex items-center gap-2">
           <ClipboardList className="h-6 w-6 text-blue-500" />
@@ -759,6 +760,7 @@ export function TaskManagement({ currentTeacher, canAssignTasks, isMobile = fals
           </div>
         </DialogContent>
       </Dialog>
-    </Card>
+      </Card>
+    </DebugOverlay>
   );
 }
