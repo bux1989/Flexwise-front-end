@@ -50,18 +50,6 @@ export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
             />
           </div>
           
-          {/* Animated icon overlay */}
-          <div className="icon-overlay">
-            <div className="laptop-icon">
-              <div className="laptop-screen">
-                <div className="checkmark">
-                  <div className="checkmark-stem"></div>
-                  <div className="checkmark-kick"></div>
-                </div>
-              </div>
-              <div className="laptop-base"></div>
-            </div>
-          </div>
         </div>
 
 
