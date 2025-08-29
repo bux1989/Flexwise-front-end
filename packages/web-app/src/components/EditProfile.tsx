@@ -1542,52 +1542,64 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 </Button>
                               </div>
 
-                              {/* Email OTP Option */}
-                              <div className="space-y-2">
-                                <Label htmlFor="otp-email">E-Mail OTP</Label>
-                                <div className="flex gap-2">
-                                  <Input
-                                    id="otp-email"
-                                    type="email"
-                                    placeholder={profile.contacts.emails.find(e => e.is_primary)?.value || 'E-Mail-Adresse'}
-                                    value={otpEmail}
-                                    onChange={(e) => setOtpEmail(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                  <Button
-                                    onClick={sendEmailOtp}
-                                    disabled={isSendingOtp}
-                                    className="bg-blue-600 hover:bg-blue-700"
-                                  >
-                                    <Mail className="h-4 w-4 mr-2" />
-                                    {isSendingOtp ? 'Senden...' : 'Code senden'}
-                                  </Button>
-                                </div>
-                              </div>
-
-                              {/* SMS OTP Option - Show warning */}
-                              <div className="space-y-2">
-                                <Label htmlFor="otp-phone">SMS OTP</Label>
-                                <p className="text-xs text-orange-600 mb-1">
-                                  ⚠️ SMS ist möglicherweise nicht verfügbar
+                              <div className="border-t pt-3 mt-3">
+                                <p className="text-sm text-gray-600 mb-3">
+                                  Alternative Methoden (falls Authenticator-App nicht funktioniert):
                                 </p>
-                                <div className="flex gap-2">
-                                  <Input
-                                    id="otp-phone"
-                                    type="tel"
-                                    placeholder={profile.contacts.phones.find(p => p.is_primary)?.value || 'Telefonnummer'}
-                                    value={otpPhone}
-                                    onChange={(e) => setOtpPhone(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                  <Button
-                                    onClick={sendSmsOtp}
-                                    disabled={isSendingOtp}
-                                    className="bg-green-600 hover:bg-green-700"
-                                  >
-                                    <MessageSquare className="h-4 w-4 mr-2" />
-                                    {isSendingOtp ? 'Senden...' : 'Code senden'}
-                                  </Button>
+
+                                {/* Email OTP Option */}
+                                <div className="space-y-2 opacity-75">
+                                  <Label htmlFor="otp-email">E-Mail OTP</Label>
+                                  <p className="text-xs text-orange-600 mb-1">
+                                    ⚠️ Möglicherweise nicht verfügbar (Konfigurationsproblem)
+                                  </p>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      id="otp-email"
+                                      type="email"
+                                      placeholder={profile.contacts.emails.find(e => e.is_primary)?.value || 'E-Mail-Adresse'}
+                                      value={otpEmail}
+                                      onChange={(e) => setOtpEmail(e.target.value)}
+                                      className="flex-1"
+                                    />
+                                    <Button
+                                      onClick={sendEmailOtp}
+                                      disabled={isSendingOtp}
+                                      variant="outline"
+                                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                                    >
+                                      <Mail className="h-4 w-4 mr-2" />
+                                      {isSendingOtp ? 'Senden...' : 'Versuchen'}
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                {/* SMS OTP Option - Show warning */}
+                                <div className="space-y-2 opacity-75 mt-3">
+                                  <Label htmlFor="otp-phone">SMS OTP</Label>
+                                  <p className="text-xs text-red-600 mb-1">
+                                    ❌ SMS ist nicht konfiguriert (Administrator kontaktieren)
+                                  </p>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      id="otp-phone"
+                                      type="tel"
+                                      placeholder={profile.contacts.phones.find(p => p.is_primary)?.value || 'Telefonnummer'}
+                                      value={otpPhone}
+                                      onChange={(e) => setOtpPhone(e.target.value)}
+                                      className="flex-1"
+                                      disabled
+                                    />
+                                    <Button
+                                      onClick={sendSmsOtp}
+                                      disabled={true}
+                                      variant="outline"
+                                      className="border-gray-300 text-gray-500 cursor-not-allowed"
+                                    >
+                                      <MessageSquare className="h-4 w-4 mr-2" />
+                                      Nicht verfügbar
+                                    </Button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
