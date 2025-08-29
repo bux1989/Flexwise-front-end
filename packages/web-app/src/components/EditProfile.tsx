@@ -246,6 +246,15 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       }
 
       // Update or insert staff info
+      console.log('🏫 Attempting to save staff info:', {
+        profile_id: profileId,
+        school_id: authUser.user_metadata?.school_id,
+        user_role: authUser.user_metadata?.role,
+        skills: profile.skills,
+        kurzung: profile.kurzung || null,
+        subjects_stud: profile.subjects_stud
+      });
+
       const { error: staffError } = await supabase
         .from('profile_info_staff')
         .upsert({
@@ -257,6 +266,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         });
 
       if (staffError) {
+        console.error('❌ Staff info save error:', {
+          code: staffError.code,
+          message: staffError.message,
+          details: staffError.details,
+          hint: staffError.hint
+        });
         throw new Error('Failed to update staff info: ' + staffError.message);
       }
 
