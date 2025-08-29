@@ -44,10 +44,67 @@ Root Level:
 - Extract features and replace existing functionality
 - Integrate with current architecture
 
-### Strategy 2: Selective Extraction  
+### Strategy 2: Selective Extraction
 **Use Case**: Extract specific components from Figma templates
 - Pick and choose components to migrate
 - Integrate into existing feature structure
+
+---
+
+## 📊 Template Documentation System
+
+Each Figma template now includes comprehensive documentation to guide migration:
+
+### Template-Specific Documentation
+For each `figma_*` folder, you'll find:
+
+| Template | Template Guide | Migration Checklist |
+|----------|---------------|-------------------|
+| **figma_klassenbuch** | [TEMPLATE_GUIDE.md](../figma_klassenbuch/TEMPLATE_GUIDE.md) | [MIGRATION_CHECKLIST.md](../figma_klassenbuch/MIGRATION_CHECKLIST.md) |
+| **figma_teacher_dashboard** | [TEMPLATE_GUIDE.md](../figma_teacher_dashboard/TEMPLATE_GUIDE.md) | [MIGRATION_CHECKLIST.md](../figma_teacher_dashboard/MIGRATION_CHECKLIST.md) |
+| **figma_admin_page** | [TEMPLATE_GUIDE.md](../figma_admin_page/TEMPLATE_GUIDE.md) | [MIGRATION_CHECKLIST.md](../figma_admin_page/MIGRATION_CHECKLIST.md) |
+| **figma_parent_page** | [TEMPLATE_GUIDE.md](../figma_parent_page/TEMPLATE_GUIDE.md) | [MIGRATION_CHECKLIST.md](../figma_parent_page/MIGRATION_CHECKLIST.md) |
+
+### What Each Document Contains
+
+#### TEMPLATE_GUIDE.md
+- **Special Features**: Unique components and interactions
+- **Component Breakdown**: Detailed analysis of all components
+- **Data Structures**: Mock data formats and schemas
+- **Design System Differences**: Styling and component variations
+- **Integration Points**: External system connections
+- **Known Issues**: Migration challenges and considerations
+
+#### MIGRATION_CHECKLIST.md
+- **Component-Level Tracking**: Individual component migration status
+- **Feature-Area Progress**: Feature-based migration tracking
+- **Data Migration Status**: Mock data → Supabase migration progress
+- **Integration Points**: Cross-feature dependencies
+- **Blocker Identification**: Issues preventing migration progress
+- **Who/When Tracking**: Migration responsibility and timing
+
+### Master Migration Tracker
+For a centralized view of all template migration progress:
+- **[FIGMA_MIGRATION_TRACKER.md](./FIGMA_MIGRATION_TRACKER.md)**: Complete migration status dashboard
+
+> **📝 AI Responsibility**: The AI should update MIGRATION_CHECKLIST.md files during migration conversations, tracking who migrated what and when, and noting any issues encountered during troubleshooting.
+
+### Using the Documentation
+
+**Before Starting Migration**:
+1. Read the relevant `TEMPLATE_GUIDE.md` to understand template features
+2. Review the `MIGRATION_CHECKLIST.md` to see current status and priorities
+3. Check the master tracker for dependencies and overall project status
+
+**During Migration**:
+1. Update the `MIGRATION_CHECKLIST.md` as components are completed
+2. Note any issues or discoveries in the checklist
+3. Update progress percentages and migration dates
+
+**After Migration**:
+1. Mark items as completed with your name and date
+2. Update any known issues that were resolved
+3. Add notes for future reference or follow-up work
 - Preserve existing functionality
 
 ---
