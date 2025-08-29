@@ -19,6 +19,7 @@ interface KlassenbuchAppProps {
   onWeekChange?: (week: Date) => void;
   selectedClass?: any;
   onClassChange?: (classItem: any) => void;
+  onAttendanceClick?: (lessonId: string, viewMode?: 'overview' | 'edit') => void;
 }
 
 export function KlassenbuchApp({
