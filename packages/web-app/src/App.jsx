@@ -45,7 +45,7 @@ const extractUserRole = (userRoles, error) => {
     console.log('✅ Roles found:', roleNames)
     return role
   } else {
-    console.log('⚠�� No roles found, using fallback')
+    console.log('⚠️ No roles found, using fallback')
     return DEFAULT_ROLE
   }
 }
@@ -262,7 +262,12 @@ function App() {
       <Router>
         <div className="min-h-screen bg-gray-50">
           {!session ? (
-            <Login />
+            <Routes>
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/reset-password" element={<ResetPassword />} />
+              <Route path="/" element={<Login />} />
+              <Route path="*" element={<Navigate to="/auth/login" replace />} />
+            </Routes>
           ) : (
             <Routes>
               <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
