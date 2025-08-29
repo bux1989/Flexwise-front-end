@@ -425,9 +425,19 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           {/* Content */}
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="personal">Persönliche Daten</TabsTrigger>
-                <TabsTrigger value="professional">Berufliche Daten</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 h-12 bg-gray-100 p-1 rounded-lg border">
+                <TabsTrigger
+                  value="personal"
+                  className="h-10 font-semibold text-base data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-gray-200"
+                >
+                  Persönliche Daten
+                </TabsTrigger>
+                <TabsTrigger
+                  value="professional"
+                  className="h-10 font-semibold text-base data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-gray-200"
+                >
+                  Berufliche Daten
+                </TabsTrigger>
               </TabsList>
 
               {/* Personal Information Tab */}
