@@ -611,7 +611,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         </div>
       )}
 
-      {/* Klassenbuch content - show when active */}
+      {/* Conditional content based on current view */}
       {showKlassenbuch ? (
         <div className="mx-6 mt-4">
           <KlassenbuchApp
@@ -627,6 +627,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             onAttendanceClick={handleAttendanceClick}
           />
         </div>
+      ) : showEditProfile ? (
+        <EditProfile
+          onClose={() => setShowEditProfile(false)}
+          user={user}
+        />
       ) : (
         <div className="p-1 lg:p-6">
         {/* Top Row - 2 columns */}
@@ -1045,13 +1050,6 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Edit Profile Component */}
-      <EditProfile
-        isOpen={showEditProfile}
-        onClose={() => setShowEditProfile(false)}
-        user={user}
-      />
       </div>
     </DebugOverlay>
   );
