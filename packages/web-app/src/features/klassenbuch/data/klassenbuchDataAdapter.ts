@@ -270,6 +270,8 @@ interface DatabaseLesson {
  * @returns Promise<Array of lessons>
  */
 export async function getLessonsForWeek(classId: string, schoolId: string, weekStart: Date): Promise<Lesson[]> {
+  // First get the school days to map day numbers to names correctly
+  const schoolDaysData = await getSchoolDays(schoolId);
   try {
     console.log('📚 Fetching lessons for class:', classId, 'school:', schoolId, 'week:', weekStart);
 
