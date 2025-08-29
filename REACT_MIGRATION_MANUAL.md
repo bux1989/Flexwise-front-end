@@ -435,7 +435,7 @@ npm run dev
 - Pass data down through props
 - Use callback functions for state updates
 
-### 5. Error Handling
+### 6. Error Handling
 - Check for missing dependencies early
 - Use TypeScript for type safety
 - Test import paths before committing
