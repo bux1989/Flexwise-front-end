@@ -79,6 +79,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   // Store school_id from profile data (for security)
   const [userSchoolId, setUserSchoolId] = useState<string | null>(null);
 
+  // Store auth user email to protect it from deletion
+  const [authUserEmail, setAuthUserEmail] = useState<string | null>(null);
+
   // Load profile data from Supabase
   useEffect(() => {
     loadProfileData();
@@ -466,7 +469,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           .insert(contactsToInsert);
 
         if (insertError) {
-          console.error('�� Error inserting contacts:', {
+          console.error('❌ Error inserting contacts:', {
             code: insertError.code,
             message: insertError.message,
             details: insertError.details,
