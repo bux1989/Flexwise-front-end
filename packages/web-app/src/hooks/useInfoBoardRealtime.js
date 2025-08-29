@@ -59,35 +59,36 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
 
     try {
       console.log('📋 Fetching substitutions for school:', schoolId)
-      
+
       const today = new Date().toISOString().split('T')[0]
-      
+
       const { data, error } = await supabase
         .from('substitutions')
         .select(`
           id,
-          lesson_id,
-          substitute_teacher_id,
-          original_teacher_id,
+          original_lesson_id,
+          substitute_staff_id,
           reason,
           notes,
           created_at,
-          lesson_date,
-          period_start,
-          period_end,
+          valid_until,
+          status,
           course_lessons!inner(
+            id,
             subject_id,
             class_id,
             room_id,
+            start_datetime,
+            end_datetime,
             subjects(name, abbreviation),
             structure_classes(name),
             structure_rooms(name)
           )
         `)
         .eq('school_id', schoolId)
-        .gte('lesson_date', today)
-        .order('lesson_date', { ascending: true })
-        .order('period_start', { ascending: true })
+        .eq('status', 'approved')
+        .gte('valid_until', today)
+        .order('created_at', { ascending: false })
         .limit(20)
 
       if (error) {
