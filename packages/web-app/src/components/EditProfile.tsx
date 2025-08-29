@@ -477,7 +477,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           {/* Content */}
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3 h-12 bg-gray-100 p-1 rounded-lg border">
+              <TabsList className="grid w-full grid-cols-2 h-12 bg-gray-100 p-1 rounded-lg border">
                 <TabsTrigger
                   value="personal"
                   className="h-10 font-semibold text-base data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-gray-200"
@@ -489,12 +489,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                   className="h-10 font-semibold text-base data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-gray-200"
                 >
                   Berufliche Daten
-                </TabsTrigger>
-                <TabsTrigger
-                  value="security"
-                  className="h-10 font-semibold text-base data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-gray-200"
-                >
-                  Sicherheit
                 </TabsTrigger>
               </TabsList>
 
@@ -856,6 +850,57 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Security Settings - Compact Section */}
+                <Card className="border-l-4 border-l-red-500">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Lock className="h-5 w-5 text-red-600" />
+                      Sicherheitseinstellungen
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Password Reset */}
+                    <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
+                      <div>
+                        <h4 className="font-medium text-red-800">Passwort zurücksetzen</h4>
+                        <p className="text-sm text-red-600 mt-1">
+                          Senden Sie sich einen Reset-Link per E-Mail
+                        </p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-red-200 text-red-700 hover:bg-red-100"
+                        onClick={() => {
+                          alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
+                        }}
+                      >
+                        Link senden
+                      </Button>
+                    </div>
+
+                    {/* TOTP Activation */}
+                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-100">
+                      <div>
+                        <h4 className="font-medium text-orange-800">Zwei-Faktor-Authentifizierung</h4>
+                        <p className="text-sm text-orange-600 mt-1">
+                          Status: <span className="font-medium">Nicht aktiviert</span>
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="bg-orange-600 hover:bg-orange-700 text-white"
+                        onClick={() => {
+                          alert('TOTP-Setup wird geöffnet. Scannen Sie den QR-Code mit Ihrer Authenticator-App!');
+                        }}
+                      >
+                        <Smartphone className="h-4 w-4 mr-2" />
+                        Aktivieren
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
