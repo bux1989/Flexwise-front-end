@@ -34,6 +34,31 @@ export async function handleLogin(email, password) {
   }
 }
 
+// Logout function
+export async function handleLogout() {
+  try {
+    console.log('🚪 Logging out...')
+
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
+
+    if (error) {
+      console.error('❌ Logout error:', error)
+      console.log('🔄 Local session cleared despite error')
+    } else {
+      console.log('✅ Logout successful')
+    }
+
+    // Force redirect to login page (root shows login when not authenticated)
+    window.location.href = '/'
+
+  } catch (err) {
+    console.error('💥 Logout failed:', err)
+    console.log('🔄 Forcing local logout and redirect...')
+    // Force redirect even if logout fails
+    window.location.href = '/'
+  }
+}
+
 // Get current user profile using the correct connection pattern
 export async function getCurrentUserProfile() {
   try {
@@ -66,8 +91,7 @@ export async function getCurrentUserProfile() {
       .from('user_profiles')
       .select(`
         *,
-        roles(name),
-        structure_schools(name)
+        roles(name)
       `)
       .eq('id', profileId)
       .single()
@@ -93,13 +117,12 @@ export async function getCurrentUserProfile() {
     }
     
     const role = profile.roles?.name || 'Parent'
-    const school = profile.structure_schools?.name || 'Unknown School'
-    
+
     console.log('✅ Profile loaded successfully:', {
       profile_id: profile.id,
       name: `${profile.first_name} ${profile.last_name}`,
       role: role,
-      school: school
+      school_id: profile.school_id
     })
     
     return {
@@ -203,6 +226,12 @@ export async function fetchAttendanceBadges(lessonIds) {
   try {
     console.log('🏷️ Fetching attendance badges for lessons:', lessonIds)
 
+    // Handle empty or null lesson IDs
+    if (!lessonIds || lessonIds.length === 0) {
+      console.log('📋 No lesson IDs provided, returning empty badges')
+      return {}
+    }
+
     const { data: badges, error } = await supabase
       .from('vw_lesson_attendance_badges')
       .select('*')
@@ -219,12 +248,12 @@ export async function fetchAttendanceBadges(lessonIds) {
       badgeLookup[badge.lesson_id] = badge
     })
 
-    console.log('✅ Attendance badges fetched:', badgeLookup)
+    console.log('✅ Attendance badges fetched:', Object.keys(badgeLookup).length, 'badges')
     return badgeLookup
 
   } catch (error) {
     console.error('💥 Error in fetchAttendanceBadges:', error)
-    return {} // Return empty object on error
+    return {} // Return empty object on error to prevent crashes
   }
 }
 
@@ -232,43 +261,63 @@ export async function fetchAttendanceBadges(lessonIds) {
 export async function fetchLessonAttendance(lessonId) {
   try {
     console.log('📋 Fetching attendance for lesson:', lessonId)
+    console.log('📋 Lesson ID type:', typeof lessonId)
 
+    // First, let's try a simple query to see if the table exists
+    console.log('🔍 Testing table access...')
+    const { data: testData, error: testError } = await supabase
+      .from('student_attendance_logs')
+      .select('*')
+      .limit(1)
+
+    if (testError) {
+      console.error('❌ Table access failed:', testError)
+      console.error('❌ Error message:', testError.message || 'No message')
+      console.error('❌ Error code:', testError.code || 'No code')
+      console.error('❌ Error details:', testError.details || 'No details')
+      console.error('❌ Error hint:', testError.hint || 'No hint')
+      throw new Error(`Table access failed: ${testError.message}`)
+    }
+
+    console.log('✅ Table access successful, test data:', testData)
+
+    // Now try the actual query - specify which user_profiles relationship we want
     const { data: attendance, error } = await supabase
       .from('student_attendance_logs')
       .select(`
         *,
-        user_profiles(first_name, last_name)
+        user_profiles!student_attendance_logs_student_id_fkey(first_name, last_name)
       `)
       .eq('lesson_id', lessonId)
 
     if (error) {
-      console.error('❌ Error fetching attendance:', {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
-      })
-      throw error
+      console.error('❌ Error fetching attendance:', error)
+      console.error('❌ Error message:', error.message || 'No message')
+      console.error('❌ Error code:', error.code || 'No code')
+      console.error('❌ Error details:', error.details || 'No details')
+      console.error('❌ Error hint:', error.hint || 'No hint')
+      throw new Error(`Attendance fetch failed: ${error.message}`)
     }
+
+    console.log('📋 Raw attendance data:', attendance)
 
     // Group attendance by status
     const grouped = {
       present: attendance?.filter(record => record.status === 'present') || [],
       late: attendance?.filter(record => record.status === 'late') || [],
-      absent: attendance?.filter(record => record.status === 'absent') || []
+      absent: attendance?.filter(record =>
+        record.status === 'absent_excused' || record.status === 'absent_unexcused'
+      ) || []
     }
 
-    console.log('✅ Attendance fetched:', grouped)
+    console.log('✅ Attendance fetched and grouped:', grouped)
     return grouped
 
   } catch (error) {
-    console.error('💥 Error in fetchLessonAttendance:', {
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-      code: error.code,
-      lessonId: lessonId
-    })
+    console.error('💥 Error in fetchLessonAttendance:', error)
+    console.error('💥 Error name:', error.name || 'No name')
+    console.error('💥 Error message:', error.message || 'No message')
+    console.error('💥 Error stack:', error.stack || 'No stack')
     throw error
   }
 }
@@ -343,3 +392,208 @@ export async function bulkSaveAttendance(lessonId, attendanceRecords) {
 }
 
 export const isDemo = false // Always use real authentication now
+
+// Fetch lesson meta from course_lessons
+export async function getLessonMeta(lessonId) {
+  const { data, error } = await supabase
+    .from('course_lessons')
+    .select('id, school_id, course_id, class_id, start_datetime, end_datetime')
+    .eq('id', lessonId)
+    .single()
+  if (error) throw error
+  return data
+}
+
+
+// Build student ID ↔ name pairs for a lesson
+export async function getLessonStudentNameIdPairs(lessonId) {
+  const lesson = await getLessonMeta(lessonId)
+  if (!lesson) return { students: [], schoolId: null }
+
+  // Helper to fetch profiles and classes
+  const fetchProfilesAndClasses = async (studentIds, classIdOverride = null) => {
+    if (!studentIds.length) return []
+    const { data: profiles, error: pErr } = await supabase
+      .from('user_profiles')
+      .select('id, first_name, last_name')
+      .in('id', studentIds)
+    if (pErr) throw pErr
+
+    // Map profile_id -> class_id
+    let classMap = {}
+    if (classIdOverride) {
+      profiles.forEach(p => { classMap[p.id] = classIdOverride })
+    } else {
+      const { data: pis, error: pisErr } = await supabase
+        .from('profile_info_student')
+        .select('profile_id, class_id')
+        .in('profile_id', studentIds)
+      if (pisErr) throw pisErr
+      classMap = (pis || []).reduce((acc, r) => { acc[r.profile_id] = r.class_id; return acc }, {})
+    }
+
+    const classIds = Array.from(new Set(Object.values(classMap).filter(Boolean)))
+    let classNameById = {}
+    if (classIds.length) {
+      const { data: classes, error: cErr } = await supabase
+        .from('structure_classes')
+        .select('id, name')
+        .in('id', classIds)
+      if (cErr) throw cErr
+      classNameById = (classes || []).reduce((acc, c) => { acc[c.id] = c.name; return acc }, {})
+    }
+
+    return profiles.map(p => {
+      const className = classNameById[classMap[p.id]] || ''
+      const displayName = `${p.first_name || ''} ${p.last_name || ''}${className ? ` (${className})` : ''}`.trim()
+      return { id: p.id, displayName }
+    })
+  }
+
+  if (lesson.course_id) {
+    const { data: enrollments, error: eErr } = await supabase
+      .from('course_enrollments')
+      .select('student_id')
+      .eq('course_id', lesson.course_id)
+    if (eErr) throw eErr
+    const studentIds = (enrollments || []).map(e => e.student_id).filter(Boolean)
+    const students = await fetchProfilesAndClasses(studentIds)
+    return { students, schoolId: lesson.school_id }
+  }
+
+  if (lesson.class_id) {
+    const { data: pis, error: pisErr } = await supabase
+      .from('profile_info_student')
+      .select('profile_id')
+      .eq('class_id', lesson.class_id)
+    if (pisErr) throw pisErr
+    const studentIds = (pis || []).map(r => r.profile_id).filter(Boolean)
+    const students = await fetchProfilesAndClasses(studentIds, lesson.class_id)
+    return { students, schoolId: lesson.school_id }
+  }
+
+  return { students: [], schoolId: lesson.school_id }
+}
+
+// Fetch single lesson by ID for attendance modal fallback
+export async function fetchSingleLesson(lessonId) {
+  try {
+    console.log('📚 Fetching single lesson:', lessonId);
+
+    const { data: lesson, error } = await supabase
+      .from('vw_react_lesson_details')
+      .select('*')
+      .eq('lesson_id', lessonId)
+      .single();
+
+    if (error) {
+      console.error('❌ Error fetching lesson:', error);
+      return null;
+    }
+
+    if (!lesson) {
+      console.warn('⚠️ No lesson found with ID:', lessonId);
+      return null;
+    }
+
+    // Fetch student data for the lesson
+    let students = [];
+    try {
+      const { students: studentData } = await getLessonStudentNameIdPairs(lessonId);
+      students = studentData.map(s => ({
+        id: s.id,
+        name: s.displayName
+      }));
+    } catch (error) {
+      console.warn('⚠️ Could not fetch students for lesson:', lessonId, error);
+      // Try alternative student fetch if available
+      if (lesson.class_id) {
+        try {
+          const { data: classStudents, error: classError } = await supabase
+            .from('profile_info_student')
+            .select('profile_id, user_profiles!inner(first_name, last_name)')
+            .eq('class_id', lesson.class_id);
+
+          if (!classError && classStudents) {
+            students = classStudents.map(s => ({
+              id: s.profile_id,
+              name: `${s.user_profiles.first_name} ${s.user_profiles.last_name}`
+            }));
+          }
+        } catch (classError) {
+          console.warn('⚠️ Could not fetch class students either:', classError);
+        }
+      }
+    }
+
+    // Transform to teacher dashboard lesson format
+    const startTime = new Date(lesson.start_datetime);
+    const endTime = new Date(lesson.end_datetime);
+
+    return {
+      id: lesson.lesson_id,
+      time: startTime.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+      endTime: endTime.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+      subject: lesson.subject_name || 'Unbekannt',
+      class: lesson.class_name || 'Unbekannte Klasse',
+      room: lesson.room_name,
+      location: lesson.room_name,
+      isCurrent: false, // Will be calculated if needed
+      isSubstitute: lesson.lesson_type === 'substitute',
+      isCancelled: lesson.is_cancelled || false,
+      otherTeachers: [],
+      adminComment: lesson.notes,
+      students: students,
+      enrolled: students.length || lesson.student_count || 0,
+      attendance: { present: [], late: [], absent: [] },
+      attendanceTaken: lesson.attendance_taken || false
+    };
+
+  } catch (error) {
+    console.error('💥 Error in fetchSingleLesson:', error);
+    return null;
+  }
+}
+
+// RPC call to save attendance via DB function
+export async function fetchLessonDiaryEntry(lessonId) {
+  try {
+    console.log('📝 Fetching lesson diary entry for lesson:', lessonId)
+
+    const { data: diaryEntries, error } = await supabase
+      .from('lesson_diary_entries')
+      .select('*')
+      .eq('lesson_id', lessonId)
+      .eq('entry_type', 'attendance')
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (error) {
+      console.error('❌ Error fetching lesson diary entry:', error)
+      throw error
+    }
+
+    const latestEntry = diaryEntries?.[0]
+    console.log('✅ Lesson diary entry fetched:', latestEntry?.entry_text || 'No entry found')
+
+    return latestEntry?.entry_text || ''
+
+  } catch (error) {
+    console.error('💥 Error in fetchLessonDiaryEntry:', error)
+    return '' // Return empty string on error to prevent crashes
+  }
+}
+
+export async function saveLessonAttendanceBulkRPC({ lessonId, schoolId, attendance, diaryText, diaryType = 'attendance', diaryPrivate = false }) {
+  const payload = {
+    p_lesson_id: lessonId,
+    p_school_id: schoolId,
+    p_attendance: attendance,
+    p_diary_entry_text: diaryText || null,
+    p_diary_entry_type: diaryType,
+    p_diary_is_private: !!diaryPrivate
+  }
+  const { data, error } = await supabase.rpc('save_lesson_attendance_bulk', payload)
+  if (error) throw error
+  return data
+}

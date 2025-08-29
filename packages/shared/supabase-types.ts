@@ -1,5 +1,8 @@
 // Generated types from Supabase
 // Run: npx supabase gen types typescript --project-id YOUR_PROJECT_ID --schema public > packages/shared/supabase-types.ts
+//
+// NOTE: For comprehensive database types with better documentation and helper types,
+// see: ../../types/database.ts
 
 export interface Database {
   public: {

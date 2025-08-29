@@ -284,10 +284,21 @@ export const getSubstituteLessons = () => {
 };
 
 export const needsAttendanceTracking = (lessonTime: string, lessonEndTime: string, selectedDate: Date, isCurrent: boolean = false) => {
-  const isToday = selectedDate.toDateString() === new Date().toDateString();
-  if (!isToday) return false;
-
   const currentTime = new Date();
+  const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+  const todayOnly = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate());
+
+  // If the lesson is on a future date, no attendance tracking needed
+  if (selectedDateOnly > todayOnly) {
+    return false;
+  }
+
+  // If the lesson is on a past date, always show attendance tracking
+  if (selectedDateOnly < todayOnly) {
+    return true;
+  }
+
+  // If the lesson is today, check if it has started or is current
   const [startHours, startMinutes] = lessonTime.split(':').map(Number);
   const [endHours, endMinutes] = lessonEndTime.split(':').map(Number);
 

@@ -5,9 +5,9 @@ import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { Checkbox } from '../../../components/ui/checkbox';
 import { Label } from '../../../components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/popover';
-import { Calendar as CalendarComponent } from '../../../components/ui/calendar';
+import { CompactDatePicker } from '../../../components/ui/date-picker';
 import { TooltipProvider } from '../../../components/ui/tooltip';
+import dayjs, { Dayjs } from 'dayjs';
 
 // Import from shared domains
 import { 
@@ -23,20 +23,22 @@ interface LessonScheduleProps {
   lessons: any[];
   selectedDate: Date;
   onDateChange: (date: Date) => void;
-  onAttendanceClick: (lessonId: number, viewMode?: 'overview' | 'edit') => void;
+  onAttendanceClick: (lessonId: string, viewMode?: 'overview' | 'edit') => void;
   isMobile?: boolean;
 }
 
-export function LessonSchedule({ 
-  lessons, 
-  selectedDate, 
-  onDateChange, 
+export function LessonSchedule({
+  lessons,
+  selectedDate,
+  onDateChange,
   onAttendanceClick,
-  isMobile = false 
+  isMobile = false
 }: LessonScheduleProps) {
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [showAllLessonsOnMobile, setShowAllLessonsOnMobile] = useState(false);
   const [expandedMobileLessonDetails, setExpandedMobileLessonDetails] = useState<Set<number>>(new Set());
+
+  // Convert Date to dayjs for the DatePicker
+  const selectedDayjs = dayjs(selectedDate);
 
   // Helper function for mobile lesson abbreviations
   const getMobileSubjectAbbreviation = (subject: string): string => {
@@ -75,8 +77,6 @@ export function LessonSchedule({
     });
   };
 
-  const currentDate = new Date();
-  const isToday = selectedDate.toDateString() === currentDate.toDateString();
 
   // Filter lessons for mobile display
   const displayedLessons = useMemo(() => {
@@ -103,15 +103,10 @@ export function LessonSchedule({
     });
   }, [lessons, isMobile, showAllLessonsOnMobile]);
 
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date) {
-      onDateChange(date);
-      setIsDatePickerOpen(false);
+  const handleDatePickerChange = (newValue: Dayjs | null) => {
+    if (newValue) {
+      onDateChange(newValue.toDate());
     }
-  };
-
-  const handleTodayClick = () => {
-    onDateChange(new Date());
   };
 
   return (
@@ -135,28 +130,10 @@ export function LessonSchedule({
               </Label>
             </div>
           )}
-          <Button 
-            size="sm" 
-            className={`${isToday ? 'bg-cyan-400 hover:bg-cyan-500' : 'bg-gray-200 hover:bg-gray-300'} text-black h-8 px-3`}
-            onClick={handleTodayClick}
-          >
-            Heute
-          </Button>
-          <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Calendar className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <CalendarComponent
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateSelect}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <CompactDatePicker
+            value={selectedDayjs}
+            onChange={handleDatePickerChange}
+          />
         </div>
       </CardHeader>
       <CardContent className="space-y-1">
@@ -293,11 +270,11 @@ export function LessonSchedule({
                     {lesson.isCurrent && !isMobile && (
                       <span className="text-xs text-blue-600">Aktuell</span>
                     )}
-                    
+
                     {!lesson.isCancelled && needsAttendanceTracking(lesson.time, lesson.endTime, selectedDate, lesson.isCurrent) && (
                       <>
                         {attendanceStatus === 'complete' ? (
-                          <Badge 
+                          <Badge
                             className="cursor-pointer bg-green-50 hover:bg-green-100 text-green-700 border-green-200 flex items-center gap-1 px-2 py-1"
                             onClick={() => onAttendanceClick(lesson.id, 'overview')}
                           >
@@ -307,7 +284,7 @@ export function LessonSchedule({
                             </span>
                           </Badge>
                         ) : attendanceStatus === 'incomplete' ? (
-                          <Badge 
+                          <Badge
                             className="cursor-pointer bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200 flex items-center gap-1 px-2 py-1"
                             onClick={() => onAttendanceClick(lesson.id, 'edit')}
                           >
@@ -317,7 +294,7 @@ export function LessonSchedule({
                             </span>
                           </Badge>
                         ) : (
-                          <Badge 
+                          <Badge
                             className="cursor-pointer bg-red-50 hover:bg-red-100 text-red-600 border-red-200 flex items-center gap-1 px-2 py-1"
                             onClick={() => onAttendanceClick(lesson.id, 'edit')}
                           >

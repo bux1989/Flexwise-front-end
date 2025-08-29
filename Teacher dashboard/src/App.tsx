@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Calendar, Bell, MessageCircle, Menu, Info, Clock, MapPin, Plus, Check, AlertCircle, X, Edit, Trash2, HelpCircle, UserPlus, Search, Filter, Star, ChevronDown, ChevronUp, EyeOff, Eye, BookOpen, Users, UserX, User, FileText, LogOut, CalendarIcon, ClipboardList, MoreHorizontal } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import { Button } from './components/ui/button';
@@ -20,14 +20,14 @@ import { Header } from './components/Header';
 import { AddTaskDialog } from './components/AddTaskDialog';
 import { TimeInputWithArrows } from './components/TimeInputWithArrows';
 import { CURRENT_TEACHER, INITIAL_TASKS, INITIAL_EVENTS, INITIAL_LESSONS, ASSIGNEE_GROUPS } from './constants/mockData';
-import { 
-  getSubstituteLessons, 
-  getPriorityValue, 
-  needsAttendanceTracking, 
-  getAttendanceStatus, 
-  getAttendanceSummary, 
-  getAttendanceNumbers, 
-  formatDateTime, 
+import {
+  getSubstituteLessons,
+  getPriorityValue,
+  needsAttendanceTracking,
+  getAttendanceStatus,
+  getAttendanceSummary,
+  getAttendanceNumbers,
+  formatDateTime,
   formatTimestamp,
   formatCompactTimestamp,
   getTeacherAbbreviation,
@@ -35,9 +35,39 @@ import {
   parseLessonNote
 } from './utils/helpers';
 
+// Import Supabase helper
+import { getCurrentUserProfile } from '../../packages/shared/lib/supabaseClient';
+
 export default function App() {
   const isMobile = useIsMobile();
-  
+
+  // User profile state
+  const [currentTeacher, setCurrentTeacher] = useState(CURRENT_TEACHER); // fallback to mock data
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  // Load user profile on component mount
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        const profile = await getCurrentUserProfile();
+        if (profile && profile.first_name && profile.last_name) {
+          // Format the teacher name (e.g., "Frau Anna Müller" or "Herr John Schmidt")
+          const salutation = profile.role === 'Teacher' ?
+            (profile.first_name.endsWith('a') || profile.first_name.endsWith('e') ? 'Frau' : 'Herr') : 'Frau';
+          const fullName = `${salutation} ${profile.first_name} ${profile.last_name}`;
+          setCurrentTeacher(fullName);
+        }
+      } catch (error) {
+        console.warn('Could not load user profile, using fallback:', error);
+        // Keep the fallback value (CURRENT_TEACHER)
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    loadUserProfile();
+  }, []);
+
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [events, setEvents] = useState(INITIAL_EVENTS);
   const [lessons, setLessons] = useState(INITIAL_LESSONS);
@@ -105,9 +135,9 @@ export default function App() {
   const [completionComment, setCompletionComment] = useState('');
   const [expandedGroupAssignees, setExpandedGroupAssignees] = useState<Set<number>>(new Set());
   
-  // Mock user permissions - Frau Müller can assign tasks
+  // Mock user permissions - user can assign tasks if they are a teacher
   const canAssignTasks = true;
-  
+
   const substituteLessons = getSubstituteLessons();
 
   // Mobile-specific toggle functions
@@ -261,14 +291,14 @@ export default function App() {
         ...task, 
         completed: true,
         completedAt: now,
-        completedBy: CURRENT_TEACHER,
+        completedBy: currentTeacher,
         comments: completionComment.trim() ? [
           ...task.comments,
           {
             id: task.comments.length + 1,
             text: completionComment.trim(),
             timestamp: now,
-            author: CURRENT_TEACHER
+            author: currentTeacher
           }
         ] : task.comments
       } : task
@@ -290,11 +320,11 @@ export default function App() {
     setTasks(tasks.map(task => 
       task.id === taskId ? { 
         ...task, 
-        comments: [...task.comments, { 
-          id: task.comments.length + 1, 
-          text: commentText, 
+        comments: [...task.comments, {
+          id: task.comments.length + 1,
+          text: commentText,
           timestamp,
-          author: CURRENT_TEACHER
+          author: currentTeacher
         }] 
       } : task
     ));
@@ -318,7 +348,7 @@ export default function App() {
       dueDate: taskData.dueDate ? taskData.dueDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       hotList: taskData.hotList,
       assignedTo: taskData.assignedTo,
-      assignedBy: CURRENT_TEACHER,
+      assignedBy: currentTeacher,
       assignedAt: now,
       completedAt: null,
       completedBy: null,
@@ -1032,15 +1062,15 @@ export default function App() {
           });
           break;
         case 'excused':
-          absent.push({ 
-            name: student.name, 
-            id: student.id, 
-            excused: true, 
+          absent.push({
+            name: student.name,
+            id: student.id,
+            excused: true,
             reason: attendance.excuseReason || 'Entschuldigt',
-            excusedBy: CURRENT_TEACHER,
+            excusedBy: currentTeacher,
             excusedAt: new Date().toLocaleString('de-DE', {
               day: '2-digit',
-              month: '2-digit', 
+              month: '2-digit',
               year: 'numeric',
               hour: '2-digit',
               minute: '2-digit'
@@ -1070,7 +1100,7 @@ export default function App() {
       // First time taking attendance - create new format
       updatedLessonNote = createLessonNoteWithMetadata(
         lessonNote,
-        CURRENT_TEACHER,
+        currentTeacher,
         timestamp
       );
     } else {
@@ -1081,14 +1111,14 @@ export default function App() {
           lessonNote,
           selectedLesson.attendanceTakenBy,
           selectedLesson.attendanceTakenAt,
-          CURRENT_TEACHER,
+          currentTeacher,
           timestamp
         );
       } else {
         // Fallback for existing lessons without metadata
         updatedLessonNote = createLessonNoteWithMetadata(
           lessonNote,
-          CURRENT_TEACHER,
+          currentTeacher,
           timestamp
         );
       }
@@ -1102,10 +1132,10 @@ export default function App() {
             attendance: totalStudentsWithAttendance > 0 ? { present, late, absent } : undefined,
             lessonNote: updatedLessonNote,
             ...(wasFirstTime ? {
-              attendanceTakenBy: CURRENT_TEACHER,
+              attendanceTakenBy: currentTeacher,
               attendanceTakenAt: timestamp
             } : {
-              attendanceLastEditedBy: CURRENT_TEACHER,
+              attendanceLastEditedBy: currentTeacher,
               attendanceLastEditedAt: timestamp
             })
           }
@@ -1147,11 +1177,11 @@ export default function App() {
             ...lesson.attendance,
             absent: lesson.attendance.absent.map(student => 
               student.id === selectedStudentForExcuse.studentId 
-                ? { 
-                    ...student, 
-                    excused: true, 
+                ? {
+                    ...student,
+                    excused: true,
                     reason: excuseReason || 'Entschuldigt',
-                    excusedBy: CURRENT_TEACHER,
+                    excusedBy: currentTeacher,
                     excusedAt: timestamp
                   }
                 : student
@@ -1218,7 +1248,7 @@ export default function App() {
         tempLessonNote,
         lesson.attendanceTakenBy,
         lesson.attendanceTakenAt,
-        CURRENT_TEACHER,
+        currentTeacher,
         timestamp
       );
     } else if (lesson.attendanceTakenBy && lesson.attendanceTakenAt) {
@@ -1239,7 +1269,7 @@ export default function App() {
             ...l, 
             lessonNote: updatedLessonNote,
             ...(parsedNote.hasMetadata && lesson.attendanceTakenBy && lesson.attendanceTakenAt ? {
-              attendanceLastEditedBy: CURRENT_TEACHER,
+              attendanceLastEditedBy: currentTeacher,
               attendanceLastEditedAt: timestamp
             } : {})
           }
@@ -1265,8 +1295,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      <Header 
-        currentTeacher={CURRENT_TEACHER}
+      <Header
+        currentTeacher={currentTeacher}
         dateString={dateString}
         onButtonClick={handleHeaderButtonClick}
       />

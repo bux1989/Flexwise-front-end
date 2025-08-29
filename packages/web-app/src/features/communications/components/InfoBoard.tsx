@@ -1,21 +1,35 @@
 import { useState } from 'react';
-import { Info, Clock, UserPlus, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { Info, Clock, UserPlus, ChevronUp, ChevronDown, Eye, EyeOff, Wifi } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { Checkbox } from '../../../components/ui/checkbox';
 import { Label } from '../../../components/ui/label';
 
-// Import substitute lessons from shared domains
-import { getSubstituteLessons } from '../../../../../shared/domains/academic/klassenbuch/utils';
+// Import real-time hook for Info-Board data
+import { useInfoBoardRealtime, formatSubstitutionText } from '../../../hooks/useInfoBoardRealtime';
 
 interface InfoBoardProps {
+  schoolId?: string;
   isMobile?: boolean;
 }
 
-export function InfoBoard({ isMobile = false }: InfoBoardProps) {
+export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
   const [expandedInfoItems, setExpandedInfoItems] = useState<Set<string>>(new Set());
   const [expandedInfoBoardPosts, setExpandedInfoBoardPosts] = useState<Set<string>>(new Set());
   const [showSubstituteLessons, setShowSubstituteLessons] = useState(!isMobile);
+
+  // Debug logging
+  console.log('🖥️ InfoBoard - schoolId:', schoolId, 'isMobile:', isMobile);
+
+  // Real-time data fetching - now enabled with updated database schema
+  const { bulletinPosts, substitutions, loading, error, refresh } = useInfoBoardRealtime(schoolId, true);
+
+  console.log('📊 InfoBoard - Data state:', {
+    bulletinPostsCount: bulletinPosts?.length,
+    substitutionsCount: substitutions?.length,
+    loading,
+    error
+  });
 
   const toggleInfoItemExpansion = (itemId: string) => {
     setExpandedInfoItems(prev => {
@@ -41,8 +55,6 @@ export function InfoBoard({ isMobile = false }: InfoBoardProps) {
     });
   };
 
-  const substituteLessons = getSubstituteLessons();
-
   return (
     <Card>
       <CardHeader>
@@ -63,59 +75,52 @@ export function InfoBoard({ isMobile = false }: InfoBoardProps) {
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {/* Regular info items - always show titles */}
-        <div 
-          className={`p-2 rounded-lg bg-gray-50 ${isMobile ? 'cursor-pointer' : ''}`}
-          onClick={isMobile ? () => toggleInfoBoardPost('schulversammlung') : undefined}
-        >
-          <div className="flex justify-between items-start">
-            <h4 className="font-semibold">Schulversammlung</h4>
-            <div className="text-xs text-gray-600 flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              14:30
-            </div>
-          </div>
-          {(!isMobile || expandedInfoBoardPosts.has('schulversammlung')) && (
-            <div className="text-xs text-gray-600 mt-1">Heute in der Aula</div>
-          )}
-        </div>
-        
-        <div 
-          className={`p-2 rounded-lg bg-gray-50 ${isMobile ? 'cursor-pointer' : ''}`}
-          onClick={isMobile ? () => toggleInfoBoardPost('lehrerkonferenz') : undefined}
-        >
-          <div className="flex justify-between items-start">
-            <h4 className="font-semibold">Lehrerkonferenz</h4>
-            <div className="text-xs text-gray-600 flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              16:30
-            </div>
-          </div>
-          {(!isMobile || expandedInfoBoardPosts.has('lehrerkonferenz')) && (
-            <div className="text-xs text-gray-600 mt-1">Morgen im Konferenzraum</div>
-          )}
-        </div>
+      <CardContent className="space-y-2 max-h-96 overflow-y-auto">
 
-        <div 
-          className={`p-2 rounded-lg bg-gray-50 ${isMobile ? 'cursor-pointer' : ''}`}
-          onClick={isMobile ? () => toggleInfoBoardPost('it-systemupdate') : undefined}
-        >
-          <h4 className="font-semibold">IT-Systemupdate</h4>
-          {(!isMobile || expandedInfoBoardPosts.has('it-systemupdate')) && (
-            <div className="text-xs text-gray-600 mt-1">
-              Freitag geplant, voraussichtlich am Wochenende abgeschlossen
-            </div>
-          )}
-        </div>
+        {/* Loading and Error States */}
+        {loading && (
+          <div className="p-2 bg-blue-50 rounded-lg text-center">
+            <div className="text-sm text-blue-600">Lade Info-Board Daten...</div>
+          </div>
+        )}
 
-        {/* Vertretungsstunden section */}
-        {substituteLessons.length > 0 && (
+        {error && (
+          <div className="p-2 bg-red-50 rounded-lg text-center">
+            <div className="text-sm text-red-600">Fehler: {error}</div>
+            <Button variant="outline" size="sm" onClick={refresh} className="mt-2">
+              Neu laden
+            </Button>
+          </div>
+        )}
+
+        {/* Real-time Bulletin Posts - only show if not mobile or section is expanded */}
+        {bulletinPosts.length > 0 && (!isMobile || expandedInfoItems.has('info-board')) && (
+          <div className="space-y-2">
+            {bulletinPosts.map((post) => (
+              <div
+                key={post.id}
+                className={`p-2 rounded-lg ${post.priority === 'high' ? 'bg-red-50 border border-red-200' : 'bg-blue-50'} ${isMobile ? 'cursor-pointer' : ''}`}
+                onClick={isMobile ? () => toggleInfoBoardPost(post.id) : undefined}
+              >
+                <div className="flex justify-between items-start">
+                  <h4 className="font-semibold">{post.title}</h4>
+                  <div className="text-xs text-gray-600">{post.timestamp}</div>
+                </div>
+                {(!isMobile || expandedInfoBoardPosts.has(post.id)) && (
+                  <div className="text-xs text-gray-600 mt-1">{post.content}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Vertretungsstunden section - only show if not mobile or section is expanded */}
+        {substitutions.length > 0 && (!isMobile || expandedInfoItems.has('info-board')) && (
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-semibold flex items-center gap-2">
                 <UserPlus className="h-4 w-4 text-purple-500" />
-                Vertretungsstunden
+                Vertretungsstunden ({substitutions.length})
               </h4>
               {isMobile && (
                 <div className="flex items-center space-x-2">
@@ -142,16 +147,21 @@ export function InfoBoard({ isMobile = false }: InfoBoardProps) {
             </div>
             {showSubstituteLessons && (
               <div className="space-y-2">
-                {substituteLessons.map((substitute, index) => (
-                  <div key={index} className="p-2 bg-purple-50 rounded-lg border border-purple-200">
+                {substitutions.map((substitute) => (
+                  <div key={substitute.id} className="p-2 bg-purple-50 rounded-lg border border-purple-200">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="font-medium text-sm text-purple-800">
                           {substitute.subject} {substitute.class}
                         </div>
                         <div className="text-xs text-purple-600 mt-1">
-                          für {substitute.forTeacher}
+                          {substitute.reason}
                         </div>
+                        {substitute.notes && (
+                          <div className="text-xs text-purple-600 italic">
+                            {substitute.notes}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">
                         <div className="text-xs text-purple-700 font-medium">
@@ -162,15 +172,23 @@ export function InfoBoard({ isMobile = false }: InfoBoardProps) {
                         </div>
                       </div>
                     </div>
-                    {!isMobile && (
+                    {!isMobile && substitute.date && (
                       <div className="text-xs text-purple-600 mt-2">
-                        {substitute.date}
+                        {new Date(substitute.date).toLocaleDateString('de-DE')}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Empty state when no data is available - only show if not mobile or section is expanded */}
+        {!loading && !error && substitutions.length === 0 && bulletinPosts.length === 0 && (!isMobile || expandedInfoItems.has('info-board')) && (
+          <div className="p-4 text-center text-gray-500">
+            <Info className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+            <div className="text-sm">Keine aktuellen Informationen verfügbar</div>
           </div>
         )}
       </CardContent>

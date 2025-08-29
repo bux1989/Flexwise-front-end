@@ -18,7 +18,7 @@
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
   --border: rgba(0, 0, 0, 0.1);
-  --input: transparent;
+  --input: rgba(0, 0, 0, 0.1);
   --ring: oklch(0.708 0 0);
   --radius: 0.625rem;
 }
@@ -57,4 +57,90 @@
     padding: 0;
     @apply bg-background text-foreground;
   }
+}
+
+/* Enhanced floating and falling animations for background icons */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-20px) translateX(5px);
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-18px) translateX(-6px);
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-25px) translateX(3px);
+  }
+}
+
+@keyframes fall-gentle {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(16px) translateX(-4px);
+  }
+}
+
+@keyframes fall-slow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(14px) translateX(7px);
+  }
+}
+
+@keyframes fall-medium {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(22px) translateX(-3px);
+  }
+}
+
+/* Animation classes */
+.animate-float-gentle {
+  animation: float-gentle 8s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.animate-float-slow {
+  animation: float-slow 10s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-float-medium {
+  animation: float-medium 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-fall-gentle {
+  animation: fall-gentle 9s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.animate-fall-slow {
+  animation: fall-slow 11s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-fall-medium {
+  animation: fall-medium 7s ease-in-out infinite;
+  animation-delay: 3s;
 }
