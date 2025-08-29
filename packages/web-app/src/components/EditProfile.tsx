@@ -1553,29 +1553,88 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                               </div>
                             </div>
                           ) : (
-                            <div className="space-y-3">
-                              <p className="text-sm text-gray-600">
-                                Geben Sie den 6-stelligen Code ein, den Sie per{' '}
-                                {otpMethod === 'email' ? 'E-Mail' : 'SMS'} erhalten haben:
-                              </p>
+                            <div className="space-y-4">
+                              {otpMethod === 'totp' ? (
+                                <>
+                                  <div className="text-center space-y-3">
+                                    <p className="text-sm font-medium text-gray-900">
+                                      Scannen Sie den QR-Code mit Ihrer Authenticator-App:
+                                    </p>
 
-                              <div className="flex gap-2">
-                                <Input
-                                  type="text"
-                                  placeholder="123456"
-                                  value={otpCode}
-                                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                  maxLength={6}
-                                  className="text-center text-lg font-mono tracking-widest"
-                                />
-                                <Button
-                                  onClick={verifyOtp}
-                                  disabled={isVerifyingOtp || otpCode.length !== 6}
-                                  className="bg-green-600 hover:bg-green-700"
-                                >
-                                  {isVerifyingOtp ? 'Verifizieren...' : 'Verifizieren'}
-                                </Button>
-                              </div>
+                                    {totpQrCode && (
+                                      <div className="flex justify-center p-4 bg-white border rounded-lg">
+                                        <img
+                                          src={totpQrCode}
+                                          alt="QR Code für Authenticator-App"
+                                          className="w-48 h-48"
+                                        />
+                                      </div>
+                                    )}
+
+                                    <div className="text-xs text-gray-600 space-y-1">
+                                      <p>Empfohlene Apps:</p>
+                                      <p>• Google Authenticator</p>
+                                      <p>• Microsoft Authenticator</p>
+                                      <p>• Authy</p>
+                                    </div>
+
+                                    {totpSecret && (
+                                      <details className="text-xs">
+                                        <summary className="cursor-pointer text-gray-600">Manueller Schlüssel (falls QR-Code nicht funktioniert)</summary>
+                                        <div className="mt-2 p-2 bg-gray-100 rounded font-mono break-all">
+                                          {totpSecret}
+                                        </div>
+                                      </details>
+                                    )}
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Geben Sie den 6-stelligen Code aus Ihrer App ein:</Label>
+                                    <div className="flex gap-2">
+                                      <Input
+                                        type="text"
+                                        placeholder="123456"
+                                        value={otpCode}
+                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        maxLength={6}
+                                        className="text-center text-lg font-mono tracking-widest"
+                                      />
+                                      <Button
+                                        onClick={verifyOtp}
+                                        disabled={isVerifyingOtp || otpCode.length !== 6}
+                                        className="bg-green-600 hover:bg-green-700"
+                                      >
+                                        {isVerifyingOtp ? 'Verifizieren...' : 'Verifizieren'}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <p className="text-sm text-gray-600">
+                                    Geben Sie den 6-stelligen Code ein, den Sie per{' '}
+                                    {otpMethod === 'email' ? 'E-Mail' : 'SMS'} erhalten haben:
+                                  </p>
+
+                                  <div className="flex gap-2">
+                                    <Input
+                                      type="text"
+                                      placeholder="123456"
+                                      value={otpCode}
+                                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                      maxLength={6}
+                                      className="text-center text-lg font-mono tracking-widest"
+                                    />
+                                    <Button
+                                      onClick={verifyOtp}
+                                      disabled={isVerifyingOtp || otpCode.length !== 6}
+                                      className="bg-green-600 hover:bg-green-700"
+                                    >
+                                      {isVerifyingOtp ? 'Verifizieren...' : 'Verifizieren'}
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
 
                               <Button
                                 variant="outline"
@@ -1583,6 +1642,8 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 onClick={() => {
                                   setOtpMethod(null);
                                   setOtpCode('');
+                                  setTotpSecret('');
+                                  setTotpQrCode('');
                                 }}
                               >
                                 Zurück zur Methodenauswahl
