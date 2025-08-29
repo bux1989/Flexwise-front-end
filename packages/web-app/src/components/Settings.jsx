@@ -225,13 +225,10 @@ export default function Settings() {
             <p className="text-blue-600/70">Aktuelles Schuljahr verwalten</p>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-              <Book className="w-5 h-5 text-blue-600" />
-              <div>
-                <p className="text-blue-900">Unterrichtsliste</p>
-                <p className="text-sm text-blue-600/70">Schulinformationen</p>
-              </div>
-            </div>
+            <Button variant="outline" className="w-full gap-2 bg-blue-50 hover:bg-blue-100 border-blue-200">
+              <Book className="w-4 h-4 text-blue-600" />
+              Unterrichtsliste
+            </Button>
             <Button variant="outline" className="w-full gap-2 bg-blue-50 hover:bg-blue-100 border-blue-200">
               <User className="w-4 h-4 text-blue-600" />
               Kurse aus der LUSD importieren
