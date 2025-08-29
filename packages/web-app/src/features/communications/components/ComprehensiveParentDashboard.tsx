@@ -228,7 +228,6 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
               alt="FlexWise"
               className="h-8 w-auto lg:h-10 flex-shrink-0"
             />
-              <span className="font-semibold text-2xl text-primary">FlexWise</span>
             </button>
             <div className="hidden md:block">
               <span className="text-lg text-foreground">Hallo {user?.name || 'Father Müller'}</span>
