@@ -1,4 +1,12 @@
-# Debug Overlay Implementation Plan
+# Debug Overlay System - Standard Development Requirement
+
+## 🎯 Overview
+
+Debug overlays are now a **MANDATORY** requirement for all new components in the FlexWise project. This system provides component identification during development and testing.
+
+## ✅ Implementation Status
+
+This debug overlay system is fully implemented and **required for all new development**.
 
 ## Components That Need Debug Overlays
 
