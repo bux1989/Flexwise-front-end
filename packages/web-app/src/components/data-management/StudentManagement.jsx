@@ -396,11 +396,14 @@ export default function StudentManagement({ onBack }) {
     return { isValid, type: student.but.type }
   }
 
-  const handleSaveStudent = () => {
-    // TODO: Implement save functionality
-    console.log('Save student:', selectedStudent)
+  const handleSaveStudent = (updatedStudent) => {
+    // TODO: Implement save functionality with Supabase
+    console.log('Save student:', updatedStudent)
+    // Update the students array with the edited student
+    // This would normally be done through an API call to Supabase
     setIsEditing(false)
     setSelectedStudent(null)
+    setShowDetailView(false)
   }
 
   // Show detailed view when student is selected for viewing
