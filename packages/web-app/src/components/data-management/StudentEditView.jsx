@@ -837,109 +837,51 @@ export default function StudentEditView({ student, onBack, onSave }) {
           {/* Active Courses */}
           <Card className="border-l-4 border-l-green-500">
             <CardHeader className="bg-green-50 border-b border-green-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-green-600" />
-                  Aktive Kurse & AGs
-                </CardTitle>
-                <Button 
-                  size="sm" 
-                  className="bg-green-600 hover:bg-green-700"
-                  onClick={() => addItemToArray('activeCourses', {
-                    name: '',
-                    instructor: '',
-                    schedule: '',
-                    location: '',
-                    type: 'AG',
-                    startDate: '',
-                    description: ''
-                  })}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Kurs hinzufügen
-                </Button>
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-green-600" />
+                Aktive Kurse & AGs
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {editedStudent.activeCourses.map((course, index) => (
-                <div key={index} className="p-4 border border-green-200 rounded-lg bg-green-50 space-y-3">
+                <div
+                  key={index}
+                  className="p-4 border border-green-200 rounded-lg bg-green-50 hover:bg-green-100 transition-colors cursor-pointer"
+                  onClick={() => {
+                    // TODO: Navigate to course management page
+                    console.log('Navigate to course:', course.name)
+                  }}
+                  title="Klicken um zum Kurs zu gelangen"
+                >
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-green-900">Kurs #{index + 1}</h4>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-2 hover:bg-red-50"
-                      onClick={() => removeItemFromArray('activeCourses', index)}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
+                    <h3 className="font-medium text-green-900">{course.name}</h3>
+                    <Badge className="bg-green-100 text-green-700">
+                      {course.type || 'AG'}
+                    </Badge>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Kursname</label>
-                      <Input
-                        value={course.name}
-                        onChange={(e) => updateNestedField('activeCourses', index, 'name', e.target.value)}
-                        className="mt-1"
-                      />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 text-sm text-green-600/70">
+                    <div className="flex items-center gap-1">
+                      <User className="w-3 h-3" />
+                      <span>{course.instructor}</span>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Kursleitung</label>
-                      <Input
-                        value={course.instructor}
-                        onChange={(e) => updateNestedField('activeCourses', index, 'instructor', e.target.value)}
-                        className="mt-1"
-                      />
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{course.schedule}</span>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Zeit</label>
-                      <Input
-                        value={course.schedule}
-                        onChange={(e) => updateNestedField('activeCourses', index, 'schedule', e.target.value)}
-                        className="mt-1"
-                        placeholder="z.B. Mittwoch 15:00-17:00"
-                      />
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      <span>{course.location}</span>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Ort</label>
-                      <Input
-                        value={course.location}
-                        onChange={(e) => updateNestedField('activeCourses', index, 'location', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Typ</label>
-                      <select
-                        value={course.type}
-                        onChange={(e) => updateNestedField('activeCourses', index, 'type', e.target.value)}
-                        className="w-full mt-1 px-3 py-2 border border-input bg-background rounded-md"
-                      >
-                        <option value="AG">AG</option>
-                        <option value="Kurs">Kurs</option>
-                        <option value="Förderunterricht">Förderunterricht</option>
-                        <option value="Sport">Sport</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-900">Startdatum</label>
-                      <Input
-                        type="date"
-                        value={course.startDate}
-                        onChange={(e) => updateNestedField('activeCourses', index, 'startDate', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
+                    {course.startDate && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        <span>seit {new Date(course.startDate).toLocaleDateString('de-DE')}</span>
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-green-900">Beschreibung</label>
-                    <Textarea
-                      value={course.description}
-                      onChange={(e) => updateNestedField('activeCourses', index, 'description', e.target.value)}
-                      className="mt-1"
-                      rows={2}
-                    />
-                  </div>
+                  {course.description && (
+                    <p className="text-sm text-green-600/70 mt-2">{course.description}</p>
+                  )}
                 </div>
               ))}
               {editedStudent.activeCourses.length === 0 && (
@@ -953,85 +895,47 @@ export default function StudentEditView({ student, onBack, onSave }) {
           {/* Waiting List */}
           <Card className="border-l-4 border-l-yellow-500">
             <CardHeader className="bg-yellow-50 border-b border-yellow-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-yellow-600" />
-                  Warteliste
-                </CardTitle>
-                <Button 
-                  size="sm" 
-                  className="bg-yellow-600 hover:bg-yellow-700"
-                  onClick={() => addItemToArray('waitingList', {
-                    name: '',
-                    instructor: '',
-                    schedule: '',
-                    waitingPosition: 1,
-                    registrationDate: new Date().toISOString().split('T')[0]
-                  })}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Zur Warteliste hinzufügen
-                </Button>
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-yellow-600" />
+                Warteliste
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {editedStudent.waitingList.map((course, index) => (
-                <div key={index} className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 space-y-3">
+                <div
+                  key={index}
+                  className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer"
+                  onClick={() => {
+                    // TODO: Navigate to course management page
+                    console.log('Navigate to course:', course.name)
+                  }}
+                  title="Klicken um zum Kurs zu gelangen"
+                >
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-yellow-900">Warteliste #{index + 1}</h4>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-2 hover:bg-red-50"
-                      onClick={() => removeItemFromArray('waitingList', index)}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
+                    <h3 className="font-medium text-yellow-900">{course.name}</h3>
+                    <Badge className="bg-yellow-100 text-yellow-700">
+                      Warteliste #{course.waitingPosition}
+                    </Badge>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm font-medium text-yellow-900">Kursname</label>
-                      <Input
-                        value={course.name}
-                        onChange={(e) => updateNestedField('waitingList', index, 'name', e.target.value)}
-                        className="mt-1"
-                      />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 text-sm text-yellow-600/70">
+                    <div className="flex items-center gap-1">
+                      <User className="w-3 h-3" />
+                      <span>{course.instructor}</span>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-yellow-900">Kursleitung</label>
-                      <Input
-                        value={course.instructor}
-                        onChange={(e) => updateNestedField('waitingList', index, 'instructor', e.target.value)}
-                        className="mt-1"
-                      />
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{course.schedule}</span>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-yellow-900">Zeit</label>
-                      <Input
-                        value={course.schedule}
-                        onChange={(e) => updateNestedField('waitingList', index, 'schedule', e.target.value)}
-                        className="mt-1"
-                      />
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>Position: {course.waitingPosition}</span>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-yellow-900">Position auf Warteliste</label>
-                      <Input
-                        type="number"
-                        min="1"
-                        value={course.waitingPosition}
-                        onChange={(e) => updateNestedField('waitingList', index, 'waitingPosition', parseInt(e.target.value) || 1)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-yellow-900">Anmeldedatum</label>
-                      <Input
-                        type="date"
-                        value={course.registrationDate}
-                        onChange={(e) => updateNestedField('waitingList', index, 'registrationDate', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
+                    {course.registrationDate && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        <span>Angemeldet: {new Date(course.registrationDate).toLocaleDateString('de-DE')}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1046,77 +950,33 @@ export default function StudentEditView({ student, onBack, onSave }) {
           {/* Past Courses */}
           <Card className="border-l-4 border-l-gray-500">
             <CardHeader className="bg-gray-50 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-gray-600" />
-                  Vergangene Kurse
-                </CardTitle>
-                <Button 
-                  size="sm" 
-                  className="bg-gray-600 hover:bg-gray-700"
-                  onClick={() => addItemToArray('pastCourses', {
-                    name: '',
-                    instructor: '',
-                    period: '',
-                    completed: true
-                  })}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Vergangenen Kurs hinzufügen
-                </Button>
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-gray-600" />
+                Vergangene Kurse
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {editedStudent.pastCourses.map((course, index) => (
-                <div key={index} className="p-3 border border-gray-200 rounded-lg bg-gray-50 space-y-3">
+                <div
+                  key={index}
+                  className="p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                  onClick={() => {
+                    // TODO: Navigate to course management page
+                    console.log('Navigate to course:', course.name)
+                  }}
+                  title="Klicken um zum Kurs zu gelangen"
+                >
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-gray-900">Vergangener Kurs #{index + 1}</h4>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-2 hover:bg-red-50"
-                      onClick={() => removeItemFromArray('pastCourses', index)}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
+                    <h3 className="font-medium text-gray-900">{course.name}</h3>
+                    <div className="flex items-center gap-2">
+                      {course.completed && (
+                        <Badge className="bg-green-100 text-green-700">Erfolgreich abgeschlossen</Badge>
+                      )}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm font-medium text-gray-900">Kursname</label>
-                      <Input
-                        value={course.name}
-                        onChange={(e) => updateNestedField('pastCourses', index, 'name', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-900">Kursleitung</label>
-                      <Input
-                        value={course.instructor}
-                        onChange={(e) => updateNestedField('pastCourses', index, 'instructor', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-900">Zeitraum</label>
-                      <Input
-                        value={course.period}
-                        onChange={(e) => updateNestedField('pastCourses', index, 'period', e.target.value)}
-                        className="mt-1"
-                        placeholder="z.B. 2023-2024"
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={course.completed}
-                          onChange={(e) => updateNestedField('pastCourses', index, 'completed', e.target.checked)}
-                          className="w-4 h-4"
-                        />
-                        <span className="text-sm font-medium text-gray-900">Erfolgreich abgeschlossen</span>
-                      </label>
-                    </div>
+                  <div className="flex items-center gap-4 mt-2 text-sm text-gray-600/70">
+                    <span>{course.period}</span>
+                    <span>{course.instructor}</span>
                   </div>
                 </div>
               ))}
@@ -1127,6 +987,21 @@ export default function StudentEditView({ student, onBack, onSave }) {
               )}
             </CardContent>
           </Card>
+
+          {/* Info Notice */}
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                <span className="text-blue-600 text-xs">ℹ</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-blue-900">Kursübersicht</p>
+                <p className="text-sm text-blue-600/70 mt-1">
+                  Klicken Sie auf einen Kurs, um zur Kursverwaltung zu gelangen. Dort können Sie Änderungen vornehmen oder Schüler ab-/anmelden.
+                </p>
+              </div>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
