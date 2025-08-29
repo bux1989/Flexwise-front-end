@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { DebugOverlay } from '../../../debug';
 import { Button } from '../../../components/ui/button';
 import { Textarea } from '../../../components/ui/textarea';
 import { Label } from '../../../components/ui/label';
@@ -39,7 +40,8 @@ export function AddExcuseModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <DebugOverlay name="AddExcuseModal">
+      <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
@@ -76,6 +78,7 @@ export function AddExcuseModal({
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+    </DebugOverlay>
   );
 }
