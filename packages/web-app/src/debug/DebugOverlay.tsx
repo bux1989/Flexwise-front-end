@@ -29,7 +29,8 @@ export function DebugOverlay({ id, name, children, className }: DebugOverlayProp
           fontFamily: 'monospace',
           fontWeight: '400',
           borderRadius: '2px',
-          userSelect: 'none',
+          userSelect: 'text',
+          cursor: 'text',
         }}
         title={`Debug ID: ${debugId} | Component: ${name}`}
       >
