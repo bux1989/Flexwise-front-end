@@ -206,9 +206,9 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <Button
@@ -228,10 +228,10 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <span className="font-semibold text-xl text-blue-600">FlexWise</span>
+              <span className="font-semibold text-2xl text-primary">FlexWise</span>
             </button>
             <div className="hidden md:block">
-              <span className="text-lg text-gray-700">Hallo {user?.name || 'Father Müller'}</span>
+              <span className="text-lg text-foreground">Hallo {user?.name || 'Father Müller'}</span>
             </div>
           </div>
           
