@@ -40,7 +40,7 @@ const extractUserRole = (userRoles, error) => {
     console.log('✅ Roles found:', roleNames)
     return role
   } else {
-    console.log('⚠��� No roles found, using fallback')
+    console.log('⚠️ No roles found, using fallback')
     return DEFAULT_ROLE
   }
 }
@@ -199,7 +199,7 @@ function App() {
     })
 
     return () => subscription.unsubscribe()
-  }, [loadUserProfile, showStartupScreen])
+  }, [loadUserProfile, showLoginTransition])
 
   // PWA Startup screen
   if (showStartupScreen) {
