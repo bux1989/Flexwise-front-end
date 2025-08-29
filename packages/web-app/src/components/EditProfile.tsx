@@ -907,7 +907,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
               </TabsContent>
 
               {/* Professional Information Tab */}
-              <TabsContent value="professional" className="space-y-6">
+              <TabsContent value="professional" className="space-y-4">
                 <Card className="border-l-4 border-l-purple-500">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
