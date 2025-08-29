@@ -751,32 +751,31 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
         // Provide specific error messages based on the actual error
         if (error.message.includes('Unable to get SMS provider')) {
-          alert(`🔧 SELF-HOSTED SUPABASE SMS KONFIGURATION:
+          alert(`🔧 TWILIO KONFIGURATION PROBLEM:
 
-SMS-Provider nicht verfügbar in Ihrer selbst-gehosteten Supabase-Instanz.
+Ihre Twilio-Konfiguration ist unvollständig!
 
-Benötigte Environment Variables in Ihrer Supabase-Deployment:
+PROBLEM: GOTRUE_SMS_TWILIO_MESSAGE_SERVICE_SID ist leer
 
-# Twilio Configuration
-GOTRUE_SMS_PROVIDER=twilio
-GOTRUE_SMS_TWILIO_ACCOUNT_SID=your_twilio_account_sid
-GOTRUE_SMS_TWILIO_AUTH_TOKEN=your_twilio_auth_token
-GOTRUE_SMS_TWILIO_MESSAGE_SERVICE_SID=your_twilio_messaging_service_sid
+LÖSUNG - Option 1 (Empfohlen): Message Service verwenden
+1. Gehe zu Twilio Console → Messaging → Services
+2. Erstelle einen neuen Message Service
+3. Kopiere die Message Service SID
+4. Setze: GOTRUE_SMS_TWILIO_MESSAGE_SERVICE_SID="MGxxxxxxxxxxxx"
 
-# Alternative: Wenn Sie Twilio Phone Number verwenden
-GOTRUE_SMS_TWILIO_PHONE=+1234567890
+LÖSUNG - Option 2: Twilio Phone Number verwenden
+1. Kaufe eine Twilio Telefonnummer
+2. Setze: GOTRUE_SMS_TWILIO_PHONE="+1234567890"
+3. Lasse GOTRUE_SMS_TWILIO_MESSAGE_SERVICE_SID=""
 
-# Aktiviere Phone Signup
-GOTRUE_ENABLE_SIGNUP=true
-
-Nach dem Setzen der Environment Variables:
-1. Restart Ihrer Supabase GoTrue Service
-2. SMS OTP sollte funktionieren
+NACH DER KONFIGURATION:
+1. Restart GoTrue Service
+2. Test SMS OTP erneut
 
 Status: Telefonnummer (${formattedPhone}) ist mit dem Benutzer verknüpft ✅
-Fehler: SMS-Provider Environment Variables fehlen ❌
+Fehler: Twilio Message Service SID oder Phone Number fehlt ❌
 
-Dokumentation: https://supabase.com/docs/reference/self-hosting-auth/config`);
+Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
         } else if (error.message.includes('Signups not allowed for otp')) {
           alert('SMS OTP ist in der Supabase-Konfiguration deaktiviert. Der Administrator muss in den Supabase Auth-Einstellungen "Enable phone signup" aktivieren.');
         } else if (error.message.includes('Phone number is invalid') || error.message.includes('422')) {
