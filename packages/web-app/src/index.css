@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Import FlexWise Loading Screen styles */
+@import './components/LoadingScreen.css';
+
 :root {
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
