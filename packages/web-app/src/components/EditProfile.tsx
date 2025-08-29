@@ -200,7 +200,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         });
       } else {
         console.log('📞 Contacts query result:', contactsData);
-        console.log('📞 Number of contacts found:', contactsData?.length || 0);
+        console.log('���� Number of contacts found:', contactsData?.length || 0);
       }
 
       // Organize contacts by type
@@ -286,6 +286,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           if (insertError) {
             console.error('❌ Error creating contact from auth email:', insertError);
             setIsCreatingContact(false);
+            setGloballyCreatingContact(profileId, authUser.email, false);
           } else {
             console.log('✅ Contact created from auth email');
             // Reload contacts after creating
@@ -325,10 +326,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
               });
             }
             setIsCreatingContact(false);
+            setGloballyCreatingContact(profileId, authUser.email, false);
           }
         } catch (error) {
           console.error('💥 Error auto-creating contact:', error);
           setIsCreatingContact(false);
+          setGloballyCreatingContact(profileId, authUser.email, false);
         }
       }
 
