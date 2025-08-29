@@ -591,6 +591,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             onWeekChange={setKlassenbuchSelectedWeek}
             selectedClass={klassenbuchSelectedClass}
             onClassChange={setKlassenbuchSelectedClass}
+            onAttendanceClick={handleAttendanceClick}
           />
         </div>
       ) : (
