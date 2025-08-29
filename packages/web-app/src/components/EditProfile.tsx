@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, X, User, Save, Camera, Lock, Smartphone, Shield } from 'lucide-react';
+import { ArrowLeft, Plus, X, User, Save, Camera, Lock, Smartphone, Shield, Mail, MessageSquare } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
