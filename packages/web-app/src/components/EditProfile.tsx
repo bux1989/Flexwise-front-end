@@ -1513,26 +1513,26 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                 </Card>
 
                 {/* Security Settings - Compact Section */}
-                <Card className="border-l-4 border-l-red-500">
+                <Card className="border-l-4 border-l-gray-400">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Lock className="h-5 w-5 text-red-600" />
+                      <Lock className="h-5 w-5 text-gray-600" />
                       Sicherheitseinstellungen
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {/* Password Reset */}
-                    <div className="flex items-center justify-between p-2 bg-red-50 rounded-lg border border-red-100">
+                    <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-200">
                       <div>
-                        <h4 className="font-medium text-red-800">Passwort zurücksetzen</h4>
-                        <p className="text-sm text-red-600 mt-1">
+                        <h4 className="font-medium text-gray-800">Passwort zurücksetzen</h4>
+                        <p className="text-sm text-gray-600 mt-1">
                           Senden Sie sich einen Reset-Link per E-Mail
                         </p>
                       </div>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-red-200 text-red-700 hover:bg-red-100"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-100"
                         onClick={async () => {
                           try {
                             const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -1570,10 +1570,18 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
 
                     {/* OTP Setup */}
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between p-2 bg-orange-50 rounded-lg border border-orange-100">
+                      <div className={`flex items-center justify-between p-2 rounded-lg border ${
+                        isOtpEnabled
+                          ? 'bg-green-50 border-green-200'
+                          : 'bg-gray-50 border-gray-200'
+                      }`}>
                         <div>
-                          <h4 className="font-medium text-orange-800">Zwei-Faktor-Authentifizierung</h4>
-                          <p className="text-sm text-orange-600 mt-1">
+                          <h4 className={`font-medium ${
+                            isOtpEnabled ? 'text-green-800' : 'text-gray-800'
+                          }`}>Zwei-Faktor-Authentifizierung</h4>
+                          <p className={`text-sm mt-1 ${
+                            isOtpEnabled ? 'text-green-600' : 'text-gray-600'
+                          }`}>
                             Status: <span className="font-medium">
                               {isOtpEnabled ? 'Aktiviert' : 'Nicht aktiviert'}
                             </span>
@@ -1583,7 +1591,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-red-200 text-red-700 hover:bg-red-100"
+                            className="border-gray-300 text-gray-700 hover:bg-gray-100"
                             onClick={disableOtp}
                           >
                             <X className="h-4 w-4 mr-2" />
@@ -1592,7 +1600,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                         ) : (
                           <Button
                             size="sm"
-                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
                             onClick={() => setShowOtpSetup(true)}
                           >
                             <Shield className="h-4 w-4 mr-2" />
@@ -1603,7 +1611,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
 
                       {/* OTP Setup Modal/Section */}
                       {showOtpSetup && (
-                        <div className="p-4 bg-white border border-orange-200 rounded-lg shadow-sm space-y-4">
+                        <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm space-y-4">
                           <div className="flex items-center justify-between">
                             <h5 className="font-medium text-gray-900">OTP-Methode wählen</h5>
                             <Button
