@@ -1092,24 +1092,148 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       </Button>
                     </div>
 
-                    {/* TOTP Activation */}
-                    <div className="flex items-center justify-between p-2 bg-orange-50 rounded-lg border border-orange-100">
-                      <div>
-                        <h4 className="font-medium text-orange-800">Zwei-Faktor-Authentifizierung</h4>
-                        <p className="text-sm text-orange-600 mt-1">
-                          Status: <span className="font-medium">Nicht aktiviert</span>
-                        </p>
+                    {/* OTP Setup */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-2 bg-orange-50 rounded-lg border border-orange-100">
+                        <div>
+                          <h4 className="font-medium text-orange-800">Zwei-Faktor-Authentifizierung</h4>
+                          <p className="text-sm text-orange-600 mt-1">
+                            Status: <span className="font-medium">
+                              {isOtpEnabled ? 'Aktiviert' : 'Nicht aktiviert'}
+                            </span>
+                          </p>
+                        </div>
+                        {isOtpEnabled ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-red-200 text-red-700 hover:bg-red-100"
+                            onClick={disableOtp}
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Deaktivieren
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                            onClick={() => setShowOtpSetup(true)}
+                          >
+                            <Shield className="h-4 w-4 mr-2" />
+                            Aktivieren
+                          </Button>
+                        )}
                       </div>
-                      <Button
-                        size="sm"
-                        className="bg-orange-600 hover:bg-orange-700 text-white"
-                        onClick={() => {
-                          alert('TOTP-Setup wird geöffnet. Scannen Sie den QR-Code mit Ihrer Authenticator-App!');
-                        }}
-                      >
-                        <Smartphone className="h-4 w-4 mr-2" />
-                        Aktivieren
-                      </Button>
+
+                      {/* OTP Setup Modal/Section */}
+                      {showOtpSetup && (
+                        <div className="p-4 bg-white border border-orange-200 rounded-lg shadow-sm space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h5 className="font-medium text-gray-900">OTP-Methode wählen</h5>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                setShowOtpSetup(false);
+                                setOtpMethod(null);
+                                setOtpCode('');
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          {!otpMethod ? (
+                            <div className="space-y-3">
+                              <p className="text-sm text-gray-600">
+                                Wählen Sie eine Methode für die Zwei-Faktor-Authentifizierung:
+                              </p>
+
+                              {/* Email OTP Option */}
+                              <div className="space-y-2">
+                                <Label htmlFor="otp-email">E-Mail OTP</Label>
+                                <div className="flex gap-2">
+                                  <Input
+                                    id="otp-email"
+                                    type="email"
+                                    placeholder={profile.contacts.emails.find(e => e.is_primary)?.value || 'E-Mail-Adresse'}
+                                    value={otpEmail}
+                                    onChange={(e) => setOtpEmail(e.target.value)}
+                                    className="flex-1"
+                                  />
+                                  <Button
+                                    onClick={sendEmailOtp}
+                                    disabled={isSendingOtp}
+                                    className="bg-blue-600 hover:bg-blue-700"
+                                  >
+                                    <Mail className="h-4 w-4 mr-2" />
+                                    {isSendingOtp ? 'Senden...' : 'Code senden'}
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {/* SMS OTP Option */}
+                              <div className="space-y-2">
+                                <Label htmlFor="otp-phone">SMS OTP</Label>
+                                <div className="flex gap-2">
+                                  <Input
+                                    id="otp-phone"
+                                    type="tel"
+                                    placeholder={profile.contacts.phones.find(p => p.is_primary)?.value || 'Telefonnummer'}
+                                    value={otpPhone}
+                                    onChange={(e) => setOtpPhone(e.target.value)}
+                                    className="flex-1"
+                                  />
+                                  <Button
+                                    onClick={sendSmsOtp}
+                                    disabled={isSendingOtp}
+                                    className="bg-green-600 hover:bg-green-700"
+                                  >
+                                    <MessageSquare className="h-4 w-4 mr-2" />
+                                    {isSendingOtp ? 'Senden...' : 'Code senden'}
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              <p className="text-sm text-gray-600">
+                                Geben Sie den 6-stelligen Code ein, den Sie per{' '}
+                                {otpMethod === 'email' ? 'E-Mail' : 'SMS'} erhalten haben:
+                              </p>
+
+                              <div className="flex gap-2">
+                                <Input
+                                  type="text"
+                                  placeholder="123456"
+                                  value={otpCode}
+                                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                  maxLength={6}
+                                  className="text-center text-lg font-mono tracking-widest"
+                                />
+                                <Button
+                                  onClick={verifyOtp}
+                                  disabled={isVerifyingOtp || otpCode.length !== 6}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  {isVerifyingOtp ? 'Verifizieren...' : 'Verifizieren'}
+                                </Button>
+                              </div>
+
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setOtpMethod(null);
+                                  setOtpCode('');
+                                }}
+                              >
+                                Zurück zur Methodenauswahl
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
