@@ -219,7 +219,11 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       console.log('📊 Organized contacts:', organizedContacts);
 
       // Auto-create contact record from auth email if none exist
-      if (!contactsData || contactsData.length === 0) {
+      const authEmailExists = contactsData?.some(contact =>
+        contact.type === 'email' && contact.value === authUser.email
+      );
+
+      if ((!contactsData || contactsData.length === 0) && !authEmailExists) {
         console.log('📧 No contacts found, creating from auth email:', authUser.email);
 
         try {
