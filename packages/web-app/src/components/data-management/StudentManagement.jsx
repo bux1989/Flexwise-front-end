@@ -24,6 +24,9 @@ import StudentEditView from './StudentEditView'
 export default function StudentManagement({ onBack }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedClass, setSelectedClass] = useState('all')
+  const [selectedButStatus, setSelectedButStatus] = useState('all')
+  const [selectedPhotoStatus, setSelectedPhotoStatus] = useState('all')
+  const [selectedActiveStatus, setSelectedActiveStatus] = useState('all')
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const [showDetailView, setShowDetailView] = useState(false)
@@ -349,7 +352,30 @@ export default function StudentManagement({ onBack }) {
 
     const matchesClass = selectedClass === 'all' || student.class === selectedClass
 
-    return matchesSearch && matchesClass
+    const matchesButStatus = (() => {
+      if (selectedButStatus === 'all') return true
+      const butStatus = getButStatus(student)
+      if (selectedButStatus === 'gueltig') return butStatus && butStatus.isValid
+      if (selectedButStatus === 'abgelaufen') return butStatus && !butStatus.isValid
+      return false
+    })()
+
+    const matchesPhotoStatus = (() => {
+      if (selectedPhotoStatus === 'all') return true
+      const hasValidPhoto = hasValidPhotoPermission(student)
+      if (selectedPhotoStatus === 'gueltig') return hasValidPhoto
+      if (selectedPhotoStatus === 'keine') return !hasValidPhoto
+      return false
+    })()
+
+    const matchesActiveStatus = (() => {
+      if (selectedActiveStatus === 'all') return true
+      if (selectedActiveStatus === 'active') return student.status === 'active'
+      if (selectedActiveStatus === 'inactive') return student.status === 'inactive'
+      return false
+    })()
+
+    return matchesSearch && matchesClass && matchesButStatus && matchesPhotoStatus && matchesActiveStatus
   })
 
   const handleViewStudent = (student) => {
