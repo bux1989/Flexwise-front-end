@@ -77,6 +77,24 @@ Only put things in `components/`, `hooks/`, `services/` if they're used by multi
    mv src/components/AddTaskDialog.tsx src/features/task-management/components/
    ```
 
+   **Add debug overlays to extracted components:**
+   ```typescript
+   // src/features/task-management/components/AddTaskDialog.tsx
+   import { DebugOverlay } from '../../../debug';
+
+   export function AddTaskDialog() {
+     return (
+       <DebugOverlay id="TSK-014" name="AddTaskDialog">
+         <Dialog>
+           <DebugOverlay id="TSK-001" name="AddTaskDialog.Form">
+             {/* Dialog form content */}
+           </DebugOverlay>
+         </Dialog>
+       </DebugOverlay>
+     );
+   }
+   ```
+
 2. **Create task hooks:**
    ```typescript
    // src/features/task-management/hooks/useTaskState.ts
@@ -134,6 +152,7 @@ Only put things in `components/`, `hooks/`, `services/` if they're used by multi
 1. **Identify the feature** it belongs to
 2. **Add to existing feature** if it fits
 3. **Create new feature** if it's distinct
+4. **Add debug overlays** to all new components
 
 **Example - Adding task comments:**
 ```
@@ -141,10 +160,31 @@ src/features/task-management/
 ├── components/
 │   ├── TaskList.tsx
 │   ├── TaskCard.tsx
-│   └── TaskComments.tsx          # ← Add here
+│   └── TaskComments.tsx          # ← Add here (with debug overlays)
 ├── hooks/
 │   ├── useTaskState.ts
 │   └── useTaskComments.ts         # ← Add here
+```
+
+**TaskComments.tsx with debug overlays:**
+```typescript
+import { DebugOverlay } from '../../../debug';
+
+export function TaskComments({ taskId }: TaskCommentsProps) {
+  return (
+    <DebugOverlay id="TSK-015" name="TaskComments">
+      <div className="task-comments">
+        <DebugOverlay id="TSK-016" name="TaskComments.List">
+          {/* Comments list */}
+        </DebugOverlay>
+
+        <DebugOverlay id="TSK-017" name="TaskComments.Form">
+          {/* Add comment form */}
+        </DebugOverlay>
+      </div>
+    </DebugOverlay>
+  );
+}
 ```
 
 ### ✅ DO: Feature Exports
