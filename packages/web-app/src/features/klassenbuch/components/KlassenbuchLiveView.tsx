@@ -307,7 +307,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
                       <tr key={period.block_number} className="border-b hover:bg-muted/30">
                         <td className={`p-3 border-r bg-muted/50 ${!hasLessons ? 'py-1' : ''}`}>
                           <div className="text-center">
-                            <div className="font-semibold">{period.block_number}</div>
+                            <div className="font-semibold">{period.label}</div>
                             {!isMobile && hasLessons && (
                               <div className="text-xs text-muted-foreground">{timeSlot}</div>
                             )}
