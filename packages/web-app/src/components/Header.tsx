@@ -241,9 +241,16 @@ export function Header({
       ) : (
         /* Normal Dashboard Header */
         <div className="flex items-center justify-between">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">Hallo {currentTeacher} 👋</h1>
-            <p className="text-xs lg:text-sm text-gray-600 truncate">{dateString}</p>
+          <div className="min-w-0 flex-1 flex items-center space-x-3">
+            <img
+              src="/logo.png"
+              alt="FlexWise"
+              className="h-8 w-auto lg:h-10 flex-shrink-0"
+            />
+            <div className="min-w-0">
+              <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">Hallo {currentTeacher}</h1>
+              <p className="text-xs lg:text-sm text-gray-600 truncate">{dateString}</p>
+            </div>
           </div>
           <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
             <TooltipProvider>
