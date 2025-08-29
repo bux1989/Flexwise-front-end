@@ -64,10 +64,13 @@ export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
           </div>
         </div>
 
-        {/* Loading text */}
-        <div className="loading-text">
-          <h2 className="app-title">FlexWise</h2>
-          <p className="app-subtitle">Flexible Tools for Smart Schools</p>
+        {/* Logo icon */}
+        <div className="logo-icon-container">
+          <img
+            src="/icon-192.png"
+            alt="FlexWise"
+            className="logo-icon"
+          />
         </div>
 
 
