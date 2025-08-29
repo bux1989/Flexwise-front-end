@@ -263,6 +263,102 @@ interface DatabaseLesson {
 }
 
 /**
+ * Check attendance completion for a lesson
+ * @param lessonId - The lesson ID
+ * @returns Promise<AttendanceCompletion>
+ */
+interface AttendanceCompletion {
+  status: 'complete' | 'incomplete' | 'missing';
+  studentsWithAttendance: number;
+  totalStudents: number;
+  completionPercentage: number;
+}
+
+async function checkAttendanceCompletion(lessonId: string): Promise<AttendanceCompletion> {
+  try {
+    // Get total students enrolled in this lesson
+    const { data: enrollmentData, error: enrollmentError } = await supabase
+      .from('vw_react_lesson_details')
+      .select('course_id, class_id')
+      .eq('lesson_id', lessonId)
+      .single();
+
+    if (enrollmentError) {
+      console.error('❌ Error fetching lesson enrollment:', enrollmentError);
+      return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
+    }
+
+    // Count total students in the class/course
+    let totalStudentsQuery;
+    if (enrollmentData.course_id) {
+      totalStudentsQuery = supabase
+        .from('course_enrollments')
+        .select('student_id', { count: 'exact' })
+        .eq('course_id', enrollmentData.course_id)
+        .eq('status', 'active');
+    } else if (enrollmentData.class_id) {
+      totalStudentsQuery = supabase
+        .from('class_enrollments')
+        .select('student_id', { count: 'exact' })
+        .eq('class_id', enrollmentData.class_id)
+        .eq('status', 'active');
+    } else {
+      return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
+    }
+
+    const { count: totalStudents, error: countError } = await totalStudentsQuery;
+
+    if (countError) {
+      console.error('❌ Error counting total students:', countError);
+      return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
+    }
+
+    // Count students with attendance records for this lesson
+    const { count: studentsWithAttendance, error: attendanceError } = await supabase
+      .from('lesson_attendance')
+      .select('student_id', { count: 'exact' })
+      .eq('lesson_id', lessonId);
+
+    if (attendanceError) {
+      console.error('❌ Error counting attendance records:', attendanceError);
+      return { status: 'missing', studentsWithAttendance: 0, totalStudents: totalStudents || 0, completionPercentage: 0 };
+    }
+
+    const studentsCount = studentsWithAttendance || 0;
+    const totalCount = totalStudents || 0;
+    const completionPercentage = totalCount > 0 ? (studentsCount / totalCount) * 100 : 0;
+
+    // Determine status
+    let status: 'complete' | 'incomplete' | 'missing';
+    if (studentsCount === 0) {
+      status = 'missing';
+    } else if (studentsCount === totalCount) {
+      status = 'complete';
+    } else {
+      status = 'incomplete'; // Partial attendance - this should show orange warning
+    }
+
+    console.log(`📊 Attendance completion for lesson ${lessonId}:`, {
+      status,
+      studentsWithAttendance: studentsCount,
+      totalStudents: totalCount,
+      completionPercentage
+    });
+
+    return {
+      status,
+      studentsWithAttendance: studentsCount,
+      totalStudents: totalCount,
+      completionPercentage
+    };
+
+  } catch (error) {
+    console.error('💥 Error checking attendance completion:', error);
+    return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
+  }
+}
+
+/**
  * Get lessons for a specific class/course for the current week
  * @param classId - The class ID (can be 'teacher' for teacher view)
  * @param schoolId - The school ID
@@ -410,12 +506,16 @@ function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay
   // Format time
   const timeString = `${lessonStart.toTimeString().substring(0, 5)}-${lessonEnd.toTimeString().substring(0, 5)}`;
 
-  // Determine attendance status
+  // Determine attendance status with proper completion checking
   let attendanceStatus: 'complete' | 'missing' | 'incomplete' | 'future' = 'future';
-  if (isPast) {
-    attendanceStatus = dbLesson.attendance_taken ? 'complete' : 'missing';
-  } else if (isOngoing) {
-    attendanceStatus = dbLesson.attendance_taken ? 'complete' : 'incomplete';
+  if (isPast || isOngoing) {
+    if (dbLesson.attendance_taken) {
+      // If attendance has been taken, check if it's complete or incomplete
+      const completion = await checkAttendanceCompletion(dbLesson.lesson_id);
+      attendanceStatus = completion.status;
+    } else {
+      attendanceStatus = 'missing';
+    }
   }
 
   // Determine status
