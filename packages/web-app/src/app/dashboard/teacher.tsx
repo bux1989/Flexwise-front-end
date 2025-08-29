@@ -56,7 +56,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // Attendance dialog state - simplified
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [attendanceViewMode, setAttendanceViewMode] = useState<'overview' | 'edit'>('edit');
-  const [selectedLessonForAttendance, setSelectedLessonForAttendance] = useState<string | null>(null);
+  const [selectedLessonForAttendance, setSelectedLessonForAttendance] = useState<any | null>(null);
   const [tempAttendance, setTempAttendance] = useState<{[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}}>({});
   const [lessonNote, setLessonNote] = useState('');
   const [overviewData, setOverviewData] = useState<any>(null);
@@ -124,10 +124,10 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Simple function: Open overview mode (for green badges - complete attendance)
   const openOverviewMode = async (lessonId: string) => {
-    // Set lesson but DON'T open dialog yet - load data first
-    setSelectedLessonForAttendance(lessonId);
+    // Clear previous data
+    setSelectedLessonForAttendance(null);
     setAttendanceViewMode('overview');
-    setOverviewData(null); // Clear previous data
+    setOverviewData(null);
 
     try {
       // Fetch data for overview mode
@@ -149,6 +149,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           return;
         }
       }
+
+      // Set lesson object BEFORE opening dialog
+      setSelectedLessonForAttendance(lesson);
 
       const getUiStudentName = (record: any): string => {
         const profile = Array.isArray(record?.user_profiles) ? record.user_profiles[0] : record?.user_profiles;
@@ -193,11 +196,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   // Simple function: Open edit mode (for orange/red badges - incomplete/no attendance)
   const openEditMode = async (lessonId: string) => {
-    // Set lesson but DON'T open dialog yet - load data first to prevent lag
-    setSelectedLessonForAttendance(lessonId);
-    setAttendanceViewMode('edit');
-
     // Clear previous data
+    setSelectedLessonForAttendance(null);
+    setAttendanceViewMode('edit');
     setTempAttendance({});
     setLessonNote('');
 
@@ -221,6 +222,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           return;
         }
       }
+
+      // Set lesson object BEFORE opening dialog
+      setSelectedLessonForAttendance(lesson);
 
       const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
 
@@ -287,9 +291,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       return;
     }
 
-    let lesson = lessons.find(l => l.id === selectedLessonForAttendance);
+    const lesson = selectedLessonForAttendance;
     if (!lesson) {
-      console.error('Lesson not found in switchToEdit - this should not happen as we should have fetched it already');
+      console.error('Lesson not found in switchToEdit - this should not happen');
       return;
     }
 
@@ -350,8 +354,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     }
   };
 
-  // Helper function to get selected lesson
-  const selectedLesson = lessons.find(l => l.id === selectedLessonForAttendance);
+  // selectedLessonForAttendance now contains the lesson object directly
+  const selectedLesson = selectedLessonForAttendance;
 
 
   // Helper function to get default late time
