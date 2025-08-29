@@ -240,17 +240,109 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
 
         {/* Familie Tab */}
         <TabsContent value="familie" className="space-y-6">
+          {/* Parents */}
           <Card className="border-l-4 border-l-blue-500">
             <CardHeader className="bg-blue-50 border-b border-blue-200">
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                Familie
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  Eltern / Erziehungsberechtigte
+                </CardTitle>
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Hinzufügen
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-center py-8">
-                Familieninformationen werden hier angezeigt...
-              </p>
+            <CardContent className="space-y-4">
+              {student.parents && student.parents.length > 0 ? (
+                student.parents.map((parent, index) => (
+                  <div key={index} className="p-4 border border-blue-200 rounded-lg bg-blue-50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-blue-900">
+                            {parent.firstName} {parent.lastName}
+                          </h3>
+                          <p className="text-sm text-blue-600/70">{parent.relationship}</p>
+                          <div className="flex items-center gap-4 text-sm text-blue-600/70 mt-1">
+                            <span className="flex items-center gap-1">
+                              <Mail className="w-3 h-3" />
+                              {parent.email}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3" />
+                              {parent.phone}
+                            </span>
+                            {parent.address && (
+                              <span className="flex items-center gap-1">
+                                <MapPin className="w-3 h-3" />
+                                {parent.address}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className={parent.isPrimary ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                          {parent.isPrimary ? 'Hauptkontakt' : 'Zusatzkontakt'}
+                        </Badge>
+                        <Button variant="ghost" size="sm" className="p-2 hover:bg-blue-100">
+                          <Edit className="w-4 h-4 text-blue-600" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-8">
+                  Keine Elterninformationen vorhanden
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Siblings */}
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader className="bg-green-50 border-b border-green-200">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-green-600" />
+                  Geschwister
+                </CardTitle>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Hinzufügen
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {student.siblings && student.siblings.length > 0 ? (
+                student.siblings.map((sibling, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border border-green-200 rounded-lg bg-green-50">
+                    <div>
+                      <p className="font-medium text-green-900">
+                        {sibling.firstName} {sibling.lastName}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-green-600/70">
+                        <span>Klasse: {sibling.class || 'Nicht an der Schule'}</span>
+                        <span>Geboren: {new Date(sibling.birthDate).toLocaleDateString('de-DE')}</span>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
+                      <Trash2 className="w-4 h-4 text-red-600" />
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">Keine Geschwister verzeichnet</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
