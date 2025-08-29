@@ -160,19 +160,31 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
   };
 
   const getStatusIcon = (lesson: Lesson) => {
+    console.log(`🎨 Rendering status icon for lesson ${lesson.id}:`, {
+      subject: lesson.subject,
+      attendanceStatus: lesson.attendanceStatus,
+      isPast: lesson.isPast,
+      isOngoing: lesson.isOngoing
+    });
+
     // Don't show any icon for future lessons
     if (lesson.attendanceStatus === 'future') {
+      console.log('⏭️ Future lesson - no icon');
       return null;
     }
 
     switch (lesson.attendanceStatus) {
       case 'complete':
+        console.log('✅ Complete status - green check');
         return <Check className="h-4 w-4 text-green-600" />;
       case 'missing':
+        console.log('❌ Missing status - red triangle');
         return <AlertTriangle className="h-4 w-4 text-red-600" />;
       case 'incomplete':
+        console.log('⚠️ Incomplete status - orange circle');
         return <AlertCircle className="h-4 w-4 text-orange-600" />;
       default:
+        console.log('❓ Unknown status - no icon');
         return null;
     }
   };
@@ -241,16 +253,33 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
 
   // Handle lesson click - mobile vs desktop behavior
   const handleLessonClick = (lesson: Lesson) => {
+    console.log('🖱️ Lesson tile clicked:', {
+      id: lesson.id,
+      subject: lesson.subject,
+      time: lesson.time,
+      attendanceStatus: lesson.attendanceStatus,
+      status: lesson.status,
+      isPast: lesson.isPast,
+      isOngoing: lesson.isOngoing,
+      canEdit: canEditAttendance(lesson),
+      fullLesson: lesson
+    });
+
     if (canEditAttendance(lesson)) {
+      console.log('✅ Lesson is editable, opening attendance modal');
       // If attendance click handler is provided, use the attendance modal
       if (onAttendanceClick) {
         // Use 'edit' mode for lessons that can be edited, 'overview' for completed ones
         const viewMode = lesson.attendanceStatus === 'complete' ? 'overview' : 'edit';
+        console.log('🎯 Opening attendance modal with viewMode:', viewMode);
         onAttendanceClick(lesson.id, viewMode);
       } else {
+        console.log('⚠️ No attendance click handler, using fallback modal');
         // Fallback to the old modal if no attendance handler provided
         setSelectedLesson(lesson);
       }
+    } else {
+      console.log('❌ Lesson is not editable - no action taken');
     }
   };
 
