@@ -102,13 +102,9 @@
 .logo-container {
   position: relative;
   margin-bottom: 2rem;
-  animation: logoIntro 1.2s ease-out forwards;
-  opacity: 0;
-  transform: translateY(30px) scale(0.8);
-}
-
-.flexwise-loading-screen.main .logo-container {
-  animation: logoMain 2s ease-in-out infinite;
+  animation: logoIntro 1.2s ease-out forwards, logoMain 3s ease-in-out infinite 1.2s;
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .logo-wrapper {
