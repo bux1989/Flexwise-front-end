@@ -52,6 +52,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [profileLoading, setProfileLoading] = useState(false)
   const [showStartupScreen, setShowStartupScreen] = useState(true)
+  const [showLoginTransition, setShowLoginTransition] = useState(false)
 
   // Profile loading logic
   const loadUserProfile = useCallback(async (user) => {
