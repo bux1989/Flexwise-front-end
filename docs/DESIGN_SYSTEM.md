@@ -416,4 +416,64 @@ import { Button, Card, CardHeader, CardTitle, CardContent } from './ui'
 
 ---
 
+## 🎨 Style Variations & Options
+
+### Option A: Subtle Professional Enhancement (EditProfile Pattern)
+*Applied on: EditProfile component*
+
+A balanced approach that adds visual interest while maintaining professionalism:
+
+#### Color Strategy
+```jsx
+// Page background - light warm tone
+<div className="min-h-screen bg-gray-50">
+
+// Main container - clean white with subtle shadow
+<div className="bg-white rounded-lg border shadow-sm">
+
+// Header - single color accent (not gradient)
+<div className="bg-blue-600 text-white border-b">
+
+// Section cards - left border accent colors
+<Card className="border-l-4 border-l-blue-500">    // Personal info
+<Card className="border-l-4 border-l-green-500">   // Contact info
+<Card className="border-l-4 border-l-purple-500">  // Professional info
+```
+
+#### Visual Elements
+```jsx
+// Section headers with colored icons
+<CardTitle className="flex items-center gap-2">
+  <User className="h-5 w-5 text-blue-600" />
+  Section Title
+</CardTitle>
+
+// Subtle contact item containers
+<div className="bg-gray-50 rounded-lg p-3">
+
+// Muted color tags (not bright)
+<div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
+<div className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full">
+
+// Simple primary badges
+<span className="bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">
+```
+
+#### Key Principles
+- ✅ **Single accent colors** (no gradients)
+- ✅ **Left border accents** for visual hierarchy
+- ✅ **Colored icons** for section identification
+- ✅ **Muted backgrounds** (`gray-50`) instead of pure white
+- ✅ **Subtle semantic colors** for tags and status
+- ❌ **No bright gradients** or overly vibrant colors
+- ❌ **No complex shadows** or excessive effects
+
+#### When to Use
+- Profile pages and settings
+- Content-heavy pages that need visual organization
+- Forms and data entry interfaces
+- Admin panels requiring clear section separation
+
+---
+
 This design system ensures **visual consistency**, **maintainable code**, and **scalable development** across all FlexWise components.
