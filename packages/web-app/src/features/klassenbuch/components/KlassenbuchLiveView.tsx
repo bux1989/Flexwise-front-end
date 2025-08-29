@@ -268,7 +268,15 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
   // Handle lesson click - mobile vs desktop behavior
   const handleLessonClick = (lesson: Lesson) => {
     if (canEditAttendance(lesson)) {
-      setSelectedLesson(lesson);
+      // If attendance click handler is provided, use the attendance modal
+      if (onAttendanceClick) {
+        // Use 'edit' mode for lessons that can be edited, 'overview' for completed ones
+        const viewMode = lesson.attendanceStatus === 'complete' ? 'overview' : 'edit';
+        onAttendanceClick(lesson.id, viewMode);
+      } else {
+        // Fallback to the old modal if no attendance handler provided
+        setSelectedLesson(lesson);
+      }
     }
   };
 
