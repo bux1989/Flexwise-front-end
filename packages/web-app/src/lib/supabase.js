@@ -496,6 +496,36 @@ export async function fetchSingleLesson(lessonId) {
       return null;
     }
 
+    // Fetch student data for the lesson
+    let students = [];
+    try {
+      const { students: studentData } = await getLessonStudentNameIdPairs(lessonId);
+      students = studentData.map(s => ({
+        id: s.id,
+        name: s.displayName
+      }));
+    } catch (error) {
+      console.warn('⚠️ Could not fetch students for lesson:', lessonId, error);
+      // Try alternative student fetch if available
+      if (lesson.class_id) {
+        try {
+          const { data: classStudents, error: classError } = await supabase
+            .from('profile_info_student')
+            .select('profile_id, user_profiles!inner(first_name, last_name)')
+            .eq('class_id', lesson.class_id);
+
+          if (!classError && classStudents) {
+            students = classStudents.map(s => ({
+              id: s.profile_id,
+              name: `${s.user_profiles.first_name} ${s.user_profiles.last_name}`
+            }));
+          }
+        } catch (classError) {
+          console.warn('⚠️ Could not fetch class students either:', classError);
+        }
+      }
+    }
+
     // Transform to teacher dashboard lesson format
     const startTime = new Date(lesson.start_datetime);
     const endTime = new Date(lesson.end_datetime);
@@ -513,8 +543,8 @@ export async function fetchSingleLesson(lessonId) {
       isCancelled: lesson.is_cancelled || false,
       otherTeachers: [],
       adminComment: lesson.notes,
-      students: [], // Will be populated when needed
-      enrolled: lesson.student_count || 0,
+      students: students,
+      enrolled: students.length || lesson.student_count || 0,
       attendance: { present: [], late: [], absent: [] },
       attendanceTaken: lesson.attendance_taken || false
     };
