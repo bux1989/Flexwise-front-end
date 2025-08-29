@@ -259,11 +259,11 @@
   font-size: 2rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
-  background: linear-gradient(45deg, #ffffff, #e0e7ff);
+  background: linear-gradient(45deg, #1f2937, #4b5563);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .app-subtitle {
