@@ -884,7 +884,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                     </div>
 
                     {/* TOTP Activation */}
-                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-100">
+                    <div className="flex items-center justify-between p-2 bg-orange-50 rounded-lg border border-orange-100">
                       <div>
                         <h4 className="font-medium text-orange-800">Zwei-Faktor-Authentifizierung</h4>
                         <p className="text-sm text-orange-600 mt-1">
