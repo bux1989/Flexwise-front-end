@@ -75,7 +75,7 @@ function App() {
         console.error('❌ No profile_id in user metadata for:', user.email)
         console.log('🔍 User metadata:', user.user_metadata)
         const fallbackProfile = createFallbackProfile(user, DEFAULT_ROLE)
-        console.log('🚨 Using fallback profile:', fallbackProfile)
+        console.log('��� Using fallback profile:', fallbackProfile)
         setUserProfile(fallbackProfile)
         return
       }
@@ -149,7 +149,7 @@ function App() {
     }
 
     // If no profile and not loading, redirect to login
-    if (!userProfile) return <Navigate to="/login" replace />
+    if (!userProfile) return <Navigate to="/auth/login" replace />
 
     const dashboardProps = { user: session.user, profile: userProfile }
 
