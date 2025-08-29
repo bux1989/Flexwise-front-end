@@ -233,27 +233,20 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
   };
 
   const getLessonForSlot = (period: number, day: string) => {
-    if (classTimetable.length > 0) {
-      console.log('🔍 Looking for lesson with period:', period, 'day:', day);
-      console.log('📚 Available lessons periods:', classTimetable.map(l => l.period));
-      console.log('📚 Available lessons days:', classTimetable.map(l => l.day));
-      console.log('📚 Period matching check:', classTimetable.map(l => ({
-        period: l.period,
-        periodType: typeof l.period,
-        searchPeriod: period,
-        searchPeriodType: typeof period,
-        periodsMatch: l.period === period,
-        day: l.day,
-        dayMatch: l.day === day,
-        fullMatch: l.period === period && l.day === day
-      })));
-    }
     const found = classTimetable.find(lesson => lesson.period === period && lesson.day === day);
-    if (found) {
-      console.log('✅ Found lesson:', found);
-    } else {
-      console.log('❌ No lesson found for period:', period, 'day:', day);
+
+    // Only log for the first few searches to avoid console spam
+    if (period <= 3) {
+      console.log(`🔍 Searching period ${period}, day ${day}:`, {
+        searchPeriod: period,
+        searchDay: day,
+        availablePeriods: [...new Set(classTimetable.map(l => l.period))],
+        availableDays: [...new Set(classTimetable.map(l => l.day))],
+        found: !!found,
+        foundLesson: found ? { period: found.period, day: found.day, subject: found.subject } : null
+      });
     }
+
     return found;
   };
 
