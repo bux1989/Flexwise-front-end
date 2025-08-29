@@ -14,6 +14,9 @@ import { ParentProfileModal } from './ParentProfileModal';
 // Import mock data from shared package
 import { PARENT_CHILDREN, PARENT_NEWS, PARENT_APPOINTMENTS } from '../../../../../shared/data/mockData';
 
+// Import logout functionality
+import { handleLogout } from '../../../lib/supabase';
+
 // Debug system
 import { DebugOverlay } from '../../../debug';
 
@@ -270,7 +273,13 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
               </Button>
               
               {/* Logout Icon */}
-              <Button variant="ghost" size="sm" className="hover:bg-destructive/10">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hover:bg-destructive/10"
+                onClick={() => handleLogout()}
+                title="Ausloggen"
+              >
                 <LogOut className="h-5 w-5 text-destructive" />
               </Button>
             </div>
