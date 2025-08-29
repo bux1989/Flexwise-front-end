@@ -894,7 +894,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
                             console.log('📧 Sending reset email to:', authUser.email);
                             const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
-                              redirectTo: `${window.location.origin}/auth/reset-password`,
+                              redirectTo: `https://flexwise.io/auth/reset-password`,
                               data: {
                                 USER_NAME: fullName || authUser.email  // Fallback to email if no name
                               }
