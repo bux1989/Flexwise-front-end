@@ -153,6 +153,8 @@ export function Header({
                     variant={klassenbuchView === 'statistics' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => onKlassenbuchViewChange('statistics')}
+                    className="hidden"
+                    style={{ display: 'none' }}
                   >
                     Statistiken
                   </Button>
