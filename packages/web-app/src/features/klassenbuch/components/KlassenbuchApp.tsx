@@ -31,7 +31,8 @@ export function KlassenbuchApp({
   selectedWeek: externalSelectedWeek,
   onWeekChange: externalOnWeekChange,
   selectedClass: externalSelectedClass,
-  onClassChange: externalOnClassChange
+  onClassChange: externalOnClassChange,
+  onAttendanceClick
 }: KlassenbuchAppProps) {
   const [internalCurrentView, setInternalCurrentView] = useState<'live' | 'statistics'>('live');
   const [internalSelectedWeek, setInternalSelectedWeek] = useState(new Date());
