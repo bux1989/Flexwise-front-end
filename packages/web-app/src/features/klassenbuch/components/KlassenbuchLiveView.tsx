@@ -80,6 +80,12 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
           lessons: lessonsData.length
         });
 
+        console.log('📅 Schedule periods block numbers:', periodsData.map(p => ({
+          id: p.id,
+          block_number: p.block_number,
+          label: p.label
+        })));
+
         console.log('📚 Lessons data:', lessonsData);
 
         if (lessonsData.length === 0) {
