@@ -192,6 +192,11 @@ function App() {
     return () => subscription.unsubscribe()
   }, [loadUserProfile, showStartupScreen])
 
+  // PWA Startup screen
+  if (showStartupScreen) {
+    return <LoadingScreen onComplete={() => setShowStartupScreen(false)} minDisplayTime={2500} />
+  }
+
   // Loading state
   if (loading) {
     return <LoadingScreen onComplete={() => setLoading(false)} />
