@@ -18,8 +18,18 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
   const [expandedInfoBoardPosts, setExpandedInfoBoardPosts] = useState<Set<string>>(new Set());
   const [showSubstituteLessons, setShowSubstituteLessons] = useState(!isMobile);
 
+  // Debug logging
+  console.log('🖥️ InfoBoard - schoolId:', schoolId, 'isMobile:', isMobile);
+
   // Real-time data fetching - now enabled with updated database schema
   const { bulletinPosts, substitutions, loading, error, refresh } = useInfoBoardRealtime(schoolId, true);
+
+  console.log('📊 InfoBoard - Data state:', {
+    bulletinPostsCount: bulletinPosts?.length,
+    substitutionsCount: substitutions?.length,
+    loading,
+    error
+  });
 
   const toggleInfoItemExpansion = (itemId: string) => {
     setExpandedInfoItems(prev => {
