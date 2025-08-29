@@ -22,7 +22,7 @@ interface KlassenbuchLiveViewProps {
   onAttendanceClick?: (lessonId: string, viewMode?: 'overview' | 'edit') => void;
 }
 
-export function KlassenbuchLiveView({ selectedWeek, selectedClass }: KlassenbuchLiveViewProps) {
+export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceClick }: KlassenbuchLiveViewProps) {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [commentModalLesson, setCommentModalLesson] = useState<Lesson | null>(null);
   const [schedulePeriods, setSchedulePeriods] = useState<SchedulePeriod[]>([]);
