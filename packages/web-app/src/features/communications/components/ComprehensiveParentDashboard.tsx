@@ -352,7 +352,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                           {child.specialRule && (
                             <div className="flex items-center gap-1 mt-1">
                               <span className="text-sm">❗</span>
-                              <span className="text-xs leading-tight text-red-600">
+                              <span className="text-xs leading-tight text-destructive">
                                 <strong>Sonderregelung:</strong>{' '}
                                 {child.specialRule.type === 'alone' 
                                   ? 'Allein entlassen'
@@ -362,7 +362,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                             </div>
                           )}
                         </div>
-                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </div>
                   );
@@ -372,7 +372,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
               {/* Pending Requests */}
               {pendingRequests.length > 0 && (
                 <div className="space-y-2 mb-3">
-                  <div className="text-xs text-gray-500 px-2">Anfragen in Bearbeitung:</div>
+                  <div className="text-xs text-muted-foreground px-2">Anfragen in Bearbeitung:</div>
                   {pendingRequests.map((request) => (
                     <div
                       key={request.id}
@@ -514,7 +514,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                                                     }`}
                                                   >
                                                     <div className="text-center">
-                                                      <div className="font-medium">🏃 FRÜHE ENTLASSUNG</div>
+                                                      <div className="font-medium">🏃 FR��HE ENTLASSUNG</div>
                                                       <div className="text-xs opacity-90 mt-1">
                                                         Um 13:00 Uhr
                                                       </div>
