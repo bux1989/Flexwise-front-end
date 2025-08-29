@@ -30,13 +30,65 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
   const [classTimetable, setClassTimetable] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [schoolId, setSchoolId] = useState<string>('');
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [attendanceStatuses, setAttendanceStatuses] = useState<Record<string, 'complete' | 'missing' | 'incomplete' | 'future'>>({});
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
-  // Function to refresh lessons data
-  const refreshLessons = () => {
-    console.log('🔄 Refreshing lessons data...');
-    setRefreshTrigger(prev => prev + 1);
+  // Function to update attendance status for a specific lesson
+  const updateLessonAttendanceStatus = async (lessonId: string) => {
+    try {
+      console.log('🔄 Updating attendance status for lesson:', lessonId);
+
+      // Query just the attendance data for this specific lesson
+      const { data: lesson, error } = await supabase
+        .from('vw_react_lesson_details')
+        .select('lesson_id, attendance_taken, student_count')
+        .eq('lesson_id', lessonId)
+        .single();
+
+      if (error || !lesson) {
+        console.error('❌ Error fetching lesson attendance:', error);
+        return;
+      }
+
+      // Check if it's a past/ongoing lesson
+      const lessonFromTable = classTimetable.find(l => l.id === lessonId);
+      if (!lessonFromTable || (!lessonFromTable.isPast && !lessonFromTable.isOngoing)) {
+        return; // Don't update future lessons
+      }
+
+      let newStatus: 'complete' | 'missing' | 'incomplete' | 'future' = 'missing';
+
+      if (lesson.attendance_taken) {
+        // Get actual attendance count
+        const { data: attendanceCount, error: countError } = await supabase
+          .from('student_attendance_logs')
+          .select('lesson_id', { count: 'exact' })
+          .eq('lesson_id', lessonId);
+
+        if (!countError) {
+          const studentsWithAttendance = attendanceCount?.length || 0;
+          const totalStudents = lesson.student_count || 1;
+
+          if (studentsWithAttendance === 0) {
+            newStatus = 'missing';
+          } else if (studentsWithAttendance >= totalStudents) {
+            newStatus = 'complete';
+          } else {
+            newStatus = 'incomplete';
+          }
+        }
+      }
+
+      // Update only this lesson's attendance status
+      setAttendanceStatuses(prev => ({
+        ...prev,
+        [lessonId]: newStatus
+      }));
+
+      console.log('✅ Updated attendance status for lesson', lessonId, 'to', newStatus);
+    } catch (error) {
+      console.error('💥 Error updating lesson attendance status:', error);
+    }
   };
 
   // Fetch database-driven periods and school days
@@ -82,6 +134,13 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
         setSchoolDays(schoolDaysData);
         setClassTimetable(lessonsData);
 
+        // Initialize attendance statuses from fetched lessons
+        const initialStatuses: Record<string, 'complete' | 'missing' | 'incomplete' | 'future'> = {};
+        lessonsData.forEach(lesson => {
+          initialStatuses[lesson.id] = lesson.attendanceStatus;
+        });
+        setAttendanceStatuses(initialStatuses);
+
         if (lessonsData.length === 0) {
           console.warn('⚠�� No lessons found for:', {
             classId: selectedClass.id,
@@ -118,13 +177,13 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
     };
 
     fetchScheduleData();
-  }, [selectedClass.id, selectedWeek, refreshTrigger]);
+  }, [selectedClass.id, selectedWeek]);
 
-  // Set up real-time subscription for attendance updates
+  // Set up targeted real-time subscription for attendance updates
   useEffect(() => {
-    if (!schoolId) return;
+    if (!schoolId || classTimetable.length === 0) return;
 
-    console.log('🔗 Setting up real-time subscription for attendance updates');
+    console.log('🔗 Setting up targeted real-time subscription for attendance updates');
 
     // Subscribe to student_attendance_logs changes
     const attendanceSubscription = supabase
@@ -139,8 +198,13 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
         },
         (payload) => {
           console.log('📡 Real-time attendance update received:', payload);
-          // Refresh lessons when attendance changes
-          refreshLessons();
+
+          // Get the lesson ID from the payload
+          const lessonId = payload.new?.lesson_id || payload.old?.lesson_id;
+          if (lessonId) {
+            // Only update the specific lesson's attendance status
+            updateLessonAttendanceStatus(lessonId);
+          }
         }
       )
       .subscribe();
@@ -149,7 +213,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
       console.log('🔌 Cleaning up real-time subscription');
       supabase.removeChannel(attendanceSubscription);
     };
-  }, [schoolId]);
+  }, [schoolId, classTimetable.length]);
 
   // Check if a time slot has any lessons across all days
   const hasLessonsInPeriod = (period: number) => {
@@ -182,20 +246,24 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
   };
 
   const getStatusIcon = (lesson: Lesson) => {
+    // Use the real-time updated status if available, otherwise fall back to lesson data
+    const currentStatus = attendanceStatuses[lesson.id] || lesson.attendanceStatus;
+
     console.log(`🎨 Rendering status icon for lesson ${lesson.id}:`, {
       subject: lesson.subject,
-      attendanceStatus: lesson.attendanceStatus,
+      originalStatus: lesson.attendanceStatus,
+      currentStatus: currentStatus,
       isPast: lesson.isPast,
       isOngoing: lesson.isOngoing
     });
 
     // Don't show any icon for future lessons
-    if (lesson.attendanceStatus === 'future') {
+    if (currentStatus === 'future') {
       console.log('⏭️ Future lesson - no icon');
       return null;
     }
 
-    switch (lesson.attendanceStatus) {
+    switch (currentStatus) {
       case 'complete':
         console.log('✅ Complete status - green check');
         return <Check className="h-4 w-4 text-green-600" />;
@@ -576,7 +644,11 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
             lesson={selectedLesson}
             classData={selectedClass}
             isOpen={!!selectedLesson}
-            onClose={() => setSelectedLesson(null)}
+            onClose={() => {
+              setSelectedLesson(null);
+              // Update attendance status after modal closes
+              setTimeout(() => updateLessonAttendanceStatus(selectedLesson.id), 500);
+            }}
           />
         )}
 
