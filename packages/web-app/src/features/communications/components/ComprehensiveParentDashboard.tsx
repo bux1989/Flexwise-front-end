@@ -324,18 +324,18 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                   return (
                     <div
                       key={child.id}
-                      className="p-2 rounded-lg border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-colors cursor-pointer"
+                      className="p-2 rounded-lg border border-border hover:border-primary/20 hover:bg-accent/50 transition-colors cursor-pointer"
                       onClick={() => setSelectedChild(child)}
                     >
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <User className="h-5 w-5 text-gray-600" />
+                        <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                          <User className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className={`font-medium leading-tight ${
-                            selectedChild?.id === child.id 
-                              ? 'text-blue-600' 
-                              : ''
+                            selectedChild?.id === child.id
+                              ? 'text-primary'
+                              : 'text-foreground'
                           }`}>
                             {child.name} ({child.class})
                           </p>
