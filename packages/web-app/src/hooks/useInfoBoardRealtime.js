@@ -73,7 +73,7 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
           created_at,
           valid_until,
           status,
-          course_lessons!inner(
+          course_lessons!substitutions_original_lesson_id_fkey(
             id,
             subject_id,
             class_id,
@@ -86,7 +86,7 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
           )
         `)
         .eq('school_id', schoolId)
-        .eq('status', 'approved')
+        .in('status', ['approved', 'pending'])
         .gte('valid_until', today)
         .order('created_at', { ascending: false })
         .limit(20)
