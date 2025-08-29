@@ -6,14 +6,17 @@ import { Infoboard } from '../../../components/Infoboard';
 import { MissingStaff } from '../../../components/MissingStaff';
 import { Veranstaltungen } from '../../../components/Veranstaltungen';
 import { TodosPlaceholder } from '../../../components/TodosPlaceholder';
+import Settings from '../../../components/Settings';
 
 interface AdminDashboardProps {
   user: any;
   onShowSettings: () => void;
+  showSettings?: boolean;
+  onBackToDashboard?: () => void;
 }
 
-export function AdminDashboard({ user, onShowSettings }: AdminDashboardProps) {
-  const [currentView, setCurrentView] = useState('home');
+export function AdminDashboard({ user, onShowSettings, showSettings = false, onBackToDashboard }: AdminDashboardProps) {
+  const [currentView, setCurrentView] = useState(showSettings ? 'einstellungen' : 'home');
 
   const handleLogout = async () => {
     try {
@@ -34,10 +37,20 @@ export function AdminDashboard({ user, onShowSettings }: AdminDashboardProps) {
 
   const handleNavigation = (view: string) => {
     setCurrentView(view);
-    if (view !== 'home') {
+    if (view === 'home') {
+      // Navigate back to dashboard
+      if (onBackToDashboard) {
+        onBackToDashboard();
+      }
+    } else if (view !== 'home') {
       console.log('Navigate to:', view);
       // Future: Handle navigation to different views
     }
+  };
+
+  const handleShowSettings = () => {
+    setCurrentView('einstellungen');
+    onShowSettings();
   };
 
   const handleClassClick = (className: string) => {
@@ -50,14 +63,16 @@ export function AdminDashboard({ user, onShowSettings }: AdminDashboardProps) {
     // Future: Navigate to status detail view
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navigation
-        currentView={currentView}
-        onNavigate={handleNavigation}
-        onShowSettings={onShowSettings}
-      />
+  const renderMainContent = () => {
+    if (showSettings) {
+      return (
+        <main className="container mx-auto px-4 py-6 max-w-7xl">
+          <Settings />
+        </main>
+      );
+    }
 
+    return (
       <main className="container mx-auto px-4 py-6 max-w-7xl">
         {/* Widget Grid - 5 widgets in asymmetric layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -84,6 +99,18 @@ export function AdminDashboard({ user, onShowSettings }: AdminDashboardProps) {
           </div>
         </div>
       </main>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation
+        currentView={currentView}
+        onNavigate={handleNavigation}
+        onShowSettings={handleShowSettings}
+      />
+
+      {renderMainContent()}
     </div>
   );
 }
