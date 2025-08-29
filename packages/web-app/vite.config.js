@@ -4,10 +4,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     react(),
-    VitePWA({
+    // Only enable PWA in production to avoid dev server conflicts
+    ...(command === 'build' ? [VitePWA({
       registerType: 'autoUpdate',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
@@ -59,12 +60,8 @@ export default defineConfig({
             purpose: 'any maskable'
           }
         ]
-      },
-      devOptions: {
-        enabled: true,
-        type: 'module'
       }
-    })
+    })] : [])
   ],
   resolve: {
     alias: {
@@ -77,10 +74,13 @@ export default defineConfig({
     host: true,
     hmr: {
       port: 5173,
+      overlay: true
     },
+    // Disable service worker in development
+    middlewareMode: false
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
   },
-})
+}))
