@@ -33,6 +33,35 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState('contact')
   const [activeDataComponent, setActiveDataComponent] = useState(null)
 
+  // Render data management component if one is selected
+  if (activeDataComponent) {
+    const handleBack = () => setActiveDataComponent(null)
+
+    switch (activeDataComponent) {
+      case 'students':
+        return <StudentManagement onBack={handleBack} />
+      case 'staff':
+        return <StaffManagement onBack={handleBack} />
+      case 'subjects':
+        return <SubjectManagement onBack={handleBack} />
+      case 'rooms':
+        return <GenericDataManagement dataType="rooms" onBack={handleBack} />
+      case 'classes':
+        return <GenericDataManagement dataType="classes" onBack={handleBack} />
+      case 'access-codes':
+        return <GenericDataManagement dataType="access-codes" onBack={handleBack} />
+      case 'partners':
+        return <GenericDataManagement dataType="partners" onBack={handleBack} />
+      case 'groups':
+        return <GenericDataManagement dataType="groups" onBack={handleBack} />
+      case 'users':
+        return <GenericDataManagement dataType="users" onBack={handleBack} />
+      default:
+        setActiveDataComponent(null)
+        break
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
