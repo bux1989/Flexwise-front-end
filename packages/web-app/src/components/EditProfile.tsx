@@ -549,7 +549,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         return;
       }
 
-      setIsOtpEnabled(factors.totp.length > 0);
+      // Check for any verified MFA factors (TOTP or phone/SMS)
+      const hasVerifiedFactors = factors.totp.some(factor => factor.status === 'verified') ||
+                                factors.phone?.some(factor => factor.status === 'verified') ||
+                                (authUser.phone_confirmed_at && authUser.phone);
+
+      setIsOtpEnabled(hasVerifiedFactors);
     } catch (error) {
       console.error('Error checking OTP status:', error);
     }
