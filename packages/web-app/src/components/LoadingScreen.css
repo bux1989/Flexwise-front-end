@@ -6,7 +6,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #bfdbfe 0%, #dbeafe 50%, #eff6ff 100%);
+  background: #f3f4f6;
   display: flex;
   flex-direction: column;
   align-items: center;
