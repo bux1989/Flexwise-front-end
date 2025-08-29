@@ -361,14 +361,17 @@
 
 .dot-1 {
   animation-delay: 0s;
+  background: #3b82f6;
 }
 
 .dot-2 {
   animation-delay: 0.2s;
+  background: #1d4ed8;
 }
 
 .dot-3 {
   animation-delay: 0.4s;
+  background: #1e40af;
 }
 
 @keyframes dotsAppear {
