@@ -145,7 +145,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       }
 
       // Store school_id from profile data for security
-      console.log('���� Profile loaded with school_id:', profileData?.school_id);
+      console.log('👤 Profile loaded with school_id:', profileData?.school_id);
       setUserSchoolId(profileData?.school_id || null);
 
       // Load staff info
@@ -357,7 +357,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           label: email.type,
           value: email.value,
           is_primary: email.is_primary,
-          school_id: schoolId // Use actual school_id from user metadata
+          school_id: userSchoolId // Use actual school_id from profile data
         });
       });
 
@@ -369,7 +369,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           label: phone.type,
           value: phone.value,
           is_primary: phone.is_primary,
-          school_id: schoolId // Use actual school_id from user metadata
+          school_id: userSchoolId // Use actual school_id from profile data
         });
       });
 
@@ -381,7 +381,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           label: address.type,
           value: address.value,
           is_primary: address.is_primary,
-          school_id: schoolId // Use actual school_id from user metadata
+          school_id: userSchoolId // Use actual school_id from profile data
         });
       });
 
@@ -1151,7 +1151,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                               console.error('❌ Reset email error:', error);
                               alert('Fehler beim Senden des Reset-Links: ' + error.message);
                             } else {
-                              console.log('�� Reset email sent successfully');
+                              console.log('✅ Reset email sent successfully');
                               alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
                             }
                           } catch (error) {
