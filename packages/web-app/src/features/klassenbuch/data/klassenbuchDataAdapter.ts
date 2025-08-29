@@ -263,6 +263,7 @@ interface DatabaseLesson {
   subject_color?: string;
   class_id?: string;
   course_id?: string;
+  course_name?: string;
 }
 
 /**
