@@ -1645,11 +1645,11 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                   </div>
                                 </div>
 
-                                {/* SMS OTP Option - Show warning */}
-                                <div className="space-y-2 opacity-75 mt-3">
+                                {/* SMS OTP Option */}
+                                <div className="space-y-2 mt-3">
                                   <Label htmlFor="otp-phone">SMS OTP</Label>
-                                  <p className="text-xs text-red-600 mb-1">
-                                    ❌ SMS ist nicht konfiguriert (Administrator kontaktieren)
+                                  <p className="text-xs text-blue-600 mb-1">
+                                    📱 SMS wird an Ihre primäre Telefonnummer gesendet
                                   </p>
                                   <div className="flex gap-2">
                                     <Input
@@ -1659,16 +1659,14 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                       value={otpPhone}
                                       onChange={(e) => setOtpPhone(e.target.value)}
                                       className="flex-1"
-                                      disabled
                                     />
                                     <Button
                                       onClick={sendSmsOtp}
-                                      disabled={true}
-                                      variant="outline"
-                                      className="border-gray-300 text-gray-500 cursor-not-allowed"
+                                      disabled={isSendingOtp}
+                                      className="bg-green-600 hover:bg-green-700"
                                     >
                                       <MessageSquare className="h-4 w-4 mr-2" />
-                                      Nicht verfügbar
+                                      {isSendingOtp ? 'Senden...' : 'SMS senden'}
                                     </Button>
                                   </div>
                                 </div>
