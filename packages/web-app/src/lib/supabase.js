@@ -1,8 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Use your actual Supabase credentials
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://api.schulflex.app'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzQ2MzA5NjAwLCJleHAiOjE5MDQwNzYwMDB9.mhTQEJi2po9vvM_sjtKzKUrYYQEbFyvykOwkE_gya-Q'
+// Environment variable validation (no fallbacks for security)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl) {
+  throw new Error('Missing required environment variable: VITE_SUPABASE_URL')
+}
+
+if (!supabaseAnonKey) {
+  throw new Error('Missing required environment variable: VITE_SUPABASE_ANON_KEY')
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -386,7 +394,7 @@ export async function bulkSaveAttendance(lessonId, attendanceRecords) {
     return data
 
   } catch (error) {
-    console.error('💥 Error in bulkSaveAttendance:', error)
+    console.error('�� Error in bulkSaveAttendance:', error)
     throw error
   }
 }
