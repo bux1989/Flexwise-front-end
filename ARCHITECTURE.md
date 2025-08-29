@@ -266,7 +266,7 @@ packages/
 │   │   ├── admin/
 │   │   └── student/
 │   ├── components/                   # Web-specific UI
-│   └── pages/                        # Web routing
+���   └── pages/                        # Web routing
 └── mobile-app/                       # React Native application
     ├── screens/
     │   ├── dashboards/               # Overview dashboards per role
@@ -340,14 +340,64 @@ packages/
    - Task filtering and sorting
    - Assignment management
 
+## Development Standards
+
+### Debug Overlay Requirements ✅
+
+**Decision**: All new components must include debug overlays for development and testing
+
+**Implementation Requirements:**
+- Import `DebugOverlay` from `../debug` in all new components
+- Wrap main component sections with systematic debug IDs
+- Use format: `{COMPONENT_PREFIX}-{SECTION_NUMBER}` (e.g., "PRO-001", "PRO-002")
+- Include descriptive names: `{ComponentName}.{SectionDescription}`
+
+**Example Implementation:**
+```tsx
+import { DebugOverlay } from '../debug';
+
+export function ProfileEditPage() {
+  return (
+    <DebugOverlay id="PRO-014" name="ProfileEditPage">
+      <div className="profile-page">
+        <DebugOverlay id="PRO-001" name="ProfileEdit.Header">
+          <header>Profile Header</header>
+        </DebugOverlay>
+
+        <DebugOverlay id="PRO-002" name="ProfileEdit.Form">
+          <form>Profile Form</form>
+        </DebugOverlay>
+
+        <DebugOverlay id="PRO-003" name="ProfileEdit.Actions">
+          <div>Action Buttons</div>
+        </DebugOverlay>
+      </div>
+    </DebugOverlay>
+  );
+}
+```
+
+**Benefits:**
+- Component identification during development
+- Easy debugging and testing
+- Systematic approach to component organization
+- No impact on production builds
+
+**ID Convention:**
+- Each component gets a unique 3-letter prefix + 3-digit number
+- Main component: `{PREFIX}-014` (using component identifier)
+- Sub-sections: `{PREFIX}-001`, `{PREFIX}-002`, etc.
+- Names follow: `{ComponentName}.{SectionDescription}`
+
 ## Next Steps
 
 ---
 
 ## Implementation Status
 - [x] Architecture decisions documented
+- [x] Debug overlay standards established
 - [ ] Question 3: Feature licensing approach
-- [ ] Question 4: Mobile navigation structure  
+- [ ] Question 4: Mobile navigation structure
 - [ ] Question 5: Data synchronization strategy
 - [ ] Begin code reorganization
 
