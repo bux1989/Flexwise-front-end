@@ -110,7 +110,8 @@ export function LessonSchedule({
   };
 
   return (
-    <Card>
+    <DebugOverlay name="LessonSchedule">
+      <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl flex items-center gap-2">
           <Calendar className="h-6 w-6 text-blue-500" />
@@ -313,6 +314,7 @@ export function LessonSchedule({
           </TooltipProvider>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </DebugOverlay>
   );
 }
