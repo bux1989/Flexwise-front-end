@@ -23,6 +23,12 @@ import {
   X
 } from 'lucide-react'
 
+// Data management components
+import StudentManagement from './data-management/StudentManagement'
+import StaffManagement from './data-management/StaffManagement'
+import SubjectManagement from './data-management/SubjectManagement'
+import GenericDataManagement from './data-management/GenericDataManagement'
+
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('contact')
   const [activeDataComponent, setActiveDataComponent] = useState(null)
