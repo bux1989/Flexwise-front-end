@@ -117,16 +117,31 @@ export default function StudentManagement({ onBack }) {
     return matchesSearch && matchesClass
   })
 
-  const handleEditStudent = (student) => {
+  const handleViewStudent = (student) => {
     setSelectedStudent(student)
-    setIsEditing(true)
+    setShowDetailView(true)
+    setIsEditing(false)
   }
 
-  const handleDeleteStudent = (studentId) => {
+  const handleEditStudent = (student, event) => {
+    event.stopPropagation() // Prevent row click
+    setSelectedStudent(student)
+    setIsEditing(true)
+    setShowDetailView(false)
+  }
+
+  const handleDeleteStudent = (studentId, event) => {
+    event.stopPropagation() // Prevent row click
     if (confirm('Sind Sie sicher, dass Sie diesen Schüler löschen möchten?')) {
       // TODO: Implement delete functionality
       console.log('Delete student:', studentId)
     }
+  }
+
+  const handleBackToList = () => {
+    setSelectedStudent(null)
+    setShowDetailView(false)
+    setIsEditing(false)
   }
 
   const handleSaveStudent = () => {
