@@ -96,7 +96,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     loadUserProfile();
   }, []);
 
-  const dateString = formatDateTime();
+  const dateString = formatDateTime(selectedDate);
 
   const handleHeaderButtonClick = async (action: string) => {
     if (action === 'Ausloggen') {
