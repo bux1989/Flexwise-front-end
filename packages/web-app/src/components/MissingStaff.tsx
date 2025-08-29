@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
 import { Checkbox } from './ui/checkbox';
 import { Info, ArrowRight, Users } from 'lucide-react';
+import { DebugOverlay } from '../debug';
 
 interface MissingStaffEntry {
   name: string;
