@@ -258,7 +258,7 @@ export default function StudentManagement({ onBack }) {
 
       {/* Search and Filters */}
       <Card className="border-l-4 border-l-blue-500">
-        <CardContent className="p-4">
+        <CardContent className="p-4 space-y-4">
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -272,6 +272,33 @@ export default function StudentManagement({ onBack }) {
             <Badge variant="secondary" className="bg-blue-100 text-blue-700">
               {filteredStudents.length} Schüler gefunden
             </Badge>
+          </div>
+
+          {/* Class Filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-blue-900">Filter nach Klasse:</span>
+            <Button
+              variant={selectedClass === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSelectedClass('all')}
+              className={selectedClass === 'all' ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-50'}
+            >
+              Alle ({students.length})
+            </Button>
+            {availableClasses.map((className) => {
+              const classCount = students.filter(s => s.class === className).length
+              return (
+                <Button
+                  key={className}
+                  variant={selectedClass === className ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedClass(className)}
+                  className={selectedClass === className ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-50'}
+                >
+                  {className} ({classCount})
+                </Button>
+              )
+            })}
           </div>
         </CardContent>
       </Card>
