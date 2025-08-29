@@ -566,82 +566,84 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
 
         {/* Hide Legends on mobile */}
         {!isMobile && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Subject Legend */}
-            <Card>
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-3">Fächer</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                  {Array.from(new Set(classTimetable.map(lesson => lesson.subject))).map((subject) => {
-                    const lesson = classTimetable.find(l => l.subject === subject);
-                    if (!lesson) return null;
+          <DebugOverlay id="KLA-014-3" name="KlassenbuchLiveView.Legends">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Subject Legend */}
+              <Card>
+                <CardContent className="p-4">
+                  <h4 className="font-semibold mb-3">Fächer</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    {Array.from(new Set(classTimetable.map(lesson => lesson.subject))).map((subject) => {
+                      const lesson = classTimetable.find(l => l.subject === subject);
+                      if (!lesson) return null;
 
-                    const subjectLabels: Record<string, string> = {
-                      'DAZ': 'DAZ (Deutsch als Zweitsprache)',
-                      'En': 'En (Englisch)',
-                      'Ma': 'Ma (Mathematik)',
-                      'GeWi': 'GeWi (Gesellschaftswissenschaften)',
-                      'NaWi': 'NaWi (Naturwissenschaften)',
-                      'Sp': 'Sp (Sport)',
-                      'De': 'De (Deutsch)',
-                      'Ph': 'Ph (Physik)',
-                      'Ge': 'Ge (Geschichte)',
-                      'Bio': 'Bio (Biologie)',
-                      'Ch': 'Ch (Chemie)',
-                      'Mu': 'Mu (Musik)',
-                      'Fr': 'Fr (Französisch)',
-                      'Ku': 'Ku (Kunst)',
-                      'Eth': 'Eth (Ethik)',
-                      'Kla': 'Kla (Klassenleitung)',
-                      'AUB': 'AUB (Arbeitsunterricht)',
-                      'Inf': 'Inf (Informatik)',
-                      'PoWi': 'PoWi (Politik und Wirtschaft)',
-                      'AWT': 'AWT (Arbeitslehre)',
-                      'WPU': 'WPU (Wahlpflichtunterricht)',
-                      // Course subjects
-                      'Bowling': 'Bowling (Wahlpflichtkurs)',
-                      'Tischtennis': 'Tischtennis (Wahlpflichtkurs)',
-                    };
+                      const subjectLabels: Record<string, string> = {
+                        'DAZ': 'DAZ (Deutsch als Zweitsprache)',
+                        'En': 'En (Englisch)',
+                        'Ma': 'Ma (Mathematik)',
+                        'GeWi': 'GeWi (Gesellschaftswissenschaften)',
+                        'NaWi': 'NaWi (Naturwissenschaften)',
+                        'Sp': 'Sp (Sport)',
+                        'De': 'De (Deutsch)',
+                        'Ph': 'Ph (Physik)',
+                        'Ge': 'Ge (Geschichte)',
+                        'Bio': 'Bio (Biologie)',
+                        'Ch': 'Ch (Chemie)',
+                        'Mu': 'Mu (Musik)',
+                        'Fr': 'Fr (Französisch)',
+                        'Ku': 'Ku (Kunst)',
+                        'Eth': 'Eth (Ethik)',
+                        'Kla': 'Kla (Klassenleitung)',
+                        'AUB': 'AUB (Arbeitsunterricht)',
+                        'Inf': 'Inf (Informatik)',
+                        'PoWi': 'PoWi (Politik und Wirtschaft)',
+                        'AWT': 'AWT (Arbeitslehre)',
+                        'WPU': 'WPU (Wahlpflichtunterricht)',
+                        // Course subjects
+                        'Bowling': 'Bowling (Wahlpflichtkurs)',
+                        'Tischtennis': 'Tischtennis (Wahlpflichtkurs)',
+                      };
 
-                    return (
-                      <div key={subject} className="flex items-center space-x-2">
-                        <div className={`w-4 h-4 border rounded ${lesson.subjectColor.replace('text-', 'border-')}`}></div>
-                        <span>{subjectLabels[subject] || subject}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                      return (
+                        <div key={subject} className="flex items-center space-x-2">
+                          <div className={`w-4 h-4 border rounded ${lesson.subjectColor.replace('text-', 'border-')}`}></div>
+                          <span>{subjectLabels[subject] || subject}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
 
-            {/* Status Legend */}
-            <Card>
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-3">Symbole</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <MessageSquare className="h-3 w-3 text-blue-600" />
-                    <span>Admin-Kommentar (mit Maus berühren)</span>
+              {/* Status Legend */}
+              <Card>
+                <CardContent className="p-4">
+                  <h4 className="font-semibold mb-3">Symbole</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <MessageSquare className="h-3 w-3 text-blue-600" />
+                      <span>Admin-Kommentar (mit Maus berühren)</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-red-50 border border-red-200 rounded"></div>
+                      <X className="h-3 w-3 text-red-600" />
+                      <span>Stunde entfällt</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-blue-50 border border-blue-200 rounded"></div>
+                      <RefreshCw className="h-3 w-3 text-blue-600" />
+                      <span>Raumänderung</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-amber-50 border border-amber-200 rounded"></div>
+                      <RefreshCw className="h-3 w-3 text-blue-600" />
+                      <span>Lehrkraftwechsel</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-red-50 border border-red-200 rounded"></div>
-                    <X className="h-3 w-3 text-red-600" />
-                    <span>Stunde entfällt</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-blue-50 border border-blue-200 rounded"></div>
-                    <RefreshCw className="h-3 w-3 text-blue-600" />
-                    <span>Raumänderung</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-amber-50 border border-amber-200 rounded"></div>
-                    <RefreshCw className="h-3 w-3 text-blue-600" />
-                    <span>Lehrkraftwechsel</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
+          </DebugOverlay>
         )}
 
         {/* Attendance Modal */}
