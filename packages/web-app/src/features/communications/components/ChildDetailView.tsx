@@ -549,7 +549,7 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
                 <tr className="bg-muted/30">
                   <th className="p-2 text-left border-r border-border font-medium text-foreground">Zeit</th>
                   {dayNames.map((day) => (
-                    <th key={day} className="p-2 text-center border-r border-gray-200 font-medium last:border-r-0">
+                    <th key={day} className="p-2 text-center border-r border-border font-medium last:border-r-0 text-foreground">
                       {day}
                     </th>
                   ))}
@@ -557,12 +557,12 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
               </thead>
               <tbody>
                 {childData.schedule.map((row, index) => (
-                  <tr key={index} className="border-t border-gray-200">
-                    <td className="p-2 border-r border-gray-200 font-medium bg-gray-50">
+                  <tr key={index} className="border-t border-border">
+                    <td className="p-2 border-r border-border font-medium bg-muted/30 text-foreground">
                       {row.time}
                     </td>
                     {dayKeys.map((dayKey) => (
-                      <td key={dayKey} className="p-1 border-r border-gray-200 text-center last:border-r-0">
+                      <td key={dayKey} className="p-1 border-r border-border text-center last:border-r-0">
                         {row[dayKey] && (
                           <Badge
                             variant="secondary"
