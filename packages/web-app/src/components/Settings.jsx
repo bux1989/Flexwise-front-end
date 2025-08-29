@@ -4,22 +4,23 @@ import { Button } from './ui/button'
 import { DebugOverlay } from '../debug'
 import { Badge } from './ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
-import { 
-  Building, 
-  Settings as SettingsIcon, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  User, 
-  Database, 
-  Key, 
-  Users, 
-  Book, 
-  DoorClosed, 
-  UsersRound, 
-  Shield, 
+import {
+  Building,
+  Settings as SettingsIcon,
+  Mail,
+  Phone,
+  MapPin,
+  User,
+  Database,
+  Key,
+  Users,
+  Book,
+  DoorClosed,
+  UsersRound,
+  Shield,
   Download,
-  Edit
+  Edit,
+  X
 } from 'lucide-react'
 
 export default function Settings() {
