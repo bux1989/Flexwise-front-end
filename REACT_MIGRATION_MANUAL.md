@@ -98,8 +98,11 @@ cp "Source/components/AddTaskDialog.tsx" "packages/web-app/src/components/"
 // 1. Copy the relevant section from the monolithic component
 // 2. Create the component file
 // 3. Define proper interfaces
+// 4. Add debug overlays with systematic IDs
 
 // Example: LessonSchedule.tsx
+import { DebugOverlay } from '../../../debug';
+
 interface LessonScheduleProps {
   lessons: any[];
   selectedDate: Date;
@@ -108,14 +111,30 @@ interface LessonScheduleProps {
   isMobile?: boolean;
 }
 
-export function LessonSchedule({ 
-  lessons, 
-  selectedDate, 
-  onDateChange, 
+export function LessonSchedule({
+  lessons,
+  selectedDate,
+  onDateChange,
   onAttendanceClick,
-  isMobile = false 
+  isMobile = false
 }: LessonScheduleProps) {
-  // Component implementation
+  return (
+    <DebugOverlay id="LES-014" name="LessonSchedule">
+      <div className="lesson-schedule">
+        <DebugOverlay id="LES-001" name="LessonSchedule.Header">
+          <header>
+            {/* Header implementation */}
+          </header>
+        </DebugOverlay>
+
+        <DebugOverlay id="LES-002" name="LessonSchedule.Grid">
+          <div className="schedule-grid">
+            {/* Schedule grid implementation */}
+          </div>
+        </DebugOverlay>
+      </div>
+    </DebugOverlay>
+  );
 }
 ```
 
@@ -198,6 +217,39 @@ export * from './communications';
 export * from './task-management';
 // etc.
 ```
+
+### Phase 5.5: Add Debug Overlays
+
+#### 5.5.1 Debug Overlay Requirements
+**MANDATORY**: All migrated components must include debug overlays
+
+```typescript
+// Import debug overlay in every component
+import { DebugOverlay } from '../../../debug';
+
+// Wrap main component and major sections
+export function ComponentName(props) {
+  return (
+    <DebugOverlay id="ABC-014" name="ComponentName">
+      <div className="component-wrapper">
+        <DebugOverlay id="ABC-001" name="ComponentName.Section1">
+          {/* Section 1 content */}
+        </DebugOverlay>
+
+        <DebugOverlay id="ABC-002" name="ComponentName.Section2">
+          {/* Section 2 content */}
+        </DebugOverlay>
+      </div>
+    </DebugOverlay>
+  );
+}
+```
+
+#### 5.5.2 Debug ID Convention
+- **Component ID**: `{PREFIX}-014` (main component identifier)
+- **Section IDs**: `{PREFIX}-001`, `{PREFIX}-002`, etc.
+- **Names**: `{ComponentName}.{SectionDescription}`
+- **Prefixes**: 3-letter codes (LES=Lessons, COM=Communications, TSK=Tasks, etc.)
 
 ### Phase 6: Create Dashboard Component
 
@@ -332,8 +384,9 @@ npm run dev
 - [ ] Feature boundaries defined
 - [ ] Directory structure created
 
-### During Migration  
+### During Migration
 - [ ] Components copied and extracted
+- [ ] Debug overlays added to all components
 - [ ] Data moved to shared package
 - [ ] Utilities moved to appropriate domains
 - [ ] Import paths fixed
@@ -369,8 +422,15 @@ npm run dev
 - Follow established naming conventions
 - Use consistent file organization
 - Match feature names across files
+- Use systematic debug overlay IDs
 
-### 4. Proper State Management
+### 4. Debug Overlay Standards
+- Add debug overlays to ALL new components
+- Use consistent ID prefixes per feature
+- Wrap major component sections
+- Include descriptive overlay names
+
+### 5. Proper State Management
 - Keep state in appropriate components
 - Pass data down through props
 - Use callback functions for state updates
