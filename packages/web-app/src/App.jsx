@@ -154,7 +154,7 @@ function App() {
     // Start login transition before startup screen ends for crossfade effect
     const loginTransitionTimer = setTimeout(() => {
       setShowLoginTransition(true)
-    }, 1900) // Start login fade-in 600ms before startup ends
+    }, 1500) // Start login fade-in 1000ms before startup ends
 
     // Hide startup screen
     const startupTimer = setTimeout(() => {
