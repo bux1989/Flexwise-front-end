@@ -97,7 +97,7 @@ export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
 
       {/* Version info */}
       <div className="version-info">
-        <span>Powered by FlexWise Platform</span>
+        <span>Made with ❤️ in Berlin</span>
       </div>
     </div>
   )
