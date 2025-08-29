@@ -542,6 +542,13 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         return;
       }
 
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('Ungültiges E-Mail-Format. Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
@@ -551,7 +558,14 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
       if (error) {
         console.error('Error sending email OTP:', error);
-        alert('Fehler beim Senden der E-Mail: ' + error.message);
+        // Provide more specific error messages
+        if (error.message.includes('rate limit')) {
+          alert('Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
+        } else if (error.message.includes('invalid')) {
+          alert('Ungültige E-Mail-Adresse. Bitte überprüfen Sie Ihre Eingabe.');
+        } else {
+          alert('Fehler beim Senden der E-Mail: ' + error.message);
+        }
       } else {
         alert(`OTP-Code wurde an ${email} gesendet!`);
         setOtpMethod('email');
