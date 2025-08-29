@@ -245,7 +245,7 @@ export function Header({
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1 flex items-center space-x-3">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fccb040ecd5f34c9d92625e0548970cb8?format=webp&width=800"
+              src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fb0814f7ff5d24c7a9970474123112e62?format=webp&width=800"
               alt="FlexWise"
               className="h-8 w-auto lg:h-10 flex-shrink-0"
             />
