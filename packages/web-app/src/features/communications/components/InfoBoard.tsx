@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui
 import { Button } from '../../../components/ui/button';
 import { Checkbox } from '../../../components/ui/checkbox';
 import { Label } from '../../../components/ui/label';
+import { DebugOverlay } from '../../../debug';
 
 // Import real-time hook for Info-Board data
 import { useInfoBoardRealtime, formatSubstitutionText } from '../../../hooks/useInfoBoardRealtime';
