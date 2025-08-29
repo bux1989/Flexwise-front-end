@@ -711,9 +711,9 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
           {editingAuthorizedPickup && (
             <div className="mb-4 space-y-4">
               {/* Unified Contact Management Section */}
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-medium text-blue-800">Verfügbare Kontakte auswählen</h4>
+                  <h4 className="font-medium text-primary">Verfügbare Kontakte auswählen</h4>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -748,9 +748,9 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
                       <div 
                         key={index} 
                         className={`flex items-center space-x-3 p-3 rounded-lg border ${
-                          isCurrentParent 
-                            ? 'bg-green-50 border-green-200' 
-                            : 'bg-white border-gray-200'
+                          isCurrentParent
+                            ? 'bg-green-50 border-green-200'
+                            : 'bg-card border-border'
                         }`}
                       >
                         <Checkbox
@@ -762,7 +762,7 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
                         />
                         
                         <div className="flex-1 min-w-0">
-                          <div className={isCurrentParent ? 'text-green-800' : 'text-blue-800'}>
+                          <div className={isCurrentParent ? 'text-green-800' : 'text-foreground'}>
                             <p className="font-medium text-sm leading-tight">
                               {personName}
                               {isCurrentParent && ' (Sie)'}
@@ -797,7 +797,7 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-blue-600">
+                  <p className="text-sm text-primary">
                     {selectedContacts.size} {selectedContacts.size === 1 ? 'Person' : 'Personen'} ausgewählt
                   </p>
                 </div>
