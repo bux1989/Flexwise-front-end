@@ -254,6 +254,7 @@ interface DatabaseLesson {
   period_number: number;
   period_label: string;
   attendance_taken: boolean;
+  student_count: number; // Total students in the lesson
   school_id: string;
   lesson_date: string;
   subject_abbreviation?: string;
@@ -274,13 +275,62 @@ interface AttendanceCompletion {
   completionPercentage: number;
 }
 
-// Simplified attendance completion checking - will be enhanced when detailed attendance table is available
-async function checkAttendanceCompletion(lessonId: string): Promise<AttendanceCompletion> {
-  // For now, since the lesson_attendance table doesn't exist, we'll use the attendance_taken boolean
-  // This function is kept for future enhancement when detailed attendance data is available
-  console.log('ℹ️ Simplified attendance checking - detailed attendance table not yet available');
+// Check attendance completion using student_attendance_logs table
+async function checkAttendanceCompletion(lessonId: string, totalStudents: number): Promise<AttendanceCompletion> {
+  try {
+    console.log('🔍 Checking attendance completion for lesson:', lessonId, 'with', totalStudents, 'total students');
 
-  return { status: 'missing', studentsWithAttendance: 0, totalStudents: 0, completionPercentage: 0 };
+    // Count actual attendance records in student_attendance_logs
+    const { count: attendanceCount, error: attendanceError } = await supabase
+      .from('student_attendance_logs')
+      .select('id', { count: 'exact' })
+      .eq('lesson_id', lessonId);
+
+    if (attendanceError) {
+      console.error('❌ Error counting attendance records:', {
+        message: attendanceError.message,
+        code: attendanceError.code,
+        details: attendanceError.details,
+        hint: attendanceError.hint
+      });
+      return { status: 'missing', studentsWithAttendance: 0, totalStudents, completionPercentage: 0 };
+    }
+
+    const studentsWithAttendance = attendanceCount || 0;
+    const completionPercentage = totalStudents > 0 ? (studentsWithAttendance / totalStudents) * 100 : 0;
+
+    // Determine status based on completion
+    let status: 'complete' | 'incomplete' | 'missing';
+    if (studentsWithAttendance === 0) {
+      status = 'missing';
+    } else if (studentsWithAttendance >= totalStudents) {
+      status = 'complete'; // Green checkmark - all students marked
+    } else {
+      status = 'incomplete'; // Orange warning - partial attendance
+    }
+
+    console.log(`📊 Attendance completion for lesson ${lessonId}:`, {
+      status,
+      studentsWithAttendance,
+      totalStudents,
+      completionPercentage: Math.round(completionPercentage)
+    });
+
+    return {
+      status,
+      studentsWithAttendance,
+      totalStudents,
+      completionPercentage
+    };
+
+  } catch (error) {
+    console.error('💥 Error checking attendance completion:', {
+      message: error?.message || 'Unknown error',
+      stack: error?.stack,
+      error: error
+    });
+    return { status: 'missing', studentsWithAttendance: 0, totalStudents, completionPercentage: 0 };
+  }
 }
 
 /**
@@ -433,7 +483,7 @@ async function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: Sch
   // Format time
   const timeString = `${lessonStart.toTimeString().substring(0, 5)}-${lessonEnd.toTimeString().substring(0, 5)}`;
 
-  // Determine attendance status using existing attendance_taken boolean
+  // Determine attendance status with proper completion checking
   let attendanceStatus: 'complete' | 'missing' | 'incomplete' | 'future' = 'future';
 
   console.log(`📅 Determining attendance status for lesson ${dbLesson.lesson_id}:`, {
@@ -441,14 +491,18 @@ async function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: Sch
     startTime: dbLesson.start_datetime,
     isPast,
     isOngoing,
-    attendance_taken: dbLesson.attendance_taken
+    attendance_taken: dbLesson.attendance_taken,
+    student_count: dbLesson.student_count
   });
 
   if (isPast || isOngoing) {
     console.log('🕒 Lesson is past or ongoing, checking attendance...');
     if (dbLesson.attendance_taken) {
-      console.log('✅ Attendance has been taken - marking as complete');
-      attendanceStatus = 'complete';
+      console.log('📝 Attendance has been taken, checking completion level...');
+      // Check if attendance is complete or partial
+      const completion = await checkAttendanceCompletion(dbLesson.lesson_id, dbLesson.student_count);
+      attendanceStatus = completion.status;
+      console.log(`🎯 Final attendance status: ${attendanceStatus}`, completion);
     } else {
       console.log('❌ No attendance taken - marking as missing');
       attendanceStatus = 'missing';
@@ -456,8 +510,6 @@ async function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: Sch
   } else {
     console.log('⏭️ Future lesson - marking as future');
   }
-
-  console.log(`🎯 Final attendance status: ${attendanceStatus}`);
 
   // Determine status
   let status: 'normal' | 'cancelled' | 'room_changed' | 'teacher_changed' = 'normal';
