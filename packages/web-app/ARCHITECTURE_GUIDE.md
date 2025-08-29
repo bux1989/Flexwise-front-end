@@ -168,10 +168,22 @@ export default function TeacherDashboard({ user }) {
 3. **Create main component** (`components/NewFeature.tsx`):
    ```typescript
    import { NewFeatureProps } from '../types/newFeature';
-   
+   import { DebugOverlay } from '../../../debug';
+
    export function NewFeature({ userId }: NewFeatureProps) {
-     // Feature implementation
-     return <div>/* feature UI */</div>
+     return (
+       <DebugOverlay id="NEW-014" name="NewFeature">
+         <div className="new-feature">
+           <DebugOverlay id="NEW-001" name="NewFeature.Header">
+             {/* Feature header */}
+           </DebugOverlay>
+
+           <DebugOverlay id="NEW-002" name="NewFeature.Content">
+             {/* Feature content */}
+           </DebugOverlay>
+         </div>
+       </DebugOverlay>
+     );
    }
    ```
 
@@ -189,6 +201,50 @@ export default function TeacherDashboard({ user }) {
    export * from './hooks/useNewFeature';
    export * from './types/newFeature';
    ```
+
+## 🐛 Debug Overlay Standards
+
+**MANDATORY**: All feature components must include debug overlays
+
+### Debug Overlay Requirements:
+- Import `DebugOverlay` from appropriate path
+- Wrap main component with systematic ID: `{PREFIX}-014`
+- Wrap major sections with: `{PREFIX}-001`, `{PREFIX}-002`, etc.
+- Use descriptive names: `{ComponentName}.{SectionDescription}`
+
+### Example Implementation:
+```typescript
+import { DebugOverlay } from '../../../debug';
+
+export function UserProfile({ userId }: UserProfileProps) {
+  return (
+    <DebugOverlay id="USR-014" name="UserProfile">
+      <div className="user-profile">
+        <DebugOverlay id="USR-001" name="UserProfile.Avatar">
+          {/* Avatar section */}
+        </DebugOverlay>
+
+        <DebugOverlay id="USR-002" name="UserProfile.Details">
+          {/* Details section */}
+        </DebugOverlay>
+
+        <DebugOverlay id="USR-003" name="UserProfile.Actions">
+          {/* Action buttons */}
+        </DebugOverlay>
+      </div>
+    </DebugOverlay>
+  );
+}
+```
+
+### Debug ID Prefix Guide:
+- `USR`: User Management features
+- `COM`: Communications features
+- `REP`: Reports features
+- `TSK`: Task Management features
+- `ATT`: Attendance features
+- `LES`: Lessons features
+- `KLA`: Klassenbuch features
 
 6. **Update main features index** (`features/index.ts`):
    ```typescript
@@ -265,5 +321,7 @@ When building new functionality, always ask:
 2. **Can this be reused across dashboard types?**
 3. **Does this feature need to communicate with others?**
 4. **How can I keep this feature self-contained?**
+5. **What debug overlay structure should I use?**
+6. **What debug ID prefix is appropriate?**
 
 Follow these principles and FlexWise will remain maintainable and scalable! 🎉
