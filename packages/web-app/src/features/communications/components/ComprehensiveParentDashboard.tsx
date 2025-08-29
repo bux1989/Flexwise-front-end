@@ -418,7 +418,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 p-4 bg-gray-50">
+        <main className="flex-1 p-4 bg-background">
           <div className="max-w-6xl mx-auto pb-16">
             {selectedChild ? (
               <ChildDetailView 
@@ -431,8 +431,8 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                 <section>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <Bell className="h-6 w-6 text-blue-600" />
-                      <h2 className="text-xl font-semibold leading-tight">Neuigkeiten & Infos</h2>
+                      <Bell className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-semibold leading-tight text-foreground">Neuigkeiten & Infos</h2>
                     </div>
                     <Button variant="outline" size="sm">Alle ansehen</Button>
                   </div>
@@ -455,7 +455,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                       >
                         <CardContent className="p-3">
                           <div className="flex items-start justify-between mb-0.5">
-                            <h3 className="text-lg font-semibold leading-tight">{item.title}</h3>
+                            <h3 className="text-lg font-semibold leading-tight text-foreground">{item.title}</h3>
                             <div className="flex items-center gap-2">
                               {item.important && !zeugnisSubmitted && (
                                 <Badge variant="destructive" className="text-xs">
@@ -467,7 +467,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                                   ✓ Entscheidung übermittelt
                                 </Badge>
                               )}
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-muted-foreground">
                                 {new Date(item.date).toLocaleDateString('de-DE')}
                               </span>
                             </div>
@@ -514,7 +514,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                                                     }`}
                                                   >
                                                     <div className="text-center">
-                                                      <div className="font-medium">🏃 FR��HE ENTLASSUNG</div>
+                                                      <div className="font-medium">🏃 FRÜHE ENTLASSUNG</div>
                                                       <div className="text-xs opacity-90 mt-1">
                                                         Um 13:00 Uhr
                                                       </div>
