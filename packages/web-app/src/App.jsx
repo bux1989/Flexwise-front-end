@@ -148,8 +148,21 @@ function App() {
     }
   }
 
+  // PWA Startup screen
+  useEffect(() => {
+    // Show startup screen for PWA experience
+    const startupTimer = setTimeout(() => {
+      setShowStartupScreen(false)
+    }, 2500) // Show for 2.5 seconds
+
+    return () => clearTimeout(startupTimer)
+  }, [])
+
   // Authentication setup
   useEffect(() => {
+    // Only start auth check after startup screen
+    if (showStartupScreen) return
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('📡 Initial session:', session ? 'Found' : 'None')
@@ -177,7 +190,7 @@ function App() {
     })
 
     return () => subscription.unsubscribe()
-  }, [loadUserProfile])
+  }, [loadUserProfile, showStartupScreen])
 
   // Loading state
   if (loading) {
