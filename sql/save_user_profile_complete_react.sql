@@ -15,7 +15,7 @@ DECLARE
   v_school_id UUID;
   v_result JSONB := '{}';
   v_contact JSONB;
-  v_contacts_inserted INTEGER := 0;
+  v_contacts_processed INTEGER := 0;
 BEGIN
   -- Get school_id from existing profile (security: can't be manipulated by client)
   SELECT school_id INTO v_school_id
@@ -72,45 +72,78 @@ BEGIN
       subjects_stud = COALESCE((p_staff_data->>'subjects_stud')::TEXT[], ARRAY[]::TEXT[]),
       updated_at = NOW();
 
-    -- 3. Delete existing contacts
-    DELETE FROM contacts 
-    WHERE profile_id = p_profile_id;
-
-    -- 4. Insert new contacts
+    -- 3. Surgical contact updates (preserve important fields like is_linked_to_user_login)
+    
+    -- First, handle updates and inserts
     FOR v_contact IN SELECT * FROM jsonb_array_elements(p_contacts)
     LOOP
-      INSERT INTO contacts (
-        profile_id,
-        profile_type,
-        type,
-        label,
-        value,
-        is_primary,
-        school_id,
-        created_at,
-        updated_at
-      ) VALUES (
-        p_profile_id,
-        'staff',
-        v_contact->>'type',
-        v_contact->>'label',
-        v_contact->>'value',
-        COALESCE((v_contact->>'is_primary')::BOOLEAN, false),
-        v_school_id,
-        NOW(),
-        NOW()
-      );
-      
-      v_contacts_inserted := v_contacts_inserted + 1;
+      -- Check if contact has an ID (existing) or needs to be inserted (new)
+      IF v_contact->>'id' IS NOT NULL AND NOT (v_contact->>'id' LIKE 'temp_%') THEN
+        -- Update existing contact (preserve is_linked_to_user_login and created_at)
+        UPDATE contacts SET
+          type = v_contact->>'type',
+          label = v_contact->>'label',
+          value = v_contact->>'value',
+          is_primary = COALESCE((v_contact->>'is_primary')::BOOLEAN, false),
+          updated_at = NOW()
+        WHERE id = (v_contact->>'id')::UUID 
+          AND profile_id = p_profile_id;
+          
+        IF FOUND THEN
+          v_contacts_processed := v_contacts_processed + 1;
+        END IF;
+      ELSE
+        -- Insert new contact
+        INSERT INTO contacts (
+          profile_id,
+          profile_type,
+          type,
+          label,
+          value,
+          is_primary,
+          is_linked_to_user_login,
+          school_id,
+          created_at,
+          updated_at
+        ) VALUES (
+          p_profile_id,
+          'staff',
+          v_contact->>'type',
+          v_contact->>'label',
+          v_contact->>'value',
+          COALESCE((v_contact->>'is_primary')::BOOLEAN, false),
+          COALESCE((v_contact->>'is_linked_to_user_login')::BOOLEAN, false),
+          v_school_id,
+          NOW(),
+          NOW()
+        );
+        
+        v_contacts_processed := v_contacts_processed + 1;
+      END IF;
     END LOOP;
+
+    -- 4. Delete contacts that are no longer in the form data
+    -- Only delete if we have contact IDs to compare against
+    IF jsonb_array_length(p_contacts) > 0 THEN
+      DELETE FROM contacts 
+      WHERE profile_id = p_profile_id 
+        AND school_id = v_school_id
+        AND id NOT IN (
+          SELECT (contact_element->>'id')::UUID
+          FROM jsonb_array_elements(p_contacts) AS contact_element
+          WHERE contact_element->>'id' IS NOT NULL 
+            AND NOT (contact_element->>'id' LIKE 'temp_%')
+            AND (contact_element->>'id')::TEXT ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+        );
+    END IF;
 
     -- Build success response
     v_result := jsonb_build_object(
       'success', true,
       'profile_id', p_profile_id,
       'school_id', v_school_id,
-      'contacts_inserted', v_contacts_inserted,
-      'message', 'Profile saved successfully'
+      'contacts_processed', v_contacts_processed,
+      'message', 'Profile saved successfully with surgical contact updates'
     );
 
     RETURN v_result;
@@ -127,10 +160,11 @@ GRANT EXECUTE ON FUNCTION save_user_profile_complete_react(UUID, JSONB, JSONB, J
 
 -- Add comment for documentation
 COMMENT ON FUNCTION save_user_profile_complete_react IS 
-'Saves complete user profile including staff info and contacts in a single transaction. 
+'Saves complete user profile including staff info and contacts in a single transaction using surgical updates. 
+Preserves important contact fields like is_linked_to_user_login and created_at timestamps.
 Uses school_id from existing profile data for security. 
 Parameters:
 - p_profile_id: User profile UUID
 - p_profile_data: JSONB with first_name, last_name, date_of_birth, gender, profile_picture_url
 - p_staff_data: JSONB with skills, kurzung, subjects_stud
-- p_contacts: JSONB array with type, label, value, is_primary';
+- p_contacts: JSONB array with id, type, label, value, is_primary, is_linked_to_user_login';
