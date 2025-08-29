@@ -1,6 +1,9 @@
+import { DebugOverlay } from '../../../debug';
+
 export function ExternalAccessNotice() {
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+    <DebugOverlay name="ExternalAccessNotice">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
       <div className="flex">
         <div className="flex-shrink-0">
           <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -16,6 +19,7 @@ export function ExternalAccessNotice() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }
