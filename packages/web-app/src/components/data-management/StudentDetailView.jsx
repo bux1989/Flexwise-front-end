@@ -349,17 +349,112 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
 
         {/* Abholinfos Tab */}
         <TabsContent value="abholinfos" className="space-y-6">
+          <Card className="border-l-4 border-l-orange-500">
+            <CardHeader className="bg-orange-50 border-b border-orange-200">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Car className="w-5 h-5 text-orange-600" />
+                  Wöchentliche Abholinfos
+                </CardTitle>
+                <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                  <Edit className="w-4 h-4 mr-2" />
+                  Bearbeiten
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {student.pickupSchedule ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {Object.entries(student.pickupSchedule).map(([day, info]) => (
+                    <div key={day} className="p-4 border border-orange-200 rounded-lg bg-orange-50">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-orange-900 capitalize">{day}</h3>
+                          <div className="flex items-center gap-4 text-sm text-orange-600/70 mt-1">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {info.time}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Car className="w-3 h-3" />
+                              {info.method}
+                            </span>
+                            {info.authorizedPersons && info.authorizedPersons.length > 0 && (
+                              <span className="flex items-center gap-1">
+                                <User className="w-3 h-3" />
+                                Abholberechtigt: {info.authorizedPersons.join(', ')}
+                              </span>
+                            )}
+                          </div>
+                          {info.notes && (
+                            <p className="text-sm text-orange-600/70 mt-2">
+                              Hinweise: {info.notes}
+                            </p>
+                          )}
+                        </div>
+                        <Button variant="ghost" size="sm" className="p-2 hover:bg-orange-100">
+                          <Edit className="w-4 h-4 text-orange-600" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-center py-8">
+                  Keine Abholinformationen eingetragen
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Authorized Pickup Persons */}
           <Card className="border-l-4 border-l-blue-500">
             <CardHeader className="bg-blue-50 border-b border-blue-200">
-              <CardTitle className="flex items-center gap-2">
-                <Car className="w-5 h-5 text-blue-600" />
-                Abholinfos
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  Abholberechtigte Personen
+                </CardTitle>
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Person hinzufügen
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-center py-8">
-                Abholinformationen werden hier angezeigt...
-              </p>
+            <CardContent className="space-y-3">
+              {student.authorizedPersons && student.authorizedPersons.length > 0 ? (
+                student.authorizedPersons.map((person, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border border-blue-200 rounded-lg bg-blue-50">
+                    <div>
+                      <p className="font-medium text-blue-900">{person.name}</p>
+                      <div className="flex items-center gap-4 text-sm text-blue-600/70">
+                        <span>Beziehung: {person.relationship}</span>
+                        {person.phone && (
+                          <span className="flex items-center gap-1">
+                            <Phone className="w-3 h-3" />
+                            {person.phone}
+                          </span>
+                        )}
+                        {person.idRequired && (
+                          <Badge className="bg-yellow-100 text-yellow-700">Ausweis erforderlich</Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="sm" className="p-2 hover:bg-blue-100">
+                        <Edit className="w-4 h-4 text-blue-600" />
+                      </Button>
+                      <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">
+                  Keine abholberechtigten Personen eingetragen
+                </p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
