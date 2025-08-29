@@ -233,8 +233,8 @@ export default function Settings() {
               <User className="w-4 h-4 text-blue-600" />
               Kurse aus der LUSD importieren
             </Button>
-            <Button variant="outline" className="w-full gap-2 bg-blue-50 hover:bg-blue-100 border-blue-200">
-              <Download className="w-4 h-4 text-blue-600" />
+            <Button className="w-full gap-2 bg-green-100 hover:bg-green-200 text-green-800 border border-green-200">
+              <Download className="w-4 h-4" />
               Daten sichern
             </Button>
 
