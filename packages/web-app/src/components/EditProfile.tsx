@@ -68,13 +68,16 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
   // OTP state
   const [showOtpSetup, setShowOtpSetup] = useState(false);
-  const [otpMethod, setOtpMethod] = useState<'email' | 'sms' | null>(null);
+  const [otpMethod, setOtpMethod] = useState<'email' | 'sms' | 'totp' | null>(null);
   const [otpCode, setOtpCode] = useState('');
   const [otpEmail, setOtpEmail] = useState('');
   const [otpPhone, setOtpPhone] = useState('');
   const [isOtpEnabled, setIsOtpEnabled] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [totpSecret, setTotpSecret] = useState('');
+  const [totpQrCode, setTotpQrCode] = useState('');
+  const [isEnrollingTotp, setIsEnrollingTotp] = useState(false);
 
   // Store school_id from profile data (for security)
   const [userSchoolId, setUserSchoolId] = useState<string | null>(null);
