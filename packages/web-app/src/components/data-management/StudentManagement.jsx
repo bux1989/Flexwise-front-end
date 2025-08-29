@@ -56,14 +56,65 @@ export default function StudentManagement({ onBack }) {
       birthDate: '2009-02-10',
       status: 'inactive',
       address: 'Schulstraße 789, 12345 Berlin'
+    },
+    {
+      id: 4,
+      firstName: 'Lisa',
+      lastName: 'Hoffmann',
+      email: 'lisa.hoffmann@student.de',
+      phone: '+49 444 987654',
+      class: '10B',
+      birthDate: '2008-11-03',
+      status: 'active',
+      address: 'Lindenstraße 321, 12345 Berlin'
+    },
+    {
+      id: 5,
+      firstName: 'Marco',
+      lastName: 'Fischer',
+      email: 'marco.fischer@student.de',
+      phone: '+49 333 111222',
+      class: '9A',
+      birthDate: '2009-04-18',
+      status: 'active',
+      address: 'Rosenweg 654, 12345 Berlin'
+    },
+    {
+      id: 6,
+      firstName: 'Julia',
+      lastName: 'Wagner',
+      email: 'julia.wagner@student.de',
+      phone: '+49 222 333444',
+      class: '10B',
+      birthDate: '2008-07-25',
+      status: 'active',
+      address: 'Blumenstraße 987, 12345 Berlin'
+    },
+    {
+      id: 7,
+      firstName: 'Kevin',
+      lastName: 'Bauer',
+      email: 'kevin.bauer@student.de',
+      phone: '+49 111 222333',
+      class: '9A',
+      birthDate: '2009-01-14',
+      status: 'active',
+      address: 'Parkstraße 147, 12345 Berlin'
     }
   ])
 
-  const filteredStudents = students.filter(student => 
-    `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.class.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Get unique classes for filter
+  const availableClasses = [...new Set(students.map(student => student.class))].sort()
+
+  const filteredStudents = students.filter(student => {
+    const matchesSearch = `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.class.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesClass = selectedClass === 'all' || student.class === selectedClass
+
+    return matchesSearch && matchesClass
+  })
 
   const handleEditStudent = (student) => {
     setSelectedStudent(student)
