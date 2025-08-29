@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { DebugOverlay } from '../../../debug';
 import { Navigation } from '../../../components/Navigation';
 import { AttendanceMatrix } from '../../../components/AttendanceMatrix';
 import { Infoboard } from '../../../components/Infoboard';
