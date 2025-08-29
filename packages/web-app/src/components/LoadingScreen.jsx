@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, Palette } from 'lucide-react'
 import './LoadingScreen.css'
 
 export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
