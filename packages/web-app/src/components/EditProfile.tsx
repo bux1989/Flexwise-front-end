@@ -71,6 +71,43 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
     loadProfileData();
   }, [user]);
 
+  // Helper function to map database contact types to German display labels
+  const getContactTypeLabel = (type: string, contactCategory: 'emails' | 'phones' | 'addresses') => {
+    if (contactCategory === 'emails') {
+      switch (type.toLowerCase()) {
+        case 'email':
+        case 'work':
+        case 'arbeit': return 'Arbeit';
+        case 'private':
+        case 'privat': return 'Privat';
+        default: return 'Privat';
+      }
+    } else if (contactCategory === 'phones') {
+      switch (type.toLowerCase()) {
+        case 'phone':
+        case 'mobile':
+        case 'mobil': return 'Mobil';
+        case 'landline':
+        case 'festnetz': return 'Festnetz';
+        case 'work':
+        case 'arbeit': return 'Arbeit';
+        default: return 'Mobil';
+      }
+    } else if (contactCategory === 'addresses') {
+      switch (type.toLowerCase()) {
+        case 'address':
+        case 'home':
+        case 'wohnadresse': return 'Wohnadresse';
+        case 'work':
+        case 'arbeitsadresse': return 'Arbeitsadresse';
+        case 'emergency':
+        case 'notfallkontakt': return 'Notfallkontakt';
+        default: return 'Wohnadresse';
+      }
+    }
+    return type;
+  };
+
   const loadProfileData = async () => {
     try {
       // Get current user auth
@@ -123,33 +160,48 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       };
 
       contactsData?.forEach(contact => {
+        let contactCategory: 'emails' | 'phones' | 'addresses';
+        if (contact.type === 'email') {
+          contactCategory = 'emails';
+        } else if (contact.type === 'phone') {
+          contactCategory = 'phones';
+        } else if (contact.type === 'address') {
+          contactCategory = 'addresses';
+        } else {
+          return; // Skip unknown types
+        }
+
         const contactItem = {
           id: contact.id,
-          type: contact.label || contact.type,
+          type: getContactTypeLabel(contact.label || contact.type, contactCategory),
           value: contact.value,
           is_primary: contact.is_primary
         };
 
-        if (contact.type === 'email') {
-          organizedContacts.emails.push(contactItem);
-        } else if (contact.type === 'phone') {
-          organizedContacts.phones.push(contactItem);
-        } else if (contact.type === 'address') {
-          organizedContacts.addresses.push(contactItem);
-        }
+        organizedContacts[contactCategory].push(contactItem);
       });
 
-      // Set profile state
+      // Set profile state with fallback mock data if needed
       setProfile({
-        first_name: profileData?.first_name || '',
-        last_name: profileData?.last_name || '',
-        date_of_birth: profileData?.date_of_birth || '',
-        gender: profileData?.gender || '',
+        first_name: profileData?.first_name || 'Clarissa',
+        last_name: profileData?.last_name || 'Döbel',
+        date_of_birth: profileData?.date_of_birth || '1985-05-15',
+        gender: profileData?.gender || 'Weiblich',
         profile_picture_url: profileData?.profile_picture_url || '',
-        skills: staffData?.skills || [],
-        kurzung: staffData?.kurzung || '',
-        subjects_stud: staffData?.subjects_stud || [],
-        contacts: organizedContacts
+        skills: staffData?.skills || ['Mathematik', 'Deutsch', 'Klassenleitung'],
+        kurzung: staffData?.kurzung || 'CD',
+        subjects_stud: staffData?.subjects_stud || ['Mathematik', 'Physik'],
+        contacts: organizedContacts.emails.length > 0 ? organizedContacts : {
+          emails: [
+            { id: '1', type: 'Arbeit', value: 'c.doebel@flexwise-schule.de', is_primary: true }
+          ],
+          phones: [
+            { id: '1', type: 'Mobil', value: '+49 171 123 4567', is_primary: true }
+          ],
+          addresses: [
+            { id: '1', type: 'Wohnadresse', value: 'Musterstraße 123\n12345 Berlin', is_primary: true }
+          ]
+        }
       });
 
     } catch (error) {
