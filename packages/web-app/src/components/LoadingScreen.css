@@ -476,12 +476,7 @@
     animation-duration: 0.3s !important;
     animation-iteration-count: 1 !important;
   }
-  
-  .floating-icon {
-    animation: none;
-    opacity: 0.2;
-  }
-  
+
   .gradient-orb {
     animation: none;
   }
