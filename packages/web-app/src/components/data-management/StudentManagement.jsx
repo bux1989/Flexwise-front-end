@@ -253,6 +253,23 @@ export default function StudentManagement({ onBack }) {
     setIsEditing(false)
   }
 
+  // Helper functions for visual indicators
+  const hasValidPhotoPermission = (student) => {
+    return student.photoPermissions?.some(permission =>
+      new Date(permission.validUntil) > new Date()
+    ) || false
+  }
+
+  const hasAllergies = (student) => {
+    return student.allergies?.length > 0 || false
+  }
+
+  const getButStatus = (student) => {
+    if (!student.but?.enabled) return null
+    const isValid = new Date(student.but.validUntil) > new Date()
+    return { isValid, type: student.but.type }
+  }
+
   const handleSaveStudent = () => {
     // TODO: Implement save functionality
     console.log('Save student:', selectedStudent)
