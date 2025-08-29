@@ -73,7 +73,8 @@ export function Header({
   };
 
   return (
-    <header className="bg-white border-b px-3 py-2 lg:px-6 lg:py-4">
+    <DebugOverlay name="Header">
+      <header className="bg-white border-b px-3 py-2 lg:px-6 lg:py-4">
       {showKlassenbuch ? (
         /* Klassenbuch Header Layout */
         <div className="space-y-3">
@@ -310,6 +311,7 @@ export function Header({
           </div>
         </div>
       )}
-    </header>
+      </header>
+    </DebugOverlay>
   );
 }

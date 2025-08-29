@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
+import { DebugOverlay } from '../debug';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Badge } from './ui/badge';
 import {
@@ -73,7 +74,7 @@ export function Navigation({ onNavigate, currentView, onShowSettings, onLogout }
   };
 
   return (
-    <>
+    <DebugOverlay name="Navigation">
       {/* Top Navigation */}
       <nav className="bg-card border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
@@ -189,6 +190,6 @@ export function Navigation({ onNavigate, currentView, onShowSettings, onLogout }
           </div>
         </div>
       </nav>
-    </>
+    </DebugOverlay>
   );
 }

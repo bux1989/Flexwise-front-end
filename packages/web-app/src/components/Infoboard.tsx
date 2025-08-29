@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { DebugOverlay } from '../debug';
 import { Button } from './ui/button';
 import { Info, Clock, Monitor, Users, School, Plus, ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -146,7 +147,8 @@ export function Infoboard() {
   };
 
   return (
-    <Card className="h-full">
+    <DebugOverlay name="Infoboard">
+      <Card className="h-full">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
@@ -255,6 +257,7 @@ export function Infoboard() {
           )}
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </DebugOverlay>
   );
 }
