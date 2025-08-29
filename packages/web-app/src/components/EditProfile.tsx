@@ -218,13 +218,13 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       console.log('📊 Actual contacts data from DB:', contactsData);
       console.log('📊 Organized contacts:', organizedContacts);
 
-      // Auto-create contact record from auth email if none exist
+      // Auto-create contact record from auth email if it doesn't exist
       const authEmailExists = contactsData?.some(contact =>
         contact.type === 'email' && contact.value === authUser.email
       );
 
-      if ((!contactsData || contactsData.length === 0) && !authEmailExists) {
-        console.log('📧 No contacts found, creating from auth email:', authUser.email);
+      if (!authEmailExists) {
+        console.log('📧 Auth email not found in contacts, creating:', authUser.email);
 
         try {
           const { error: insertError } = await supabase
