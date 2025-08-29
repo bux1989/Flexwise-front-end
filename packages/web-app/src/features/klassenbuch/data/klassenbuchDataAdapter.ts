@@ -558,108 +558,11 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
  * @param schoolDays - School days data for proper day name mapping
  * @returns Transformed lesson
  */
+// Legacy individual lesson transformation - now uses optimized batch processing
 async function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay[]): Promise<Lesson> {
-  const now = new Date();
-  const lessonStart = new Date(dbLesson.start_datetime);
-  const lessonEnd = new Date(dbLesson.end_datetime);
-
-  // Determine if lesson is past, ongoing, or future
-  const isPast = lessonEnd < now;
-  const isOngoing = lessonStart <= now && lessonEnd >= now;
-
-  // Get day name using the school's day mapping
-  const lessonDayNumber = lessonStart.getDay(); // 0=Sunday, 1=Monday, etc.
-  const schoolDay = schoolDays.find(sd => sd.day.day_number === lessonDayNumber);
-  const dayName = schoolDay?.day.name_de || schoolDay?.day.name_en || 'Unbekannt';
-
-  console.log('🗓️ Lesson day mapping:', {
-    lessonDayNumber,
-    dayName,
-    lessonDate: lessonStart.toDateString(),
-    schoolDayFound: !!schoolDay
-  });
-
-  // Format time
-  const timeString = `${lessonStart.toTimeString().substring(0, 5)}-${lessonEnd.toTimeString().substring(0, 5)}`;
-
-  // Determine attendance status with proper completion checking
-  let attendanceStatus: 'complete' | 'missing' | 'incomplete' | 'future' = 'future';
-
-  console.log(`📅 Determining attendance status for lesson ${dbLesson.lesson_id}:`, {
-    subject: dbLesson.subject_name,
-    startTime: dbLesson.start_datetime,
-    isPast,
-    isOngoing,
-    attendance_taken: dbLesson.attendance_taken,
-    student_count: dbLesson.student_count
-  });
-
-  if (isPast || isOngoing) {
-    console.log('🕒 Lesson is past or ongoing, checking attendance...');
-    if (dbLesson.attendance_taken) {
-      console.log('📝 Attendance has been taken, checking completion level...');
-      // Check if attendance is complete or partial
-      const completion = await checkAttendanceCompletion(dbLesson.lesson_id, dbLesson.student_count);
-      attendanceStatus = completion.status;
-      console.log(`🎯 Final attendance status: ${attendanceStatus}`, completion);
-    } else {
-      console.log('❌ No attendance taken - marking as missing');
-      attendanceStatus = 'missing';
-    }
-  } else {
-    console.log('⏭️ Future lesson - marking as future');
-  }
-
-  // Determine status
-  let status: 'normal' | 'cancelled' | 'room_changed' | 'teacher_changed' = 'normal';
-  if (dbLesson.is_cancelled) {
-    status = 'cancelled';
-  } else if (dbLesson.lesson_type === 'substitute') {
-    status = 'teacher_changed';
-  }
-
-  // Get subject color (fallback to default colors)
-  const subjectColors: Record<string, string> = {
-    'Deutsch': 'bg-emerald-100 text-emerald-800',
-    'Mathematik': 'bg-green-100 text-green-800',
-    'Englisch': 'bg-blue-100 text-blue-800',
-    'DAZ': 'bg-red-100 text-red-800',
-    'Sport': 'bg-yellow-100 text-yellow-800',
-    'Physik': 'bg-cyan-100 text-cyan-800',
-    'Chemie': 'bg-violet-100 text-violet-800',
-    'Biologie': 'bg-lime-100 text-lime-800',
-    'Geschichte': 'bg-amber-100 text-amber-800',
-    'Musik': 'bg-pink-100 text-pink-800',
-    'Kunst': 'bg-orange-100 text-orange-800',
-    'Ethik': 'bg-teal-100 text-teal-800',
-    'Französisch': 'bg-rose-100 text-rose-800',
-    'Politik': 'bg-red-100 text-red-800'
-  };
-
-  const subjectColor = subjectColors[dbLesson.subject_name] || 'bg-gray-100 text-gray-800';
-
-  // Use the period_number directly from the database view
-  // The view should now properly match periods via time when period_id is missing
-  const mappedPeriod = dbLesson.period_number;
-
-  // Period mapping successful
-
-  return {
-    id: dbLesson.lesson_id,
-    period: mappedPeriod,
-    day: dayName,
-    time: timeString,
-    subject: dbLesson.subject_abbreviation || dbLesson.subject_name,
-    teacher: dbLesson.teacher_names.join(', ') || '',
-    room: dbLesson.room_name || '',
-    attendanceStatus,
-    isPast,
-    isOngoing,
-    subjectColor,
-    status,
-    adminComment: undefined, // Could be added from lesson notes if needed
-    classId: dbLesson.class_id || dbLesson.course_id || ''
-  };
+  // Use the optimized batch transformation for consistency and performance
+  const optimizedResult = await transformDatabaseLessonsOptimized([dbLesson], schoolDays);
+  return optimizedResult[0];
 }
 
 /**
