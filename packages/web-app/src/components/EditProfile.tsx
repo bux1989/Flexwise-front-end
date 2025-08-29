@@ -888,9 +888,16 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                               return;
                             }
 
+                            // Get user's full name from current profile state
+                            const fullName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
+                            console.log('👤 User name:', fullName);
+
                             console.log('📧 Sending reset email to:', authUser.email);
                             const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
                               redirectTo: `${window.location.origin}/auth/reset-password`,
+                              data: {
+                                USER_NAME: fullName || authUser.email  // Fallback to email if no name
+                              }
                             });
 
                             console.log('📨 Reset email result:', { error });
