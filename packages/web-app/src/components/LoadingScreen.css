@@ -406,7 +406,8 @@
 .floating-icon {
   position: absolute;
   font-size: 1.5rem;
-  opacity: 0.3;
+  opacity: 0.4;
+  color: #6b7280;
   animation: floatAround 15s linear infinite;
 }
 
