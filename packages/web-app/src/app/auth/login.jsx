@@ -67,7 +67,7 @@ export default function Login() {
 
             <div className="mb-6 flex justify-center">
               <img
-                src="/logo.png"
+                src="/flexwise-logo-with-tagline.png"
                 alt="FlexWise - Flexible Tools for Smart Schools"
                 className="w-auto"
                 style={{ height: '114px' }}
