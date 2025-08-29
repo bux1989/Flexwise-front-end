@@ -23,24 +23,6 @@
 }
 
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) translateX(0px) scale(1);
-    opacity: 0.3;
-  }
-  25% {
-    transform: translateY(-20px) translateX(10px) scale(1.1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: translateY(-10px) translateX(-15px) scale(0.9);
-    opacity: 0.4;
-  }
-  75% {
-    transform: translateY(15px) translateX(5px) scale(1.05);
-    opacity: 0.5;
-  }
-}
 
 /* Main content */
 .loading-content {
