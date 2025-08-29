@@ -206,6 +206,33 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
   const displayWeekDays = isMobile ? mobileWeekDays : weekDays;
   const weekDates = getWeekDates(selectedWeek);
 
+  // Show loading state while fetching data
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Lade Stundenplan...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no data loaded
+  if (schedulePeriods.length === 0 || schoolDays.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Keine Stundenplandaten gefunden</h3>
+          <p className="text-muted-foreground">
+            Es konnten keine Zeiten oder Schultage für diese Schule geladen werden.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <TooltipProvider>
       <div className="space-y-6">
@@ -213,6 +240,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
           <div className={isMobile ? 'w-full text-center' : ''}>
             <h2 className="text-2xl font-semibold">Stundenplan - Live Ansicht</h2>
             <p className="text-muted-foreground">{selectedClass.name}</p>
+            <p className="text-xs text-muted-foreground">Schule ID: {schoolId}</p>
           </div>
           
           {/* Hide legend on mobile */}
