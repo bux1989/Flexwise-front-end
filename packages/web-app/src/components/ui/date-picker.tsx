@@ -41,8 +41,16 @@ function EnhancedCalendar({
   
   const startOfMonth = viewDate.startOf('month');
   const endOfMonth = viewDate.endOf('month');
-  const startOfCalendar = startOfMonth.startOf('week').add(1, 'day'); // Start on Monday
-  const endOfCalendar = endOfMonth.endOf('week').add(1, 'day');
+
+  // Correctly calculate Monday as the start of the week
+  const getMonday = (date: Dayjs) => {
+    const day = date.day(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const diff = day === 0 ? -6 : 1 - day; // If Sunday, go back 6 days; otherwise go back to Monday
+    return date.add(diff, 'day');
+  };
+
+  const startOfCalendar = getMonday(startOfMonth);
+  const endOfCalendar = getMonday(endOfMonth.add(7, 'days'));
   
   const calendarDays = [];
   let current = startOfCalendar;

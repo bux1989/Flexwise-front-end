@@ -1,3 +1,5 @@
+import { DebugOverlay } from '../../../debug';
+
 interface ExternalStatsProps {
   reportsAvailable: number;
   lastAccess: string;
@@ -6,7 +8,8 @@ interface ExternalStatsProps {
 
 export function ExternalStats({ reportsAvailable, lastAccess, accessExpires }: ExternalStatsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <DebugOverlay name="ExternalStats">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div className="bg-white overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
@@ -39,6 +42,7 @@ export function ExternalStats({ reportsAvailable, lastAccess, accessExpires }: E
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }

@@ -1,11 +1,11 @@
 // Shared date and time utility functions
 
-export const formatDateTime = (includeTime: boolean = true): string => {
-  const currentDate = new Date();
-  return currentDate.toLocaleDateString('de-DE', { 
-    weekday: 'long', 
-    day: '2-digit', 
-    month: 'long', 
+export const formatDateTime = (date?: Date, includeTime: boolean = true): string => {
+  const targetDate = date || new Date();
+  return targetDate.toLocaleDateString('de-DE', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
     year: 'numeric',
     ...(includeTime && {
       hour: '2-digit',

@@ -1,3 +1,5 @@
+import { DebugOverlay } from '../../../debug';
+
 interface ParentStatsProps {
   childrenCount: number;
   messagesCount: number;
@@ -7,7 +9,8 @@ interface ParentStatsProps {
 
 export function ParentStats({ childrenCount, messagesCount, eventsCount, attendanceRate }: ParentStatsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <DebugOverlay name="ParentStats">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
       <div className="bg-white overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
@@ -53,6 +56,7 @@ export function ParentStats({ childrenCount, messagesCount, eventsCount, attenda
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }

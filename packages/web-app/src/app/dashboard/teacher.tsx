@@ -4,6 +4,9 @@ import { TaskManagement } from '../../features/task-management/components/TaskMa
 import { LessonSchedule } from '../../features/lessons/components/LessonSchedule';
 import { InfoBoard } from '../../features/communications/components/InfoBoard';
 import { Events } from '../../features/communications/components/Events';
+import PWANotifications from '../../components/PWANotifications';
+import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner';
+import { EditProfile } from '../../components/EditProfile';
 
 // Import UI components for attendance dialog
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
@@ -21,6 +24,9 @@ import { formatDateTime } from '../../../../shared/domains/academic/klassenbuch/
 import { getCurrentUserProfile, handleLogout, fetchLessonAttendance, fetchLessonDiaryEntry, getLessonStudentNameIdPairs, saveLessonAttendanceBulkRPC } from '../../lib/supabase';
 import { useLessons, useTeacherProfile } from '../../features/lessons/hooks/useLessons';
 import { KlassenbuchApp } from '../../features/klassenbuch';
+
+// Debug system
+import { DebugOverlay } from '../../debug';
 
 interface TeacherDashboardProps {
   user?: {
@@ -71,6 +77,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const [klassenbuchSelectedClass, setKlassenbuchSelectedClass] = useState<any>(null);
   const [klassenbuchClasses, setKlassenbuchClasses] = useState<any[]>([]);
 
+  // Edit profile state
+  const [showEditProfile, setShowEditProfile] = useState(false);
+
   // Load user profile on component mount
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -95,7 +104,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     loadUserProfile();
   }, []);
 
-  const dateString = formatDateTime();
+  const dateString = formatDateTime(selectedDate);
 
   const handleHeaderButtonClick = async (action: string) => {
     if (action === 'Ausloggen') {
@@ -110,6 +119,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       setShowKlassenbuch(true);
     } else if (action === 'Klassenbuch-Close') {
       setShowKlassenbuch(false);
+    } else if (action === 'Mein Account') {
+      setShowEditProfile(true);
     }
     // Handle other actions in the future
   };
@@ -565,7 +576,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // No early return for Klassenbuch - show it under the header instead
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DebugOverlay name="TeacherDashboard">
+      <div className="min-h-screen bg-gray-50">
+      <PWAInstallBannerWithInstructions />
       <Header
         currentTeacher={isLoadingProfile ? "Wird geladen..." : currentTeacher}
         dateString={loadingLessons ? "Stundenplan wird geladen..." : dateString}
@@ -598,7 +611,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         </div>
       )}
 
-      {/* Klassenbuch content - show when active */}
+      {/* Conditional content based on current view */}
       {showKlassenbuch ? (
         <div className="mx-6 mt-4">
           <KlassenbuchApp
@@ -614,6 +627,11 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             onAttendanceClick={handleAttendanceClick}
           />
         </div>
+      ) : showEditProfile ? (
+        <EditProfile
+          onClose={() => setShowEditProfile(false)}
+          user={user}
+        />
       ) : (
         <div className="p-1 lg:p-6">
         {/* Top Row - 2 columns */}
@@ -650,14 +668,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             isMobile={isMobile}
           />
 
-          {/* Task Management - Right Column - Hidden for now */}
-          <div className="hidden" style={{ display: 'none' }}>
-            <TaskManagement
-              currentTeacher={currentTeacher}
-              canAssignTasks={true}
-              isMobile={isMobile}
-            />
-          </div>
+          {/* PWA Notifications - Right Column */}
+          <PWANotifications />
         </div>
         </div>
       )}
@@ -1038,6 +1050,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }

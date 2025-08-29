@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import { supabase, getCurrentUserProfile, getRouteByRole } from './lib/supabase'
+import { shouldShowLoadingScreen, debugPWAStatus } from './utils/pwaHelpers'
 
 // Components
 import Login from './app/auth/login'
@@ -8,6 +9,10 @@ import TeacherDashboard from './app/dashboard/teacher'
 import ParentDashboard from './app/dashboard/parent'
 import ExternalDashboard from './app/dashboard/external'
 import AdminDashboard from './app/dashboard/admin'
+import LoadingScreen from './components/LoadingScreen'
+
+// Debug system
+import { DebugProvider, DebugModal } from './debug'
 
 // Constants
 const ROLE_ROUTES = {
@@ -50,6 +55,13 @@ function App() {
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [profileLoading, setProfileLoading] = useState(false)
+  const [showStartupScreen, setShowStartupScreen] = useState(shouldShowLoadingScreen())
+  const [showLoginTransition, setShowLoginTransition] = useState(false)
+
+  // Debug PWA status on mount
+  useEffect(() => {
+    debugPWAStatus();
+  }, []);
 
   // Profile loading logic
   const loadUserProfile = useCallback(async (user) => {
@@ -122,14 +134,15 @@ function App() {
   }
 
   const renderDashboard = () => {
-    // If profile is loading, show loading state instead of redirecting
+    // If profile is loading, show loading state instead of redirecting (PWA only)
     if (!userProfile && profileLoading) {
+      if (shouldShowLoadingScreen()) {
+        return <LoadingScreen onComplete={() => setProfileLoading(false)} minDisplayTime={1500} />
+      }
+      // For browser, just show a simple loading without full screen
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="text-lg text-gray-900">Loading Profile...</div>
-            <div className="text-sm text-gray-500 mt-2">Setting up your dashboard</div>
-          </div>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-lg">Loading...</div>
         </div>
       )
     }
@@ -153,8 +166,36 @@ function App() {
     }
   }
 
+  // PWA Startup screen
+  useEffect(() => {
+    // Only run startup screen logic if this is a PWA
+    if (!shouldShowLoadingScreen()) {
+      setShowStartupScreen(false)
+      setShowLoginTransition(true)
+      return
+    }
+
+    // Start login transition before startup screen ends for crossfade effect
+    const loginTransitionTimer = setTimeout(() => {
+      setShowLoginTransition(true)
+    }, 1500) // Start login fade-in 1000ms before startup ends
+
+    // Hide startup screen
+    const startupTimer = setTimeout(() => {
+      setShowStartupScreen(false)
+    }, 2500) // Show for 2.5 seconds
+
+    return () => {
+      clearTimeout(loginTransitionTimer)
+      clearTimeout(startupTimer)
+    }
+  }, [])
+
   // Authentication setup
   useEffect(() => {
+    // Only start auth check when login transition begins
+    if (!showLoginTransition) return
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('📡 Initial session:', session ? 'Found' : 'None')
@@ -182,39 +223,60 @@ function App() {
     })
 
     return () => subscription.unsubscribe()
-  }, [loadUserProfile])
+  }, [loadUserProfile, showLoginTransition])
 
-  // Loading state
-  if (loading) {
+  // PWA Startup screen (only show on PWA)
+  if (showStartupScreen && !showLoginTransition) {
+    return <LoadingScreen onComplete={() => setShowStartupScreen(false)} minDisplayTime={2500} />
+  }
+
+  // Crossfade transition period - show both screens (PWA only)
+  if (showStartupScreen && showLoginTransition) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="text-lg text-gray-900">Loading...</div>
-          <div className="text-sm text-gray-500 mt-2">Initializing FlexWise</div>
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden' }}>
+        <LoadingScreen onComplete={() => setShowStartupScreen(false)} minDisplayTime={2500} />
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10000 }}>
+          <Login />
         </div>
+      </div>
+    )
+  }
+
+  // Loading state (PWA only)
+  if (loading) {
+    if (shouldShowLoadingScreen()) {
+      return <LoadingScreen onComplete={() => setLoading(false)} />
+    }
+    // For browser, just show a simple loading without full screen
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
       </div>
     )
   }
 
   // Main render
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
-        {!session ? (
-          <Login />
-        ) : (
-          <Routes>
-            <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
-            <Route path="/dashboard/admin" element={renderDashboard()} />
-            <Route path="/dashboard/teacher" element={renderDashboard()} />
-            <Route path="/dashboard/parent" element={renderDashboard()} />
-            <Route path="/dashboard/external" element={renderDashboard()} />
-            <Route path="/" element={<Navigate to={getDashboardPath()} replace />} />
-            <Route path="*" element={<Navigate to={getDashboardPath()} replace />} />
-          </Routes>
-        )}
-      </div>
-    </Router>
+    <DebugProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          {!session ? (
+            <Login />
+          ) : (
+            <Routes>
+              <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
+              <Route path="/dashboard/admin" element={renderDashboard()} />
+              <Route path="/dashboard/teacher" element={renderDashboard()} />
+              <Route path="/dashboard/parent" element={renderDashboard()} />
+              <Route path="/dashboard/external" element={renderDashboard()} />
+              <Route path="/" element={<Navigate to={getDashboardPath()} replace />} />
+              <Route path="*" element={<Navigate to={getDashboardPath()} replace />} />
+            </Routes>
+          )}
+        </div>
+        <DebugModal />
+      </Router>
+    </DebugProvider>
   )
 }
 

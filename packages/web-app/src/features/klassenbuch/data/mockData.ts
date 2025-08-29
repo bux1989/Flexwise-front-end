@@ -12,6 +12,7 @@ export interface Lesson {
   day: string;
   time: string;
   subject: string;
+  subjectAbbreviation?: string;
   teacher: string;
   room: string;
   attendanceStatus: 'complete' | 'missing' | 'incomplete' | 'future';

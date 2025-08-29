@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { handleLogin } from '../../lib/supabase'
 import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, Palette } from 'lucide-react'
+import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -29,7 +30,9 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <>
+      <PWAInstallBannerWithInstructions />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden animate-fade-in">
       {/* Subtle school-themed background icons */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top left area */}
@@ -64,9 +67,10 @@ export default function Login() {
 
             <div className="mb-6 flex justify-center">
               <img
-                src="/logo.png"
+                src="/flexwise-logo-with-tagline.png"
                 alt="FlexWise - Flexible Tools for Smart Schools"
-                className="h-16 w-auto"
+                className="w-auto"
+                style={{ height: '114px' }}
               />
             </div>
 
@@ -142,6 +146,7 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

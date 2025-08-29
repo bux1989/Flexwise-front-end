@@ -263,6 +263,7 @@ interface DatabaseLesson {
   subject_color?: string;
   class_id?: string;
   course_id?: string;
+  course_name?: string;
 }
 
 /**
@@ -383,15 +384,16 @@ async function transformDatabaseLessonsOptimized(dbLessons: DatabaseLesson[], sc
       'Politik': 'bg-red-100 text-red-800'
     };
 
-    const subjectColor = subjectColors[dbLesson.subject_name] || 'bg-gray-100 text-gray-800';
+    const subjectColor = subjectColors[dbLesson.subject_name || ''] || 'bg-gray-100 text-gray-800';
 
     return {
       id: dbLesson.lesson_id,
       period: dbLesson.period_number || 1,
       day: dayName,
       time: timeString,
-      subject: dbLesson.subject_abbreviation || dbLesson.subject_name.substring(0, 2).toUpperCase(),
-      teacher: dbLesson.teacher_names[0] || 'N/A',
+      subject: dbLesson.subject_name || dbLesson.course_name || dbLesson.subject_abbreviation || '',
+      subjectAbbreviation: dbLesson.subject_abbreviation || (dbLesson.subject_name ? dbLesson.subject_name.substring(0, 2).toUpperCase() : ''),
+      teacher: (Array.isArray(dbLesson.teacher_names) && dbLesson.teacher_names.length > 0 ? dbLesson.teacher_names[0] : 'N/A'),
       room: dbLesson.room_name || '',
       attendanceStatus,
       isPast,

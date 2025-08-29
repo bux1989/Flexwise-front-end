@@ -218,6 +218,155 @@ export const INDIVIDUAL_ASSIGNEES = [
   'Herr Neumann'
 ];
 
+// Parent Dashboard Mock Data
+export const PARENT_CHILDREN = [
+  {
+    id: 4,
+    name: 'Nina Lang',
+    class: '1A',
+    avatar: '👧',
+    checkInPending: true,
+    status: 'present', // present, dismissed, excused
+    dismissedAt: null,
+    specialRule: {
+      type: 'pickup',
+      person: 'Oma Lang'
+    },
+    urlaubsInfo: {
+      reason: 'Familienurlaub',
+      type: 'full', // 'full' for whole day, 'partial' for specific times
+      startDate: '2024-07-08', // Next Monday
+      endDate: '2024-07-08', // Same day (1 day)
+      submittedBy: 'Mutter Lang',
+      submittedAt: '2024-06-25 16:20',
+      approved: true,
+      approvedBy: 'Schulleitung',
+      approvedAt: '2024-06-26 09:15'
+    }
+  },
+  {
+    id: 2,
+    name: 'Tom Koch',
+    class: '2B',
+    avatar: '👦',
+    checkInPending: true,
+    status: 'dismissed',
+    dismissedAt: '14:35',
+    specialRule: null
+  },
+  {
+    id: 3,
+    name: 'Tim Peters',
+    class: '3C',
+    avatar: '👦',
+    checkInPending: true,
+    status: 'excused',
+    dismissedAt: null,
+    specialRule: null,
+    excuseInfo: {
+      reason: 'Arzttermin beim Zahnarzt',
+      type: 'partial', // 'full' for whole day, 'partial' for specific times
+      startDate: '2024-07-02',
+      endDate: '2024-07-02',
+      startTime: '10:00',
+      endTime: '12:30',
+      submittedBy: 'Mutter Peters',
+      submittedAt: '2024-07-01 18:45'
+    }
+  },
+  {
+    id: 1,
+    name: 'Jonas Müller',
+    class: '4A',
+    avatar: '👦',
+    checkInPending: true,
+    status: 'present',
+    dismissedAt: null,
+    specialRule: {
+      type: 'alone',
+      person: null
+    },
+    urlaubsInfo: {
+      reason: 'Besuch bei den Großeltern',
+      type: 'full',
+      startDate: '2024-07-15', // Later next week
+      endDate: '2024-07-17', // 3 days
+      submittedBy: 'Father Müller',
+      submittedAt: '2024-06-20 14:30',
+      approved: false, // Still pending approval
+      approvedBy: undefined,
+      approvedAt: undefined
+    }
+  }
+];
+
+export const PARENT_NEWS = [
+  {
+    id: 1,
+    title: '🎓 Zeugnisausgabe: Der Unterricht endet am 23.07. für alle um 13:00 Uhr',
+    content: `Liebe Eltern,
+
+am 23. Juli 2024 ist Zeugnisausgabe und der Unterricht endet für alle Kinder bereits um 13:00 Uhr.
+
+WICHTIGE ENTSCHEIDUNG ERFORDERLICH:
+Bitte entscheiden Sie bis zum 20.06., ob Ihr Kind um 13 Uhr entlassen werden soll.
+
+Die Anmeldung ist verbindlich. Bei fehlender Rückmeldung gehen wir davon aus, dass Ihr Kind zur gewohnten Zeit abgeholt wird.
+
+Für Rückfragen stehen wir Ihnen gerne zur Verfügung.
+
+Mit freundlichen Grüßen
+Das FlexWise-Team`,
+    date: '2024-06-28',
+    important: true,
+    isZeugnisPost: true
+  },
+  {
+    id: 2,
+    title: 'Neue Pausenzeiten ab September',
+    content: 'Ab dem neuen Schuljahr ändern sich die Pausenzeiten. Weitere Details folgen.',
+    date: '2024-06-25',
+    important: false
+  },
+  {
+    id: 3,
+    title: 'Elternabend Klasse 3A',
+    content: 'Der nächste Elternabend für die Klasse 3A findet am 10. Juli um 19:00 Uhr statt.',
+    date: '2024-06-20',
+    important: false
+  }
+];
+
+export const PARENT_APPOINTMENTS = [
+  {
+    id: 1,
+    title: 'Elterngespräch Emma',
+    date: '2024-07-05',
+    time: '15:30',
+    teacher: 'Frau Schmidt',
+    room: 'Klassenzimmer 2A',
+    helpText: 'Bitte bringen Sie das letzte Zeugnis und eventuelle Fragen zur Entwicklung Ihres Kindes mit. Das Gespräch dauert ca. 20 Minuten.'
+  },
+  {
+    id: 2,
+    title: 'Schulausflug Max',
+    date: '2024-07-12',
+    time: '08:00',
+    location: 'Zoo Berlin',
+    room: 'Treffpunkt Haupteingang',
+    helpText: 'Bitte sorgen Sie dafür, dass Ihr Kind wetterfeste Kleidung, Sonnenschutz und ausreichend Verpflegung dabei hat. Rückkehr ist für 16:00 Uhr geplant.'
+  },
+  {
+    id: 3,
+    title: 'Sportfest',
+    date: '2024-07-18',
+    time: '09:00',
+    location: 'Schulsportplatz',
+    room: 'Turnhalle (bei Regen)',
+    helpText: 'Sportkleidung und Turnschuhe nicht vergessen! Bei schlechtem Wetter findet das Fest in der Turnhalle statt. Eltern sind herzlich eingeladen zuzuschauen.'
+  }
+];
+
 export const INITIAL_LESSONS = [
   {
     id: 1,

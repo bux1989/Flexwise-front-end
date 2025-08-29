@@ -1,3 +1,5 @@
+import { DebugOverlay } from '../../../debug';
+
 interface ReportItem {
   id: number;
   title: string;
@@ -11,7 +13,8 @@ interface AvailableReportsProps {
 
 export function AvailableReports({ reports }: AvailableReportsProps) {
   return (
-    <div className="bg-white shadow rounded-lg">
+    <DebugOverlay name="AvailableReports">
+      <div className="bg-white shadow rounded-lg">
       <div className="px-6 py-4 border-b border-gray-200">
         <h3 className="text-lg font-medium text-gray-900">Available Reports</h3>
       </div>
@@ -35,6 +38,7 @@ export function AvailableReports({ reports }: AvailableReportsProps) {
           ))}
         </div>
       </div>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }

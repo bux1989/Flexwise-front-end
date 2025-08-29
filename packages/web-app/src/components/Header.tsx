@@ -3,6 +3,7 @@ import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { DebugOverlay } from '../debug';
 
 interface HeaderProps {
   currentTeacher: string;
@@ -72,7 +73,8 @@ export function Header({
   };
 
   return (
-    <header className="bg-white border-b px-3 py-2 lg:px-6 lg:py-4">
+    <DebugOverlay name="Header">
+      <header className="bg-white border-b px-3 py-2 lg:px-6 lg:py-4">
       {showKlassenbuch ? (
         /* Klassenbuch Header Layout */
         <div className="space-y-3">
@@ -241,9 +243,16 @@ export function Header({
       ) : (
         /* Normal Dashboard Header */
         <div className="flex items-center justify-between">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">Hallo {currentTeacher} 👋</h1>
-            <p className="text-xs lg:text-sm text-gray-600 truncate">{dateString}</p>
+          <div className="min-w-0 flex-1 flex items-center space-x-3">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F020295f4dae640e8b44edc48cd1c867a%2Fb0814f7ff5d24c7a9970474123112e62?format=webp&width=800"
+              alt="FlexWise"
+              className="h-8 w-auto lg:h-10 flex-shrink-0"
+            />
+            <div className="min-w-0">
+              <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">Hallo {currentTeacher}</h1>
+              <p className="text-xs lg:text-sm text-gray-600 truncate">{dateString}</p>
+            </div>
           </div>
           <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
             <TooltipProvider>
@@ -302,6 +311,7 @@ export function Header({
           </div>
         </div>
       )}
-    </header>
+      </header>
+    </DebugOverlay>
   );
 }

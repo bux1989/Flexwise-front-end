@@ -361,8 +361,9 @@ export const getAttendanceNumbers = (lesson: any) => {
   };
 };
 
-export const formatDateTime = () => {
-  return new Date().toLocaleDateString('de-DE', {
+export const formatDateTime = (date?: Date) => {
+  const targetDate = date || new Date();
+  return targetDate.toLocaleDateString('de-DE', {
     weekday: 'long',
     day: '2-digit',
     month: 'long',

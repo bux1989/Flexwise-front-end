@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { DebugOverlay } from '../../../debug';
 import { Button } from '../../../components/ui/button';
 import { type Lesson } from '../data/klassenbuchDataAdapter';
 
@@ -24,7 +25,8 @@ export function KlassenbuchAttendanceModal({
   onClose 
 }: KlassenbuchAttendanceModalProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <DebugOverlay name="KlassenbuchAttendanceModal">
+      <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
@@ -43,6 +45,7 @@ export function KlassenbuchAttendanceModal({
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+    </DebugOverlay>
   );
 }

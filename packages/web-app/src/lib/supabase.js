@@ -1,10 +1,49 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Use your actual Supabase credentials
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://api.schulflex.app'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzQ2MzA5NjAwLCJleHAiOjE5MDQwNzYwMDB9.mhTQEJi2po9vvM_sjtKzKUrYYQEbFyvykOwkE_gya-Q'
+// Environment variable validation (no fallbacks for security)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+if (!supabaseUrl) {
+  throw new Error('Missing required environment variable: VITE_SUPABASE_URL')
+}
+
+if (!supabaseAnonKey) {
+  throw new Error('Missing required environment variable: VITE_SUPABASE_ANON_KEY')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Enable automatic token refresh
+    autoRefreshToken: true,
+    // Persist session in localStorage
+    persistSession: true,
+    // Detect session from URL (for auth callbacks)
+    detectSessionInUrl: true,
+    // Set custom session storage (optional)
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    // Add debug logging in development only
+    debug: import.meta.env.DEV
+  },
+  realtime: {
+    // Rate limiting for realtime connections
+    params: {
+      eventsPerSecond: 10
+    },
+    // Heartbeat interval for connection health
+    heartbeatIntervalMs: 30000,
+    // Reconnection attempts
+    reconnectAfterMs: function (tries) {
+      return Math.min(tries * 1000, 30000)
+    }
+  },
+  // Security headers
+  global: {
+    headers: {
+      'X-Client-Info': 'flexwise-web-app'
+    }
+  }
+})
 
 // Authentication only - App.jsx handles profile/role loading
 export async function handleLogin(email, password) {
