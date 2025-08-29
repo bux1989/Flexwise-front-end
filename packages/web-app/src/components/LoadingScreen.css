@@ -344,10 +344,10 @@
 /* Loading dots */
 .loading-dots {
   display: flex;
-  gap: 8px;
+  gap: 16px;
   margin-bottom: 2rem;
   animation: dotsAppear 0.6s ease-out 1.2s forwards;
-  opacity: 0;
+  opacity: 1;
 }
 
 .dot {
