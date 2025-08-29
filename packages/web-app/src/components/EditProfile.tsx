@@ -876,24 +876,35 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         size="sm"
                         className="border-red-200 text-red-700 hover:bg-red-100"
                         onClick={async () => {
+                          console.log('🔑 Password reset button clicked');
                           try {
+                            console.log('🔍 Getting current user...');
                             const { data: { user: authUser } } = await supabase.auth.getUser();
+                            console.log('👤 Current user:', authUser);
+
                             if (!authUser?.email) {
+                              console.error('❌ No email found for user');
                               alert('Keine E-Mail-Adresse gefunden.');
                               return;
                             }
 
+                            console.log('📧 Sending reset email to:', authUser.email);
                             const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
                               redirectTo: `${window.location.origin}/auth/reset-password`,
                             });
 
+                            console.log('📨 Reset email result:', { error });
+
                             if (error) {
+                              console.error('❌ Reset email error:', error);
                               alert('Fehler beim Senden des Reset-Links: ' + error.message);
                             } else {
+                              console.log('✅ Reset email sent successfully');
                               alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
                             }
                           } catch (error) {
-                            alert('Fehler beim Senden des Reset-Links.');
+                            console.error('💥 Password reset error:', error);
+                            alert('Fehler beim Senden des Reset-Links: ' + error.message);
                           }
                         }}
                       >
