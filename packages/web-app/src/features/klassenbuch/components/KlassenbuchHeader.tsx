@@ -148,6 +148,7 @@ export function KlassenbuchHeader({
               <CalendarCheck className="h-4 w-4" />
               <span>Live</span>
             </Button>
+            {/* Statistics tab hidden for now - can be re-enabled later
             <Button
               variant={currentView === 'statistics' ? 'default' : 'outline'}
               onClick={() => onViewChange('statistics')}
@@ -156,6 +157,7 @@ export function KlassenbuchHeader({
               <BarChart3 className="h-4 w-4" />
               <span>Statistiken</span>
             </Button>
+            */}
           </div>
         </div>
 
