@@ -345,7 +345,11 @@ export default function StudentManagement({ onBack }) {
         <CardContent className="p-0">
           <div className="divide-y divide-border">
             {filteredStudents.map((student) => (
-              <div key={student.id} className="p-4 hover:bg-muted/50 transition-colors">
+              <div
+                key={student.id}
+                className="p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                onClick={() => handleViewStudent(student)}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
