@@ -124,7 +124,8 @@ export function KlassenbuchHeader({
   };
 
   return (
-    <Card className="p-6 mx-6 mt-6">
+    <DebugOverlay name="KlassenbuchHeader">
+      <Card className="p-6 mx-6 mt-6">
       <div className="flex items-center justify-between">
         {/* Left side - Navigation and Close button */}
         <div className="flex items-center space-x-4">
@@ -235,6 +236,7 @@ export function KlassenbuchHeader({
         {/* Spacer when no class selection is shown */}
         {!shouldShowClassSelection() && <div />}
       </div>
-    </Card>
+      </Card>
+    </DebugOverlay>
   );
 }
