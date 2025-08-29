@@ -208,10 +208,18 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         fetchLessonDiaryEntry(lessonId)
       ]);
 
-      const lesson = lessons.find(l => l.id === lessonId);
+      let lesson = lessons.find(l => l.id === lessonId);
+
+      // Fallback: fetch lesson directly if not found in cached lessons (e.g., from Klassenbuch)
       if (!lesson) {
-        console.error('Lesson not found:', lessonId);
-        return;
+        console.warn('Lesson not found in cached lessons, fetching directly:', lessonId);
+        const { fetchSingleLesson } = await import('../../lib/supabase');
+        lesson = await fetchSingleLesson(lessonId);
+
+        if (!lesson) {
+          console.error('Lesson not found even after direct fetch:', lessonId);
+          return;
+        }
       }
 
       const editAttendance: {[studentId: string]: {status: 'present' | 'late' | 'excused' | 'unexcused', minutesLate?: number, excuseReason?: string, arrivalTime?: string, lateExcused?: boolean}} = {};
