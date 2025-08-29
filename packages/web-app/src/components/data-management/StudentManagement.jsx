@@ -389,7 +389,7 @@ export default function StudentManagement({ onBack }) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleEditStudent(student)}
+                      onClick={(e) => handleEditStudent(student, e)}
                       className="p-2 hover:bg-blue-50"
                     >
                       <Edit className="w-4 h-4 text-blue-600" />
@@ -397,7 +397,7 @@ export default function StudentManagement({ onBack }) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDeleteStudent(student.id)}
+                      onClick={(e) => handleDeleteStudent(student.id, e)}
                       className="p-2 hover:bg-red-50"
                     >
                       <Trash2 className="w-4 h-4 text-red-600" />
