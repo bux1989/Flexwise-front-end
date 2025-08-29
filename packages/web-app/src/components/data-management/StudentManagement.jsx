@@ -505,7 +505,26 @@ export default function StudentManagement({ onBack }) {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge 
+                    {/* Visual Indicators */}
+                    {hasValidPhotoPermission(student) && (
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center" title="Gültige Fotoerlaubnis">
+                        <Camera className="w-3 h-3 text-green-600" />
+                      </div>
+                    )}
+                    {hasAllergies(student) && (
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center" title="Allergien vorhanden">
+                        <Heart className="w-3 h-3 text-red-600" />
+                      </div>
+                    )}
+                    {getButStatus(student) && (
+                      <Badge
+                        className={getButStatus(student).isValid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}
+                        title={`BuT ${getButStatus(student).type} - ${getButStatus(student).isValid ? 'Gültig' : 'Abgelaufen'}`}
+                      >
+                        BuT
+                      </Badge>
+                    )}
+                    <Badge
                       variant={student.status === 'active' ? 'default' : 'secondary'}
                       className={student.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}
                     >
