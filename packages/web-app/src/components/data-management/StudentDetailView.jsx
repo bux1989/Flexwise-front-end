@@ -25,6 +25,7 @@ import {
 
 export default function StudentDetailView({ student, onBack, onEdit }) {
   const [activeTab, setActiveTab] = useState('schulakte')
+  const [expandedParent, setExpandedParent] = useState(null)
 
   if (!student) {
     return null
@@ -282,53 +283,87 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
             <CardContent className="space-y-4">
               {student.parents && student.parents.length > 0 ? (
                 student.parents.map((parent, index) => (
-                  <div key={index} className="p-4 border border-blue-200 rounded-lg bg-blue-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-blue-900">
-                            {parent.firstName} {parent.lastName}
-                          </h3>
-                          <p className="text-sm text-blue-600/70">{parent.relationship}</p>
-                          <div className="flex items-center gap-4 text-sm text-blue-600/70 mt-1">
-                            <span className="flex items-center gap-1">
-                              <Mail className="w-3 h-3" />
-                              {parent.email}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Phone className="w-3 h-3" />
-                              {parent.phone}
-                            </span>
-                            {parent.address && (
+                  <div key={index} className="border border-blue-200 rounded-lg bg-blue-50">
+                    {/* Parent Summary - Always Visible */}
+                    <div
+                      className="p-4 cursor-pointer hover:bg-blue-100 transition-colors"
+                      onClick={() => setExpandedParent(expandedParent === index ? null : index)}
+                      title="Klicken für weitere Details"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-blue-900">
+                              {parent.firstName} {parent.lastName}
+                            </h3>
+                            <div className="flex items-center gap-4 text-sm text-blue-600/70">
+                              <span>{parent.relationship}</span>
                               <span className="flex items-center gap-1">
-                                <MapPin className="w-3 h-3" />
-                                {parent.address}
+                                <Mail className="w-3 h-3" />
+                                {parent.email}
                               </span>
-                            )}
+                              <span className="flex items-center gap-1">
+                                <Phone className="w-3 h-3" />
+                                {parent.phone}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={parent.isPrimary ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                            {parent.isPrimary ? 'Hauptkontakt' : 'Zusatzkontakt'}
+                          </Badge>
+                          <div className="text-blue-600 text-sm">
+                            {expandedParent === index ? '▲' : '▼'}
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={parent.isPrimary ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
-                          {parent.isPrimary ? 'Hauptkontakt' : 'Zusatzkontakt'}
-                        </Badge>
-                        <Button variant="ghost" size="sm" className="p-2 hover:bg-blue-100">
-                          <Edit className="w-4 h-4 text-blue-600" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </Button>
-                      </div>
                     </div>
+
+                    {/* Expanded Details - Only when clicked */}
+                    {expandedParent === index && (
+                      <div className="border-t border-blue-200 p-4 bg-white">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-blue-900">Kontaktinformationen</h4>
+                            <div className="text-sm text-blue-600/70 space-y-1">
+                              <div className="flex items-center gap-2">
+                                <Mail className="w-4 h-4" />
+                                <span>{parent.email}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Phone className="w-4 h-4" />
+                                <span>{parent.phone}</span>
+                              </div>
+                              {parent.address && (
+                                <div className="flex items-start gap-2">
+                                  <MapPin className="w-4 h-4 mt-0.5" />
+                                  <span>{parent.address}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-blue-900">Zusätzliche Informationen</h4>
+                            <div className="text-sm text-blue-600/70 space-y-1">
+                              <div>Beziehung: {parent.relationship}</div>
+                              <div>Status: {parent.isPrimary ? 'Hauptkontakt' : 'Zusatzkontakt'}</div>
+                              {/* Add more parent details here as needed */}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))
               ) : (
-                <p className="text-muted-foreground text-center py-8">
-                  Keine Elterninformationen vorhanden
-                </p>
+                <div className="text-center py-8">
+                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">Keine Elterninformationen vorhanden</p>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -336,37 +371,50 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
           {/* Siblings */}
           <Card className="border-l-4 border-l-green-500">
             <CardHeader className="bg-green-50 border-b border-green-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-green-600" />
-                  Geschwister
-                </CardTitle>
-                <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Hinzufügen
-                </Button>
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-green-600" />
+                Geschwister
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {student.siblings && student.siblings.length > 0 ? (
                 student.siblings.map((sibling, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border border-green-200 rounded-lg bg-green-50">
-                    <div>
-                      <p className="font-medium text-green-900">
-                        {sibling.firstName} {sibling.lastName}
-                      </p>
-                      <div className="flex items-center gap-4 text-sm text-green-600/70">
-                        <span>Klasse: {sibling.class || 'Nicht an der Schule'}</span>
-                        <span>Geboren: {new Date(sibling.birthDate).toLocaleDateString('de-DE')}</span>
+                  <div
+                    key={index}
+                    className="p-4 border border-green-200 rounded-lg bg-green-50 hover:bg-green-100 transition-colors cursor-pointer"
+                    onClick={() => {
+                      // TODO: Navigate to sibling's profile page
+                      console.log('Navigate to sibling profile:', sibling.firstName, sibling.lastName)
+                    }}
+                    title="Klicken um zum Schülerprofil zu gelangen"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-green-900">
+                          {sibling.firstName} {sibling.lastName}
+                        </h3>
+                        <div className="flex items-center gap-4 text-sm text-green-600/70">
+                          <span>Klasse: {sibling.class || 'Nicht an der Schule'}</span>
+                          <span>Geboren: {new Date(sibling.birthDate).toLocaleDateString('de-DE')}</span>
+                        </div>
+                      </div>
+                      <div className="ml-auto">
+                        <Badge className="bg-green-100 text-green-700">
+                          Geschwister
+                        </Badge>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
                   </div>
                 ))
               ) : (
-                <p className="text-muted-foreground text-center py-4">Keine Geschwister verzeichnet</p>
+                <div className="text-center py-8">
+                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">Keine Geschwister verzeichnet</p>
+                  <p className="text-gray-400 text-xs mt-1">Geschwister werden über deren eigene Profile verknüpft</p>
+                </div>
               )}
             </CardContent>
           </Card>
