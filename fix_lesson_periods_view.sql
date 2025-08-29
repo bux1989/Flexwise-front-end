@@ -79,6 +79,7 @@ SELECT
   cl.school_id,
   s.color as subject_color,
   s.abbreviation as subject_abbreviation,
+  cours.name as course_name,
   sc.year as class_year,
   sc.grade_level,
   sr.room_number,
@@ -100,6 +101,7 @@ FROM
   LEFT JOIN subjects s ON cl.subject_id = s.id
   LEFT JOIN structure_classes sc ON cl.class_id = sc.id
   LEFT JOIN structure_rooms sr ON cl.room_id = sr.id
+  LEFT JOIN course_list cours ON cl.course_id = cours.id
   -- Direct period_id match (when period_id is set correctly)
   LEFT JOIN schedule_periods sp_direct ON cl.period_id = sp_direct.id
   -- Time-based period match (fallback when period_id is NULL)
@@ -161,6 +163,7 @@ GROUP BY
   sc.year,
   sc.grade_level,
   sr.room_number,
-  sr.building
+  sr.building,
+  cours.name
 ORDER BY
   cl.start_datetime DESC;
