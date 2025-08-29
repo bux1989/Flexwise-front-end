@@ -599,9 +599,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {/* Email Addresses Section */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="text-base font-medium">E-Mail-Adressen</Label>
+                        <Label className="text-sm font-medium">E-Mail-Adressen</Label>
                         {isEditing && (
                           <Button onClick={() => addContact('emails')} size="sm" variant="outline">
                             <Plus className="h-4 w-4 mr-2" />
