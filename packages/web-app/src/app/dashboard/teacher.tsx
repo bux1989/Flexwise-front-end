@@ -4,6 +4,7 @@ import { TaskManagement } from '../../features/task-management/components/TaskMa
 import { LessonSchedule } from '../../features/lessons/components/LessonSchedule';
 import { InfoBoard } from '../../features/communications/components/InfoBoard';
 import { Events } from '../../features/communications/components/Events';
+import PWANotifications from '../../components/PWANotifications';
 
 // Import UI components for attendance dialog
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
