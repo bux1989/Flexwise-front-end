@@ -19,12 +19,9 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
     try {
       console.log('📋 Fetching bulletin posts for school:', schoolId)
       
-      // Only show posts from today or posts scheduled to display today
+      // Only show posts from today
       const today = new Date()
-      const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-      const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
-      const startOfTodayISO = startOfToday.toISOString()
-      const endOfTodayISO = endOfToday.toISOString()
+      const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString()
 
       const { data, error } = await supabase
         .from('bulletin_posts')
@@ -43,8 +40,7 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
         .eq('school_id', schoolId)
         .eq('is_public', true)
         .or('expires_at.is.null,expires_at.gte.now()')
-        .or(`created_at.gte.${startOfTodayISO},display_from.gte.${startOfTodayISO}`)
-        .or(`created_at.lt.${endOfTodayISO},display_from.lt.${endOfTodayISO}`)
+        .gte('created_at', startOfToday)
         .order('priority', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(10)
