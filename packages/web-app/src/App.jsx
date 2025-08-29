@@ -8,6 +8,7 @@ import TeacherDashboard from './app/dashboard/teacher'
 import ParentDashboard from './app/dashboard/parent'
 import ExternalDashboard from './app/dashboard/external'
 import AdminDashboard from './app/dashboard/admin'
+import LoadingScreen from './components/LoadingScreen'
 
 // Constants
 const ROLE_ROUTES = {
