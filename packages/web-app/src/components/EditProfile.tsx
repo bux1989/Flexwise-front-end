@@ -594,13 +594,21 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
       if (error) {
         console.error('Error sending email OTP:', error);
+        console.error('Error details:', {
+          message: error.message,
+          status: error.status,
+          statusCode: error.statusCode
+        });
+
         // Provide more specific error messages
-        if (error.message.includes('rate limit')) {
+        if (error.message.includes('Signups not allowed for otp') || error.message.includes('422')) {
+          alert('E-Mail-OTP ist nicht verfügbar. Bitte verwenden Sie stattdessen die Authenticator-App.');
+        } else if (error.message.includes('rate limit')) {
           alert('Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
         } else if (error.message.includes('invalid')) {
           alert('Ungültige E-Mail-Adresse. Bitte überprüfen Sie Ihre Eingabe.');
         } else {
-          alert('Fehler beim Senden der E-Mail: ' + error.message);
+          alert('E-Mail-OTP ist nicht verfügbar. Bitte verwenden Sie die Authenticator-App.');
         }
       } else {
         alert(`OTP-Code wurde an ${email} gesendet!`);
