@@ -81,7 +81,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
           lessons: lessonsData.length
         });
 
-        console.log('�� Schedule periods block numbers:', periodsData.map(p => ({
+        console.log('📅 Schedule periods block numbers:', periodsData.map(p => ({
           id: p.id,
           block_number: p.block_number,
           label: p.label
@@ -236,26 +236,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
   };
 
   const getLessonForSlot = (period: number, day: string) => {
-    const found = classTimetable.find(lesson => lesson.period === period && lesson.day === day);
-
-    // Test alternative period numbers to detect patterns
-    const foundWithOffset = classTimetable.find(lesson => lesson.period === (period - 1) && lesson.day === day);
-
-    // Only log for the first few searches to avoid console spam
-    if (period <= 3) {
-      console.log(`🔍 Searching period ${period}, day ${day}:`, {
-        searchPeriod: period,
-        searchDay: day,
-        availablePeriods: [...new Set(classTimetable.map(l => l.period))],
-        availableDays: [...new Set(classTimetable.map(l => l.day))],
-        found: !!found,
-        foundWithMinusOne: !!foundWithOffset,
-        foundLesson: found ? { period: found.period, day: found.day, subject: found.subject } : null,
-        foundWithOffsetLesson: foundWithOffset ? { period: foundWithOffset.period, day: foundWithOffset.day, subject: foundWithOffset.subject } : null
-      });
-    }
-
-    return found;
+    return classTimetable.find(lesson => lesson.period === period && lesson.day === day);
   };
 
   // Handle lesson click - mobile vs desktop behavior
