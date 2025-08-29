@@ -30,78 +30,183 @@ export default function StudentManagement({ onBack }) {
       id: 1,
       firstName: 'Max',
       lastName: 'Mustermann',
+      nickname: 'Maxi',
       email: 'max.mustermann@student.de',
       phone: '+49 123 456789',
       class: '10A',
       birthDate: '2008-05-15',
       status: 'active',
-      address: 'Musterstraße 123, 12345 Berlin'
+      address: 'Musterstraße 123, 12345 Berlin',
+      photoPermissions: [
+        {
+          date: '2024-01-15',
+          description: 'Schulveranstaltungen und Projekte',
+          grantedBy: 'Frau Mustermann',
+          validUntil: '2024-12-31'
+        }
+      ],
+      allergies: [
+        {
+          name: 'Erdnüsse',
+          severity: 'Schwer',
+          description: 'Anaphylaxie-Risiko, Notfallmedikation verfügbar'
+        }
+      ],
+      but: {
+        enabled: true,
+        type: 'B1',
+        validUntil: '2024-08-31'
+      }
     },
     {
       id: 2,
       firstName: 'Anna',
       lastName: 'Schmidt',
+      nickname: null,
       email: 'anna.schmidt@student.de',
       phone: '+49 987 654321',
       class: '10A',
       birthDate: '2008-08-22',
       status: 'active',
-      address: 'Hauptstraße 456, 12345 Berlin'
+      address: 'Hauptstraße 456, 12345 Berlin',
+      photoPermissions: [],
+      allergies: [],
+      but: {
+        enabled: false
+      }
     },
     {
       id: 3,
       firstName: 'Tom',
       lastName: 'Weber',
+      nickname: 'Tommy',
       email: 'tom.weber@student.de',
       phone: '+49 555 123456',
       class: '9B',
       birthDate: '2009-02-10',
       status: 'inactive',
-      address: 'Schulstraße 789, 12345 Berlin'
+      address: 'Schulstraße 789, 12345 Berlin',
+      photoPermissions: [
+        {
+          date: '2023-09-01',
+          description: 'Klassenfotos',
+          grantedBy: 'Herr Weber',
+          validUntil: '2023-12-31'
+        }
+      ],
+      allergies: [
+        {
+          name: 'Pollen',
+          severity: 'Leicht',
+          description: 'Saisonale Allergie, Frühjahr und Sommer'
+        }
+      ],
+      but: {
+        enabled: true,
+        type: 'L',
+        validUntil: '2023-12-31'
+      }
     },
     {
       id: 4,
       firstName: 'Lisa',
       lastName: 'Hoffmann',
+      nickname: null,
       email: 'lisa.hoffmann@student.de',
       phone: '+49 444 987654',
       class: '10B',
       birthDate: '2008-11-03',
       status: 'active',
-      address: 'Lindenstraße 321, 12345 Berlin'
+      address: 'Lindenstraße 321, 12345 Berlin',
+      photoPermissions: [
+        {
+          date: '2024-01-10',
+          description: 'Schulwebsite und Broschüren',
+          grantedBy: 'Frau Hoffmann',
+          validUntil: '2025-01-10'
+        },
+        {
+          date: '2024-02-01',
+          description: 'Sportveranstaltungen',
+          grantedBy: 'Herr Hoffmann',
+          validUntil: '2024-12-31'
+        }
+      ],
+      allergies: [],
+      but: {
+        enabled: false
+      }
     },
     {
       id: 5,
       firstName: 'Marco',
       lastName: 'Fischer',
+      nickname: null,
       email: 'marco.fischer@student.de',
       phone: '+49 333 111222',
       class: '9A',
       birthDate: '2009-04-18',
       status: 'active',
-      address: 'Rosenweg 654, 12345 Berlin'
+      address: 'Rosenweg 654, 12345 Berlin',
+      photoPermissions: [],
+      allergies: [
+        {
+          name: 'Nüsse',
+          severity: 'Mittel',
+          description: 'Vermeidung erforderlich'
+        },
+        {
+          name: 'Laktose',
+          severity: 'Leicht',
+          description: 'Magen-Darm-Beschwerden'
+        }
+      ],
+      but: {
+        enabled: true,
+        type: 'B2',
+        validUntil: '2024-07-31'
+      }
     },
     {
       id: 6,
       firstName: 'Julia',
       lastName: 'Wagner',
+      nickname: 'Jules',
       email: 'julia.wagner@student.de',
       phone: '+49 222 333444',
       class: '10B',
       birthDate: '2008-07-25',
       status: 'active',
-      address: 'Blumenstraße 987, 12345 Berlin'
+      address: 'Blumenstraße 987, 12345 Berlin',
+      photoPermissions: [
+        {
+          date: '2024-01-20',
+          description: 'Alle Schulaktivitäten',
+          grantedBy: 'Frau Wagner',
+          validUntil: '2024-12-31'
+        }
+      ],
+      allergies: [],
+      but: {
+        enabled: false
+      }
     },
     {
       id: 7,
       firstName: 'Kevin',
       lastName: 'Bauer',
+      nickname: null,
       email: 'kevin.bauer@student.de',
       phone: '+49 111 222333',
       class: '9A',
       birthDate: '2009-01-14',
       status: 'active',
-      address: 'Parkstraße 147, 12345 Berlin'
+      address: 'Parkstraße 147, 12345 Berlin',
+      photoPermissions: [],
+      allergies: [],
+      but: {
+        enabled: false
+      }
     }
   ])
 
