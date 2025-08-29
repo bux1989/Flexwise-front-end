@@ -19,6 +19,7 @@ interface Class {
 interface KlassenbuchLiveViewProps {
   selectedWeek: Date;
   selectedClass: Class;
+  onAttendanceClick?: (lessonId: string, viewMode?: 'overview' | 'edit') => void;
 }
 
 export function KlassenbuchLiveView({ selectedWeek, selectedClass }: KlassenbuchLiveViewProps) {
