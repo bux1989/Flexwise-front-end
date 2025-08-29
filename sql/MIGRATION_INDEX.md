@@ -16,7 +16,8 @@ This document tracks all database schema changes and migrations applied to the p
 | Date | File | Description | Functions Affected | Status |
 |------|------|-------------|-------------------|--------|
 | 2025-08-29 | `save_user_profile_complete_react.sql` | Complete user profile saving function with surgical contact updates | `save_user_profile_complete_react()` | ✅ Applied |
-| 2025-08-29 | `fix_jsonb_array_casting_save_user_profile.sql` | Fix JSONB array casting for skills and subjects_stud fields | `save_user_profile_complete_react()` | ✅ Applied |
+| 2025-08-29 | `fix_jsonb_array_casting_save_user_profile.sql` | Fix JSONB array casting for skills and subjects_stud fields | `save_user_profile_complete_react()` | ❌ Failed |
+| 2025-08-29 | `fix_jsonb_array_handling_v2.sql` | Alternative fix using CASE statements for safer JSONB array handling | `save_user_profile_complete_react()` | 🟡 Pending |
 
 ## Migration Details
 
