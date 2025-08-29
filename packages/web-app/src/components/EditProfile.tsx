@@ -676,16 +676,24 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           setOtpCode('');
         }
       } else if (otpMethod === 'sms') {
-        const phone = otpPhone || profile.contacts.phones.find(p => p.is_primary)?.value;
+        const rawPhone = otpPhone || profile.contacts.phones.find(p => p.is_primary)?.value;
+        const formattedPhone = formatPhoneNumber(rawPhone);
+
         const { error } = await supabase.auth.verifyOtp({
-          phone: phone,
+          phone: formattedPhone,
           token: otpCode,
           type: 'sms'
         });
 
         if (error) {
           console.error('Error verifying SMS OTP:', error);
-          alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
+          if (error.message.includes('expired')) {
+            alert('Der Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.');
+          } else if (error.message.includes('invalid')) {
+            alert('Ungültiger Code. Bitte überprüfen Sie Ihre Eingabe.');
+          } else {
+            alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
+          }
         } else {
           alert('SMS-OTP erfolgreich aktiviert!');
           setIsOtpEnabled(true);
