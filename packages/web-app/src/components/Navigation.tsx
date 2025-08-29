@@ -2,22 +2,24 @@ import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Badge } from './ui/badge';
-import { 
-  Menu, 
-  Calendar, 
-  UserCheck, 
-  Clock, 
-  Edit, 
-  BookOpen, 
+import {
+  Menu,
+  Calendar,
+  UserCheck,
+  Clock,
+  Edit,
+  BookOpen,
   Settings,
   Boxes,
-  DoorClosed
+  DoorClosed,
+  LogOut
 } from 'lucide-react';
 
 interface NavigationProps {
   onNavigate: (view: string) => void;
   currentView: string;
   onShowSettings: () => void;
+  onLogout: () => void;
 }
 
 // Custom Soccer Ball Icon Component
@@ -39,7 +41,7 @@ const SoccerBallIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export function Navigation({ onNavigate, currentView, onShowSettings }: NavigationProps) {
+export function Navigation({ onNavigate, currentView, onShowSettings, onLogout }: NavigationProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const mainNavItems = [
@@ -108,6 +110,21 @@ export function Navigation({ onNavigate, currentView, onShowSettings }: Navigati
                           </Button>
                         );
                       })}
+
+                      {/* Logout Button in Sidebar */}
+                      <div className="pt-4 border-t border-border">
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => {
+                            onLogout();
+                            setSidebarOpen(false);
+                          }}
+                        >
+                          <LogOut className="h-4 w-4 mr-3" />
+                          Abmelden
+                        </Button>
+                      </div>
                     </nav>
                   </div>
                 </SheetContent>
@@ -158,6 +175,17 @@ export function Navigation({ onNavigate, currentView, onShowSettings }: Navigati
                 </Button>
               );
             })}
+
+            {/* Logout Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onLogout}
+              className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Abmelden</span>
+            </Button>
           </div>
         </div>
       </nav>

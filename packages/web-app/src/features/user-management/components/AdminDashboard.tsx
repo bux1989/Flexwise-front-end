@@ -113,6 +113,7 @@ export function AdminDashboard({ user, onShowSettings, showSettings = false, onB
         currentView={currentView}
         onNavigate={handleNavigation}
         onShowSettings={handleShowSettings}
+        onLogout={handleLogout}
       />
 
       {renderMainContent()}
