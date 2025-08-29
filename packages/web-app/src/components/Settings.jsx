@@ -278,7 +278,7 @@ export default function Settings() {
               <p className="text-sm text-amber-700 font-medium mb-2">Aus Datenschutzgründen empfehlen wir, die personenbezogenen Daten des vergangenen Schuljahres zu löschen.</p>
             </div>
 
-            <Button className="w-full gap-2 bg-green-400 hover:bg-green-500 text-white">
+            <Button className="w-full gap-2 bg-green-100 hover:bg-green-200 text-green-800 border border-green-200">
               <Download className="w-4 h-4" />
               Daten sichern
             </Button>
