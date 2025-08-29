@@ -38,37 +38,35 @@ export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
         <div className="gradient-orb orb-3"></div>
       </div>
 
+      {/* Floating school icons - Behind main content */}
+      <div className="floating-icons">
+        <div className="floating-icon icon-book">📚</div>
+        <div className="floating-icon icon-pencil">✏️</div>
+        <div className="floating-icon icon-calc">🧮</div>
+        <div className="floating-icon icon-globe">🌍</div>
+        <div className="floating-icon icon-graduate">🎓</div>
+        <div className="floating-icon icon-apple">🍎</div>
+      </div>
+
       {/* Main content */}
       <div className="loading-content">
         {/* Logo container */}
         <div className="logo-container">
           <div className="logo-wrapper">
-            <img 
-              src="/logo.png" 
-              alt="FlexWise" 
+            <img
+              src="/logo.png"
+              alt="FlexWise"
               className="main-logo"
             />
           </div>
-          
+
         </div>
-
-
 
         {/* Loading dots */}
         <div className="loading-dots">
           <div className="dot dot-1"></div>
           <div className="dot dot-2"></div>
           <div className="dot dot-3"></div>
-        </div>
-
-        {/* Floating school icons */}
-        <div className="floating-icons">
-          <div className="floating-icon icon-book">📚</div>
-          <div className="floating-icon icon-pencil">✏️</div>
-          <div className="floating-icon icon-calc">🧮</div>
-          <div className="floating-icon icon-globe">🌍</div>
-          <div className="floating-icon icon-graduate">🎓</div>
-          <div className="floating-icon icon-apple">🍎</div>
         </div>
       </div>
 
