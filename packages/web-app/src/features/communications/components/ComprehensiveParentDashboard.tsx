@@ -231,7 +231,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
               <span className="font-semibold text-2xl text-primary">FlexWise</span>
             </button>
             <div className="hidden md:block">
-              <span className="text-lg text-foreground">Hallo {user?.name || 'Father M��ller'}</span>
+              <span className="text-lg text-foreground">Hallo {user?.name || 'Father Müller'}</span>
             </div>
           </div>
           
@@ -278,7 +278,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
       <div className="flex">
         {/* Sidebar */}
         <aside className={`
-          fixed lg:static inset-y-0 left-0 z-40 w-80 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out shadow-lg lg:shadow-none
+          fixed lg:static inset-y-0 left-0 z-40 w-80 bg-card border-r border-border transform transition-transform duration-300 ease-in-out shadow-lg lg:shadow-none
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
           <div className="p-4 h-full overflow-y-auto">
@@ -292,11 +292,11 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
             {/* Your Children Section */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Users className="h-5 w-5 text-blue-600" />
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Users className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg leading-tight">Deine Kinder</h3>
+                  <h3 className="font-semibold text-lg leading-tight text-foreground">Deine Kinder</h3>
                 </div>
               </div>
               
