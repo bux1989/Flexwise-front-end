@@ -6,6 +6,7 @@ import { InfoBoard } from '../../features/communications/components/InfoBoard';
 import { Events } from '../../features/communications/components/Events';
 import PWANotifications from '../../components/PWANotifications';
 import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner';
+import { EditProfile } from '../../components/EditProfile';
 
 // Import UI components for attendance dialog
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
@@ -76,6 +77,9 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const [klassenbuchSelectedClass, setKlassenbuchSelectedClass] = useState<any>(null);
   const [klassenbuchClasses, setKlassenbuchClasses] = useState<any[]>([]);
 
+  // Edit profile state
+  const [showEditProfile, setShowEditProfile] = useState(false);
+
   // Load user profile on component mount
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -115,6 +119,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
       setShowKlassenbuch(true);
     } else if (action === 'Klassenbuch-Close') {
       setShowKlassenbuch(false);
+    } else if (action === 'Mein Account') {
+      setShowEditProfile(true);
     }
     // Handle other actions in the future
   };
@@ -1039,6 +1045,13 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Edit Profile Component */}
+      <EditProfile
+        isOpen={showEditProfile}
+        onClose={() => setShowEditProfile(false)}
+        user={user}
+      />
       </div>
     </DebugOverlay>
   );
