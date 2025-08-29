@@ -420,110 +420,14 @@ export default function StudentManagement({ onBack }) {
     )
   }
 
+  // Show comprehensive edit view when editing
   if (selectedStudent && isEditing) {
     return (
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            onClick={() => {
-              setIsEditing(false)
-              setSelectedStudent(null)
-            }}
-            className="p-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <h2 className="text-2xl font-bold text-foreground">Schüler bearbeiten</h2>
-        </div>
-
-        {/* Edit Form */}
-        <Card className="border-l-4 border-l-blue-500">
-          <CardHeader className="bg-blue-50 border-b border-blue-200">
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5 text-blue-600" />
-              Schülerinformationen bearbeiten
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-blue-900">Vorname</label>
-                <Input 
-                  value={selectedStudent.firstName}
-                  onChange={(e) => setSelectedStudent({...selectedStudent, firstName: e.target.value})}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-blue-900">Nachname</label>
-                <Input 
-                  value={selectedStudent.lastName}
-                  onChange={(e) => setSelectedStudent({...selectedStudent, lastName: e.target.value})}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-blue-900">E-Mail</label>
-                <Input 
-                  type="email"
-                  value={selectedStudent.email}
-                  onChange={(e) => setSelectedStudent({...selectedStudent, email: e.target.value})}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-blue-900">Telefon</label>
-                <Input 
-                  value={selectedStudent.phone}
-                  onChange={(e) => setSelectedStudent({...selectedStudent, phone: e.target.value})}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-blue-900">Klasse</label>
-                <Input 
-                  value={selectedStudent.class}
-                  onChange={(e) => setSelectedStudent({...selectedStudent, class: e.target.value})}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-blue-900">Geburtsdatum</label>
-                <Input 
-                  type="date"
-                  value={selectedStudent.birthDate}
-                  onChange={(e) => setSelectedStudent({...selectedStudent, birthDate: e.target.value})}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-blue-900">Adresse</label>
-              <Input 
-                value={selectedStudent.address}
-                onChange={(e) => setSelectedStudent({...selectedStudent, address: e.target.value})}
-                className="mt-1"
-              />
-            </div>
-            <div className="flex gap-3 pt-4">
-              <Button onClick={handleSaveStudent} className="bg-blue-600 hover:bg-blue-700">
-                Speichern
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setIsEditing(false)
-                  setSelectedStudent(null)
-                }}
-              >
-                Abbrechen
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <StudentEditView
+        student={selectedStudent}
+        onBack={handleBackToList}
+        onSave={handleSaveStudent}
+      />
     )
   }
 
