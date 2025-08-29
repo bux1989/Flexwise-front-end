@@ -16,8 +16,8 @@ export default function PWANotifications() {
     setIsSupported(notificationService.isNotificationSupported())
     setPermission(notificationService.getPermission())
 
-    // Register service worker
-    if ('serviceWorker' in navigator) {
+    // Register service worker only in production
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           console.log('Service Worker registered:', registration)
@@ -27,17 +27,22 @@ export default function PWANotifications() {
         })
     }
 
-    // Listen for service worker messages
-    if ('serviceWorker' in navigator) {
+    // Listen for service worker messages (only in production)
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
       navigator.serviceWorker.addEventListener('message', (event) => {
         const { type, url, action, notificationData } = event.data || {}
-        
+
         if (type === 'NAVIGATE') {
           console.log('Navigation requested:', { url, action, notificationData })
           // Handle navigation based on the notification action
           setStatus(`Notification clicked: ${action || 'view'}`)
         }
       })
+    }
+
+    // In development, show a notice about service worker limitations
+    if (!import.meta.env.PROD) {
+      setStatus('Development mode: Service worker disabled to prevent HMR conflicts')
     }
   }, [])
 
