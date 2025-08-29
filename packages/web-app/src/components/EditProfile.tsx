@@ -190,15 +190,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         .order('created_at', { ascending: true });
 
       if (contactsError) {
-        console.error('❌ Error loading contacts:', {
-          code: contactsError.code,
-          message: contactsError.message,
-          details: contactsError.details,
-          hint: contactsError.hint
-        });
-      } else {
-        console.log('📞 Contacts query result:', contactsData);
-        console.log('���� Number of contacts found:', contactsData?.length || 0);
+        console.error('Error loading contacts:', contactsError);
       }
 
       // Organize contacts by type
@@ -230,14 +222,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         organizedContacts[contactCategory].push(contactItem);
       });
 
-
       // Auto-create contact record from auth email if it doesn't exist (with duplicate prevention)
       const authEmailExists = contactsData?.some(contact =>
         contact.type === 'email' && contact.value === authUser.email
       );
 
       if (!authEmailExists && authUser.email && !isCreatingContact && !isGloballyCreatingContact(profileId, authUser.email)) {
-        console.log('📧 Auth email not found in contacts, creating:', authUser.email);
         setIsCreatingContact(true);
         setGloballyCreatingContact(profileId, authUser.email, true);
 
@@ -251,14 +241,13 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
             .eq('value', authUser.email);
 
           if (checkError) {
-            console.error('💥 Error checking existing contacts:', checkError);
+            console.error('Error checking existing contacts:', checkError);
             setIsCreatingContact(false);
             setGloballyCreatingContact(profileId, authUser.email, false);
             return;
           }
 
           if (existingContacts && existingContacts.length > 0) {
-            console.log('📧 Auth email already exists, skipping creation');
             setIsCreatingContact(false);
             setGloballyCreatingContact(profileId, authUser.email, false);
             return;
@@ -278,11 +267,10 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
             });
 
           if (insertError) {
-            console.error('❌ Error creating contact from auth email:', insertError);
+            console.error('Error creating contact from auth email:', insertError);
             setIsCreatingContact(false);
             setGloballyCreatingContact(profileId, authUser.email, false);
           } else {
-            console.log('✅ Contact created from auth email');
             // Reload contacts after creating
             const { data: newContactsData } = await supabase
               .from('contacts')
@@ -323,7 +311,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
             setGloballyCreatingContact(profileId, authUser.email, false);
           }
         } catch (error) {
-          console.error('💥 Error auto-creating contact:', error);
+          console.error('Error auto-creating contact:', error);
           setIsCreatingContact(false);
           setGloballyCreatingContact(profileId, authUser.email, false);
         }
@@ -362,7 +350,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       setIsEditing(false);
 
       // Show success message (you might want to add a toast notification here)
-      console.log('Profile saved successfully');
 
     } catch (error) {
       console.error('Failed to save profile:', error);
@@ -374,8 +361,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
   const saveProfileWithFunction = async (profileId: string) => {
     try {
-      console.log('📞 Saving profile with PostgreSQL function:', profileId);
-
       // Get auth user email to preserve login connection
       const { data: { user: authUser } } = await supabase.auth.getUser();
       const authEmail = authUser?.email;
@@ -432,19 +417,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         });
       });
 
-      console.log('📝 Calling PostgreSQL function with data:', {
-        profileData,
-        staffData,
-        contactsCount: contactsData.length
-      });
-
-      console.log('📞 Detailed contact data being sent:', contactsData);
-      console.log('📊 Profile contacts state:', {
-        emails: profile.contacts.emails,
-        phones: profile.contacts.phones,
-        addresses: profile.contacts.addresses
-      });
-
       // Call the PostgreSQL function
       const { data, error } = await supabase.rpc('save_user_profile_complete_react', {
         p_profile_id: profileId,
@@ -454,25 +426,21 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       });
 
       if (error) {
-        console.error('❌ PostgreSQL function error:', error);
+        console.error('PostgreSQL function error:', error);
         throw new Error('Failed to save profile: ' + error.message);
       }
 
-      console.log('✅ Profile saved successfully via PostgreSQL function:', data);
       return data;
 
     } catch (error) {
-      console.error('💥 Error in saveProfileWithFunction:', error);
+      console.error('Error in saveProfileWithFunction:', error);
       throw error;
     }
   };
 
   const saveContacts = async (profileId: string) => {
     try {
-      console.log('��� Saving contacts for profile:', profileId);
-
       // Use school_id from profile data (secure)
-      console.log('���� Using school_id from profile:', userSchoolId);
 
       if (!userSchoolId) {
         throw new Error('School ID not found in user profile data');
@@ -485,7 +453,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         .eq('profile_id', profileId);
 
       if (deleteError) {
-        console.error('❌ Error deleting contacts:', deleteError);
+        console.error('Error deleting contacts:', deleteError);
         throw new Error('Failed to delete old contacts: ' + deleteError.message);
       }
 
@@ -528,8 +496,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         });
       });
 
-      console.log('📝 Contacts to insert:', contactsToInsert);
-
       // Insert new contacts
       if (contactsToInsert.length > 0) {
         const { error: insertError } = await supabase
@@ -537,19 +503,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           .insert(contactsToInsert);
 
         if (insertError) {
-          console.error('❌ Error inserting contacts:', {
-            code: insertError.code,
-            message: insertError.message,
-            details: insertError.details,
-            hint: insertError.hint
-          });
+          console.error('Error inserting contacts:', insertError);
           throw new Error('Failed to insert contacts: ' + insertError.message);
         }
-
-        console.log('✅ Contacts saved successfully');
       }
     } catch (error) {
-      console.error('💥 Error in saveContacts:', error);
+      console.error('Error in saveContacts:', error);
       throw error;
     }
   };
@@ -568,7 +527,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       }
 
       setIsOtpEnabled(factors.totp.length > 0);
-      console.log('MFA Status:', factors);
     } catch (error) {
       console.error('Error checking OTP status:', error);
     }
@@ -657,7 +615,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
         if (error) {
           console.error('Error verifying email OTP:', error);
-          alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
+          alert('Ung��ltiger Code. Bitte versuchen Sie es erneut.');
         } else {
           alert('E-Mail-OTP erfolgreich aktiviert!');
           setIsOtpEnabled(true);
@@ -807,7 +765,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         }
 
         // Log the security event for audit purposes
-        console.warn('🔒 User deleted primary email while 2FA is enabled:', {
+        console.warn('User deleted primary email while 2FA is enabled:', {
           deletedEmail: emailToDelete.value,
           authEmail: authUser?.email,
           mfaEnabled: isOtpEnabled,
@@ -1292,23 +1250,17 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         size="sm"
                         className="border-red-200 text-red-700 hover:bg-red-100"
                         onClick={async () => {
-                          console.log('🔑 Password reset button clicked');
                           try {
-                            console.log('🔍 Getting current user...');
                             const { data: { user: authUser } } = await supabase.auth.getUser();
-                            console.log('👤 Current user:', authUser);
 
                             if (!authUser?.email) {
-                              console.error('❌ No email found for user');
                               alert('Keine E-Mail-Adresse gefunden.');
                               return;
                             }
 
                             // Get user's full name from current profile state
                             const fullName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
-                            console.log('👤 User name:', fullName);
 
-                            console.log('📧 Sending reset email to:', authUser.email);
                             const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
                               redirectTo: `https://flexwise.io/auth/reset-password`,
                               data: {
@@ -1316,17 +1268,14 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                               }
                             });
 
-                            console.log('��� Reset email result:', { error });
-
                             if (error) {
-                              console.error('❌ Reset email error:', error);
+                              console.error('Reset email error:', error);
                               alert('Fehler beim Senden des Reset-Links: ' + error.message);
                             } else {
-                              console.log('✅ Reset email sent successfully');
                               alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
                             }
                           } catch (error) {
-                            console.error('💥 Password reset error:', error);
+                            console.error('Password reset error:', error);
                             alert('Fehler beim Senden des Reset-Links: ' + error.message);
                           }
                         }}
@@ -1494,6 +1443,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Teacher Abbreviation */}
                     <div className="space-y-2">
                       <Label htmlFor="kurzung">Kürzel</Label>
                       <Input
@@ -1501,31 +1451,27 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         value={profile.kurzung}
                         onChange={(e) => setProfile(prev => ({ ...prev, kurzung: e.target.value }))}
                         disabled={!isEditing}
-                        placeholder="z.B. MU, DE, EN"
-                        className={`max-w-xs ${!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}`}
+                        className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
+                        placeholder="z.B. CD"
                       />
-                      <p className="text-sm text-gray-500">
-                        Ihr persönliches Kürzel für Stundenpläne und Listen
-                      </p>
                     </div>
 
                     {/* Skills */}
                     <div className="space-y-3">
-                      <Label>Fähigkeiten & Qualifikationen</Label>
+                      <Label>Fähigkeiten</Label>
                       <div className="flex flex-wrap gap-2">
-                        {profile.skills.map((skill) => (
-                          <div
-                            key={skill}
-                            className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
-                          >
-                            {skill}
+                        {profile.skills.map((skill, index) => (
+                          <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                            <span className="text-sm font-medium">{skill}</span>
                             {isEditing && (
-                              <button
+                              <Button
                                 onClick={() => removeSkill(skill)}
-                                className="text-blue-500 hover:text-blue-700"
+                                size="sm"
+                                variant="ghost"
+                                className="h-4 w-4 p-0 hover:bg-blue-200 text-blue-600"
                               >
                                 <X className="h-3 w-3" />
-                              </button>
+                              </Button>
                             )}
                           </div>
                         ))}
@@ -1533,36 +1479,34 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       {isEditing && (
                         <div className="flex gap-2">
                           <Input
-                            placeholder="Neue Fähigkeit hinzufügen"
                             value={newSkill}
                             onChange={(e) => setNewSkill(e.target.value)}
+                            placeholder="Neue Fähigkeit hinzufügen"
                             onKeyPress={(e) => e.key === 'Enter' && addSkill()}
-                            className="max-w-xs text-slate-600 font-semibold"
                           />
-                          <Button onClick={addSkill} size="sm" variant="outline">
+                          <Button onClick={addSkill} variant="outline">
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
                       )}
                     </div>
 
-                    {/* Subjects Studied */}
+                    {/* Subjects */}
                     <div className="space-y-3">
-                      <Label>Studierte Fächer</Label>
+                      <Label>Fächer (studiert)</Label>
                       <div className="flex flex-wrap gap-2">
-                        {profile.subjects_stud.map((subject) => (
-                          <div
-                            key={subject}
-                            className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
-                          >
-                            {subject}
+                        {profile.subjects_stud.map((subject, index) => (
+                          <div key={index} className="flex items-center gap-1 bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                            <span className="text-sm font-medium">{subject}</span>
                             {isEditing && (
-                              <button
+                              <Button
                                 onClick={() => removeSubject(subject)}
-                                className="text-green-500 hover:text-green-700"
+                                size="sm"
+                                variant="ghost"
+                                className="h-4 w-4 p-0 hover:bg-green-200 text-green-600"
                               >
                                 <X className="h-3 w-3" />
-                              </button>
+                              </Button>
                             )}
                           </div>
                         ))}
@@ -1570,13 +1514,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       {isEditing && (
                         <div className="flex gap-2">
                           <Input
-                            placeholder="Neues Fach hinzufügen"
                             value={newSubject}
                             onChange={(e) => setNewSubject(e.target.value)}
+                            placeholder="Neues Fach hinzufügen"
                             onKeyPress={(e) => e.key === 'Enter' && addSubject()}
-                            className="max-w-xs text-slate-600 font-semibold"
                           />
-                          <Button onClick={addSubject} size="sm" variant="outline">
+                          <Button onClick={addSubject} variant="outline">
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
@@ -1585,7 +1528,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                   </CardContent>
                 </Card>
               </TabsContent>
-
             </Tabs>
           </div>
         </div>
