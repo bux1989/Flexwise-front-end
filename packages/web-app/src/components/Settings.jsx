@@ -228,7 +228,7 @@ export default function Settings() {
             <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
               <Book className="w-5 h-5 text-blue-600" />
               <div>
-                <p className="font-medium text-blue-900">Unterrichtsliste</p>
+                <p className="text-blue-900">Unterrichtsliste</p>
                 <p className="text-sm text-blue-600/70">Schulinformationen</p>
               </div>
             </div>
