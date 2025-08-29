@@ -53,24 +53,19 @@ BEGIN
       school_id,
       skills,
       kurzung,
-      subjects_stud,
-      created_at,
-      updated_at
+      subjects_stud
     ) VALUES (
       p_profile_id,
       v_school_id,
       COALESCE((p_staff_data->>'skills')::TEXT[], ARRAY[]::TEXT[]),
       p_staff_data->>'kurzung',
-      COALESCE((p_staff_data->>'subjects_stud')::TEXT[], ARRAY[]::TEXT[]),
-      NOW(),
-      NOW()
+      COALESCE((p_staff_data->>'subjects_stud')::TEXT[], ARRAY[]::TEXT[])
     )
-    ON CONFLICT (profile_id) 
+    ON CONFLICT (profile_id)
     DO UPDATE SET
       skills = COALESCE((p_staff_data->>'skills')::TEXT[], ARRAY[]::TEXT[]),
       kurzung = p_staff_data->>'kurzung',
-      subjects_stud = COALESCE((p_staff_data->>'subjects_stud')::TEXT[], ARRAY[]::TEXT[]),
-      updated_at = NOW();
+      subjects_stud = COALESCE((p_staff_data->>'subjects_stud')::TEXT[], ARRAY[]::TEXT[]);
 
     -- 3. Surgical contact updates (preserve important fields like is_linked_to_user_login)
     
