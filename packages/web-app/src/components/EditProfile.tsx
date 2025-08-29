@@ -254,8 +254,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           skills: profile.skills,
           kurzung: profile.kurzung || null,
           subjects_stud: profile.subjects_stud
-        })
-        .eq('profile_id', profileId);
+        });
 
       if (staffError) {
         throw new Error('Failed to update staff info: ' + staffError.message);
