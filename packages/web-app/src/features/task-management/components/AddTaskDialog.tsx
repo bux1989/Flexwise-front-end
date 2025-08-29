@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CalendarIcon, Search, ChevronUp, ChevronDown, Star } from 'lucide-react';
+import { DebugOverlay } from '../../../debug';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -81,7 +82,8 @@ export function AddTaskDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <DebugOverlay name="AddTaskDialog">
+      <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Neue Aufgabe hinzufügen</DialogTitle>
@@ -167,6 +169,7 @@ export function AddTaskDialog({
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+    </DebugOverlay>
   );
 }

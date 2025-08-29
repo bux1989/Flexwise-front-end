@@ -1,3 +1,5 @@
+import { DebugOverlay } from '../../../debug';
+
 interface AdminActionsProps {
   onManageTeachers: () => void;
   onManageParents: () => void;
@@ -16,7 +18,8 @@ export function AdminActions({
   onSystemSettings
 }: AdminActionsProps) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <DebugOverlay name="AdminActions">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* User Management */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-4 border-b border-gray-200">
@@ -84,6 +87,7 @@ export function AdminActions({
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }
