@@ -348,7 +348,7 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
     console.log('📋 Raw lessons data:', lessons);
 
     // Transform database lessons to our Lesson interface
-    const transformedLessons: Lesson[] = (lessons || []).map(dbLesson => transformDatabaseLesson(dbLesson));
+    const transformedLessons: Lesson[] = (lessons || []).map(dbLesson => transformDatabaseLesson(dbLesson, schoolDaysData));
 
     console.log('🔄 Transformed lessons:', transformedLessons);
     return transformedLessons;
