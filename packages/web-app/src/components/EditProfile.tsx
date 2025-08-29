@@ -782,9 +782,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           </Button>
                         )}
                       </div>
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         {profile.contacts.addresses.map((address) => (
-                          <div key={address.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-gray-50 rounded-lg items-end">
+                          <div key={address.id} className="grid grid-cols-1 md:grid-cols-3 gap-2 p-2 bg-gray-50 rounded-lg items-end">
                             <div className="space-y-2">
                               <Label className="text-sm">Typ</Label>
                               {isEditing ? (
