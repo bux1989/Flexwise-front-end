@@ -875,8 +875,26 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         variant="outline"
                         size="sm"
                         className="border-red-200 text-red-700 hover:bg-red-100"
-                        onClick={() => {
-                          alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
+                        onClick={async () => {
+                          try {
+                            const { data: { user: authUser } } = await supabase.auth.getUser();
+                            if (!authUser?.email) {
+                              alert('Keine E-Mail-Adresse gefunden.');
+                              return;
+                            }
+
+                            const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
+                              redirectTo: `${window.location.origin}/auth/reset-password`,
+                            });
+
+                            if (error) {
+                              alert('Fehler beim Senden des Reset-Links: ' + error.message);
+                            } else {
+                              alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
+                            }
+                          } catch (error) {
+                            alert('Fehler beim Senden des Reset-Links.');
+                          }
                         }}
                       >
                         Link senden
