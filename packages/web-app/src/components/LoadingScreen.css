@@ -393,10 +393,6 @@
     background: #e5e7eb;
   }
 
-  .gradient-orb {
-    background: rgba(55, 65, 81, 0.3);
-  }
-
   .app-title {
     -webkit-text-fill-color: #111827;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
@@ -408,9 +404,5 @@
   * {
     animation-duration: 0.3s !important;
     animation-iteration-count: 1 !important;
-  }
-
-  .gradient-orb {
-    animation: none;
   }
 }
