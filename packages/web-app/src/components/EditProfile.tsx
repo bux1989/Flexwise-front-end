@@ -875,8 +875,44 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         variant="outline"
                         size="sm"
                         className="border-red-200 text-red-700 hover:bg-red-100"
-                        onClick={() => {
-                          alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
+                        onClick={async () => {
+                          console.log('🔑 Password reset button clicked');
+                          try {
+                            console.log('🔍 Getting current user...');
+                            const { data: { user: authUser } } = await supabase.auth.getUser();
+                            console.log('👤 Current user:', authUser);
+
+                            if (!authUser?.email) {
+                              console.error('❌ No email found for user');
+                              alert('Keine E-Mail-Adresse gefunden.');
+                              return;
+                            }
+
+                            // Get user's full name from current profile state
+                            const fullName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
+                            console.log('👤 User name:', fullName);
+
+                            console.log('📧 Sending reset email to:', authUser.email);
+                            const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
+                              redirectTo: `https://flexwise.io/auth/reset-password`,
+                              data: {
+                                USER_NAME: fullName || authUser.email  // Fallback to email if no name
+                              }
+                            });
+
+                            console.log('📨 Reset email result:', { error });
+
+                            if (error) {
+                              console.error('❌ Reset email error:', error);
+                              alert('Fehler beim Senden des Reset-Links: ' + error.message);
+                            } else {
+                              console.log('✅ Reset email sent successfully');
+                              alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
+                            }
+                          } catch (error) {
+                            console.error('💥 Password reset error:', error);
+                            alert('Fehler beim Senden des Reset-Links: ' + error.message);
+                          }
                         }}
                       >
                         Link senden

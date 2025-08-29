@@ -5,6 +5,7 @@ import { shouldShowLoadingScreen, debugPWAStatus } from './utils/pwaHelpers'
 
 // Components
 import Login from './app/auth/login'
+import ResetPassword from './app/auth/reset-password'
 import TeacherDashboard from './app/dashboard/teacher'
 import ParentDashboard from './app/dashboard/parent'
 import ExternalDashboard from './app/dashboard/external'
@@ -261,7 +262,12 @@ function App() {
       <Router>
         <div className="min-h-screen bg-gray-50">
           {!session ? (
-            <Login />
+            <Routes>
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/reset-password" element={<ResetPassword />} />
+              <Route path="/" element={<Login />} />
+              <Route path="*" element={<Navigate to="/auth/login" replace />} />
+            </Routes>
           ) : (
             <Routes>
               <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
