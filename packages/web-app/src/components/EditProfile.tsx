@@ -751,20 +751,32 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
         // Provide specific error messages based on the actual error
         if (error.message.includes('Unable to get SMS provider')) {
-          alert(`🔧 TWILIO KONFIGURATION FEHLT:
+          alert(`🔧 SELF-HOSTED SUPABASE SMS KONFIGURATION:
 
-Der SMS-Provider (Twilio) ist nicht richtig konfiguriert in Supabase.
+SMS-Provider nicht verfügbar in Ihrer selbst-gehosteten Supabase-Instanz.
 
-Benötigte Schritte im Supabase Dashboard:
-1. Gehe zu Authentication → Settings → SMS Auth
-2. Aktiviere "Enable phone sign up"
-3. Konfiguriere Twilio:
-   - Account SID: [Twilio Account SID]
-   - Auth Token: [Twilio Auth Token]
-   - Phone Number: [Deine Twilio Nummer]
+Benötigte Environment Variables in Ihrer Supabase-Deployment:
+
+# Twilio Configuration
+GOTRUE_SMS_PROVIDER=twilio
+GOTRUE_SMS_TWILIO_ACCOUNT_SID=your_twilio_account_sid
+GOTRUE_SMS_TWILIO_AUTH_TOKEN=your_twilio_auth_token
+GOTRUE_SMS_TWILIO_MESSAGE_SERVICE_SID=your_twilio_messaging_service_sid
+
+# Alternative: Wenn Sie Twilio Phone Number verwenden
+GOTRUE_SMS_TWILIO_PHONE=+1234567890
+
+# Aktiviere Phone Signup
+GOTRUE_ENABLE_SIGNUP=true
+
+Nach dem Setzen der Environment Variables:
+1. Restart Ihrer Supabase GoTrue Service
+2. SMS OTP sollte funktionieren
 
 Status: Telefonnummer (${formattedPhone}) ist mit dem Benutzer verknüpft ✅
-Fehler: SMS-Provider nicht verfügbar ❌`);
+Fehler: SMS-Provider Environment Variables fehlen ❌
+
+Dokumentation: https://supabase.com/docs/reference/self-hosting-auth/config`);
         } else if (error.message.includes('Signups not allowed for otp')) {
           alert('SMS OTP ist in der Supabase-Konfiguration deaktiviert. Der Administrator muss in den Supabase Auth-Einstellungen "Enable phone signup" aktivieren.');
         } else if (error.message.includes('Phone number is invalid') || error.message.includes('422')) {
