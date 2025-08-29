@@ -41,6 +41,8 @@ export default function StudentManagement({ onBack }) {
       birthDate: '2008-05-15',
       status: 'active',
       address: 'Musterstraße 123, 12345 Berlin',
+      einstieg: '2023-08-01', // Started school
+      ausstieg: '', // No exit date - still active
       photoPermissions: [
         {
           date: '2024-01-15',
@@ -184,6 +186,8 @@ export default function StudentManagement({ onBack }) {
       birthDate: '2008-08-22',
       status: 'active',
       address: 'Hauptstraße 456, 12345 Berlin',
+      einstieg: '2023-08-01',
+      ausstieg: '',
       photoPermissions: [],
       allergies: [],
       but: {
@@ -201,6 +205,8 @@ export default function StudentManagement({ onBack }) {
       birthDate: '2009-02-10',
       status: 'inactive',
       address: 'Schulstraße 789, 12345 Berlin',
+      einstieg: '2022-08-01',
+      ausstieg: '2024-07-31', // Student left school
       photoPermissions: [
         {
           date: '2023-09-01',
@@ -233,6 +239,8 @@ export default function StudentManagement({ onBack }) {
       birthDate: '2008-11-03',
       status: 'active',
       address: 'Lindenstraße 321, 12345 Berlin',
+      einstieg: '2023-08-01',
+      ausstieg: '',
       photoPermissions: [
         {
           date: '2024-01-10',
@@ -263,6 +271,8 @@ export default function StudentManagement({ onBack }) {
       birthDate: '2009-04-18',
       status: 'active',
       address: 'Rosenweg 654, 12345 Berlin',
+      einstieg: '2023-08-01',
+      ausstieg: '',
       photoPermissions: [],
       allergies: [
         {
@@ -293,6 +303,8 @@ export default function StudentManagement({ onBack }) {
       birthDate: '2008-07-25',
       status: 'active',
       address: 'Blumenstraße 987, 12345 Berlin',
+      einstieg: '2023-08-01',
+      ausstieg: '',
       photoPermissions: [
         {
           date: '2024-01-20',
@@ -317,6 +329,8 @@ export default function StudentManagement({ onBack }) {
       birthDate: '2009-01-14',
       status: 'active',
       address: 'Parkstraße 147, 12345 Berlin',
+      einstieg: '2023-08-01',
+      ausstieg: '',
       photoPermissions: [],
       allergies: [],
       but: {
