@@ -426,35 +426,37 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
     <DebugOverlay name="KlassenbuchLiveView">
       <TooltipProvider>
       <div className="space-y-6">
-        <div className={`flex items-center ${isMobile ? 'flex-col space-y-4' : 'justify-between'}`}>
-          <div className={isMobile ? 'w-full text-center' : ''}>
-            <h2 className="text-2xl font-semibold">Stundenplan - Live Ansicht</h2>
-            <p className="text-muted-foreground">{selectedClass.name}</p>
-            <p className="text-xs text-muted-foreground">Schule ID: {schoolId}</p>
-          </div>
-          
-          {/* Hide legend on mobile */}
-          {!isMobile && (
-            <div className="flex items-center space-x-4 text-sm">
-              <div className="flex items-center space-x-2">
-                <Check className="h-4 w-4 text-green-600" />
-                <span>Anwesenheit erfasst</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="h-4 w-4 text-orange-600" />
-                <span>Unvollständig</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <span>Anwesenheit fehlt</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MessageSquare className="h-4 w-4 text-blue-600" />
-                <span>Kommentar</span>
-              </div>
+        <DebugOverlay id="KLA-014-1" name="KlassenbuchLiveView.Header">
+          <div className={`flex items-center ${isMobile ? 'flex-col space-y-4' : 'justify-between'}`}>
+            <div className={isMobile ? 'w-full text-center' : ''}>
+              <h2 className="text-2xl font-semibold">Stundenplan - Live Ansicht</h2>
+              <p className="text-muted-foreground">{selectedClass.name}</p>
+              <p className="text-xs text-muted-foreground">Schule ID: {schoolId}</p>
             </div>
-          )}
-        </div>
+
+            {/* Hide legend on mobile */}
+            {!isMobile && (
+              <div className="flex items-center space-x-4 text-sm">
+                <div className="flex items-center space-x-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  <span>Anwesenheit erfasst</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="h-4 w-4 text-orange-600" />
+                  <span>Unvollständig</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <span>Anwesenheit fehlt</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MessageSquare className="h-4 w-4 text-blue-600" />
+                  <span>Kommentar</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </DebugOverlay>
 
         {/* Timetable Grid */}
         <Card>
