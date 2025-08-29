@@ -29,7 +29,7 @@ export default function StudentManagement({ onBack }) {
   const [showDetailView, setShowDetailView] = useState(false)
 
   // Mock student data - replace with real data from Supabase
-  const [students] = useState([
+  const [students, setStudents] = useState([
     {
       id: 1,
       firstName: 'Max',
@@ -397,13 +397,22 @@ export default function StudentManagement({ onBack }) {
   }
 
   const handleSaveStudent = (updatedStudent) => {
-    // TODO: Implement save functionality with Supabase
-    console.log('Save student:', updatedStudent)
-    // Update the students array with the edited student
-    // This would normally be done through an API call to Supabase
+    // Update the students array with the edited student data
+    setStudents(prevStudents =>
+      prevStudents.map(student =>
+        student.id === updatedStudent.id ? updatedStudent : student
+      )
+    )
+
+    // Update the selected student state to reflect changes
+    setSelectedStudent(updatedStudent)
+
+    // TODO: Also save to Supabase here
+    console.log('Student data saved:', updatedStudent)
+
+    // Return to detail view after saving
     setIsEditing(false)
-    setSelectedStudent(null)
-    setShowDetailView(false)
+    setShowDetailView(true)
   }
 
   // Show detailed view when student is selected for viewing
