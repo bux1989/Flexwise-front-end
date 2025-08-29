@@ -16,5 +16,29 @@
     Header always set X-XSS-Protection "1; mode=block"
 </IfModule>
 
+# Security headers for production
+<IfModule mod_headers.c>
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options nosniff
+
+    # Prevent clickjacking
+    Header always set X-Frame-Options DENY
+
+    # XSS protection
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # HSTS (HTTP Strict Transport Security)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Content Security Policy (adjust for your needs)
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.schulflex.app wss://api.schulflex.app"
+
+    # Remove server signature
+    Header unset Server
+    Header unset X-Powered-By
+</IfModule>
+
 # Instructions:
-# Rename this file to .htaccess and upload to your web directory if IONOS uses Apache
+# 1. Rename this file to .htaccess
+# 2. Upload to your IONOS web directory root
+# 3. Adjust Content-Security-Policy URLs for your Supabase instance
