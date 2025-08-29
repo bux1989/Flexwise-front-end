@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Key, UserPlus } from 'lucide-react';
+import { DebugOverlay } from '../../../debug';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
@@ -96,7 +97,8 @@ export function AddChildModal({ isOpen, onClose, onAddPendingRequest }: AddChild
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <DebugOverlay name="AddChildModal">
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-xl">
@@ -300,6 +302,7 @@ export function AddChildModal({ isOpen, onClose, onAddPendingRequest }: AddChild
           </Tabs>
         </div>
       </div>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }

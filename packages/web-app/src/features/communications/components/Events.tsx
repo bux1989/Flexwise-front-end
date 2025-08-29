@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Calendar, Clock, MapPin, Check, HelpCircle, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { DebugOverlay } from '../../../debug';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
@@ -123,7 +124,8 @@ export function Events({ events, onEventRSVP, isMobile = false }: EventsProps) {
   const displayedEvents = filteredEvents.slice(0, eventDisplayCount);
 
   return (
-    <Card>
+    <DebugOverlay name="Events">
+      <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
           <CardTitle className="text-xl flex items-center gap-2">
@@ -428,6 +430,7 @@ export function Events({ events, onEventRSVP, isMobile = false }: EventsProps) {
         </div>
         )}
       </CardContent>
-    </Card>
+      </Card>
+    </DebugOverlay>
   );
 }
