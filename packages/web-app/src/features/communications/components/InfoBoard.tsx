@@ -75,7 +75,7 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-2 max-h-96 overflow-y-auto">
 
         {/* Loading and Error States */}
         {loading && (
