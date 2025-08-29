@@ -173,21 +173,21 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="modules" className="space-y-6">
-          <Card className="border-l-4 border-l-primary">
-            <CardHeader className="bg-muted/50 border-b border-border">
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="bg-blue-50 border-b border-blue-200">
               <CardTitle className="flex items-center gap-2">
-                <SettingsIcon className="w-5 h-5 text-primary" />
+                <SettingsIcon className="w-5 h-5 text-blue-600" />
                 Module verwalten
               </CardTitle>
-              <p className="text-muted-foreground">Aktivieren und konfigurieren Sie die verfügbaren Module für Ihre Schule</p>
+              <p className="text-blue-600/70">Aktivieren und konfigurieren Sie die verfügbaren Module für Ihre Schule</p>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between mb-6 p-4 bg-muted/20 rounded-lg border border-border">
+              <div className="flex items-center justify-between mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <div>
-                  <p className="font-medium text-foreground">Sie haben 19 Module gebucht.</p>
-                  <p className="text-sm text-muted-foreground">Verwalten Sie Ihre aktiven Module</p>
+                  <p className="font-medium text-blue-900">Sie haben 19 Module gebucht.</p>
+                  <p className="text-sm text-blue-600/70">Verwalten Sie Ihre aktiven Module</p>
                 </div>
-                <Button className="gap-2">
+                <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
                   <SettingsIcon className="w-4 h-4" />
                   Module verwalten
                 </Button>
@@ -201,9 +201,9 @@ export default function Settings() {
                   "Steckboard", "Stundenplan", "Stundenplanung", "Termine",
                   "To-Do-List", "Vertretungsplan", "Wahlfächer"
                 ].map((module, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border border-border rounded-lg bg-muted/20 hover:bg-muted/50 transition-colors">
-                    <span className="font-medium text-foreground">{module}</span>
-                    <Badge variant="secondary">Aktiv</Badge>
+                  <div key={index} className="flex items-center justify-between p-3 border border-blue-200 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <span className="font-medium text-blue-900">{module}</span>
+                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">Aktiv</Badge>
                   </div>
                 ))}
               </div>
@@ -211,15 +211,93 @@ export default function Settings() {
           </Card>
         </TabsContent>
       </Tabs>
-      
+
+      {/* School Year Management Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        {/* Current School Year 2024/25 */}
+        <Card className="border-l-4 border-l-blue-500">
+          <CardHeader className="bg-blue-50 border-b border-blue-200">
+            <CardTitle className="flex items-center gap-2">
+              <Book className="w-5 h-5 text-blue-600" />
+              Schuljahr 2024/25
+            </CardTitle>
+            <p className="text-blue-600/70">Aktuelles Schuljahr verwalten</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+              <Book className="w-5 h-5 text-blue-600" />
+              <div>
+                <p className="font-medium text-blue-900">Unterschulme</p>
+                <p className="text-sm text-blue-600/70">Schulinformationen</p>
+              </div>
+            </div>
+            <Button variant="outline" className="w-full gap-2 bg-blue-50 hover:bg-blue-100 border-blue-200">
+              <User className="w-4 h-4 text-blue-600" />
+              Kurse aus der LUSD importieren
+            </Button>
+            <Button className="w-full gap-2 bg-green-600 hover:bg-green-700">
+              <Download className="w-4 h-4" />
+              Daten sichern
+            </Button>
+
+            <div className="pt-4 border-t border-blue-200">
+              <p className="text-sm font-medium text-blue-900 mb-3">Weitere Einstellungen</p>
+              <div className="grid grid-cols-3 gap-2 text-sm">
+                <div className="text-center p-2 bg-blue-50 rounded">
+                  <p className="font-medium text-blue-900">Schuljahr</p>
+                </div>
+                <div className="text-center p-2 bg-blue-50 rounded">
+                  <p className="font-medium text-blue-900">Stundenraster</p>
+                </div>
+                <div className="text-center p-2 bg-blue-50 rounded">
+                  <p className="font-medium text-blue-900">Wochentage</p>
+                </div>
+                <div className="text-center p-2 bg-blue-50 rounded mt-1">
+                  <p className="font-medium text-blue-900">A-/B Wochen</p>
+                </div>
+                <div className="text-center p-2 bg-blue-50 rounded mt-1">
+                  <p className="font-medium text-blue-900">Ferien/Feiertage</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Previous School Year 2023/24 */}
+        <Card className="border-l-4 border-l-amber-500">
+          <CardHeader className="bg-amber-50 border-b border-amber-200">
+            <CardTitle className="flex items-center gap-2">
+              <Book className="w-5 h-5 text-amber-600" />
+              Schuljahr 2023/24
+            </CardTitle>
+            <p className="text-amber-600/70">Vorheriges Schuljahr verwalten</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+              <p className="text-sm text-amber-700 font-medium mb-2">Aus Datenschutzgründen empfehlen wir, die personenbezogenen Daten des vergangenen Schuljahres zu löschen.</p>
+            </div>
+
+            <Button className="w-full gap-2 bg-green-600 hover:bg-green-700">
+              <Download className="w-4 h-4" />
+              Daten sichern
+            </Button>
+
+            <Button className="w-full gap-2 bg-red-600 hover:bg-red-700">
+              <X className="w-4 h-4" />
+              Zum Löschen/Entfernen
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Footer Links */}
       <div className="flex justify-end mt-12 pb-4">
         <div className="flex gap-4 text-sm text-muted-foreground">
-          <a href="#datenschutz" className="hover:text-primary transition-colors cursor-pointer">
+          <a href="#datenschutz" className="hover:text-blue-600 transition-colors cursor-pointer">
             Datenschutz
           </a>
           <span className="text-border">|</span>
-          <a href="#impressum" className="hover:text-primary transition-colors cursor-pointer">
+          <a href="#impressum" className="hover:text-blue-600 transition-colors cursor-pointer">
             Impressum
           </a>
         </div>
