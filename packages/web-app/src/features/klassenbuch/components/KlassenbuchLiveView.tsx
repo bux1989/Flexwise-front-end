@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../
 import { Check, AlertTriangle, AlertCircle, X, RefreshCw, MessageSquare, Loader2 } from 'lucide-react';
 import { KlassenbuchAttendanceModal } from './KlassenbuchAttendanceModal';
 import { getTimetableForClass, getStudentsForClass, getSchedulePeriods, getSchoolDays, formatTimeSlot, getLessonsForWeek, type Lesson, type SchedulePeriod, type SchoolDay } from '../data/klassenbuchDataAdapter';
-import { getCurrentUserProfile } from '../../../lib/supabase.js';
+import { getCurrentUserProfile, supabase } from '../../../lib/supabase.js';
 
 interface Class {
   id: string;
@@ -30,7 +30,14 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
   const [classTimetable, setClassTimetable] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [schoolId, setSchoolId] = useState<string>('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+
+  // Function to refresh lessons data
+  const refreshLessons = () => {
+    console.log('🔄 Refreshing lessons data...');
+    setRefreshTrigger(prev => prev + 1);
+  };
 
   // Fetch database-driven periods and school days
   useEffect(() => {
@@ -111,7 +118,38 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
     };
 
     fetchScheduleData();
-  }, [selectedClass.id, selectedWeek]);
+  }, [selectedClass.id, selectedWeek, refreshTrigger]);
+
+  // Set up real-time subscription for attendance updates
+  useEffect(() => {
+    if (!schoolId) return;
+
+    console.log('🔗 Setting up real-time subscription for attendance updates');
+
+    // Subscribe to student_attendance_logs changes
+    const attendanceSubscription = supabase
+      .channel('attendance-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'student_attendance_logs',
+          filter: `school_id=eq.${schoolId}`
+        },
+        (payload) => {
+          console.log('📡 Real-time attendance update received:', payload);
+          // Refresh lessons when attendance changes
+          refreshLessons();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('🔌 Cleaning up real-time subscription');
+      supabase.removeChannel(attendanceSubscription);
+    };
+  }, [schoolId]);
 
   // Check if a time slot has any lessons across all days
   const hasLessonsInPeriod = (period: number) => {
@@ -257,6 +295,8 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
         const viewMode = lesson.attendanceStatus === 'complete' ? 'overview' : 'edit';
         console.log('🎯 Opening attendance modal with viewMode:', viewMode);
         onAttendanceClick(lesson.id, viewMode);
+        // Refresh after a short delay to allow for attendance updates
+        setTimeout(refreshLessons, 1000);
       } else {
         console.log('⚠️ No attendance click handler, using fallback modal');
         // Fallback to the old modal if no attendance handler provided
@@ -538,7 +578,11 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
             lesson={selectedLesson}
             classData={selectedClass}
             isOpen={!!selectedLesson}
-            onClose={() => setSelectedLesson(null)}
+            onClose={() => {
+              setSelectedLesson(null);
+              // Refresh lessons after modal closes
+              setTimeout(refreshLessons, 500);
+            }}
           />
         )}
 
