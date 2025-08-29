@@ -459,108 +459,110 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
         </DebugOverlay>
 
         {/* Timetable Grid */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Wochenstundenplan</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className={`p-3 text-left font-medium bg-muted ${isMobile ? 'min-w-8' : 'min-w-20'}`}>
-                      {isMobile ? 'St.' : 'Stunde'}
-                    </th>
-                    {displayWeekDays.map((day, index) => (
-                      <th key={day} className={`p-3 text-center font-medium bg-muted ${isMobile ? 'min-w-16' : 'min-w-40'}`}>
-                        <div>
-                          <div>{day}</div>
-                          <div className="text-xs text-muted-foreground font-normal">
-                            {weekDates[index].toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
-                          </div>
-                        </div>
+        <DebugOverlay id="KLA-014-2" name="KlassenbuchLiveView.TimetableGrid">
+          <Card>
+            <CardHeader>
+              <CardTitle>Wochenstundenplan</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className={`p-3 text-left font-medium bg-muted ${isMobile ? 'min-w-8' : 'min-w-20'}`}>
+                        {isMobile ? 'St.' : 'Stunde'}
                       </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {schedulePeriods.map((period) => {
-                    const hasLessons = hasLessonsInPeriod(period.block_number);
-                    const rowHeight = hasLessons ? (isMobile ? 'min-h-20' : 'min-h-16') : 'h-8';
-                    const timeSlot = formatTimeSlot(period);
-
-                    return (
-                      <tr key={period.block_number} className="border-b hover:bg-muted/30">
-                        <td className={`p-3 border-r bg-muted/50 ${!hasLessons ? 'py-1' : ''}`}>
-                          <div className="text-center">
-                            <div className="font-semibold">{period.label}</div>
-                            {!isMobile && hasLessons && (
-                              <div className="text-xs text-muted-foreground">{timeSlot}</div>
-                            )}
-                            {!isMobile && period.group_label && (
-                              <div className="text-xs text-blue-600">{period.group_label}</div>
-                            )}
+                      {displayWeekDays.map((day, index) => (
+                        <th key={day} className={`p-3 text-center font-medium bg-muted ${isMobile ? 'min-w-16' : 'min-w-40'}`}>
+                          <div>
+                            <div>{day}</div>
+                            <div className="text-xs text-muted-foreground font-normal">
+                              {weekDates[index].toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
+                            </div>
                           </div>
-                        </td>
-                        {weekDays.map((day, dayIndex) => {
-                          const lesson = getLessonForSlot(period.block_number, day);
-                          return (
-                            <td key={`${period.block_number}-${day}`} className={`border-r ${isMobile ? 'p-1' : 'p-2'} ${!hasLessons ? 'py-1' : ''}`}>
-                              {lesson ? (
-                                <div
-                                  className={`p-2 rounded-md transition-all border ${
-                                    canEditAttendance(lesson) 
-                                      ? 'cursor-pointer hover:shadow-md hover:border-primary' 
-                                      : lesson.status === 'cancelled' 
-                                        ? 'opacity-60' 
-                                        : 'opacity-75'
-                                  } ${lesson.subjectColor} ${getLessonBackgroundColor(lesson)} ${rowHeight}`}
-                                  onClick={() => handleLessonClick(lesson)}
-                                >
-                                  <div className={`space-y-1 ${isMobile ? 'text-xs' : ''}`}>
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center space-x-1">
-                                        <span className={`font-semibold ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                                          {isMobile ? (lesson.subjectAbbreviation || lesson.subject) : lesson.subject}
-                                        </span>
-                                        {getChangeIcon(lesson)}
-                                        {getCommentIcon(lesson)}
-                                      </div>
-                                      {getStatusIcon(lesson)}
-                                    </div>
-                                    {lesson.teacher && (
-                                      <div className={`text-blue-600 font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>
-                                        {lesson.teacher}
-                                      </div>
-                                    )}
-                                    {lesson.room && (
-                                      <div className={`text-muted-foreground ${isMobile ? 'text-xs' : 'text-xs'}`}>
-                                        {lesson.room}
-                                      </div>
-                                    )}
-                                    {lesson.status === 'cancelled' && (
-                                      <div className={`text-red-600 font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>
-                                        ENTFÄLLT
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className={`flex items-center justify-center text-muted-foreground ${hasLessons ? (isMobile ? 'h-20' : 'h-16') : 'h-8'}`}>
-                                  —
-                                </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {schedulePeriods.map((period) => {
+                      const hasLessons = hasLessonsInPeriod(period.block_number);
+                      const rowHeight = hasLessons ? (isMobile ? 'min-h-20' : 'min-h-16') : 'h-8';
+                      const timeSlot = formatTimeSlot(period);
+
+                      return (
+                        <tr key={period.block_number} className="border-b hover:bg-muted/30">
+                          <td className={`p-3 border-r bg-muted/50 ${!hasLessons ? 'py-1' : ''}`}>
+                            <div className="text-center">
+                              <div className="font-semibold">{period.label}</div>
+                              {!isMobile && hasLessons && (
+                                <div className="text-xs text-muted-foreground">{timeSlot}</div>
                               )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+                              {!isMobile && period.group_label && (
+                                <div className="text-xs text-blue-600">{period.group_label}</div>
+                              )}
+                            </div>
+                          </td>
+                          {weekDays.map((day, dayIndex) => {
+                            const lesson = getLessonForSlot(period.block_number, day);
+                            return (
+                              <td key={`${period.block_number}-${day}`} className={`border-r ${isMobile ? 'p-1' : 'p-2'} ${!hasLessons ? 'py-1' : ''}`}>
+                                {lesson ? (
+                                  <div
+                                    className={`p-2 rounded-md transition-all border ${
+                                      canEditAttendance(lesson)
+                                        ? 'cursor-pointer hover:shadow-md hover:border-primary'
+                                        : lesson.status === 'cancelled'
+                                          ? 'opacity-60'
+                                          : 'opacity-75'
+                                    } ${lesson.subjectColor} ${getLessonBackgroundColor(lesson)} ${rowHeight}`}
+                                    onClick={() => handleLessonClick(lesson)}
+                                  >
+                                    <div className={`space-y-1 ${isMobile ? 'text-xs' : ''}`}>
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-1">
+                                          <span className={`font-semibold ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                                            {isMobile ? (lesson.subjectAbbreviation || lesson.subject) : lesson.subject}
+                                          </span>
+                                          {getChangeIcon(lesson)}
+                                          {getCommentIcon(lesson)}
+                                        </div>
+                                        {getStatusIcon(lesson)}
+                                      </div>
+                                      {lesson.teacher && (
+                                        <div className={`text-blue-600 font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>
+                                          {lesson.teacher}
+                                        </div>
+                                      )}
+                                      {lesson.room && (
+                                        <div className={`text-muted-foreground ${isMobile ? 'text-xs' : 'text-xs'}`}>
+                                          {lesson.room}
+                                        </div>
+                                      )}
+                                      {lesson.status === 'cancelled' && (
+                                        <div className={`text-red-600 font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>
+                                          ENTFÄLLT
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className={`flex items-center justify-center text-muted-foreground ${hasLessons ? (isMobile ? 'h-20' : 'h-16') : 'h-8'}`}>
+                                    —
+                                  </div>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </DebugOverlay>
 
         {/* Hide Legends on mobile */}
         {!isMobile && (
