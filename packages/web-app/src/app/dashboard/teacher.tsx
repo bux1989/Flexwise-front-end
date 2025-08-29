@@ -651,14 +651,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             isMobile={isMobile}
           />
 
-          {/* Task Management - Right Column - Hidden for now */}
-          <div className="hidden" style={{ display: 'none' }}>
-            <TaskManagement
-              currentTeacher={currentTeacher}
-              canAssignTasks={true}
-              isMobile={isMobile}
-            />
-          </div>
+          {/* PWA Notifications - Right Column */}
+          <PWANotifications />
         </div>
         </div>
       )}
