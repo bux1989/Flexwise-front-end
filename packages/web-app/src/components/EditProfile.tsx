@@ -145,7 +145,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       }
 
       // Store school_id from profile data for security
-      console.log('👤 Profile loaded with school_id:', profileData?.school_id);
+      console.log('���� Profile loaded with school_id:', profileData?.school_id);
       setUserSchoolId(profileData?.school_id || null);
 
       // Load staff info
@@ -328,14 +328,11 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
     try {
       console.log('📞 Saving contacts for profile:', profileId);
 
-      // Get current user for school_id
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      const schoolId = authUser?.user_metadata?.school_id;
+      // Use school_id from profile data (secure)
+      console.log('🏫 Using school_id from profile:', userSchoolId);
 
-      console.log('🏫 Using school_id:', schoolId);
-
-      if (!schoolId) {
-        throw new Error('School ID not found in user metadata');
+      if (!userSchoolId) {
+        throw new Error('School ID not found in user profile data');
       }
 
       // Delete existing contacts and re-insert (simple approach)
@@ -1154,7 +1151,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                               console.error('❌ Reset email error:', error);
                               alert('Fehler beim Senden des Reset-Links: ' + error.message);
                             } else {
-                              console.log('✅ Reset email sent successfully');
+                              console.log('�� Reset email sent successfully');
                               alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
                             }
                           } catch (error) {
