@@ -12,7 +12,7 @@ export default {
         '35': '0.35',
       },
       animation: {
-        'fade-in': 'fadeIn 0.6s ease-out',
+        'fade-in': 'fadeIn 1s ease-out',
         'float-slow': 'float 6s ease-in-out infinite',
         'float-medium': 'float 4s ease-in-out infinite',
         'float-gentle': 'float 8s ease-in-out infinite',
