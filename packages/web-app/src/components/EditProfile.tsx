@@ -144,6 +144,10 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         return;
       }
 
+      // Store school_id from profile data for security
+      console.log('👤 Profile loaded with school_id:', profileData?.school_id);
+      setUserSchoolId(profileData?.school_id || null);
+
       // Load staff info
       const { data: staffData, error: staffError } = await supabase
         .from('profile_info_staff')
