@@ -168,7 +168,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       }
 
       // Store school_id from profile data for security
-      console.log('👤 Profile loaded with school_id:', profileData?.school_id);
       setUserSchoolId(profileData?.school_id || null);
 
       // Load staff info
