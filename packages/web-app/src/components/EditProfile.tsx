@@ -339,6 +339,168 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
     }
   };
 
+  // Check if user has OTP/MFA enabled
+  const checkOtpStatus = async () => {
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      // Check if user has any MFA factors enrolled
+      const { data: factors, error } = await supabase.auth.mfa.listFactors();
+      if (error) {
+        console.error('Error checking MFA status:', error);
+        return;
+      }
+
+      setIsOtpEnabled(factors.totp.length > 0);
+      console.log('MFA Status:', factors);
+    } catch (error) {
+      console.error('Error checking OTP status:', error);
+    }
+  };
+
+  // Send OTP code via email
+  const sendEmailOtp = async () => {
+    setIsSendingOtp(true);
+    try {
+      const email = otpEmail || profile.contacts.emails.find(e => e.is_primary)?.value;
+      if (!email) {
+        alert('Keine E-Mail-Adresse gefunden. Bitte geben Sie eine E-Mail-Adresse ein.');
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          shouldCreateUser: false // Don't create new user, just send OTP
+        }
+      });
+
+      if (error) {
+        console.error('Error sending email OTP:', error);
+        alert('Fehler beim Senden der E-Mail: ' + error.message);
+      } else {
+        alert(`OTP-Code wurde an ${email} gesendet!`);
+        setOtpMethod('email');
+      }
+    } catch (error) {
+      console.error('Error sending email OTP:', error);
+      alert('Fehler beim Senden der E-Mail: ' + error.message);
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  // Send OTP code via SMS
+  const sendSmsOtp = async () => {
+    setIsSendingOtp(true);
+    try {
+      const phone = otpPhone || profile.contacts.phones.find(p => p.is_primary)?.value;
+      if (!phone) {
+        alert('Keine Telefonnummer gefunden. Bitte geben Sie eine Telefonnummer ein.');
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: phone,
+        options: {
+          shouldCreateUser: false
+        }
+      });
+
+      if (error) {
+        console.error('Error sending SMS OTP:', error);
+        alert('Fehler beim Senden der SMS: ' + error.message);
+      } else {
+        alert(`OTP-Code wurde an ${phone} gesendet!`);
+        setOtpMethod('sms');
+      }
+    } catch (error) {
+      console.error('Error sending SMS OTP:', error);
+      alert('Fehler beim Senden der SMS: ' + error.message);
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  // Verify OTP code
+  const verifyOtp = async () => {
+    if (!otpCode || otpCode.length !== 6) {
+      alert('Bitte geben Sie einen gültigen 6-stelligen Code ein.');
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    try {
+      if (otpMethod === 'email') {
+        const email = otpEmail || profile.contacts.emails.find(e => e.is_primary)?.value;
+        const { error } = await supabase.auth.verifyOtp({
+          email: email,
+          token: otpCode,
+          type: 'email'
+        });
+
+        if (error) {
+          console.error('Error verifying email OTP:', error);
+          alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
+        } else {
+          alert('E-Mail-OTP erfolgreich aktiviert!');
+          setIsOtpEnabled(true);
+          setShowOtpSetup(false);
+          setOtpCode('');
+        }
+      } else if (otpMethod === 'sms') {
+        const phone = otpPhone || profile.contacts.phones.find(p => p.is_primary)?.value;
+        const { error } = await supabase.auth.verifyOtp({
+          phone: phone,
+          token: otpCode,
+          type: 'sms'
+        });
+
+        if (error) {
+          console.error('Error verifying SMS OTP:', error);
+          alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
+        } else {
+          alert('SMS-OTP erfolgreich aktiviert!');
+          setIsOtpEnabled(true);
+          setShowOtpSetup(false);
+          setOtpCode('');
+        }
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      alert('Fehler bei der Verifizierung: ' + error.message);
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  // Disable OTP
+  const disableOtp = async () => {
+    if (!confirm('Möchten Sie die Zwei-Faktor-Authentifizierung wirklich deaktivieren?')) {
+      return;
+    }
+
+    try {
+      // List and unenroll all MFA factors
+      const { data: factors, error: listError } = await supabase.auth.mfa.listFactors();
+      if (listError) throw listError;
+
+      for (const factor of factors.totp) {
+        const { error } = await supabase.auth.mfa.unenroll({
+          factorId: factor.id
+        });
+        if (error) throw error;
+      }
+
+      setIsOtpEnabled(false);
+      alert('Zwei-Faktor-Authentifizierung wurde deaktiviert.');
+    } catch (error) {
+      console.error('Error disabling OTP:', error);
+      alert('Fehler beim Deaktivieren: ' + error.message);
+    }
+  };
+
   const addSkill = () => {
     if (newSkill.trim() && !profile.skills.includes(newSkill.trim())) {
       setProfile(prev => ({
