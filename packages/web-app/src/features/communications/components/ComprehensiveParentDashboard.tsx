@@ -593,15 +593,15 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                                             <div className="flex justify-center pt-4">
                                               <Button
                                                 onClick={handleZeugnisSubmit}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2"
+                                                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-2"
                                               >
                                                 📤 Entscheidung abschicken
                                               </Button>
                                             </div>
                                           )}
 
-                                          <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                                            <p className="text-sm text-gray-600">
+                                          <div className="p-3 bg-muted/30 border border-border rounded-lg">
+                                            <p className="text-sm text-muted-foreground">
                                               <strong>Hinweis:</strong> Die Anmeldung ist verbindlich. Bei fehlender Rückmeldung gehen wir davon aus, dass Ihr Kind zur gewohnten Zeit abgeholt wird.
                                             </p>
                                           </div>
@@ -645,7 +645,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                                                           {isEarly ? (
                                                             <>
                                                               <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-sm">
-                                                                🏃 Frühe Entlassung
+                                                                ���� Frühe Entlassung
                                                               </Badge>
                                                               <span className="text-sm text-gray-600">um 13:00 Uhr</span>
                                                               {group.pickupMethod && (
@@ -714,7 +714,7 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                                         </div>
                                       )}
 
-                                      <div className="text-sm text-gray-600">
+                                      <div className="text-sm text-muted-foreground">
                                         <p>Für Rückfragen stehen wir Ihnen gerne zur Verfügung.</p>
                                         <p className="mt-2">
                                           <strong>Mit freundlichen Grüßen<br />
@@ -772,8 +772,8 @@ export function ComprehensiveParentDashboard({ user }: ParentDashboardProps) {
                 <section>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-6 w-6 text-blue-600" />
-                      <h2 className="text-xl font-semibold leading-tight">Termine</h2>
+                      <Calendar className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-semibold leading-tight text-foreground">Termine</h2>
                     </div>
                   </div>
                   
