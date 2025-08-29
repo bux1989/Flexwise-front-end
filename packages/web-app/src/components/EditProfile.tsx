@@ -76,6 +76,9 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
+  // Store school_id from profile data (for security)
+  const [userSchoolId, setUserSchoolId] = useState<string | null>(null);
+
   // Load profile data from Supabase
   useEffect(() => {
     loadProfileData();
