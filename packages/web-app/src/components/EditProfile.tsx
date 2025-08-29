@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { DebugOverlay } from '../debug';
+import { supabase } from '../lib/supabase';
 
 interface EditProfileProps {
   onClose: () => void;
@@ -65,46 +66,213 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   const [newSkill, setNewSkill] = useState('');
   const [newSubject, setNewSubject] = useState('');
 
-  // Load profile data (mock for now)
+  // Load profile data from Supabase
   useEffect(() => {
-    // TODO: Load actual profile data from Supabase
-    setProfile({
-      first_name: user?.name?.split(' ')[0] || '',
-      last_name: user?.name?.split(' ')[1] || '',
-      date_of_birth: '1985-05-15',
-      gender: 'Weiblich',
-      profile_picture_url: '',
-      skills: ['Mathematik', 'Deutsch', 'Klassenleitung'],
-      kurzung: 'MU',
-      subjects_stud: ['Mathematik', 'Physik'],
-      contacts: {
-        emails: [
-          { id: '1', type: 'Arbeit', value: user?.email || '', is_primary: true },
-          { id: '2', type: 'Privat', value: 'privat@example.com', is_primary: false }
-        ],
-        phones: [
-          { id: '1', type: 'Mobil', value: '+49 171 123 4567', is_primary: true },
-          { id: '2', type: 'Festnetz', value: '+49 30 123 4567', is_primary: false }
-        ],
-        addresses: [
-          { id: '1', type: 'Wohnadresse', value: 'Musterstraße 123, 12345 Berlin', is_primary: true }
-        ]
-      }
-    });
+    loadProfileData();
   }, [user]);
+
+  const loadProfileData = async () => {
+    try {
+      // Get current user auth
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      // Get profile ID from user metadata
+      const profileId = authUser.user_metadata?.profile_id;
+      if (!profileId) return;
+
+      // Load user profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', profileId)
+        .single();
+
+      if (profileError) {
+        console.error('Error loading profile:', profileError);
+        return;
+      }
+
+      // Load staff info
+      const { data: staffData, error: staffError } = await supabase
+        .from('profile_info_staff')
+        .select('*')
+        .eq('profile_id', profileId)
+        .single();
+
+      if (staffError && staffError.code !== 'PGRST116') { // Ignore "not found" error
+        console.error('Error loading staff info:', staffError);
+      }
+
+      // Load contacts
+      const { data: contactsData, error: contactsError } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('profile_id', profileId)
+        .order('created_at', { ascending: true });
+
+      if (contactsError) {
+        console.error('Error loading contacts:', contactsError);
+      }
+
+      // Organize contacts by type
+      const organizedContacts = {
+        emails: [],
+        phones: [],
+        addresses: []
+      };
+
+      contactsData?.forEach(contact => {
+        const contactItem = {
+          id: contact.id,
+          type: contact.label || contact.type,
+          value: contact.value,
+          is_primary: contact.is_primary
+        };
+
+        if (contact.type === 'email') {
+          organizedContacts.emails.push(contactItem);
+        } else if (contact.type === 'phone') {
+          organizedContacts.phones.push(contactItem);
+        } else if (contact.type === 'address') {
+          organizedContacts.addresses.push(contactItem);
+        }
+      });
+
+      // Set profile state
+      setProfile({
+        first_name: profileData?.first_name || '',
+        last_name: profileData?.last_name || '',
+        date_of_birth: profileData?.date_of_birth || '',
+        gender: profileData?.gender || '',
+        profile_picture_url: profileData?.profile_picture_url || '',
+        skills: staffData?.skills || [],
+        kurzung: staffData?.kurzung || '',
+        subjects_stud: staffData?.subjects_stud || [],
+        contacts: organizedContacts
+      });
+
+    } catch (error) {
+      console.error('Error loading profile data:', error);
+    }
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // TODO: Save to Supabase
-      console.log('Saving profile:', profile);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      const profileId = authUser.user_metadata?.profile_id;
+      if (!profileId) return;
+
+      // Update user_profiles table
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .update({
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          date_of_birth: profile.date_of_birth || null,
+          gender: profile.gender || null,
+          profile_picture_url: profile.profile_picture_url || null
+        })
+        .eq('id', profileId);
+
+      if (profileError) {
+        throw new Error('Failed to update profile: ' + profileError.message);
+      }
+
+      // Update or insert staff info
+      const { error: staffError } = await supabase
+        .from('profile_info_staff')
+        .upsert({
+          profile_id: profileId,
+          school_id: authUser.user_metadata?.school_id,
+          skills: profile.skills,
+          kurzung: profile.kurzung || null,
+          subjects_stud: profile.subjects_stud
+        })
+        .eq('profile_id', profileId);
+
+      if (staffError) {
+        throw new Error('Failed to update staff info: ' + staffError.message);
+      }
+
+      // Save contacts
+      await saveContacts(profileId);
+
       setIsEditing(false);
+
+      // Show success message (you might want to add a toast notification here)
+      console.log('Profile saved successfully');
+
     } catch (error) {
       console.error('Failed to save profile:', error);
+      alert('Fehler beim Speichern: ' + error.message);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const saveContacts = async (profileId: string) => {
+    // Delete existing contacts and re-insert (simple approach)
+    const { error: deleteError } = await supabase
+      .from('contacts')
+      .delete()
+      .eq('profile_id', profileId);
+
+    if (deleteError) {
+      throw new Error('Failed to delete old contacts: ' + deleteError.message);
+    }
+
+    // Prepare new contacts
+    const contactsToInsert = [];
+
+    profile.contacts.emails.forEach(email => {
+      contactsToInsert.push({
+        profile_id: profileId,
+        profile_type: 'staff',
+        type: 'email',
+        label: email.type,
+        value: email.value,
+        is_primary: email.is_primary,
+        school_id: null // Will be set by trigger
+      });
+    });
+
+    profile.contacts.phones.forEach(phone => {
+      contactsToInsert.push({
+        profile_id: profileId,
+        profile_type: 'staff',
+        type: 'phone',
+        label: phone.type,
+        value: phone.value,
+        is_primary: phone.is_primary,
+        school_id: null // Will be set by trigger
+      });
+    });
+
+    profile.contacts.addresses.forEach(address => {
+      contactsToInsert.push({
+        profile_id: profileId,
+        profile_type: 'staff',
+        type: 'address',
+        label: address.type,
+        value: address.value,
+        is_primary: address.is_primary,
+        school_id: null // Will be set by trigger
+      });
+    });
+
+    // Insert new contacts
+    if (contactsToInsert.length > 0) {
+      const { error: insertError } = await supabase
+        .from('contacts')
+        .insert(contactsToInsert);
+
+      if (insertError) {
+        throw new Error('Failed to insert contacts: ' + insertError.message);
+      }
     }
   };
 
