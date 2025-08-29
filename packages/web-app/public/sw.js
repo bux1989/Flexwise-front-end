@@ -47,8 +47,30 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve cached resources when offline
 self.addEventListener('fetch', (event) => {
+  // Skip HMR and dev server requests
+  if (event.request.url.includes('@vite/client') ||
+      event.request.url.includes('__vite_ping') ||
+      event.request.url.includes('/@fs/') ||
+      event.request.url.includes('/@id/') ||
+      event.request.url.includes('/@react-refresh') ||
+      event.request.url.includes('.hot-update.')) {
+    return
+  }
+
+  // Skip WebSocket upgrade requests
+  if (event.request.headers.get('upgrade') === 'websocket') {
+    return
+  }
+
   // Only handle GET requests
   if (event.request.method !== 'GET') {
+    return
+  }
+
+  // Skip dev server localhost requests in development
+  if (event.request.url.includes('localhost:') ||
+      event.request.url.includes('127.0.0.1:') ||
+      event.request.url.includes('.fly.dev')) {
     return
   }
 
