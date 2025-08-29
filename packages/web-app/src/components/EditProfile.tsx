@@ -363,22 +363,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
       const profileId = authUser.user_metadata?.profile_id;
       if (!profileId) return;
 
-      // Update user_profiles table
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .update({
-          first_name: profile.first_name,
-          last_name: profile.last_name,
-          date_of_birth: profile.date_of_birth || null,
-          gender: profile.gender || null,
-          profile_picture_url: profile.profile_picture_url || null
-        })
-        .eq('id', profileId);
-
-      if (profileError) {
-        throw new Error('Failed to update profile: ' + profileError.message);
-      }
-
       // Save everything using PostgreSQL function (profile, staff, and contacts)
       await saveProfileWithFunction(profileId);
 
