@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { Navigation } from '../../../components/Navigation';
 import { AttendanceMatrix } from '../../../components/AttendanceMatrix';
@@ -17,6 +17,11 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ user, onShowSettings, showSettings = false, onBackToDashboard }: AdminDashboardProps) {
   const [currentView, setCurrentView] = useState(showSettings ? 'einstellungen' : 'home');
+
+  // Update currentView when showSettings changes
+  React.useEffect(() => {
+    setCurrentView(showSettings ? 'einstellungen' : 'home');
+  }, [showSettings]);
 
   const handleLogout = async () => {
     try {
