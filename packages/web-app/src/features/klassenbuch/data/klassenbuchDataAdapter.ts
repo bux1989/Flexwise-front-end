@@ -275,62 +275,163 @@ interface AttendanceCompletion {
   completionPercentage: number;
 }
 
-// Check attendance completion using student_attendance_logs table
-async function checkAttendanceCompletion(lessonId: string, totalStudents: number): Promise<AttendanceCompletion> {
+// Optimized: Batch attendance checking for all lessons at once
+async function batchCheckAttendanceCompletion(lessonIds: string[]): Promise<Map<string, number>> {
   try {
-    console.log('🔍 Checking attendance completion for lesson:', lessonId, 'with', totalStudents, 'total students');
+    console.log('🚀 Batch checking attendance for', lessonIds.length, 'lessons');
 
-    // Count actual attendance records in student_attendance_logs
-    const { count: attendanceCount, error: attendanceError } = await supabase
+    if (lessonIds.length === 0) {
+      return new Map();
+    }
+
+    // Single query to get attendance counts for all lessons
+    const { data: attendanceCounts, error: attendanceError } = await supabase
       .from('student_attendance_logs')
-      .select('id', { count: 'exact' })
-      .eq('lesson_id', lessonId);
+      .select('lesson_id')
+      .in('lesson_id', lessonIds);
 
     if (attendanceError) {
-      console.error('❌ Error counting attendance records:', {
+      console.error('❌ Error fetching batch attendance records:', {
         message: attendanceError.message,
         code: attendanceError.code,
         details: attendanceError.details,
         hint: attendanceError.hint
       });
-      return { status: 'missing', studentsWithAttendance: 0, totalStudents, completionPercentage: 0 };
+      return new Map();
     }
 
-    const studentsWithAttendance = attendanceCount || 0;
-    const completionPercentage = totalStudents > 0 ? (studentsWithAttendance / totalStudents) * 100 : 0;
+    // Count attendance records per lesson
+    const attendanceMap = new Map<string, number>();
 
-    // Determine status based on completion
-    let status: 'complete' | 'incomplete' | 'missing';
-    if (studentsWithAttendance === 0) {
-      status = 'missing';
-    } else if (studentsWithAttendance >= totalStudents) {
-      status = 'complete'; // Green checkmark - all students marked
-    } else {
-      status = 'incomplete'; // Orange warning - partial attendance
-    }
+    // Initialize all lessons with 0
+    lessonIds.forEach(id => attendanceMap.set(id, 0));
 
-    console.log(`📊 Attendance completion for lesson ${lessonId}:`, {
-      status,
-      studentsWithAttendance,
-      totalStudents,
-      completionPercentage: Math.round(completionPercentage)
+    // Count actual attendance records
+    (attendanceCounts || []).forEach(record => {
+      const current = attendanceMap.get(record.lesson_id) || 0;
+      attendanceMap.set(record.lesson_id, current + 1);
     });
 
-    return {
-      status,
-      studentsWithAttendance,
-      totalStudents,
-      completionPercentage
-    };
+    console.log('✅ Batch attendance check completed:', attendanceMap.size, 'lessons processed');
+    return attendanceMap;
 
   } catch (error) {
-    console.error('💥 Error checking attendance completion:', {
-      message: error?.message || 'Unknown error',
-      stack: error?.stack,
-      error: error
-    });
-    return { status: 'missing', studentsWithAttendance: 0, totalStudents, completionPercentage: 0 };
+    console.error('💥 Error in batch attendance check:', error);
+    return new Map();
   }
+}
+
+// Optimized lesson transformation with batched attendance checking
+async function transformDatabaseLessonsOptimized(dbLessons: DatabaseLesson[], schoolDays: SchoolDay[]): Promise<Lesson[]> {
+  if (dbLessons.length === 0) {
+    return [];
+  }
+
+  console.log('🚀 Starting optimized lesson transformation for', dbLessons.length, 'lessons');
+
+  // Batch attendance checking for lessons that have attendance_taken = true
+  const lessonsWithAttendance = dbLessons.filter(lesson => lesson.attendance_taken);
+  const attendanceCounts = await batchCheckAttendanceCompletion(
+    lessonsWithAttendance.map(lesson => lesson.lesson_id)
+  );
+
+  // Transform all lessons using the batched attendance data
+  return dbLessons.map(dbLesson => {
+    const now = new Date();
+    const lessonStart = new Date(dbLesson.start_datetime);
+    const lessonEnd = new Date(dbLesson.end_datetime);
+
+    // Determine if lesson is past, ongoing, or future
+    const isPast = lessonEnd < now;
+    const isOngoing = lessonStart <= now && lessonEnd >= now;
+
+    // Get day name using the school's day mapping
+    const lessonDayNumber = lessonStart.getDay();
+    const schoolDay = schoolDays.find(sd => sd.day.day_number === lessonDayNumber);
+    const dayName = schoolDay?.day.name_de || schoolDay?.day.name_en || 'Unbekannt';
+
+    // Format time
+    const timeString = `${lessonStart.toTimeString().substring(0, 5)}-${lessonEnd.toTimeString().substring(0, 5)}`;
+
+    // Determine attendance status with optimized checking
+    let attendanceStatus: 'complete' | 'missing' | 'incomplete' | 'future' = 'future';
+
+    if (isPast || isOngoing) {
+      if (dbLesson.attendance_taken) {
+        const studentsWithAttendance = attendanceCounts.get(dbLesson.lesson_id) || 0;
+        const totalStudents = dbLesson.student_count || 1;
+
+        if (studentsWithAttendance === 0) {
+          attendanceStatus = 'missing';
+        } else if (studentsWithAttendance >= totalStudents) {
+          attendanceStatus = 'complete';
+        } else {
+          attendanceStatus = 'incomplete';
+        }
+
+        console.log(`📊 ${dbLesson.lesson_id} (${dbLesson.subject_name}): ${studentsWithAttendance}/${totalStudents} = ${attendanceStatus}`);
+      } else {
+        attendanceStatus = 'missing';
+      }
+    }
+
+    // Get subject color
+    const subjectColors: Record<string, string> = {
+      'Deutsch': 'bg-emerald-100 text-emerald-800',
+      'Mathematik': 'bg-green-100 text-green-800',
+      'Englisch': 'bg-blue-100 text-blue-800',
+      'DAZ': 'bg-red-100 text-red-800',
+      'Sport': 'bg-yellow-100 text-yellow-800',
+      'Physik': 'bg-cyan-100 text-cyan-800',
+      'Chemie': 'bg-violet-100 text-violet-800',
+      'Biologie': 'bg-lime-100 text-lime-800',
+      'Geschichte': 'bg-amber-100 text-amber-800',
+      'Musik': 'bg-pink-100 text-pink-800',
+      'Kunst': 'bg-orange-100 text-orange-800',
+      'Ethik': 'bg-teal-100 text-teal-800',
+      'Französisch': 'bg-rose-100 text-rose-800',
+      'Politik': 'bg-red-100 text-red-800'
+    };
+
+    const subjectColor = subjectColors[dbLesson.subject_name] || 'bg-gray-100 text-gray-800';
+
+    return {
+      id: dbLesson.lesson_id,
+      period: dbLesson.period_number || 1,
+      day: dayName,
+      time: timeString,
+      subject: dbLesson.subject_abbreviation || dbLesson.subject_name.substring(0, 2).toUpperCase(),
+      teacher: dbLesson.teacher_names[0] || 'N/A',
+      room: dbLesson.room_name || '',
+      attendanceStatus,
+      isPast,
+      isOngoing: isOngoing,
+      subjectColor,
+      status: dbLesson.is_cancelled ? 'cancelled' : (dbLesson.lesson_type === 'substitute' ? 'teacher_changed' : 'normal'),
+      adminComment: dbLesson.notes || undefined,
+      classId: dbLesson.class_id || dbLesson.course_id || '',
+      startTime: lessonStart.toISOString(),
+      endTime: lessonEnd.toISOString()
+    };
+  });
+}
+
+// Legacy individual lesson checking - kept for single lesson fetches
+async function checkAttendanceCompletion(lessonId: string, totalStudents: number): Promise<AttendanceCompletion> {
+  const attendanceMap = await batchCheckAttendanceCompletion([lessonId]);
+  const studentsWithAttendance = attendanceMap.get(lessonId) || 0;
+  const completionPercentage = totalStudents > 0 ? (studentsWithAttendance / totalStudents) * 100 : 0;
+
+  let status: 'complete' | 'incomplete' | 'missing';
+  if (studentsWithAttendance === 0) {
+    status = 'missing';
+  } else if (studentsWithAttendance >= totalStudents) {
+    status = 'complete';
+  } else {
+    status = 'incomplete';
+  }
+
+  return { status, studentsWithAttendance, totalStudents, completionPercentage };
 }
 
 /**
