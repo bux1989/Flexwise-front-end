@@ -64,14 +64,6 @@ export default function LoadingScreen({ onComplete, minDisplayTime = 2000 }) {
           </div>
         </div>
 
-        {/* Logo icon */}
-        <div className="logo-icon-container">
-          <img
-            src="/icon-192.png"
-            alt="FlexWise"
-            className="logo-icon"
-          />
-        </div>
 
 
         {/* Loading dots */}
