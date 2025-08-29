@@ -411,7 +411,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
                                     <div className="flex items-center justify-between">
                                       <div className="flex items-center space-x-1">
                                         <span className={`font-semibold ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                                          {lesson.subject}
+                                          {isMobile ? (lesson.subjectAbbreviation || lesson.subject) : lesson.subject}
                                         </span>
                                         {getChangeIcon(lesson)}
                                         {getCommentIcon(lesson)}
