@@ -19,10 +19,12 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
     try {
       console.log('📋 Fetching bulletin posts for school:', schoolId)
       
-      // Only show posts from the last 7 days or posts that are specifically scheduled for today/future
-      const sevenDaysAgo = new Date()
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-      const sevenDaysAgoISO = sevenDaysAgo.toISOString()
+      // Only show posts from today or posts scheduled to display today
+      const today = new Date()
+      const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+      const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+      const startOfTodayISO = startOfToday.toISOString()
+      const endOfTodayISO = endOfToday.toISOString()
 
       const { data, error } = await supabase
         .from('bulletin_posts')
@@ -41,7 +43,8 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
         .eq('school_id', schoolId)
         .eq('is_public', true)
         .or('expires_at.is.null,expires_at.gte.now()')
-        .or(`created_at.gte.${sevenDaysAgoISO},display_from.gte.${sevenDaysAgoISO}`)
+        .or(`created_at.gte.${startOfTodayISO},display_from.gte.${startOfTodayISO}`)
+        .or(`created_at.lt.${endOfTodayISO},display_from.lt.${endOfTodayISO}`)
         .order('priority', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(10)
