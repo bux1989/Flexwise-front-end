@@ -79,6 +79,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   // Load profile data from Supabase
   useEffect(() => {
     loadProfileData();
+    checkOtpStatus();
   }, [user]);
 
   // Helper function to map database contact types to German display labels
