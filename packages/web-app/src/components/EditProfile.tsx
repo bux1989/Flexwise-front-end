@@ -535,6 +535,39 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
     }
   };
 
+  // Setup TOTP (authenticator app)
+  const setupTotp = async () => {
+    setIsEnrollingTotp(true);
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      // Generate TOTP factor
+      const { data, error } = await supabase.auth.mfa.enroll({
+        factorType: 'totp',
+        friendlyName: `Flexwise 2FA - ${authUser.email}`
+      });
+
+      if (error) {
+        console.error('Error enrolling TOTP:', error);
+        alert('Fehler beim Einrichten der Authenticator-App: ' + error.message);
+        return;
+      }
+
+      setTotpSecret(data.totp.secret);
+      setTotpQrCode(data.totp.qr_code);
+      setOtpMethod('totp');
+
+      alert('QR-Code generiert! Scannen Sie ihn mit Ihrer Authenticator-App und geben Sie dann den 6-stelligen Code ein.');
+
+    } catch (error) {
+      console.error('Error setting up TOTP:', error);
+      alert('Fehler beim Einrichten der Authenticator-App: ' + error.message);
+    } finally {
+      setIsEnrollingTotp(false);
+    }
+  };
+
   // Send OTP code via email
   const sendEmailOtp = async () => {
     setIsSendingOtp(true);
