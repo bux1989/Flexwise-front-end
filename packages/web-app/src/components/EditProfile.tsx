@@ -243,9 +243,10 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         contact.type === 'email' && contact.value === authUser.email
       );
 
-      if (!authEmailExists && authUser.email && !isCreatingContact) {
+      if (!authEmailExists && authUser.email && !isCreatingContact && !isGloballyCreatingContact(profileId, authUser.email)) {
         console.log('📧 Auth email not found in contacts, creating:', authUser.email);
         setIsCreatingContact(true);
+        setGloballyCreatingContact(profileId, authUser.email, true);
 
         try {
           // Double-check for duplicates before inserting
@@ -259,12 +260,14 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           if (checkError) {
             console.error('💥 Error checking existing contacts:', checkError);
             setIsCreatingContact(false);
+            setGloballyCreatingContact(profileId, authUser.email, false);
             return;
           }
 
           if (existingContacts && existingContacts.length > 0) {
             console.log('📧 Auth email already exists, skipping creation');
             setIsCreatingContact(false);
+            setGloballyCreatingContact(profileId, authUser.email, false);
             return;
           }
 
