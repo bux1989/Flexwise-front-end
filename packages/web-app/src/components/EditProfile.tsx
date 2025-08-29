@@ -466,7 +466,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           .insert(contactsToInsert);
 
         if (insertError) {
-          console.error('❌ Error inserting contacts:', {
+          console.error('�� Error inserting contacts:', {
             code: insertError.code,
             message: insertError.message,
             details: insertError.details,
@@ -714,14 +714,26 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
     }));
   };
 
-  const removeContact = (type: 'emails' | 'phones' | 'addresses', id: string) => {
-    // Prevent deletion of primary email
+  const removeContact = async (type: 'emails' | 'phones' | 'addresses', id: string) => {
+    // Prevent deletion of auth user email and primary email
     if (type === 'emails') {
       const emailToDelete = profile.contacts.emails.find(email => email.id === id);
+
+      // Get current auth user email to protect it
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+
+      // Prevent deletion of auth user's login email
+      if (emailToDelete?.value === authUser?.email) {
+        alert('Diese E-Mail-Adresse kann nicht gelöscht werden, da sie für die Anmeldung verwendet wird.');
+        return;
+      }
+
+      // Prevent deletion of primary email
       if (emailToDelete?.is_primary) {
         alert('Die primäre E-Mail-Adresse kann nicht gelöscht werden. Setzen Sie zunächst eine andere E-Mail als primär.');
         return;
       }
+
       // Also prevent deletion if it's the only email
       if (profile.contacts.emails.length <= 1) {
         alert('Sie müssen mindestens eine E-Mail-Adresse haben.');
