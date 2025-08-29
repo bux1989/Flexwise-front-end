@@ -597,7 +597,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       Kontaktinformationen
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-3">
                     {/* Email Addresses Section */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
