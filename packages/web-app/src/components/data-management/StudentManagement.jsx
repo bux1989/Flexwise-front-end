@@ -345,6 +345,23 @@ export default function StudentManagement({ onBack }) {
   // Get unique classes for filter
   const availableClasses = [...new Set(students.map(student => student.class))].sort()
 
+  // Helper functions for visual indicators
+  const hasValidPhotoPermission = (student) => {
+    return student.photoPermissions?.some(permission =>
+      new Date(permission.validUntil) > new Date()
+    ) || false
+  }
+
+  const hasAllergies = (student) => {
+    return student.allergies?.length > 0 || false
+  }
+
+  const getButStatus = (student) => {
+    if (!student.but?.enabled) return null
+    const isValid = new Date(student.but.validUntil) > new Date()
+    return { isValid, type: student.but.type }
+  }
+
   const filteredStudents = students.filter(student => {
     const matchesSearch = `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.class.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -403,23 +420,6 @@ export default function StudentManagement({ onBack }) {
     setSelectedStudent(null)
     setShowDetailView(false)
     setIsEditing(false)
-  }
-
-  // Helper functions for visual indicators
-  const hasValidPhotoPermission = (student) => {
-    return student.photoPermissions?.some(permission =>
-      new Date(permission.validUntil) > new Date()
-    ) || false
-  }
-
-  const hasAllergies = (student) => {
-    return student.allergies?.length > 0 || false
-  }
-
-  const getButStatus = (student) => {
-    if (!student.but?.enabled) return null
-    const isValid = new Date(student.but.validUntil) > new Date()
-    return { isValid, type: student.but.type }
   }
 
   const handleSaveStudent = (updatedStudent) => {
