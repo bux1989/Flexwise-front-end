@@ -22,8 +22,9 @@ export function SystemStats({ stats, loading }: SystemStatsProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-      <div className="bg-white overflow-hidden shadow rounded-lg">
+    <DebugOverlay name="SystemStats">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div className="bg-white overflow-hidden shadow rounded-lg">
         <div className="p-5">
           <div className="flex items-center">
             <div className="flex-1">
@@ -87,6 +88,7 @@ export function SystemStats({ stats, loading }: SystemStatsProps) {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }
