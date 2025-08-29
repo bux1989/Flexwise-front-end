@@ -19,6 +19,7 @@ import {
   GraduationCap
 } from 'lucide-react'
 import StudentDetailView from './StudentDetailView'
+import StudentEditView from './StudentEditView'
 
 export default function StudentManagement({ onBack }) {
   const [searchTerm, setSearchTerm] = useState('')
