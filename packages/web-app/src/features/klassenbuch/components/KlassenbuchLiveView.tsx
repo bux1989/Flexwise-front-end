@@ -89,6 +89,25 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
             schoolId: currentSchoolId,
             weekStart: weekStart.toDateString()
           });
+
+          // For testing - add a dummy lesson to verify the UI is working
+          console.log('🧪 Adding test lesson to verify UI functionality');
+          const testLesson = {
+            id: 'test-1',
+            period: 1,
+            day: 'Montag',
+            time: '08:00-08:45',
+            subject: 'Test',
+            teacher: 'Test Teacher',
+            room: 'Test Room',
+            attendanceStatus: 'future' as const,
+            isPast: false,
+            isOngoing: false,
+            subjectColor: 'bg-blue-100 text-blue-800',
+            status: 'normal' as const,
+            classId: selectedClass.id
+          };
+          setClassTimetable([testLesson]);
         }
 
       } catch (error) {
