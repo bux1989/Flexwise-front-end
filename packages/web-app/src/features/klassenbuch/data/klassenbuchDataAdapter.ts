@@ -89,7 +89,21 @@ export function getKlassenbuchSummary() {
 }
 
 // Import Supabase client
-import { supabase } from '../../../lib/supabase.js';
+import { supabase, getCurrentUserProfile } from '../../../lib/supabase.js';
+
+/**
+ * Get the current user's school ID
+ * @returns Promise<string | null> - The school ID or null if not found
+ */
+export async function getCurrentSchoolId(): Promise<string | null> {
+  try {
+    const userProfile = await getCurrentUserProfile();
+    return userProfile?.school_id || null;
+  } catch (error) {
+    console.error('💥 Error getting current school ID:', error);
+    return null;
+  }
+}
 
 /**
  * Get schedule periods for a school filtered by block_type
