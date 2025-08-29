@@ -66,6 +66,16 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   const [newSkill, setNewSkill] = useState('');
   const [newSubject, setNewSubject] = useState('');
 
+  // OTP state
+  const [showOtpSetup, setShowOtpSetup] = useState(false);
+  const [otpMethod, setOtpMethod] = useState<'email' | 'sms' | null>(null);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpPhone, setOtpPhone] = useState('');
+  const [isOtpEnabled, setIsOtpEnabled] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+
   // Load profile data from Supabase
   useEffect(() => {
     loadProfileData();
