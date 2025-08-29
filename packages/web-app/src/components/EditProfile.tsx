@@ -750,7 +750,22 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         });
 
         // Provide specific error messages based on the actual error
-        if (error.message.includes('Signups not allowed for otp')) {
+        if (error.message.includes('Unable to get SMS provider')) {
+          alert(`🔧 TWILIO KONFIGURATION FEHLT:
+
+Der SMS-Provider (Twilio) ist nicht richtig konfiguriert in Supabase.
+
+Benötigte Schritte im Supabase Dashboard:
+1. Gehe zu Authentication → Settings → SMS Auth
+2. Aktiviere "Enable phone sign up"
+3. Konfiguriere Twilio:
+   - Account SID: [Twilio Account SID]
+   - Auth Token: [Twilio Auth Token]
+   - Phone Number: [Deine Twilio Nummer]
+
+Status: Telefonnummer (${formattedPhone}) ist mit dem Benutzer verknüpft ✅
+Fehler: SMS-Provider nicht verfügbar ❌`);
+        } else if (error.message.includes('Signups not allowed for otp')) {
           alert('SMS OTP ist in der Supabase-Konfiguration deaktiviert. Der Administrator muss in den Supabase Auth-Einstellungen "Enable phone signup" aktivieren.');
         } else if (error.message.includes('Phone number is invalid') || error.message.includes('422')) {
           alert(`Ungültiges Telefonnummer-Format: ${formattedPhone}\nBitte verwenden Sie das internationale Format (z.B. +4915912345678)`);
@@ -759,7 +774,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         } else if (error.message.includes('SMS provider') || error.message.includes('Twilio')) {
           alert('SMS-Provider ist nicht konfiguriert. Der Administrator muss Twilio oder einen anderen SMS-Service in Supabase einrichten.');
         } else {
-          alert(`SMS-OTP Fehler: ${error.message}\nBitte kontaktieren Sie den Administrator.`);
+          alert(`SMS-OTP Fehler: ${error.message}\n\nBitte kontaktieren Sie den Administrator oder prüfen Sie die Twilio-Konfiguration in Supabase.`);
         }
       } else {
         console.log('✅ SMS OTP sent successfully');
