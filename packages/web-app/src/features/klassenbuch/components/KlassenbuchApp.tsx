@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '../../../components/ui/button';
+import { DebugOverlay } from '../../../debug';
 import { KlassenbuchHeader } from './KlassenbuchHeader';
 import { KlassenbuchLiveView } from './KlassenbuchLiveView';
 import { KlassenbuchStatisticsView } from './KlassenbuchStatisticsView';
@@ -76,7 +77,8 @@ export function KlassenbuchApp({
   };
 
   return (
-    <div className={hideHeader ? "" : "min-h-screen bg-background"}>
+    <DebugOverlay name="KlassenbuchApp">
+      <div className={hideHeader ? "" : "min-h-screen bg-background"}>
       {!hideHeader && (
         <KlassenbuchHeader
           currentView={currentView}
@@ -107,6 +109,7 @@ export function KlassenbuchApp({
           />
         )}
       </main>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }
