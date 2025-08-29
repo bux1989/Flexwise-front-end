@@ -445,6 +445,13 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         contactsCount: contactsData.length
       });
 
+      console.log('📞 Detailed contact data being sent:', contactsData);
+      console.log('📊 Profile contacts state:', {
+        emails: profile.contacts.emails,
+        phones: profile.contacts.phones,
+        addresses: profile.contacts.addresses
+      });
+
       // Call the PostgreSQL function
       const { data, error } = await supabase.rpc('save_user_profile_complete_react', {
         p_profile_id: profileId,
