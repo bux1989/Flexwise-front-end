@@ -151,12 +151,20 @@ function App() {
 
   // PWA Startup screen
   useEffect(() => {
-    // Show startup screen for PWA experience
+    // Start login transition before startup screen ends for crossfade effect
+    const loginTransitionTimer = setTimeout(() => {
+      setShowLoginTransition(true)
+    }, 1900) // Start login fade-in 600ms before startup ends
+
+    // Hide startup screen
     const startupTimer = setTimeout(() => {
       setShowStartupScreen(false)
     }, 2500) // Show for 2.5 seconds
 
-    return () => clearTimeout(startupTimer)
+    return () => {
+      clearTimeout(loginTransitionTimer)
+      clearTimeout(startupTimer)
+    }
   }, [])
 
   // Authentication setup
