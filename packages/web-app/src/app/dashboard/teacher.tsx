@@ -570,7 +570,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   // No early return for Klassenbuch - show it under the header instead
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DebugOverlay name="TeacherDashboard">
+      <div className="min-h-screen bg-gray-50">
       <PWAInstallBannerWithInstructions />
       <Header
         currentTeacher={isLoadingProfile ? "Wird geladen..." : currentTeacher}
@@ -1038,6 +1039,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }

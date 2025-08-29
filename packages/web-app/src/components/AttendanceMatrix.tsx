@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { DebugOverlay } from '../debug';
 import { Badge } from './ui/badge';
 import { X, Minus, Check } from 'lucide-react';
 
@@ -90,7 +91,8 @@ export function AttendanceMatrix({ onClassClick, onStatusClick }: AttendanceMatr
   };
 
   return (
-    <Card className="h-full">
+    <DebugOverlay name="AttendanceMatrix">
+      <Card className="h-full">
       <CardHeader>
         <CardTitle>Anwesenheit</CardTitle>
       </CardHeader>
@@ -172,6 +174,7 @@ export function AttendanceMatrix({ onClassClick, onStatusClick }: AttendanceMatr
           </div>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </DebugOverlay>
   );
 }
