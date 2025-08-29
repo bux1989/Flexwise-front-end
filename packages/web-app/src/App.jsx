@@ -40,7 +40,7 @@ const extractUserRole = (userRoles, error) => {
     console.log('✅ Roles found:', roleNames)
     return role
   } else {
-    console.log('⚠️ No roles found, using fallback')
+    console.log('⚠��� No roles found, using fallback')
     return DEFAULT_ROLE
   }
 }
@@ -169,8 +169,8 @@ function App() {
 
   // Authentication setup
   useEffect(() => {
-    // Only start auth check after startup screen
-    if (showStartupScreen) return
+    // Only start auth check when login transition begins
+    if (!showLoginTransition) return
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
