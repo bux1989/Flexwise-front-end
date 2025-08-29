@@ -1,38 +1,37 @@
-# React Migration Manual: From Monolithic to Feature-Driven Architecture
+# Figma-to-Features Migration Manual
 
 ## 📋 Overview
 
-This manual provides step-by-step instructions for migrating complex React components from a monolithic structure to our feature-driven architecture. It covers common pitfalls, troubleshooting steps, and best practices.
+This manual provides step-by-step instructions for migrating Figma templates into our feature-driven architecture. It covers two primary migration strategies: wholesale replacement and selective extraction, along with best practices for maintaining code quality and functionality.
 
 ## 🎯 Migration Goals
 
-- **Modular Architecture**: Break down monolithic components into reusable features
-- **Shared Resources**: Centralize common utilities, data, and components
-- **Clean Imports**: Establish consistent import patterns
-- **Maintainable Code**: Create organized, scalable component structure
+- **Figma Integration**: Import Figma templates into production features
+- **Feature Architecture**: Maintain our established feature-driven structure
+- **Debug Integration**: Add systematic debug overlays during import
+- **Staged Data Migration**: Keep mock data initially, migrate to Supabase step-by-step
+- **Design System Compliance**: Convert styling only when explicitly instructed
 
-## 📁 Project Structure Overview
+## 📁 Current Project Structure
 
 ```
-packages/
-├── shared/                    # Shared utilities and data
-│   ├── data/
-│   │   └── mockData.ts       # Centralized mock data
-│   ├── domains/              # Business logic domains
-│   │   ├── academic/
-│   │   ├── attendance/
-│   │   └── management/
-│   └── utils/                # Shared utility functions
-│
-└── web-app/                  # Main application
-    ├── src/
-    │   ├── app/              # Main application pages
-    │   ├── components/       # Shared UI components
-    │   └── features/         # Feature modules
-    │       ├── lessons/
-    │       ├── communications/
-    │       ├── task-management/
-    │       └── user-management/
+Root Level:
+├── figma_klassenbuch/         # Figma template → klassenbuch feature
+├── figma_teacher_dashboard/   # Figma template → lessons/task-management features
+├── figma_admin_page/          # Figma template → user-management feature
+├── figma_parent_page/         # Figma template → communications feature
+├── [future figma templates]   # Additional templates as needed
+└── packages/web-app/          # Main application
+    └── src/
+        ├── app/dashboard/     # Dashboard entry points
+        ├── components/        # Shared UI components
+        ├── features/          # 🎯 TARGET: Feature modules
+        │   ├── klassenbuch/
+        │   ├── lessons/
+        │   ├── communications/
+        │   ├── task-management/
+        │   └── user-management/
+        └── debug/             # Debug overlay system
 ```
 
 ## 🚀 Pre-Migration Checklist
