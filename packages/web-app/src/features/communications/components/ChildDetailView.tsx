@@ -433,7 +433,8 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <DebugOverlay name="ChildDetailView">
+      <div className="space-y-6">
       {/* Header */}
       <div className="bg-card rounded-lg border border-border px-4 py-3">
         <div className="flex items-center justify-between mb-2">
@@ -934,6 +935,7 @@ export function ChildDetailView({ child, onClose }: ChildDetailViewProps) {
           )}
         </section>
       </div>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }
