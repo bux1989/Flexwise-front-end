@@ -134,11 +134,11 @@
 @keyframes logoIntro {
   0% {
     opacity: 0;
-    transform: translateY(30px) scale(0.8);
+    transform: translateY(50px) scale(0.5);
   }
-  60% {
+  70% {
     opacity: 1;
-    transform: translateY(-5px) scale(1.05);
+    transform: translateY(-10px) scale(1.15);
   }
   100% {
     opacity: 1;
@@ -150,8 +150,14 @@
   0%, 100% {
     transform: scale(1);
   }
+  25% {
+    transform: scale(1.05);
+  }
   50% {
-    transform: scale(1.02);
+    transform: scale(1.08);
+  }
+  75% {
+    transform: scale(1.03);
   }
 }
 
