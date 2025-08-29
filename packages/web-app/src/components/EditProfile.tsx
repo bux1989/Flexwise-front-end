@@ -750,6 +750,38 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           setShowOtpSetup(false);
           setOtpCode('');
         }
+      } else if (otpMethod === 'totp') {
+        // Verify TOTP enrollment
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        const totpFactor = factors?.totp.find(factor => factor.status === 'unverified');
+
+        if (!totpFactor) {
+          alert('Kein TOTP-Faktor zum Verifizieren gefunden.');
+          return;
+        }
+
+        const { error } = await supabase.auth.mfa.verify({
+          factorId: totpFactor.id,
+          code: otpCode
+        });
+
+        if (error) {
+          console.error('Error verifying TOTP:', error);
+          if (error.message.includes('expired')) {
+            alert('Der Code ist abgelaufen. Generieren Sie einen neuen Code in Ihrer Authenticator-App.');
+          } else if (error.message.includes('invalid')) {
+            alert('Ungültiger Code. Bitte überprüfen Sie Ihre Authenticator-App.');
+          } else {
+            alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
+          }
+        } else {
+          alert('Authenticator-App erfolgreich eingerichtet!');
+          setIsOtpEnabled(true);
+          setShowOtpSetup(false);
+          setOtpCode('');
+          setTotpSecret('');
+          setTotpQrCode('');
+        }
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
