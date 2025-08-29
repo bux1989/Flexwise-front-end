@@ -684,79 +684,86 @@ export default function StudentEditView({ student, onBack, onSave }) {
 
         {/* Abholinfos Tab */}
         <TabsContent value="abholinfos" className="space-y-6">
-          {/* Weekly Pickup Schedule */}
-          <Card className="border-l-4 border-l-orange-500">
-            <CardHeader className="bg-orange-50 border-b border-orange-200">
+          {/* Regelung zur Heimgehzeit */}
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="bg-blue-50 border-b border-blue-200">
               <CardTitle className="flex items-center gap-2">
-                <Car className="w-5 h-5 text-orange-600" />
-                Wöchentliche Abholinfos
+                <Car className="w-5 h-5 text-blue-600" />
+                Regelung zur Heimgehzeit
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {Object.entries(editedStudent.pickupSchedule).map(([day, info]) => (
-                <div key={day} className="p-4 border border-orange-200 rounded-lg bg-orange-50 space-y-3">
-                  <h4 className="font-medium text-orange-900 capitalize">{day}</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm font-medium text-orange-900">Uhrzeit</label>
-                      <Input
-                        type="time"
-                        value={info.time}
-                        onChange={(e) => updatePickupSchedule(day, 'time', e.target.value)}
-                        className="mt-1"
-                      />
+            <CardContent className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                {Object.entries(editedStudent.pickupSchedule).map(([day, info]) => {
+                  const dayNames = {
+                    'montag': 'Montag',
+                    'dienstag': 'Dienstag',
+                    'mittwoch': 'Mittwoch',
+                    'donnerstag': 'Donnerstag',
+                    'freitag': 'Freitag'
+                  }
+
+                  return (
+                    <div key={day} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm font-medium text-gray-700 mb-3 text-center">
+                        {dayNames[day] || day}
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-gray-600 block mb-1">Art der Abholung</label>
+                          <select
+                            value={info.method}
+                            onChange={(e) => updatePickupSchedule(day, 'method', e.target.value)}
+                            className="w-full text-xs px-2 py-1 border border-input bg-white rounded text-center"
+                          >
+                            <option value="">Auswählen</option>
+                            <option value="Schulbus">Schulbus</option>
+                            <option value="Abholung">Abholung</option>
+                            <option value="Geht allein nach Hause">Geht allein nach Hause</option>
+                            <option value="Bus/ÖPNV">Bus/ÖPNV</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-medium text-gray-600 block mb-1">Uhrzeit</label>
+                          <Input
+                            type="time"
+                            value={info.time}
+                            onChange={(e) => updatePickupSchedule(day, 'time', e.target.value)}
+                            className="text-xs text-center h-7"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-medium text-gray-600 block mb-1">Hinweise</label>
+                          <Textarea
+                            value={info.notes || ''}
+                            onChange={(e) => updatePickupSchedule(day, 'notes', e.target.value)}
+                            className="text-xs h-12"
+                            placeholder="Optional..."
+                            rows={2}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-orange-900">Art der Abholung</label>
-                      <select
-                        value={info.method}
-                        onChange={(e) => updatePickupSchedule(day, 'method', e.target.value)}
-                        className="w-full mt-1 px-3 py-2 border border-input bg-background rounded-md"
-                      >
-                        <option value="">Bitte auswählen</option>
-                        <option value="Abholung durch Eltern">Abholung durch Eltern</option>
-                        <option value="Abholung durch Großeltern">Abholung durch Großeltern</option>
-                        <option value="Abholung durch andere Person">Abholung durch andere Person</option>
-                        <option value="Selbstständig nach Hause">Selbstständig nach Hause</option>
-                        <option value="Bus/ÖPNV">Bus/ÖPNV</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-orange-900">Abholberechtigte Personen (kommagetrennt)</label>
-                    <Input
-                      value={info.authorizedPersons?.join(', ') || ''}
-                      onChange={(e) => updatePickupSchedule(day, 'authorizedPersons', e.target.value.split(', ').filter(p => p.trim()))}
-                      className="mt-1"
-                      placeholder="z.B. Maria Mustermann, Peter Mustermann"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-orange-900">Hinweise</label>
-                    <Textarea
-                      value={info.notes || ''}
-                      onChange={(e) => updatePickupSchedule(day, 'notes', e.target.value)}
-                      className="mt-1"
-                      rows={2}
-                      placeholder="Zusätzliche Informationen..."
-                    />
-                  </div>
-                </div>
-              ))}
+                  )
+                })}
+              </div>
             </CardContent>
           </Card>
 
-          {/* Authorized Pickup Persons */}
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="bg-blue-50 border-b border-blue-200">
+          {/* Abholberechtigte */}
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader className="bg-green-50 border-b border-green-200">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-blue-600" />
-                  Abholberechtigte Personen
+                  <Users className="w-5 h-5 text-green-600" />
+                  Abholberechtigte
                 </CardTitle>
-                <Button 
-                  size="sm" 
-                  className="bg-blue-600 hover:bg-blue-700"
+                <Button
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700"
                   onClick={() => addItemToArray('authorizedPersons', {
                     name: '',
                     relationship: '',
@@ -769,64 +776,81 @@ export default function StudentEditView({ student, onBack, onSave }) {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {editedStudent.authorizedPersons.map((person, index) => (
-                <div key={index} className="p-3 border border-blue-200 rounded-lg bg-blue-50 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-blue-900">Person #{index + 1}</h4>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-2 hover:bg-red-50"
-                      onClick={() => removeItemFromArray('authorizedPersons', index)}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm font-medium text-blue-900">Name</label>
-                      <Input
-                        value={person.name}
-                        onChange={(e) => updateNestedField('authorizedPersons', index, 'name', e.target.value)}
-                        className="mt-1"
-                      />
+            <CardContent className="p-6">
+              {editedStudent.authorizedPersons.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {editedStudent.authorizedPersons.map((person, index) => (
+                    <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <User className="w-4 h-4 text-green-600" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">Person #{index + 1}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-1 hover:bg-red-50 h-6 w-6"
+                          onClick={() => removeItemFromArray('authorizedPersons', index)}
+                        >
+                          <X className="w-3 h-3 text-red-600" />
+                        </Button>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-gray-600 block mb-1">Name</label>
+                          <Input
+                            value={person.name}
+                            onChange={(e) => updateNestedField('authorizedPersons', index, 'name', e.target.value)}
+                            className="text-sm"
+                            placeholder="Vollständiger Name"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-medium text-gray-600 block mb-1">Beziehung</label>
+                          <Input
+                            value={person.relationship}
+                            onChange={(e) => updateNestedField('authorizedPersons', index, 'relationship', e.target.value)}
+                            className="text-sm"
+                            placeholder="z.B. Großmutter"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-medium text-gray-600 block mb-1">Telefonnummer</label>
+                          <Input
+                            value={person.phone}
+                            onChange={(e) => updateNestedField('authorizedPersons', index, 'phone', e.target.value)}
+                            className="text-sm"
+                            placeholder="+49 123 456789"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id={`id-required-${index}`}
+                            checked={person.idRequired}
+                            onChange={(e) => updateNestedField('authorizedPersons', index, 'idRequired', e.target.checked)}
+                            className="w-3 h-3"
+                          />
+                          <label htmlFor={`id-required-${index}`} className="text-xs text-gray-600">
+                            Ausweis erforderlich
+                          </label>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-blue-900">Beziehung</label>
-                      <Input
-                        value={person.relationship}
-                        onChange={(e) => updateNestedField('authorizedPersons', index, 'relationship', e.target.value)}
-                        className="mt-1"
-                        placeholder="z.B. Großmutter, Nachbar"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-blue-900">Telefonnummer</label>
-                      <Input
-                        value={person.phone}
-                        onChange={(e) => updateNestedField('authorizedPersons', index, 'phone', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={person.idRequired}
-                          onChange={(e) => updateNestedField('authorizedPersons', index, 'idRequired', e.target.checked)}
-                          className="w-4 h-4"
-                        />
-                        <span className="text-sm font-medium text-blue-900">Ausweis erforderlich</span>
-                      </label>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-              {editedStudent.authorizedPersons.length === 0 && (
-                <p className="text-muted-foreground text-center py-4">
-                  Keine abholberechtigten Personen eingetragen
-                </p>
+              ) : (
+                <div className="text-center py-8">
+                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">Keine abholberechtigten Personen eingetragen</p>
+                  <p className="text-gray-400 text-xs mt-1">Klicken Sie auf "Person hinzufügen" um zu beginnen</p>
+                </div>
               )}
             </CardContent>
           </Card>
