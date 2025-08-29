@@ -371,22 +371,22 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
   return (
     <DebugOverlay name="EditProfile">
-      <div className="p-1 lg:p-6">
-        <div className="bg-white rounded-lg border shadow-sm">
+      <div className="p-1 lg:p-6 min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="bg-white rounded-xl border shadow-lg overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center justify-between p-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 text-white hover:bg-white/20"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div className="flex items-center gap-2">
-                <User className="h-5 w-5 text-muted-foreground" />
-                <h2 className="text-lg font-semibold">
+                <User className="h-5 w-5 text-white/90" />
+                <h2 className="text-lg font-semibold text-white">
                   {isEditing ? 'Profil bearbeiten' : 'Mein Profil'}
                 </h2>
               </div>
@@ -398,13 +398,14 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                     variant="outline"
                     onClick={() => setIsEditing(false)}
                     disabled={isSaving}
+                    className="border-white/20 text-white hover:bg-white/10"
                   >
                     Abbrechen
                   </Button>
                   <Button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
                   >
                     <Save className="h-4 w-4 mr-2" />
                     {isSaving ? 'Speichern...' : 'Speichern'}
@@ -413,7 +414,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
               ) : (
                 <Button
                   onClick={() => setIsEditing(true)}
-                  variant="outline"
+                  className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
                 >
                   Bearbeiten
                 </Button>
@@ -424,16 +425,29 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           {/* Content */}
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="personal">Persönliche Daten</TabsTrigger>
-                <TabsTrigger value="professional">Berufliche Daten</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-blue-100 to-purple-100 p-1">
+                <TabsTrigger
+                  value="personal"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white font-medium"
+                >
+                  Persönliche Daten
+                </TabsTrigger>
+                <TabsTrigger
+                  value="professional"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white font-medium"
+                >
+                  Berufliche Daten
+                </TabsTrigger>
               </TabsList>
 
               {/* Personal Information Tab */}
               <TabsContent value="personal" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Persönliche Informationen</CardTitle>
+                <Card className="border-t-4 border-t-blue-500 shadow-md">
+                  <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <CardTitle className="text-blue-800 flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      Persönliche Informationen
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Profile Picture */}
@@ -522,9 +536,14 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                 </Card>
 
                 {/* Contact Information - Compact Layout */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Kontaktinformationen</CardTitle>
+                <Card className="border-t-4 border-t-green-500 shadow-md">
+                  <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+                    <CardTitle className="text-green-800 flex items-center gap-2">
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Kontaktinformationen
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {/* Email Addresses Section */}
@@ -540,7 +559,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       </div>
                       <div className="space-y-3">
                         {profile.contacts.emails.map((email) => (
-                          <div key={email.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-gray-50 rounded-lg items-end">
+                          <div key={email.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg items-end hover:shadow-md transition-shadow">
                             <div className="space-y-2">
                               <Label className="text-sm">Typ</Label>
                               {isEditing ? (
@@ -587,7 +606,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                   </Button>
                                 ) : (
                                   email.is_primary && (
-                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                    <span className="text-xs bg-gradient-to-r from-blue-500 to-purple-500 text-white px-2 py-1 rounded-full font-medium shadow-sm">Primär</span>
                                   )
                                 )}
                               </div>
@@ -632,7 +651,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       </div>
                       <div className="space-y-3">
                         {profile.contacts.phones.map((phone) => (
-                          <div key={phone.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-gray-50 rounded-lg items-end">
+                          <div key={phone.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 rounded-lg items-end hover:shadow-md transition-shadow">
                             <div className="space-y-2">
                               <Label className="text-sm">Typ</Label>
                               {isEditing ? (
@@ -680,7 +699,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                   </Button>
                                 ) : (
                                   phone.is_primary && (
-                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                    <span className="text-xs bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full font-medium shadow-sm">Primär</span>
                                   )
                                 )}
                               </div>
@@ -713,7 +732,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                       </div>
                       <div className="space-y-3">
                         {profile.contacts.addresses.map((address) => (
-                          <div key={address.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-gray-50 rounded-lg items-end">
+                          <div key={address.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-lg items-end hover:shadow-md transition-shadow">
                             <div className="space-y-2">
                               <Label className="text-sm">Typ</Label>
                               {isEditing ? (
@@ -761,7 +780,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                   </Button>
                                 ) : (
                                   address.is_primary && (
-                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Primär</span>
+                                    <span className="text-xs bg-gradient-to-r from-orange-500 to-amber-500 text-white px-2 py-1 rounded-full font-medium shadow-sm">Primär</span>
                                   )
                                 )}
                               </div>
@@ -786,9 +805,14 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
               {/* Professional Information Tab */}
               <TabsContent value="professional" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Berufliche Informationen</CardTitle>
+                <Card className="border-t-4 border-t-purple-500 shadow-md">
+                  <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+                    <CardTitle className="text-purple-800 flex items-center gap-2">
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 00-2 2H8a2 2 0 00-2-2V6m8 0h2a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h2" />
+                      </svg>
+                      Berufliche Informationen
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-2">
@@ -813,7 +837,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         {profile.skills.map((skill) => (
                           <div
                             key={skill}
-                            className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                            className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-3 py-2 rounded-full text-sm flex items-center gap-2 shadow-sm font-medium"
                           >
                             {skill}
                             {isEditing && (
@@ -850,7 +874,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         {profile.subjects_stud.map((subject) => (
                           <div
                             key={subject}
-                            className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-full text-sm flex items-center gap-2 shadow-sm font-medium"
                           >
                             {subject}
                             {isEditing && (
