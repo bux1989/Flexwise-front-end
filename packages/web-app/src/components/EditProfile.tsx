@@ -276,7 +276,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
       const staffData = {
         profile_id: profileId,
-        school_id: authUser.user_metadata?.school_id,
+        school_id: userSchoolId,
         skills: profile.skills,
         kurzung: profile.kurzung || null,
         subjects_stud: profile.subjects_stud
