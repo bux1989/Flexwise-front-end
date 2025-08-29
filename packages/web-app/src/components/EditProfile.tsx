@@ -255,15 +255,41 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         subjects_stud: profile.subjects_stud
       });
 
-      const { error: staffError } = await supabase
+      // Check if staff record exists first
+      const { data: existingStaff, error: checkError } = await supabase
         .from('profile_info_staff')
-        .upsert({
-          profile_id: profileId,
-          school_id: authUser.user_metadata?.school_id,
-          skills: profile.skills,
-          kurzung: profile.kurzung || null,
-          subjects_stud: profile.subjects_stud
-        });
+        .select('profile_id')
+        .eq('profile_id', profileId)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('❌ Error checking existing staff record:', checkError);
+        throw new Error('Failed to check staff info: ' + checkError.message);
+      }
+
+      const staffData = {
+        profile_id: profileId,
+        school_id: authUser.user_metadata?.school_id,
+        skills: profile.skills,
+        kurzung: profile.kurzung || null,
+        subjects_stud: profile.subjects_stud
+      };
+
+      let staffError;
+      if (existingStaff) {
+        // Update existing record
+        const result = await supabase
+          .from('profile_info_staff')
+          .update(staffData)
+          .eq('profile_id', profileId);
+        staffError = result.error;
+      } else {
+        // Insert new record
+        const result = await supabase
+          .from('profile_info_staff')
+          .insert(staffData);
+        staffError = result.error;
+      }
 
       if (staffError) {
         console.error('❌ Staff info save error:', {
