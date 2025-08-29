@@ -172,25 +172,19 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
   }, [loadData])
 
   // Transform substitutions for display
-  const transformedSubstitutions = substitutions.map(sub => {
-    const lesson = sub.course_lessons
-    const startTime = lesson?.start_datetime ? new Date(lesson.start_datetime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : ''
-    const endTime = lesson?.end_datetime ? new Date(lesson.end_datetime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : ''
-
-    return {
-      id: sub.id,
-      subject: lesson?.subjects?.name || 'Unbekanntes Fach',
-      subjectAbbr: lesson?.subjects?.abbreviation || 'UF',
-      class: lesson?.structure_classes?.name || 'Unbekannte Klasse',
-      room: lesson?.structure_rooms?.name || 'Raum unbekannt',
-      reason: sub.reason || 'Vertretung',
-      notes: sub.notes,
-      date: lesson?.start_datetime ? new Date(lesson.start_datetime).toISOString().split('T')[0] : null,
-      time: startTime && endTime ? `${startTime} - ${endTime}` : 'Zeit unbekannt',
-      originalTeacher: 'N/A', // TODO: Resolve teacher names
-      substituteTeacher: 'N/A' // TODO: Resolve teacher names
-    }
-  })
+  const transformedSubstitutions = substitutions.map(sub => ({
+    id: sub.id,
+    subject: 'Vertretung', // Simplified since we don't have lesson details yet
+    subjectAbbr: 'V',
+    class: 'Verschiedene Klassen',
+    room: 'Siehe Details',
+    reason: sub.reason || 'Vertretung',
+    notes: sub.notes,
+    date: sub.valid_until,
+    time: 'Siehe Stundenplan',
+    originalTeacher: 'N/A', // TODO: Resolve teacher names
+    substituteTeacher: 'N/A' // TODO: Resolve teacher names
+  }))
 
   return {
     bulletinPosts: bulletinPosts.map(post => ({
