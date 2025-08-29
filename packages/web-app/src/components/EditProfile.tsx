@@ -159,12 +159,13 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         console.error('Error loading staff info:', staffError);
       }
 
-      // Load contacts
-      console.log('🔍 Querying contacts for profile_id:', profileId);
+      // Load contacts (include school_id for RLS compliance)
+      console.log('🔍 Querying contacts for profile_id:', profileId, 'school_id:', profileData?.school_id);
       const { data: contactsData, error: contactsError } = await supabase
         .from('contacts')
         .select('*')
         .eq('profile_id', profileId)
+        .eq('school_id', profileData?.school_id)
         .order('created_at', { ascending: true });
 
       if (contactsError) {
