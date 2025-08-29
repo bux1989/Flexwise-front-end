@@ -456,7 +456,9 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
   })).slice(0, 3)); // Show first 3 lessons to avoid console spam
 
     // Transform database lessons to our Lesson interface
-    const transformedLessons: Lesson[] = (lessons || []).map(dbLesson => transformDatabaseLesson(dbLesson, schoolDaysData));
+    const transformedLessons: Lesson[] = await Promise.all(
+      (lessons || []).map(dbLesson => transformDatabaseLesson(dbLesson, schoolDaysData))
+    );
 
     console.log('🔄 Transformed lessons:', transformedLessons);
   console.log('🔢 Transformed lesson periods:', transformedLessons.map(l => ({
@@ -482,7 +484,7 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
  * @param schoolDays - School days data for proper day name mapping
  * @returns Transformed lesson
  */
-function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay[]): Lesson {
+async function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay[]): Promise<Lesson> {
   const now = new Date();
   const lessonStart = new Date(dbLesson.start_datetime);
   const lessonEnd = new Date(dbLesson.end_datetime);
