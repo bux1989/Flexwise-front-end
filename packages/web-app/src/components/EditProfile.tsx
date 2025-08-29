@@ -531,7 +531,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           value={profile.first_name}
                           onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
                           disabled={!isEditing}
-                          className={!isEditing ? "bg-gray-50 text-slate-800 font-semibold" : "text-slate-800 font-semibold"}
+                          className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
                         />
                       </div>
                       <div className="space-y-2">
@@ -541,7 +541,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           value={profile.last_name}
                           onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
                           disabled={!isEditing}
-                          className={!isEditing ? "bg-gray-50 text-slate-800 font-semibold" : "text-slate-800 font-semibold"}
+                          className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
                         />
                       </div>
                     </div>
@@ -555,7 +555,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           value={profile.date_of_birth}
                           onChange={(e) => setProfile(prev => ({ ...prev, date_of_birth: e.target.value }))}
                           disabled={!isEditing}
-                          className={!isEditing ? "bg-gray-50 text-slate-800 font-semibold" : "text-slate-800 font-semibold"}
+                          className={!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}
                         />
                       </div>
                       <div className="space-y-2">
@@ -579,7 +579,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           <Input
                             value={profile.gender}
                             disabled
-                            className="bg-gray-50 text-slate-800 font-semibold"
+                            className="bg-gray-50 text-slate-600 font-semibold"
                           />
                         )}
                       </div>
@@ -631,7 +631,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 <Input
                                   value={email.type}
                                   disabled
-                                  className="h-9 bg-gray-50 text-slate-800 font-semibold"
+                                  className="h-9 bg-gray-50 text-slate-600 font-semibold"
                                 />
                               )}
                             </div>
@@ -642,7 +642,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 value={email.value}
                                 onChange={(e) => updateContact('emails', email.id, 'value', e.target.value)}
                                 disabled={!isEditing}
-                                className={`h-9 ${!isEditing ? "bg-gray-50 text-slate-800 font-semibold" : "text-slate-800 font-semibold"}`}
+                                className={`h-9 ${!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}`}
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -724,7 +724,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 <Input
                                   value={phone.type}
                                   disabled
-                                  className="h-9 bg-gray-50 text-slate-800 font-semibold"
+                                  className="h-9 bg-gray-50 text-slate-600 font-semibold"
                                 />
                               )}
                             </div>
@@ -735,7 +735,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 value={phone.value}
                                 onChange={(e) => updateContact('phones', phone.id, 'value', e.target.value)}
                                 disabled={!isEditing}
-                                className={`h-9 ${!isEditing ? "bg-gray-50 text-slate-800 font-semibold" : "text-slate-800 font-semibold"}`}
+                                className={`h-9 ${!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}`}
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -805,7 +805,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 <Input
                                   value={address.type}
                                   disabled
-                                  className="h-9 bg-gray-50 text-slate-800 font-semibold"
+                                  className="h-9 bg-gray-50 text-slate-600 font-semibold"
                                 />
                               )}
                             </div>
@@ -816,7 +816,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 onChange={(e) => updateContact('addresses', address.id, 'value', e.target.value)}
                                 disabled={!isEditing}
                                 rows={2}
-                                className={`min-h-[70px] ${!isEditing ? "bg-gray-50 text-slate-800 font-semibold" : "text-slate-800 font-semibold"}`}
+                                className={`min-h-[70px] ${!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}`}
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -875,7 +875,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                         onChange={(e) => setProfile(prev => ({ ...prev, kurzung: e.target.value }))}
                         disabled={!isEditing}
                         placeholder="z.B. MU, DE, EN"
-                        className={`max-w-xs ${!isEditing ? "bg-gray-50 text-slate-800 font-semibold" : "text-slate-800 font-semibold"}`}
+                        className={`max-w-xs ${!isEditing ? "bg-gray-50 text-slate-600 font-semibold" : "text-slate-600 font-semibold"}`}
                       />
                       <p className="text-sm text-gray-500">
                         Ihr persönliches Kürzel für Stundenpläne und Listen
@@ -910,7 +910,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                             value={newSkill}
                             onChange={(e) => setNewSkill(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addSkill()}
-                            className="max-w-xs text-slate-800 font-semibold"
+                            className="max-w-xs text-slate-600 font-semibold"
                           />
                           <Button onClick={addSkill} size="sm" variant="outline">
                             <Plus className="h-4 w-4" />
@@ -947,7 +947,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                             value={newSubject}
                             onChange={(e) => setNewSubject(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addSubject()}
-                            className="max-w-xs text-slate-800 font-semibold"
+                            className="max-w-xs text-slate-600 font-semibold"
                           />
                           <Button onClick={addSubject} size="sm" variant="outline">
                             <Plus className="h-4 w-4" />
