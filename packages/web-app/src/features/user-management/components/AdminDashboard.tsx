@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { supabase } from '../../../lib/supabase';
-import { SystemStats } from './SystemStats';
-import { AdminActions } from './AdminActions';
-import { useAdminData } from '../hooks/useAdminData';
+import { AttendanceMatrix } from '../../../components/AttendanceMatrix';
+import { Infoboard } from '../../../components/Infoboard';
+import { MissingStaff } from '../../../components/MissingStaff';
+import { Veranstaltungen } from '../../../components/Veranstaltungen';
+import { TodosPlaceholder } from '../../../components/TodosPlaceholder';
 
 interface AdminDashboardProps {
   user: any;
@@ -10,13 +12,11 @@ interface AdminDashboardProps {
 }
 
 export function AdminDashboard({ user, onShowSettings }: AdminDashboardProps) {
-  const { adminData, systemStats, loading } = useAdminData(user);
-
   const handleLogout = async () => {
     try {
       console.log('🚪 Logging out...');
       const { error } = await supabase.auth.signOut({ scope: 'local' });
-      
+
       if (error) {
         console.error('❌ Logout error:', error);
         console.log('🔄 Local session cleared despite error');
@@ -29,21 +29,18 @@ export function AdminDashboard({ user, onShowSettings }: AdminDashboardProps) {
     }
   };
 
-  const handleAdminAction = (action: string) => {
-    console.log(`Admin action: ${action}`);
-    alert(`${action} will be available soon`);
+  const handleClassClick = (className: string) => {
+    console.log('Class clicked:', className);
+    // Future: Navigate to class detail view
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading dashboard...</div>
-      </div>
-    );
-  }
+  const handleStatusClick = (status: string) => {
+    console.log('Status clicked:', status);
+    // Future: Navigate to status detail view
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -78,20 +75,30 @@ export function AdminDashboard({ user, onShowSettings }: AdminDashboardProps) {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          {/* System Stats */}
-          <SystemStats stats={systemStats} loading={loading} />
+      <main className="container mx-auto px-4 py-6 max-w-7xl">
+        {/* Widget Grid - 5 widgets in asymmetric layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Row 1 - 3 widgets */}
+          <div className="lg:col-span-1">
+            <AttendanceMatrix
+              onClassClick={handleClassClick}
+              onStatusClick={handleStatusClick}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <Infoboard />
+          </div>
+          <div className="lg:col-span-1">
+            <MissingStaff />
+          </div>
 
-          {/* Admin Actions */}
-          <AdminActions
-            onManageTeachers={() => handleAdminAction('Manage Teachers')}
-            onManageParents={() => handleAdminAction('Manage Parents')}
-            onManageStudents={() => handleAdminAction('Manage Students')}
-            onScheduleManagement={() => handleAdminAction('Schedule Management')}
-            onReportsAnalytics={() => handleAdminAction('Reports & Analytics')}
-            onSystemSettings={() => handleAdminAction('System Settings')}
-          />
+          {/* Row 2 - 2 widgets, centered */}
+          <div className="lg:col-span-1 lg:col-start-1">
+            <Veranstaltungen />
+          </div>
+          <div className="lg:col-span-1">
+            <TodosPlaceholder />
+          </div>
         </div>
       </main>
     </div>
