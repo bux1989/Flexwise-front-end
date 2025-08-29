@@ -280,6 +280,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
               label: 'Arbeit',
               value: authUser.email,
               is_primary: true,
+              is_linked_to_user_login: true,
               school_id: profileData?.school_id
             });
 
@@ -1302,7 +1303,7 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                               }
                             });
 
-                            console.log('📨 Reset email result:', { error });
+                            console.log('��� Reset email result:', { error });
 
                             if (error) {
                               console.error('❌ Reset email error:', error);
