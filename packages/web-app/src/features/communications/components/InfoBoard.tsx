@@ -18,21 +18,8 @@ export function InfoBoard({ schoolId, isMobile = false }: InfoBoardProps) {
   const [expandedInfoBoardPosts, setExpandedInfoBoardPosts] = useState<Set<string>>(new Set());
   const [showSubstituteLessons, setShowSubstituteLessons] = useState(!isMobile);
 
-  // Real-time data fetching (disabled until database is properly configured)
-  // const { bulletinPosts, substitutions, loading, error, refresh } = useInfoBoardRealtime(schoolId);
-
-  // Temporary mock data until real-time is properly enabled
-  const bulletinPosts = [
-    { id: '1', title: 'Schulversammlung', content: 'Heute in der Aula', timestamp: '14:30' },
-    { id: '2', title: 'Lehrerkonferenz', content: 'Morgen im Konferenzraum', timestamp: '16:30' }
-  ]
-  const substitutions = [
-    { id: '1', subject: 'Deutsch', class: '9A', reason: 'für Frau Weber', room: 'Raum 201', time: '10:00-10:45' },
-    { id: '2', subject: 'Geschichte', class: '8B', reason: 'für Dr. Hoffmann', room: 'Raum 105', time: '11:00-11:45' }
-  ]
-  const loading = false
-  const error = null
-  const refresh = () => console.log('Mock refresh - real-time not enabled yet')
+  // Real-time data fetching - now enabled with updated database schema
+  const { bulletinPosts, substitutions, loading, error, refresh } = useInfoBoardRealtime(schoolId, true);
 
   const toggleInfoItemExpansion = (itemId: string) => {
     setExpandedInfoItems(prev => {
