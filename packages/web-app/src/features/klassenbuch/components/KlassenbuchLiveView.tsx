@@ -50,18 +50,28 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
         console.log('🏫 Using school ID:', currentSchoolId);
         setSchoolId(currentSchoolId);
 
-        // Fetch periods and school days in parallel
-        const [periodsData, schoolDaysData] = await Promise.all([
+        // Calculate start of the selected week
+        const weekStart = new Date(selectedWeek);
+        const day = weekStart.getDay();
+        const diff = weekStart.getDate() - day + (day === 0 ? -6 : 1);
+        weekStart.setDate(diff);
+        weekStart.setHours(0, 0, 0, 0);
+
+        // Fetch periods, school days, and lessons in parallel
+        const [periodsData, schoolDaysData, lessonsData] = await Promise.all([
           getSchedulePeriods(currentSchoolId, ['instructional', 'flex']),
-          getSchoolDays(currentSchoolId)
+          getSchoolDays(currentSchoolId),
+          getLessonsForWeek(selectedClass.id, currentSchoolId, weekStart)
         ]);
 
         setSchedulePeriods(periodsData);
         setSchoolDays(schoolDaysData);
+        setClassTimetable(lessonsData);
 
         console.log('✅ Schedule data loaded:', {
           periods: periodsData.length,
-          schoolDays: schoolDaysData.length
+          schoolDays: schoolDaysData.length,
+          lessons: lessonsData.length
         });
 
       } catch (error) {
