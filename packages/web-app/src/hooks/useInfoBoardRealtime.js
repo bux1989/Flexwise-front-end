@@ -72,18 +72,7 @@ export function useInfoBoardRealtime(schoolId, enabled = true) {
           notes,
           created_at,
           valid_until,
-          status,
-          course_lessons!substitutions_original_lesson_id_fkey(
-            id,
-            subject_id,
-            class_id,
-            room_id,
-            start_datetime,
-            end_datetime,
-            subjects(name, abbreviation),
-            structure_classes(name),
-            structure_rooms(name)
-          )
+          status
         `)
         .eq('school_id', schoolId)
         .in('status', ['approved', 'pending'])
