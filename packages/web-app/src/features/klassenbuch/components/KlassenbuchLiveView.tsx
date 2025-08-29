@@ -295,8 +295,6 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
         const viewMode = lesson.attendanceStatus === 'complete' ? 'overview' : 'edit';
         console.log('🎯 Opening attendance modal with viewMode:', viewMode);
         onAttendanceClick(lesson.id, viewMode);
-        // Refresh after a short delay to allow for attendance updates
-        setTimeout(refreshLessons, 1000);
       } else {
         console.log('⚠️ No attendance click handler, using fallback modal');
         // Fallback to the old modal if no attendance handler provided
@@ -578,11 +576,7 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
             lesson={selectedLesson}
             classData={selectedClass}
             isOpen={!!selectedLesson}
-            onClose={() => {
-              setSelectedLesson(null);
-              // Refresh lessons after modal closes
-              setTimeout(refreshLessons, 500);
-            }}
+            onClose={() => setSelectedLesson(null)}
           />
         )}
 
