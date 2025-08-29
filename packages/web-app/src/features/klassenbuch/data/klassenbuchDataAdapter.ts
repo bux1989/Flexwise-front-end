@@ -450,11 +450,7 @@ function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay
   // The view should now properly match periods via time when period_id is missing
   const mappedPeriod = dbLesson.period_number;
 
-  console.log('🔄 Period mapping from DB:', {
-    period_number: dbLesson.period_number,
-    period_label: dbLesson.period_label,
-    startTime: timeString.split('-')[0]
-  });
+  // Period mapping successful
 
   return {
     id: dbLesson.lesson_id,
