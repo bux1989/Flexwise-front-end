@@ -461,17 +461,159 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
 
         {/* Kursübersicht Tab */}
         <TabsContent value="kurse" className="space-y-6">
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="bg-blue-50 border-b border-blue-200">
+          {/* Active Courses */}
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader className="bg-green-50 border-b border-green-200">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-green-600" />
+                  Aktive Kurse & AGs
+                </CardTitle>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Kurs hinzufügen
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {student.activeCourses && student.activeCourses.length > 0 ? (
+                student.activeCourses.map((course, index) => (
+                  <div key={index} className="p-4 border border-green-200 rounded-lg bg-green-50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium text-green-900">{course.name}</h3>
+                        <div className="flex items-center gap-4 text-sm text-green-600/70 mt-1">
+                          <span className="flex items-center gap-1">
+                            <User className="w-3 h-3" />
+                            {course.instructor}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {course.schedule}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {course.location}
+                          </span>
+                          {course.startDate && (
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              seit {new Date(course.startDate).toLocaleDateString('de-DE')}
+                            </span>
+                          )}
+                        </div>
+                        {course.description && (
+                          <p className="text-sm text-green-600/70 mt-2">{course.description}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-green-100 text-green-700">
+                          {course.type || 'AG'}
+                        </Badge>
+                        <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">
+                  Keine aktiven Kurse oder AGs
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Waiting List */}
+          <Card className="border-l-4 border-l-yellow-500">
+            <CardHeader className="bg-yellow-50 border-b border-yellow-200">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-yellow-600" />
+                  Warteliste
+                </CardTitle>
+                <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Zur Warteliste hinzufügen
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {student.waitingList && student.waitingList.length > 0 ? (
+                student.waitingList.map((course, index) => (
+                  <div key={index} className="p-4 border border-yellow-200 rounded-lg bg-yellow-50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium text-yellow-900">{course.name}</h3>
+                        <div className="flex items-center gap-4 text-sm text-yellow-600/70 mt-1">
+                          <span className="flex items-center gap-1">
+                            <User className="w-3 h-3" />
+                            {course.instructor}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {course.schedule}
+                          </span>
+                          <span>Position: {course.waitingPosition}</span>
+                          {course.registrationDate && (
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              Angemeldet: {new Date(course.registrationDate).toLocaleDateString('de-DE')}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-yellow-100 text-yellow-700">
+                          Warteliste #{course.waitingPosition}
+                        </Badge>
+                        <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">
+                  Keine Einträge auf der Warteliste
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Past Courses */}
+          <Card className="border-l-4 border-l-gray-500">
+            <CardHeader className="bg-gray-50 border-b border-gray-200">
               <CardTitle className="flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-blue-600" />
-                Kursübersicht
+                <GraduationCap className="w-5 h-5 text-gray-600" />
+                Vergangene Kurse
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-center py-8">
-                Kursübersicht wird hier angezeigt...
-              </p>
+            <CardContent className="space-y-3">
+              {student.pastCourses && student.pastCourses.length > 0 ? (
+                student.pastCourses.map((course, index) => (
+                  <div key={index} className="p-3 border border-gray-200 rounded-lg bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium text-gray-900">{course.name}</h3>
+                        <div className="flex items-center gap-4 text-sm text-gray-600/70 mt-1">
+                          <span>{course.period}</span>
+                          <span>{course.instructor}</span>
+                          {course.completed && (
+                            <Badge className="bg-green-100 text-green-700">Erfolgreich abgeschlossen</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">
+                  Keine vergangenen Kurse verzeichnet
+                </p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
