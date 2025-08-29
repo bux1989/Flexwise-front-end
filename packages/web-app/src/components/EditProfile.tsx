@@ -146,9 +146,6 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
 
       // Store school_id from profile data for security
       console.log('👤 Profile loaded with school_id:', profileData?.school_id);
-      console.log('📊 Actual profile data from DB:', profileData);
-      console.log('📊 Actual staff data from DB:', staffData);
-      console.log('📊 Actual contacts data from DB:', contactsData);
       setUserSchoolId(profileData?.school_id || null);
 
       // Load staff info
