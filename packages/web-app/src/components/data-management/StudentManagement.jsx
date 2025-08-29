@@ -18,6 +18,7 @@ import {
 
 export default function StudentManagement({ onBack }) {
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedClass, setSelectedClass] = useState('all')
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
 
