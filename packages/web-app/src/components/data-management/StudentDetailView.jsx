@@ -489,21 +489,23 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
           {/* Active Courses */}
           <Card className="border-l-4 border-l-green-500">
             <CardHeader className="bg-green-50 border-b border-green-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-green-600" />
-                  Aktive Kurse & AGs
-                </CardTitle>
-                <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Kurs hinzufügen
-                </Button>
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-green-600" />
+                Aktive Kurse & AGs
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {student.activeCourses && student.activeCourses.length > 0 ? (
                 student.activeCourses.map((course, index) => (
-                  <div key={index} className="p-4 border border-green-200 rounded-lg bg-green-50">
+                  <div
+                    key={index}
+                    className="p-4 border border-green-200 rounded-lg bg-green-50 hover:bg-green-100 transition-colors cursor-pointer"
+                    onClick={() => {
+                      // TODO: Navigate to course management page
+                      console.log('Navigate to course:', course.name)
+                    }}
+                    title="Klicken um zum Kurs zu gelangen"
+                  >
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="font-medium text-green-900">{course.name}</h3>
@@ -531,14 +533,9 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
                           <p className="text-sm text-green-600/70 mt-2">{course.description}</p>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-green-100 text-green-700">
-                          {course.type || 'AG'}
-                        </Badge>
-                        <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </Button>
-                      </div>
+                      <Badge className="bg-green-100 text-green-700">
+                        {course.type || 'AG'}
+                      </Badge>
                     </div>
                   </div>
                 ))
@@ -553,21 +550,23 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
           {/* Waiting List */}
           <Card className="border-l-4 border-l-yellow-500">
             <CardHeader className="bg-yellow-50 border-b border-yellow-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-yellow-600" />
-                  Warteliste
-                </CardTitle>
-                <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Zur Warteliste hinzufügen
-                </Button>
-              </div>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-yellow-600" />
+                Warteliste
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {student.waitingList && student.waitingList.length > 0 ? (
                 student.waitingList.map((course, index) => (
-                  <div key={index} className="p-4 border border-yellow-200 rounded-lg bg-yellow-50">
+                  <div
+                    key={index}
+                    className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer"
+                    onClick={() => {
+                      // TODO: Navigate to course management page
+                      console.log('Navigate to course:', course.name)
+                    }}
+                    title="Klicken um zum Kurs zu gelangen"
+                  >
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="font-medium text-yellow-900">{course.name}</h3>
@@ -589,14 +588,9 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-yellow-100 text-yellow-700">
-                          Warteliste #{course.waitingPosition}
-                        </Badge>
-                        <Button variant="ghost" size="sm" className="p-2 hover:bg-red-50">
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </Button>
-                      </div>
+                      <Badge className="bg-yellow-100 text-yellow-700">
+                        Warteliste #{course.waitingPosition}
+                      </Badge>
                     </div>
                   </div>
                 ))
@@ -619,18 +613,26 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
             <CardContent className="space-y-3">
               {student.pastCourses && student.pastCourses.length > 0 ? (
                 student.pastCourses.map((course, index) => (
-                  <div key={index} className="p-3 border border-gray-200 rounded-lg bg-gray-50">
+                  <div
+                    key={index}
+                    className="p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                    onClick={() => {
+                      // TODO: Navigate to course management page
+                      console.log('Navigate to course:', course.name)
+                    }}
+                    title="Klicken um zum Kurs zu gelangen"
+                  >
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="font-medium text-gray-900">{course.name}</h3>
                         <div className="flex items-center gap-4 text-sm text-gray-600/70 mt-1">
                           <span>{course.period}</span>
                           <span>{course.instructor}</span>
-                          {course.completed && (
-                            <Badge className="bg-green-100 text-green-700">Erfolgreich abgeschlossen</Badge>
-                          )}
                         </div>
                       </div>
+                      {course.completed && (
+                        <Badge className="bg-green-100 text-green-700">Erfolgreich abgeschlossen</Badge>
+                      )}
                     </div>
                   </div>
                 ))
@@ -641,6 +643,21 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
               )}
             </CardContent>
           </Card>
+
+          {/* Info Notice */}
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                <span className="text-blue-600 text-xs">ℹ</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-blue-900">Kursübersicht</p>
+                <p className="text-sm text-blue-600/70 mt-1">
+                  Klicken Sie auf einen Kurs, um zur Kursverwaltung zu gelangen. Dort können Sie Änderungen vornehmen oder Schüler ab-/anmelden.
+                </p>
+              </div>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
