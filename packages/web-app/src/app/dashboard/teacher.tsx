@@ -568,6 +568,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PWAInstallBannerWithInstructions />
       <Header
         currentTeacher={isLoadingProfile ? "Wird geladen..." : currentTeacher}
         dateString={loadingLessons ? "Stundenplan wird geladen..." : dateString}
