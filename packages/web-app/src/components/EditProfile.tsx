@@ -325,6 +325,195 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Contact Information */}
+                {/* Email Addresses */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>E-Mail-Adressen</CardTitle>
+                    {isEditing && (
+                      <Button onClick={() => addContact('emails')} size="sm" variant="outline">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Hinzufügen
+                      </Button>
+                    )}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {profile.contacts.emails.map((email) => (
+                      <div key={email.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div className="space-y-2">
+                          <Label>Typ</Label>
+                          {isEditing ? (
+                            <Select
+                              value={email.type}
+                              onValueChange={(value) => updateContact('emails', email.id, 'type', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Arbeit">Arbeit</SelectItem>
+                                <SelectItem value="Privat">Privat</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input value={email.type} disabled />
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label>E-Mail-Adresse</Label>
+                          <Input
+                            type="email"
+                            value={email.value}
+                            onChange={(e) => updateContact('emails', email.id, 'value', e.target.value)}
+                            disabled={!isEditing}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {email.is_primary && (
+                            <span className="text-sm text-blue-600 font-medium">Primär</span>
+                          )}
+                          {isEditing && (
+                            <Button
+                              onClick={() => removeContact('emails', email.id)}
+                              size="sm"
+                              variant="outline"
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Phone Numbers */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Telefonnummern</CardTitle>
+                    {isEditing && (
+                      <Button onClick={() => addContact('phones')} size="sm" variant="outline">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Hinzufügen
+                      </Button>
+                    )}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {profile.contacts.phones.map((phone) => (
+                      <div key={phone.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div className="space-y-2">
+                          <Label>Typ</Label>
+                          {isEditing ? (
+                            <Select
+                              value={phone.type}
+                              onValueChange={(value) => updateContact('phones', phone.id, 'type', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Mobil">Mobil</SelectItem>
+                                <SelectItem value="Festnetz">Festnetz</SelectItem>
+                                <SelectItem value="Arbeit">Arbeit</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input value={phone.type} disabled />
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Telefonnummer</Label>
+                          <Input
+                            type="tel"
+                            value={phone.value}
+                            onChange={(e) => updateContact('phones', phone.id, 'value', e.target.value)}
+                            disabled={!isEditing}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {phone.is_primary && (
+                            <span className="text-sm text-blue-600 font-medium">Primär</span>
+                          )}
+                          {isEditing && (
+                            <Button
+                              onClick={() => removeContact('phones', phone.id)}
+                              size="sm"
+                              variant="outline"
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Addresses */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Adressen</CardTitle>
+                    {isEditing && (
+                      <Button onClick={() => addContact('addresses')} size="sm" variant="outline">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Hinzufügen
+                      </Button>
+                    )}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {profile.contacts.addresses.map((address) => (
+                      <div key={address.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div className="space-y-2">
+                          <Label>Typ</Label>
+                          {isEditing ? (
+                            <Select
+                              value={address.type}
+                              onValueChange={(value) => updateContact('addresses', address.id, 'type', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Wohnadresse">Wohnadresse</SelectItem>
+                                <SelectItem value="Arbeitsadresse">Arbeitsadresse</SelectItem>
+                                <SelectItem value="Notfallkontakt">Notfallkontakt</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input value={address.type} disabled />
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Adresse</Label>
+                          <Textarea
+                            value={address.value}
+                            onChange={(e) => updateContact('addresses', address.id, 'value', e.target.value)}
+                            disabled={!isEditing}
+                            rows={2}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {address.is_primary && (
+                            <span className="text-sm text-blue-600 font-medium">Primär</span>
+                          )}
+                          {isEditing && (
+                            <Button
+                              onClick={() => removeContact('addresses', address.id)}
+                              size="sm"
+                              variant="outline"
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               {/* Professional Information Tab */}
