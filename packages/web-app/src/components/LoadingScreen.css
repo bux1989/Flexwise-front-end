@@ -124,6 +124,11 @@
   width: auto;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
   transition: all 0.3s ease;
+  border: 3px solid #fbbf24;
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 @keyframes logoIntro {
