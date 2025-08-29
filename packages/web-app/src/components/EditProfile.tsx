@@ -1479,10 +1479,29 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                           </div>
 
                           {!otpMethod ? (
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                               <p className="text-sm text-gray-600">
                                 Wählen Sie eine Methode für die Zwei-Faktor-Authentifizierung:
                               </p>
+
+                              {/* TOTP/Authenticator App Option - Recommended */}
+                              <div className="space-y-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <div className="flex items-center gap-2">
+                                  <Shield className="h-5 w-5 text-blue-600" />
+                                  <Label className="font-medium text-blue-900">Authenticator-App (Empfohlen)</Label>
+                                </div>
+                                <p className="text-sm text-blue-700 mb-2">
+                                  Verwenden Sie Google Authenticator, Authy oder eine ähnliche App
+                                </p>
+                                <Button
+                                  onClick={setupTotp}
+                                  disabled={isEnrollingTotp}
+                                  className="bg-blue-600 hover:bg-blue-700 w-full"
+                                >
+                                  <Smartphone className="h-4 w-4 mr-2" />
+                                  {isEnrollingTotp ? 'Einrichten...' : 'Authenticator-App einrichten'}
+                                </Button>
+                              </div>
 
                               {/* Email OTP Option */}
                               <div className="space-y-2">
@@ -1507,9 +1526,12 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
                                 </div>
                               </div>
 
-                              {/* SMS OTP Option */}
+                              {/* SMS OTP Option - Show warning */}
                               <div className="space-y-2">
                                 <Label htmlFor="otp-phone">SMS OTP</Label>
+                                <p className="text-xs text-orange-600 mb-1">
+                                  ⚠️ SMS ist möglicherweise nicht verfügbar
+                                </p>
                                 <div className="flex gap-2">
                                   <Input
                                     id="otp-phone"
