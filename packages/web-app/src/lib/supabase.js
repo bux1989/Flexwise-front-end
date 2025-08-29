@@ -12,7 +12,38 @@ if (!supabaseAnonKey) {
   throw new Error('Missing required environment variable: VITE_SUPABASE_ANON_KEY')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Enable automatic token refresh
+    autoRefreshToken: true,
+    // Persist session in localStorage
+    persistSession: true,
+    // Detect session from URL (for auth callbacks)
+    detectSessionInUrl: true,
+    // Set custom session storage (optional)
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    // Add debug logging in development only
+    debug: import.meta.env.DEV
+  },
+  realtime: {
+    // Rate limiting for realtime connections
+    params: {
+      eventsPerSecond: 10
+    },
+    // Heartbeat interval for connection health
+    heartbeatIntervalMs: 30000,
+    // Reconnection attempts
+    reconnectAfterMs: function (tries) {
+      return Math.min(tries * 1000, 30000)
+    }
+  },
+  // Security headers
+  global: {
+    headers: {
+      'X-Client-Info': 'flexwise-web-app'
+    }
+  }
+})
 
 // Authentication only - App.jsx handles profile/role loading
 export async function handleLogin(email, password) {
@@ -394,7 +425,7 @@ export async function bulkSaveAttendance(lessonId, attendanceRecords) {
     return data
 
   } catch (error) {
-    console.error('�� Error in bulkSaveAttendance:', error)
+    console.error('💥 Error in bulkSaveAttendance:', error)
     throw error
   }
 }
