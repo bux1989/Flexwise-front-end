@@ -13,7 +13,10 @@ import {
   Mail,
   Phone,
   Users,
-  Calendar
+  Calendar,
+  Camera,
+  Heart,
+  GraduationCap
 } from 'lucide-react'
 import StudentDetailView from './StudentDetailView'
 
