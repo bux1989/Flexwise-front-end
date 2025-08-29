@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { DebugOverlay } from '../../../debug';
 import { ExternalAccessNotice } from './ExternalAccessNotice';
 import { ExternalStats } from './ExternalStats';
 import { AvailableReports } from './AvailableReports';
@@ -75,7 +76,8 @@ export function ExternalDashboard({ user }: ExternalDashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DebugOverlay name="ExternalDashboard">
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -115,6 +117,7 @@ export function ExternalDashboard({ user }: ExternalDashboardProps) {
           <AvailableReports reports={reports} />
         </div>
       </main>
-    </div>
+      </div>
+    </DebugOverlay>
   );
 }
