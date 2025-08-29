@@ -96,6 +96,7 @@ export function KlassenbuchApp({
           <KlassenbuchLiveView
             selectedWeek={selectedWeek}
             selectedClass={selectedClass}
+            onAttendanceClick={onAttendanceClick}
           />
         ) : (
           <KlassenbuchStatisticsView
