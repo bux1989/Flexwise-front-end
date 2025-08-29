@@ -24,15 +24,57 @@ interface KlassenbuchLiveViewProps {
 export function KlassenbuchLiveView({ selectedWeek, selectedClass }: KlassenbuchLiveViewProps) {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [commentModalLesson, setCommentModalLesson] = useState<Lesson | null>(null);
+  const [schedulePeriods, setSchedulePeriods] = useState<SchedulePeriod[]>([]);
+  const [schoolDays, setSchoolDays] = useState<SchoolDay[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [schoolId, setSchoolId] = useState<string>('');
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-
-  // Get database-driven periods and school days
-  const schoolId = 'school-1'; // TODO: Get from selectedClass or user context
-  const schedulePeriods = getSchedulePeriods(schoolId, ['instructional', 'flex']);
-  const schoolDays = getSchoolDays(schoolId);
 
   // Get class-specific data
   const classTimetable = getTimetableForClass(selectedClass.id);
+
+  // Fetch database-driven periods and school days
+  useEffect(() => {
+    const fetchScheduleData = async () => {
+      try {
+        setIsLoading(true);
+        console.log('🏫 Fetching schedule data for class:', selectedClass.name);
+
+        // Get current user profile to extract school_id
+        const userProfile = await getCurrentUserProfile();
+        const currentSchoolId = userProfile?.school_id;
+
+        if (!currentSchoolId) {
+          console.error('❌ No school ID found in user profile');
+          return;
+        }
+
+        console.log('🏫 Using school ID:', currentSchoolId);
+        setSchoolId(currentSchoolId);
+
+        // Fetch periods and school days in parallel
+        const [periodsData, schoolDaysData] = await Promise.all([
+          getSchedulePeriods(currentSchoolId, ['instructional', 'flex']),
+          getSchoolDays(currentSchoolId)
+        ]);
+
+        setSchedulePeriods(periodsData);
+        setSchoolDays(schoolDaysData);
+
+        console.log('✅ Schedule data loaded:', {
+          periods: periodsData.length,
+          schoolDays: schoolDaysData.length
+        });
+
+      } catch (error) {
+        console.error('💥 Error fetching schedule data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchScheduleData();
+  }, [selectedClass.id]);
 
   // Check if a time slot has any lessons across all days
   const hasLessonsInPeriod = (period: number) => {
