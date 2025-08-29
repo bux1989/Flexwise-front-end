@@ -289,12 +289,9 @@
   }
 }
 
-/* Loading bar */
+/* Loading bar - Hidden */
 .loading-bar-container {
-  width: 200px;
-  margin-bottom: 1.5rem;
-  animation: barAppear 0.8s ease-out 1s forwards;
-  opacity: 0;
+  display: none;
 }
 
 .loading-bar {
