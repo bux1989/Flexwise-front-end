@@ -202,8 +202,20 @@ function App() {
   }, [loadUserProfile, showLoginTransition])
 
   // PWA Startup screen
-  if (showStartupScreen) {
+  if (showStartupScreen && !showLoginTransition) {
     return <LoadingScreen onComplete={() => setShowStartupScreen(false)} minDisplayTime={2500} />
+  }
+
+  // Crossfade transition period - show both screens
+  if (showStartupScreen && showLoginTransition) {
+    return (
+      <>
+        <LoadingScreen onComplete={() => setShowStartupScreen(false)} minDisplayTime={2500} />
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10000 }}>
+          <Login />
+        </div>
+      </>
+    )
   }
 
   // Loading state
