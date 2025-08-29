@@ -52,60 +52,60 @@ export default function Settings() {
 
         <TabsContent value="contact" className="space-y-6">
           {/* School Information Card */}
-          <Card className="border-l-4 border-l-primary">
-            <CardHeader className="bg-muted/50 border-b border-border">
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="bg-blue-50 border-b border-blue-200">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    <Building className="w-5 h-5 text-primary" />
+                    <Building className="w-5 h-5 text-blue-600" />
                     Schulinformationen
                   </CardTitle>
-                  <p className="text-muted-foreground">Grundlegende Informationen über Ihre Schule</p>
+                  <p className="text-blue-600/70">Grundlegende Informationen über Ihre Schule</p>
                 </div>
-                <Button variant="ghost" size="sm" className="p-2">
-                  <Edit className="w-4 h-4" />
+                <Button variant="ghost" size="sm" className="p-2 hover:bg-blue-100">
+                  <Edit className="w-4 h-4 text-blue-600" />
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                  <Building className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                  <Building className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="font-medium text-foreground">Realschule Berlin-Nord</p>
                     <p className="text-sm text-muted-foreground">Schulname</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                  <User className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                  <User className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="font-medium text-foreground">Nicht festgelegt</p>
                     <p className="text-sm text-muted-foreground">Schulleitung</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                  <MapPin className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                  <MapPin className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="font-medium text-foreground">458 Nordstraße, 13357 Berlin, Deutschland</p>
                     <p className="text-sm text-muted-foreground">Anschrift</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                  <Mail className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                  <Mail className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="font-medium text-foreground">kontakt@rs-nord.berlin.de</p>
                     <p className="text-sm text-muted-foreground">E-Mail</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                  <Phone className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                  <Phone className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="font-medium text-foreground">+49 30 87654321</p>
                     <p className="text-sm text-muted-foreground">Telefon</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
-                  <Phone className="w-5 h-5 text-muted-foreground" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-100">
+                  <Phone className="w-5 h-5 text-gray-500" />
                   <div>
                     <p className="font-medium text-foreground">Nicht festgelegt</p>
                     <p className="text-sm text-muted-foreground">Fax</p>
@@ -116,13 +116,13 @@ export default function Settings() {
           </Card>
 
           {/* General Data Management */}
-          <Card className="border-l-4 border-l-primary">
-            <CardHeader className="bg-muted/50 border-b border-border">
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="bg-blue-50 border-b border-blue-200">
               <CardTitle className="flex items-center gap-2">
-                <Database className="w-5 h-5 text-primary" />
+                <Database className="w-5 h-5 text-blue-600" />
                 Allgemeine Daten
               </CardTitle>
-              <p className="text-muted-foreground">Allgemeine Schuldaten bearbeiten und importieren</p>
+              <p className="text-blue-600/70">Allgemeine Schuldaten bearbeiten und importieren</p>
             </CardHeader>
             <CardContent>
               <DebugOverlay id="SET-001" name="Settings.GeneralData">
@@ -140,30 +140,30 @@ export default function Settings() {
                 ].map((item, index) => {
                   const IconComponent = item.icon;
                   return (
-                    <Button 
-                      key={index} 
-                      variant="outline" 
-                      className="flex items-center gap-3 p-4 h-auto hover:bg-accent hover:border-primary/20 transition-colors justify-start"
+                    <Button
+                      key={index}
+                      variant="outline"
+                      className="flex items-center gap-3 p-4 h-auto hover:bg-blue-50 hover:border-blue-300 transition-colors justify-start border-gray-200"
                     >
-                      <IconComponent className="w-6 h-6 text-primary" />
+                      <IconComponent className="w-6 h-6 text-blue-600" />
                       <span className="font-medium">{item.name}</span>
                     </Button>
                   );
                 })}
               </div>
               
-              <div className="border-t border-border pt-6 space-y-3">
-                <Button variant="outline" className="w-full p-4 h-auto bg-muted/20 hover:bg-muted/50 border-border">
+              <div className="border-t border-blue-200 pt-6 space-y-3">
+                <Button variant="outline" className="w-full p-4 h-auto bg-blue-50 hover:bg-blue-100 border-blue-200">
                   <div className="flex flex-col items-center gap-3">
-                    <Shield className="w-5 h-5 text-primary" />
+                    <Shield className="w-5 h-5 text-blue-600" />
                     <div className="text-center">
-                      <p className="font-medium text-foreground">Sicherheit und Datenschutz</p>
-                      <p className="text-sm text-muted-foreground">Hier können Sie Ihre Sicherheits- und Datenschutzeinstellungen verwalten</p>
+                      <p className="font-medium text-blue-900">Sicherheit und Datenschutz</p>
+                      <p className="text-sm text-blue-600/70">Hier können Sie Ihre Sicherheits- und Datenschutzeinstellungen verwalten</p>
                     </div>
                   </div>
                 </Button>
-                <Button variant="outline" className="w-full p-3 bg-muted/20 hover:bg-muted/50 border-border gap-2">
-                  <Download className="w-4 h-4" />
+                <Button variant="outline" className="w-full p-3 bg-blue-50 hover:bg-blue-100 border-blue-200 gap-2">
+                  <Download className="w-4 h-4 text-blue-600" />
                   Daten aus der LUSD importieren
                 </Button>
                 </div>
