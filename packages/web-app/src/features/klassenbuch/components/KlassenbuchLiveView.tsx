@@ -37,7 +37,6 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
     const fetchScheduleData = async () => {
       try {
         setIsLoading(true);
-        console.log('🏫 Fetching schedule data for class:', selectedClass.name);
 
         // Get current user profile to extract school_id
         const userProfile = await getCurrentUserProfile();
@@ -48,7 +47,6 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
           return;
         }
 
-        console.log('🏫 Using school ID:', currentSchoolId);
         setSchoolId(currentSchoolId);
 
         // Calculate start of the selected week
@@ -58,38 +56,24 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass, onAttendanceC
         weekStart.setDate(diff);
         weekStart.setHours(0, 0, 0, 0);
 
-        // Fetch periods, school days, and lessons in parallel
-        console.log('🔄 Fetching schedule data for:', {
-          classId: selectedClass.id,
-          schoolId: currentSchoolId,
-          weekStart: weekStart.toISOString()
-        });
-
-        const [periodsData, schoolDaysData, lessonsData] = await Promise.all([
+        // Fetch periods, school days, and lessons in parallel with optimized approach
+        const [periodsData, schoolDaysData] = await Promise.all([
           getSchedulePeriods(currentSchoolId, ['instructional', 'flex']),
-          getSchoolDays(currentSchoolId),
-          getLessonsForWeek(selectedClass.id, currentSchoolId, weekStart)
+          getSchoolDays(currentSchoolId)
         ]);
+
+        // Pass pre-fetched schoolDaysData and userProfile to avoid redundant calls
+        const lessonsData = await getLessonsForWeek(
+          selectedClass.id,
+          currentSchoolId,
+          weekStart,
+          schoolDaysData,
+          userProfile
+        );
 
         setSchedulePeriods(periodsData);
         setSchoolDays(schoolDaysData);
         setClassTimetable(lessonsData);
-
-        console.log('✅ Schedule data loaded:', {
-          periods: periodsData.length,
-          schoolDays: schoolDaysData.length,
-          lessons: lessonsData.length
-        });
-
-        console.log('📅 Schedule periods block numbers:', periodsData.map(p => ({
-          id: p.id,
-          block_number: p.block_number,
-          label: p.label
-        })));
-
-        // Period matching analysis complete
-
-        console.log('📚 Lessons data:', lessonsData);
 
         if (lessonsData.length === 0) {
           console.warn('⚠�� No lessons found for:', {
