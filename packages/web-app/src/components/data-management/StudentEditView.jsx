@@ -27,6 +27,7 @@ import {
 
 export default function StudentEditView({ student, onBack, onSave }) {
   const [activeTab, setActiveTab] = useState('schulakte')
+  const [expandedParent, setExpandedParent] = useState(null)
   const [editedStudent, setEditedStudent] = useState({
     ...student,
     // Ensure all arrays exist
@@ -510,86 +511,128 @@ export default function StudentEditView({ student, onBack, onSave }) {
             </CardHeader>
             <CardContent className="space-y-4">
               {editedStudent.parents.map((parent, index) => (
-                <div key={index} className="p-4 border border-blue-200 rounded-lg bg-blue-50 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-blue-900">Elternteil #{index + 1}</h4>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-2 hover:bg-red-50"
-                      onClick={() => removeItemFromArray('parents', index)}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
+                <div key={index} className="border border-blue-200 rounded-lg bg-blue-50">
+                  {/* Parent Summary - Always Visible */}
+                  <div
+                    className="p-4 cursor-pointer hover:bg-blue-100 transition-colors"
+                    onClick={() => setExpandedParent(expandedParent === index ? null : index)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-blue-900">
+                            {parent.firstName} {parent.lastName}
+                          </h3>
+                          <div className="flex items-center gap-4 text-sm text-blue-600/70">
+                            <span>{parent.relationship}</span>
+                            <span className="flex items-center gap-1">
+                              <Mail className="w-3 h-3" />
+                              {parent.email}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3" />
+                              {parent.phone}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className={parent.isPrimary ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                          {parent.isPrimary ? 'Hauptkontakt' : 'Zusatzkontakt'}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2 hover:bg-red-50"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (confirm('Elternteil entfernen?')) {
+                              removeItemFromArray('parents', index)
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm font-medium text-blue-900">Vorname</label>
-                      <Input
-                        value={parent.firstName}
-                        onChange={(e) => updateNestedField('parents', index, 'firstName', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-blue-900">Nachname</label>
-                      <Input
-                        value={parent.lastName}
-                        onChange={(e) => updateNestedField('parents', index, 'lastName', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-blue-900">Beziehung</label>
-                      <select
-                        value={parent.relationship}
-                        onChange={(e) => updateNestedField('parents', index, 'relationship', e.target.value)}
-                        className="w-full mt-1 px-3 py-2 border border-input bg-background rounded-md"
-                      >
-                        <option value="Mutter">Mutter</option>
-                        <option value="Vater">Vater</option>
-                        <option value="Erziehungsberechtigte(r)">Erziehungsberechtigte(r)</option>
-                        <option value="Vormund">Vormund</option>
-                      </select>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={parent.isPrimary}
-                          onChange={(e) => updateNestedField('parents', index, 'isPrimary', e.target.checked)}
-                          className="w-4 h-4"
+
+                  {/* Expanded Details - Only when clicked */}
+                  {expandedParent === index && (
+                    <div className="border-t border-blue-200 p-4 bg-white space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-sm font-medium text-blue-900">Vorname</label>
+                          <Input
+                            value={parent.firstName}
+                            onChange={(e) => updateNestedField('parents', index, 'firstName', e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-blue-900">Nachname</label>
+                          <Input
+                            value={parent.lastName}
+                            onChange={(e) => updateNestedField('parents', index, 'lastName', e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-blue-900">Beziehung</label>
+                          <select
+                            value={parent.relationship}
+                            onChange={(e) => updateNestedField('parents', index, 'relationship', e.target.value)}
+                            className="w-full mt-1 px-3 py-2 border border-input bg-background rounded-md"
+                          >
+                            <option value="Mutter">Mutter</option>
+                            <option value="Vater">Vater</option>
+                            <option value="Erziehungsberechtigte(r)">Erziehungsberechtigte(r)</option>
+                            <option value="Vormund">Vormund</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={parent.isPrimary}
+                              onChange={(e) => updateNestedField('parents', index, 'isPrimary', e.target.checked)}
+                              className="w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-blue-900">Hauptkontakt</span>
+                          </label>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-blue-900">E-Mail</label>
+                          <Input
+                            type="email"
+                            value={parent.email}
+                            onChange={(e) => updateNestedField('parents', index, 'email', e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-blue-900">Telefon</label>
+                          <Input
+                            value={parent.phone}
+                            onChange={(e) => updateNestedField('parents', index, 'phone', e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-blue-900">Adresse</label>
+                        <Textarea
+                          value={parent.address}
+                          onChange={(e) => updateNestedField('parents', index, 'address', e.target.value)}
+                          className="mt-1"
+                          rows={2}
                         />
-                        <span className="text-sm font-medium text-blue-900">Hauptkontakt</span>
-                      </label>
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-blue-900">E-Mail</label>
-                      <Input
-                        type="email"
-                        value={parent.email}
-                        onChange={(e) => updateNestedField('parents', index, 'email', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-blue-900">Telefon</label>
-                      <Input
-                        value={parent.phone}
-                        onChange={(e) => updateNestedField('parents', index, 'phone', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-blue-900">Adresse</label>
-                    <Textarea
-                      value={parent.address}
-                      onChange={(e) => updateNestedField('parents', index, 'address', e.target.value)}
-                      className="mt-1"
-                      rows={2}
-                    />
-                  </div>
+                  )}
                 </div>
               ))}
               {editedStudent.parents.length === 0 && (
