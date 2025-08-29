@@ -58,6 +58,12 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
         weekStart.setHours(0, 0, 0, 0);
 
         // Fetch periods, school days, and lessons in parallel
+        console.log('🔄 Fetching schedule data for:', {
+          classId: selectedClass.id,
+          schoolId: currentSchoolId,
+          weekStart: weekStart.toISOString()
+        });
+
         const [periodsData, schoolDaysData, lessonsData] = await Promise.all([
           getSchedulePeriods(currentSchoolId, ['instructional', 'flex']),
           getSchoolDays(currentSchoolId),
@@ -73,6 +79,17 @@ export function KlassenbuchLiveView({ selectedWeek, selectedClass }: Klassenbuch
           schoolDays: schoolDaysData.length,
           lessons: lessonsData.length
         });
+
+        console.log('📚 Lessons data:', lessonsData);
+
+        if (lessonsData.length === 0) {
+          console.warn('⚠️ No lessons found for:', {
+            classId: selectedClass.id,
+            className: selectedClass.name,
+            schoolId: currentSchoolId,
+            weekStart: weekStart.toDateString()
+          });
+        }
 
       } catch (error) {
         console.error('💥 Error fetching schedule data:', error);
