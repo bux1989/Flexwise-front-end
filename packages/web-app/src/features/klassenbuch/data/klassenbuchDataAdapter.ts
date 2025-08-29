@@ -362,9 +362,10 @@ export async function getLessonsForWeek(classId: string, schoolId: string, weekS
 /**
  * Transform database lesson to our Lesson interface
  * @param dbLesson - Database lesson from vw_react_lesson_details
+ * @param schoolDays - School days data for proper day name mapping
  * @returns Transformed lesson
  */
-function transformDatabaseLesson(dbLesson: DatabaseLesson): Lesson {
+function transformDatabaseLesson(dbLesson: DatabaseLesson, schoolDays: SchoolDay[]): Lesson {
   const now = new Date();
   const lessonStart = new Date(dbLesson.start_datetime);
   const lessonEnd = new Date(dbLesson.end_datetime);
@@ -373,9 +374,17 @@ function transformDatabaseLesson(dbLesson: DatabaseLesson): Lesson {
   const isPast = lessonEnd < now;
   const isOngoing = lessonStart <= now && lessonEnd >= now;
 
-  // Get day name in German
-  const dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-  const dayName = dayNames[lessonStart.getDay()];
+  // Get day name using the school's day mapping
+  const lessonDayNumber = lessonStart.getDay(); // 0=Sunday, 1=Monday, etc.
+  const schoolDay = schoolDays.find(sd => sd.day.day_number === lessonDayNumber);
+  const dayName = schoolDay?.day.name_de || schoolDay?.day.name_en || 'Unbekannt';
+
+  console.log('🗓️ Lesson day mapping:', {
+    lessonDayNumber,
+    dayName,
+    lessonDate: lessonStart.toDateString(),
+    schoolDayFound: !!schoolDay
+  });
 
   // Format time
   const timeString = `${lessonStart.toTimeString().substring(0, 5)}-${lessonEnd.toTimeString().substring(0, 5)}`;
