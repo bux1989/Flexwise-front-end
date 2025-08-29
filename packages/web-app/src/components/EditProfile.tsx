@@ -701,12 +701,21 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
         return;
       }
 
-      const { error } = await supabase.auth.signInWithOtp({
+      // Try with shouldCreateUser: true first (for OTP-only flow)
+      let { error } = await supabase.auth.signInWithOtp({
         phone: formattedPhone,
         options: {
-          shouldCreateUser: false
+          shouldCreateUser: true // Allow OTP signup
         }
       });
+
+      // If that fails, try without the option
+      if (error && error.message.includes('Signups not allowed')) {
+        console.log('Retrying SMS OTP without shouldCreateUser option...');
+        ({ error } = await supabase.auth.signInWithOtp({
+          phone: formattedPhone
+        }));
+      }
 
       if (error) {
         console.error('Error sending SMS OTP:', error);
@@ -716,18 +725,20 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
           statusCode: error.statusCode
         });
 
-        // Provide more specific error messages
-        if (error.message.includes('422') || error.message.includes('Phone number is invalid')) {
-          alert('SMS-Funktion ist möglicherweise nicht konfiguriert. Bitte verwenden Sie stattdessen E-Mail-OTP oder kontaktieren Sie den Administrator.');
+        // Provide specific error messages based on the actual error
+        if (error.message.includes('Signups not allowed for otp')) {
+          alert('SMS OTP ist in der Supabase-Konfiguration deaktiviert. Der Administrator muss in den Supabase Auth-Einstellungen "Enable phone signup" aktivieren.');
+        } else if (error.message.includes('Phone number is invalid') || error.message.includes('422')) {
+          alert(`Ungültiges Telefonnummer-Format: ${formattedPhone}\nBitte verwenden Sie das internationale Format (z.B. +4915912345678)`);
         } else if (error.message.includes('rate limit')) {
-          alert('Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
-        } else if (error.message.includes('SMS provider')) {
-          alert('SMS-Service ist nicht verfügbar. Bitte verwenden Sie E-Mail-OTP.');
+          alert('Zu viele SMS-Anfragen. Bitte warten Sie 60 Sekunden und versuchen Sie es erneut.');
+        } else if (error.message.includes('SMS provider') || error.message.includes('Twilio')) {
+          alert('SMS-Provider ist nicht konfiguriert. Der Administrator muss Twilio oder einen anderen SMS-Service in Supabase einrichten.');
         } else {
-          alert('SMS-OTP ist nicht verfügbar. Bitte verwenden Sie E-Mail-OTP oder kontaktieren Sie den Administrator.');
+          alert(`SMS-OTP Fehler: ${error.message}\nBitte kontaktieren Sie den Administrator.`);
         }
       } else {
-        alert(`OTP-Code wurde an ${formattedPhone} gesendet!`);
+        alert(`✅ SMS OTP-Code wurde an ${formattedPhone} gesendet!`);
         setOtpMethod('sms');
       }
     } catch (error) {
