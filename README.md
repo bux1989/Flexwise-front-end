@@ -1,4 +1,4 @@
-# School Management System - React Version
+# School Management System - React Version 
 
 A React-based school management application with login and teacher dashboard functionality.
 
