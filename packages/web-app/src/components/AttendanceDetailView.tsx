@@ -391,14 +391,6 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
     }
   };
 
-  const getStatusCount = () => {
-    // Count students matching current status after filtering
-    const currentStatusCount = filteredAndSortedStudents.filter(student =>
-      (studentUpdates[student.id] || student).status === status
-    ).length;
-
-    return `${currentStatusCount} ${currentStatusCount === 1 ? 'Schüler*in' : 'Schüler*innen'}`;
-  };
 
   const getDescription = (status: string) => {
     switch (status) {
