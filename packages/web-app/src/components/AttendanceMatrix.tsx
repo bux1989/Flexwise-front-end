@@ -39,7 +39,8 @@ export function AttendanceMatrix({ onClassClick, onStatusClick }: AttendanceMatr
     ausstehend: 23,
     entschuldigt: 8,
     unentschuldigt: 2,
-    ueberfaellig: 3
+    ueberfaellig: 3,
+    entlassen: 45
   };
 
   const getStatusIcon = (status: string) => {
