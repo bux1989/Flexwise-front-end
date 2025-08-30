@@ -247,15 +247,15 @@ export function TwoFactorTestUtility() {
             </div>
           )}
 
-          {/* User Stats */}
+          {/* MFA Factors */}
           {userStats && !userStats.error && (
             <div className="space-y-2">
-              <span className="font-medium">Current User Stats</span>
+              <span className="font-medium">MFA Factors</span>
               <div className="text-xs space-y-1 bg-blue-50 p-2 rounded">
-                <div>Email: {userStats.user_email}</div>
-                <div>2FA Enabled: {userStats.has_2fa_enabled ? '✓' : '✗'}</div>
-                <div>Trusted Devices: {userStats.trusted_devices_count}</div>
-                <div>Active: {userStats.active_devices} | Expired: {userStats.expired_devices}</div>
+                <div>Total Factors: {userStats.totalFactors}</div>
+                <div>TOTP Factors: {userStats.totpFactors}</div>
+                <div>Phone Factors: {userStats.phoneFactors}</div>
+                <div>Verified: {userStats.verifiedFactors}</div>
               </div>
             </div>
           )}
@@ -265,23 +265,25 @@ export function TwoFactorTestUtility() {
             <div className="space-y-2">
               <span className="font-medium">Test Results</span>
               
-              {testResults.deviceFingerprint && (
+              {testResults.securityInfo && (
                 <div className="text-xs bg-gray-50 p-2 rounded">
                   <div className="flex items-center gap-1 mb-1">
-                    <Monitor className="h-3 w-3" />
-                    <span className="font-medium">Device Fingerprint</span>
-                    {testResults.deviceFingerprint.success ? 
-                      <CheckCircle className="h-3 w-3 text-green-600" /> : 
+                    <Shield className="h-3 w-3" />
+                    <span className="font-medium">Security Info</span>
+                    {testResults.securityInfo.success ?
+                      <CheckCircle className="h-3 w-3 text-green-600" /> :
                       <XCircle className="h-3 w-3 text-red-600" />
                     }
                   </div>
-                  {testResults.deviceFingerprint.success ? (
+                  {testResults.securityInfo.success ? (
                     <div>
-                      <div>Device: {testResults.deviceFingerprint.deviceName}</div>
-                      <div>Length: {testResults.deviceFingerprint.length} chars</div>
+                      <div>Role: {testResults.securityInfo.userRole}</div>
+                      <div>Requires 2FA: {testResults.securityInfo.requires2FA ? '✓' : '✗'}</div>
+                      <div>Has 2FA: {testResults.securityInfo.has2FA ? '✓' : '✗'}</div>
+                      <div className="text-green-600">{testResults.securityInfo.note}</div>
                     </div>
                   ) : (
-                    <div className="text-red-600">Error: {testResults.deviceFingerprint.error}</div>
+                    <div className="text-red-600">Error: {testResults.securityInfo.error}</div>
                   )}
                 </div>
               )}
@@ -301,7 +303,7 @@ export function TwoFactorTestUtility() {
                       <div>Role: {testResults.roleCheck.userRole}</div>
                       <div>Requires 2FA: {testResults.roleCheck.requires2FA ? '✓' : '✗'}</div>
                       <div>Has 2FA: {testResults.roleCheck.has2FA ? '✓' : '✗'}</div>
-                      <div>Device Trusted: {testResults.roleCheck.deviceTrusted ? '✓' : '✗'}</div>
+                      <div className="text-blue-600">{testResults.roleCheck.deviceTrustNote}</div>
                     </div>
                   ) : (
                     <div className="text-red-600">Error: {testResults.roleCheck.error}</div>
