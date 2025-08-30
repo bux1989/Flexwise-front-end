@@ -51,20 +51,28 @@ clearRateLimitState()       // Clean up expired state
 - Tables without AAL2 requirements
 - Developer tools/console access
 
-## Immediate Action Required
+## Immediate Action Required (UPDATED)
 
-### Step 1: Run Security Hardening Script
+### Step 1: Apply Official Supabase MFA Hardening
 ```sql
--- Run this in Supabase SQL Editor
-\i sql/harden_mfa_aal2_requirements.sql
+-- Run this in Supabase SQL Editor (RECOMMENDED approach)
+\i sql/supabase_official_mfa_hardening.sql
 ```
 
-This adds RLS policies requiring AAL2 for users with verified MFA factors on:
+**⚠️ Use the official script instead of the previous one**
+
+This implements Supabase's recommended RESTRICTIVE policies on:
 - `user_profiles` (CRITICAL)
-- `contacts` (CRITICAL) 
+- `contacts` (CRITICAL)
 - `school_settings` (if exists)
 - `student_records` (if exists)
 - `attendance_records` (if exists)
+
+**Key differences from previous approach:**
+- Uses RESTRICTIVE policies (more secure)
+- Follows official Supabase patterns
+- Includes required permissions grant
+- Uses official helper function pattern
 
 ### Step 2: Test Security Implementation
 1. Add the test component to your admin/debug page:
