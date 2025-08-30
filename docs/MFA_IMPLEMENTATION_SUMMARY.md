@@ -159,16 +159,35 @@ WHERE mf.status = 'verified'
 4. ✅ Monitor audit logs
 
 ### Short Term (1-2 Weeks):
-1. Add more tables to AAL2 requirements
-2. Implement real-time security alerts
-3. Create security dashboard
-4. Document MFA enrollment process for users
+1. Replace previous implementation with official Supabase patterns
+2. Add more tables to AAL2 requirements using RESTRICTIVE policies
+3. Implement real-time security alerts
+4. Create security dashboard
+5. Document MFA enrollment process for users
 
-### Long Term (1 Month):
-1. Add device trust/registration
-2. Implement session timeout after MFA
+### Medium Term (1-3 Months):
+1. **Implement trusted device management** (not yet implemented)
+2. Add conditional MFA based on risk factors
+3. Implement session timeout after MFA
+4. Geographic access restrictions
+
+### Long Term (3+ Months):
+1. Device fingerprinting and trust scoring
+2. Behavioral analytics for anomaly detection
 3. Add advanced threat detection
-4. Regular security audits
+4. Regular security audits and penetration testing
+
+## Important Notes on Trusted Devices
+
+**Status: NOT YET IMPLEMENTED** ⚠️
+
+The current system does NOT include:
+- Device registration/fingerprinting
+- Trusted device management
+- Reduced MFA requirements for known devices
+- Device-based access policies
+
+This should be a priority for future development to improve user experience while maintaining security.
 
 ## Frequently Asked Questions
 
