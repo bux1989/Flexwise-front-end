@@ -42,7 +42,10 @@ export default function SecurityDataProtection({ onBack }) {
       educator: { mandatory: false, enabled: false },
       external: { mandatory: true, enabled: true },
       parent: { mandatory: false, enabled: false },
-      student: { mandatory: false, enabled: false }
+      student: { mandatory: false, enabled: false },
+      hausmeister: { mandatory: false, enabled: false },
+      sekretariat: { mandatory: false, enabled: false },
+      schulsozialarbeit: { mandatory: false, enabled: false }
     },
     autoLogout: {
       admin: 60,      // minutes
@@ -50,7 +53,10 @@ export default function SecurityDataProtection({ onBack }) {
       educator: 45,
       external: 30,
       parent: 30,
-      student: 20
+      student: 20,
+      hausmeister: 45,
+      sekretariat: 45,
+      schulsozialarbeit: 45
     },
     attendancePIN: {
       enabled: false,
