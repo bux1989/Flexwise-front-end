@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase'
 export function QuickMFATest() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [smsCode, setSmsCode] = useState('')
+  const [challengeData, setChallengeData] = useState(null)
 
   const testSMSEnrollment = async () => {
     setLoading(true)
