@@ -477,7 +477,7 @@ export default function StudentManagement({ onBack }) {
       const wb = XLSX.utils.book_new()
 
       // Create data with headers, example row, and instruction
-      const instructionRow = ['⚠️ HINWEIS: Die grüne Beispielzeile wird automatisch übersprungen', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+      const instructionRow = ['⚠️ HINWEIS: Die Beispielzeile wird automatisch übersprungen', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
       const emptyRow = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
       const newDataRow = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
 
