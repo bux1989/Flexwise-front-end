@@ -1562,29 +1562,47 @@ export default function StudentManagement({ onBack }) {
                       <table className="w-full text-sm">
                         <thead className="bg-gray-50 sticky top-0">
                           <tr>
+                            <th className="px-3 py-2 text-left border-r border-gray-200">Status</th>
                             <th className="px-3 py-2 text-left border-r border-gray-200">Vorname</th>
                             <th className="px-3 py-2 text-left border-r border-gray-200">Nachname</th>
                             <th className="px-3 py-2 text-left border-r border-gray-200">Klasse</th>
                             <th className="px-3 py-2 text-left border-r border-gray-200">Nickname</th>
-                            <th className="px-3 py-2 text-left border-r border-gray-200">Geburtsdatum</th>
                             <th className="px-3 py-2 text-left border-r border-gray-200">BuT</th>
                             <th className="px-3 py-2 text-left">Eltern 1</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {parsedData.map((student, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
-                              <td className="px-3 py-2 border-r border-gray-200">{student['Vorname']}</td>
-                              <td className="px-3 py-2 border-r border-gray-200">{student['Nachname']}</td>
-                              <td className="px-3 py-2 border-r border-gray-200">{student['Klasse']}</td>
-                              <td className="px-3 py-2 border-r border-gray-200">{student['Rufname/Nickname'] || '-'}</td>
-                              <td className="px-3 py-2 border-r border-gray-200">{student['Geburtsdatum'] || '-'}</td>
-                              <td className="px-3 py-2 border-r border-gray-200">
-                                {student['BuT berechtigt'] === 'Ja' ? `${student['BuT Typ'] || 'Ja'}` : 'Nein'}
-                              </td>
-                              <td className="px-3 py-2">{student['Eltern 1 - Name'] || '-'}</td>
-                            </tr>
-                          ))}
+                          {parsedData.map((student, index) => {
+                            const exampleField = student['Beispiel (NICHT ÄNDERN)'] || ''
+                            const isExample = exampleField.toLowerCase().includes('ja') ||
+                                            exampleField.toLowerCase().includes('beispiel') ||
+                                            exampleField.toLowerCase().includes('example') ||
+                                            exampleField.toLowerCase().includes('yes')
+
+                            return (
+                              <tr key={index} className={isExample ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"}>
+                                <td className="px-3 py-2 border-r border-gray-200">
+                                  {isExample ? (
+                                    <Badge className="bg-red-100 text-red-700 text-xs">
+                                      Beispiel - wird übersprungen
+                                    </Badge>
+                                  ) : (
+                                    <Badge className="bg-green-100 text-green-700 text-xs">
+                                      Wird importiert
+                                    </Badge>
+                                  )}
+                                </td>
+                                <td className="px-3 py-2 border-r border-gray-200">{student['Vorname']}</td>
+                                <td className="px-3 py-2 border-r border-gray-200">{student['Nachname']}</td>
+                                <td className="px-3 py-2 border-r border-gray-200">{student['Klasse']}</td>
+                                <td className="px-3 py-2 border-r border-gray-200">{student['Rufname/Nickname'] || '-'}</td>
+                                <td className="px-3 py-2 border-r border-gray-200">
+                                  {student['BuT berechtigt'] === 'Ja' ? `${student['BuT Typ'] || 'Ja'}` : 'Nein'}
+                                </td>
+                                <td className="px-3 py-2">{student['Eltern 1 - Name'] || '-'}</td>
+                              </tr>
+                            )
+                          })}
                         </tbody>
                       </table>
                     </div>
