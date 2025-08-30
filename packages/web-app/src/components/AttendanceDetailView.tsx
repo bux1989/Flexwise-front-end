@@ -275,7 +275,7 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
     }
 
     return filtered;
-  }, [allStudents, searchTerm, selectedClass, sortField, sortDirection]);
+  }, [allStudents, searchTerm, selectedClass, sortField, sortDirection, studentUpdates]);
 
   const handleSort = (field: 'name' | 'klasse') => {
     if (sortField === field) {
