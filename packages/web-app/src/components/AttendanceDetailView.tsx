@@ -282,6 +282,27 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
     if (sortField !== field) return null;
     return sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
   };
+
+  const handleOpenNoteModal = (studentId: string) => {
+    setNoteModal({ isOpen: true, studentId });
+    setNewNote('');
+  };
+
+  const handleCloseNoteModal = () => {
+    setNoteModal({ isOpen: false, studentId: null });
+    setNewNote('');
+  };
+
+  const handleSaveNote = () => {
+    // In a real app, this would save to backend
+    console.log('Saving note for student:', noteModal.studentId, 'Note:', newNote);
+    handleCloseNoteModal();
+  };
+
+  const handleStatusChange = (studentId: string, newStatus: string) => {
+    // In a real app, this would update the backend
+    console.log('Changing status for student:', studentId, 'to:', newStatus);
+  };
   const getStatusTitle = (status: string) => {
     switch (status) {
       case 'ueberfaellig':
