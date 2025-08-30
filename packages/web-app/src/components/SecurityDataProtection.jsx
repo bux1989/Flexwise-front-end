@@ -728,7 +728,7 @@ export default function SecurityDataProtection({ onBack }) {
                 <Key className="w-5 h-5 text-amber-600" />
                 Zusatzberechtigungen
               </CardTitle>
-              <p className="text-amber-600/70">Optional, von Admins verteilbar ��� nur mit 2FA</p>
+              <p className="text-amber-600/70">Optional, von Admins verteilbar – nur mit 2FA</p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -744,36 +744,57 @@ export default function SecurityDataProtection({ onBack }) {
                   { key: 'aufgaben', name: 'Aufgaben (ToDos)', description: 'Aufgabenlisten verwalten' },
                   { key: 'schueler', name: 'Schüler*innen', description: 'Schülerprofile und -daten verwalten' },
                   { key: 'eltern', name: 'Eltern', description: 'Elterndaten und Kommunikation verwalten' }
-                ].map((permission) => (
-                  <div key={permission.key} className="p-4 border border-amber-200 rounded-lg bg-amber-50">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h3 className="font-medium text-amber-900">{permission.name}</h3>
-                        <p className="text-sm text-amber-700">{permission.description}</p>
-                      </div>
-                      {isEditing && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-amber-700 border-amber-300 hover:bg-amber-100"
-                        >
-                          Verwalten
-                        </Button>
-                      )}
-                    </div>
+                ].map((permission) => {
+                  const assignedStaff = staffAssignments.permissions[permission.key] || []
+                  return (
+                    <div key={permission.key} className="p-4 border border-amber-200 rounded-lg bg-amber-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-amber-900">{permission.name}</h3>
+                          <p className="text-sm text-amber-700 mb-3">{permission.description}</p>
 
-                    {/* Current Permissions Display */}
-                    <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-amber-200 text-amber-800">
-                        <Shield className="w-3 h-3 mr-1" />
-                        2FA erforderlich
-                      </Badge>
-                      <Badge className="bg-gray-200 text-gray-700">
-                        Admin-Vergabe
-                      </Badge>
+                          {/* Assigned Staff */}
+                          <div>
+                            <p className="text-xs font-medium text-amber-800 mb-2">Zugewiesene Mitarbeitende:</p>
+                            <div className="flex flex-wrap gap-1 mb-3">
+                              {assignedStaff.map((staff, staffIndex) => (
+                                <Badge key={staffIndex} className="bg-amber-200 text-amber-800 text-xs px-2 py-1">
+                                  {staff}
+                                </Badge>
+                              ))}
+                              {assignedStaff.length === 0 && (
+                                <span className="text-xs text-amber-700 italic">Keine Zuweisungen</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        {isEditing && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-amber-700 border-amber-300 hover:bg-amber-100 ml-4"
+                          >
+                            Verwalten
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Permission Requirements */}
+                      <div className="flex flex-wrap gap-2">
+                        <Badge className="bg-amber-300 text-amber-900">
+                          <Shield className="w-3 h-3 mr-1" />
+                          2FA erforderlich
+                        </Badge>
+                        <Badge className="bg-gray-300 text-gray-800">
+                          Admin-Vergabe
+                        </Badge>
+                        <Badge className="bg-blue-200 text-blue-800">
+                          {assignedStaff.length} Personen
+                        </Badge>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
