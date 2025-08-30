@@ -87,10 +87,24 @@ export function MFAPolicyTester() {
 
       const testTable = async (tableName, category) => {
         try {
-          const { data, error } = await supabase
-            .from(tableName)
-            .select('*')
-            .limit(1)
+          let data, error
+
+          // Special handling for user_profiles - use secure function
+          if (tableName === 'user_profiles') {
+            const result = await supabase.rpc('get_user_profile', {
+              profile_id: user.user_metadata?.profile_id
+            })
+            data = result.data
+            error = result.error
+          } else {
+            // Regular table access test
+            const result = await supabase
+              .from(tableName)
+              .select('*')
+              .limit(1)
+            data = result.data
+            error = result.error
+          }
 
           const testResult = {
             accessible: !error,
