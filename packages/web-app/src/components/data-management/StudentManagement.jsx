@@ -517,10 +517,15 @@ export default function StudentManagement({ onBack }) {
           phone: student.phone || '',
           class: student.class,
           birthDate: '',
-          status: 'active',
+          status: 'inactive', // Default for new students is inactive (no FlexWise login yet)
           address: '',
           einstieg: student.einstieg,
           ausstieg: '',
+          loginInfo: {
+            hasAccount: false,
+            registrationDate: null,
+            lastLogin: null
+          },
           photoPermissions: [],
           allergies: [],
           but: { enabled: false },
