@@ -40,7 +40,26 @@ This document tracks known issues and potential improvements that are not critic
 ## Frontend Issues
 
 ### 🎨 UI/UX Improvements
-*No items currently tracked*
+
+#### Screen Flash During Logout
+**Issue:** When user logs out, there's a brief screen flash/flicker before redirecting to login page.
+
+**Current Behavior:**
+- User clicks logout
+- Screen briefly flashes or shows content before redirect
+- Creates jarring user experience
+
+**Proposed Solutions:**
+- Add smooth transition animation during logout
+- Show loading spinner during logout process
+- Implement fade-out effect before redirect
+- Consider using React Router's navigation transitions
+
+**Priority:** Low
+**Effort:** Low
+**Impact:** Improved user experience, more polished feel
+
+---
 
 ### 📱 Performance Optimizations  
 *No items currently tracked*
