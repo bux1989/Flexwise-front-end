@@ -1,5 +1,26 @@
 # Flexwise Documentation
 
+## Security & Authentication
+
+### 🔒 [Two-Factor Authentication (2FA) System](./2FA_SYSTEM.md)
+Comprehensive documentation for the role-based 2FA implementation:
+
+- **System Architecture**: Role-based requirements, device trust, components
+- **Implementation Details**: Database schema, key functions, user flows
+- **Security Features**: Device fingerprinting, sensitive action protection
+- **User Management**: Admin tools, self-service options, monitoring
+- **Configuration Guide**: Environment variables, Supabase settings
+- **Troubleshooting**: Common issues, testing checklist, support
+
+### 🛡️ [Security Checklist](./SECURITY.md)
+Production security requirements and configurations:
+
+- **Environment Security**: Proper secrets management, SSL/TLS
+- **Database Security**: RLS policies, school data isolation
+- **Authentication**: 2FA requirements, session management
+- **Network Security**: CORS, rate limiting, monitoring
+- **Compliance**: GDPR considerations, audit logging
+
 ## Database Documentation
 
 ### 📖 [Database Schema Reference](./database-schema.md)
