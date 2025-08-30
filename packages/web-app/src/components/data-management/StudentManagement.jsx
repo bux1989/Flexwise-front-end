@@ -421,6 +421,225 @@ export default function StudentManagement({ onBack }) {
   // Get unique classes for filter
   const availableClasses = [...new Set(students.map(student => student.class))].sort()
 
+  // CSV Template and Processing Functions
+  const generateCSVTemplate = () => {
+    const headers = [
+      'Vorname',
+      'Nachname',
+      'Klasse',
+      'Rufname/Nickname',
+      'Geburtsdatum',
+      'Adresse',
+      'Einstieg',
+      'Telefon (Schüler)',
+      'Eltern 1 - Name',
+      'Eltern 1 - E-Mail',
+      'Eltern 1 - Telefon',
+      'Eltern 2 - Name',
+      'Eltern 2 - E-Mail',
+      'Eltern 2 - Telefon',
+      'Allergien',
+      'BuT berechtigt',
+      'BuT Typ',
+      'BuT Gültig bis'
+    ]
+
+    const sampleRow = [
+      'Max',
+      'Mustermann',
+      '10A',
+      'Maxi',
+      '2008-05-15',
+      'Musterstraße 123, 12345 Berlin',
+      new Date().toISOString().split('T')[0],
+      '+49 123 456789',
+      'Maria Mustermann',
+      'maria.mustermann@email.de',
+      '+49 123 456789',
+      'Peter Mustermann',
+      'peter.mustermann@email.de',
+      '+49 123 456788',
+      'Erdnüsse (schwer)',
+      'Ja',
+      'B1',
+      '2024-12-31'
+    ]
+
+    return [headers, sampleRow]
+  }
+
+  const downloadTemplate = () => {
+    const [headers, sampleRow] = generateCSVTemplate()
+    const csvContent = [headers, sampleRow]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', 'schueler_import_template.csv')
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const parseCSV = (text) => {
+    const lines = text.split('\n').filter(line => line.trim())
+    if (lines.length < 2) return { data: [], errors: ['Datei ist leer oder enthält nur Überschriften'] }
+
+    const headers = lines[0].split(',').map(header => header.replace(/"/g, '').trim())
+    const expectedHeaders = [
+      'Vorname', 'Nachname', 'Klasse', 'Rufname/Nickname', 'Geburtsdatum', 'Adresse',
+      'Einstieg', 'Telefon (Schüler)', 'Eltern 1 - Name', 'Eltern 1 - E-Mail', 'Eltern 1 - Telefon',
+      'Eltern 2 - Name', 'Eltern 2 - E-Mail', 'Eltern 2 - Telefon', 'Allergien', 'BuT berechtigt',
+      'BuT Typ', 'BuT Gültig bis'
+    ]
+
+    const data = []
+    const errors = []
+
+    // Check headers
+    if (!expectedHeaders.every(header => headers.includes(header))) {
+      errors.push('CSV-Datei enthält nicht alle erforderlichen Spalten. Bitte verwenden Sie die Vorlage.')
+      return { data: [], errors }
+    }
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(value => value.replace(/"/g, '').trim())
+      const rowData = {}
+
+      headers.forEach((header, index) => {
+        rowData[header] = values[index] || ''
+      })
+
+      // Validate required fields
+      if (!rowData['Vorname']) {
+        errors.push(`Zeile ${i + 1}: Vorname ist erforderlich`)
+        continue
+      }
+      if (!rowData['Nachname']) {
+        errors.push(`Zeile ${i + 1}: Nachname ist erforderlich`)
+        continue
+      }
+      if (!rowData['Klasse']) {
+        errors.push(`Zeile ${i + 1}: Klasse ist erforderlich`)
+        continue
+      }
+
+      // Validate BuT Type if provided
+      if (rowData['BuT Typ'] && !['B1', 'B2', 'L', ''].includes(rowData['BuT Typ'])) {
+        errors.push(`Zeile ${i + 1}: BuT Typ muss B1, B2 oder L sein`)
+      }
+
+      // Validate BuT berechtigt
+      if (rowData['BuT berechtigt'] && !['Ja', 'Nein', 'ja', 'nein', 'Yes', 'No', ''].includes(rowData['BuT berechtigt'])) {
+        errors.push(`Zeile ${i + 1}: BuT berechtigt muss "Ja" oder "Nein" sein`)
+      }
+
+      data.push({ ...rowData, rowNumber: i + 1 })
+    }
+
+    return { data, errors }
+  }
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    if (!file.name.endsWith('.csv')) {
+      setUploadErrors(['Bitte wählen Sie eine CSV-Datei aus'])
+      return
+    }
+
+    setUploadFile(file)
+    setIsProcessingFile(true)
+    setUploadErrors([])
+
+    try {
+      const text = await file.text()
+      const { data, errors } = parseCSV(text)
+      setParsedData(data)
+      setUploadErrors(errors)
+    } catch (error) {
+      setUploadErrors(['Fehler beim Lesen der Datei: ' + error.message])
+    } finally {
+      setIsProcessingFile(false)
+    }
+  }
+
+  const handleImportStudents = () => {
+    if (uploadErrors.length > 0) return
+
+    const newStudents = parsedData.map(row => ({
+      id: Date.now() + Math.random(),
+      firstName: row['Vorname'],
+      lastName: row['Nachname'],
+      nickname: row['Rufname/Nickname'] || null,
+      email: `${row['Vorname'].toLowerCase()}.${row['Nachname'].toLowerCase()}@student.de`,
+      phone: row['Telefon (Schüler)'] || '',
+      class: row['Klasse'],
+      birthDate: row['Geburtsdatum'] || '',
+      status: 'inactive',
+      address: row['Adresse'] || '',
+      einstieg: row['Einstieg'] || new Date().toISOString().split('T')[0],
+      ausstieg: '',
+      loginInfo: {
+        hasAccount: false,
+        registrationDate: null,
+        lastLogin: null
+      },
+      photoPermissions: [],
+      allergies: row['Allergien'] ? [{
+        name: row['Allergien'],
+        severity: 'Unbekannt',
+        description: row['Allergien']
+      }] : [],
+      but: {
+        enabled: ['Ja', 'ja', 'Yes'].includes(row['BuT berechtigt']),
+        type: row['BuT Typ'] || '',
+        validUntil: row['BuT Gültig bis'] || ''
+      },
+      parents: [
+        ...(row['Eltern 1 - Name'] ? [{
+          firstName: row['Eltern 1 - Name'].split(' ')[0] || '',
+          lastName: row['Eltern 1 - Name'].split(' ').slice(1).join(' ') || '',
+          relationship: 'Erziehungsberechtigte/r',
+          email: row['Eltern 1 - E-Mail'] || '',
+          phone: row['Eltern 1 - Telefon'] || '',
+          address: row['Adresse'] || '',
+          isPrimary: true,
+          loginInfo: { hasAccount: false, registrationDate: null, lastLogin: null }
+        }] : []),
+        ...(row['Eltern 2 - Name'] ? [{
+          firstName: row['Eltern 2 - Name'].split(' ')[0] || '',
+          lastName: row['Eltern 2 - Name'].split(' ').slice(1).join(' ') || '',
+          relationship: 'Erziehungsberechtigte/r',
+          email: row['Eltern 2 - E-Mail'] || '',
+          phone: row['Eltern 2 - Telefon'] || '',
+          address: row['Adresse'] || '',
+          isPrimary: false,
+          loginInfo: { hasAccount: false, registrationDate: null, lastLogin: null }
+        }] : [])
+      ],
+      siblings: [],
+      pickupSchedule: {},
+      authorizedPersons: [],
+      activeCourses: [],
+      waitingList: [],
+      pastCourses: []
+    }))
+
+    setStudents(prev => [...prev, ...newStudents])
+
+    // Reset upload modal
+    setShowUploadModal(false)
+    setUploadFile(null)
+    setParsedData([])
+    setUploadErrors([])
+  }
+
   // Helper functions for visual indicators
   const hasValidPhotoPermission = (student) => {
     return student.photoPermissions?.some(permission =>
