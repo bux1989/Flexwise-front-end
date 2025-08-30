@@ -20,31 +20,31 @@ export default function Login() {
     setError('')
 
     try {
-      const result = await handleLoginWith2FA(email, password)
+      const result = await secureLoginWithMFA(email, password)
 
       if (result.loginComplete) {
-        // Login successful, no 2FA needed or device is trusted
-        console.log('Login successful:', {
+        // Login successful - session established by Supabase
+        console.log('✅ Secure login successful:', {
           user: result.user.email,
-          requires2FA: result.requires2FA,
-          deviceTrusted: result.deviceTrusted
+          sessionId: result.session?.access_token?.substring(0, 20) + '...'
         })
 
         if (result.needsSetup) {
-          // User requires 2FA but hasn't set it up yet
-          console.log('⚠️ User should set up 2FA')
-          // For now, allow login but could show a notification
+          // User should set up MFA
+          console.log('⚠️ User should set up MFA for enhanced security')
+          // Could show a notification or redirect to MFA setup
         }
 
         // Success - profile/role loading and navigation handled by App.jsx
       } else if (result.needsVerification) {
-        // Show 2FA verification form
+        // Show MFA verification form with available factors
+        console.log('🔒 MFA verification required - available factors:', result.factors.length)
         setLoginData(result)
         setShowTwoFactor(true)
       }
 
     } catch (err) {
-      console.error('Login error:', err)
+      console.error('💥 Secure login error:', err)
       setError(err.message || 'Login failed. Please check your credentials.')
     } finally {
       setLoading(false)
