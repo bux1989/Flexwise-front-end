@@ -106,13 +106,21 @@ export function TwoFactorVerification({
       // If neither SMS nor TOTP worked, show error
       if (!verificationResult) {
         console.error('❌ 2FA verification failed:', verificationError)
-        
-        if (verificationError?.message?.includes('expired')) {
-          setError('Der Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.')
-        } else if (verificationError?.message?.includes('invalid') || verificationError?.message?.includes('Invalid')) {
-          setError('Ungültiger Code. Bitte überprüfen Sie den Code und versuchen Sie es erneut.')
+        setRetryCount(prev => prev + 1)
+
+        // Categorize errors for better user guidance
+        const errorMessage = verificationError?.message?.toLowerCase() || ''
+
+        if (errorMessage.includes('expired')) {
+          setError('⏰ Der Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.')
+        } else if (errorMessage.includes('invalid') || errorMessage.includes('wrong')) {
+          setError(`❌ Ungültiger Code. Bitte überprüfen Sie den Code und versuchen Sie es erneut. (Versuch ${retryCount + 1}/5)`)
+        } else if (errorMessage.includes('rate') || errorMessage.includes('limit')) {
+          setError('⚠️ Zu viele Versuche. Bitte warten Sie einen Moment.')
+        } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
+          setError('🌐 Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
         } else {
-          setError('Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.')
+          setError(`⚠️ Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut. (Versuch ${retryCount + 1}/5)`)
         }
         return
       }
