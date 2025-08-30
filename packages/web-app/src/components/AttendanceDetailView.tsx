@@ -436,6 +436,8 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
         return 'Schüler*innen, deren Anwesenheitsstatus noch nicht erfasst wurde.';
       case 'anwesend':
         return 'Alle Schüler*innen, die heute als anwesend markiert wurden.';
+      case 'entlassen':
+        return 'Schüler*innen, die bereits entlassen und nach Hause gegangen sind.';
       default:
         return '';
     }
@@ -537,7 +539,7 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
                     currentStudent.status === 'Ausstehend' ? 'bg-orange-100 text-orange-700' :
                     'bg-green-100 text-green-700'
                   }`}>
-                    {currentStudent.status === '��berfällig' ? 'Über.' :
+                    {currentStudent.status === 'Überfällig' ? 'Über.' :
                      currentStudent.status === 'Unentschuldigt' ? 'Unent.' :
                      currentStudent.status === 'Entschuldigt' ? 'Entsch.' :
                      currentStudent.status === 'Ausstehend' ? 'Ausst.' :
