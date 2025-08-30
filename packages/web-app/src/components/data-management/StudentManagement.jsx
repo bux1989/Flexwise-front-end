@@ -269,10 +269,15 @@ export default function StudentManagement({ onBack }) {
       phone: '+49 444 987654',
       class: '10B',
       birthDate: '2008-11-03',
-      status: 'active',
+      status: 'active', // Has FlexWise login
       address: 'Lindenstraße 321, 12345 Berlin',
       einstieg: '2023-08-01',
       ausstieg: '',
+      loginInfo: {
+        hasAccount: true,
+        registrationDate: '2024-02-10',
+        lastLogin: '2024-03-10'
+      },
       photoPermissions: [
         {
           date: '2024-01-10',
