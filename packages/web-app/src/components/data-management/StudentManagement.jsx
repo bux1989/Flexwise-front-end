@@ -379,10 +379,15 @@ export default function StudentManagement({ onBack }) {
       phone: '+49 111 222333',
       class: '9A',
       birthDate: '2009-01-14',
-      status: 'active',
+      status: 'inactive', // No FlexWise login yet
       address: 'Parkstraße 147, 12345 Berlin',
       einstieg: '2023-08-01',
       ausstieg: '',
+      loginInfo: {
+        hasAccount: false,
+        registrationDate: null,
+        lastLogin: null
+      },
       photoPermissions: [],
       allergies: [],
       but: {
@@ -760,7 +765,7 @@ export default function StudentManagement({ onBack }) {
                   onClick={() => setSelectedButStatus('all')}
                   className="ml-1 hover:text-red-600"
                 >
-                  ×
+                  ��
                 </button>
               </Badge>
             )}
@@ -968,7 +973,7 @@ export default function StudentManagement({ onBack }) {
                         className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
                         required
                       >
-                        <option value="">Klasse auswählen</option>
+                        <option value="">Klasse ausw��hlen</option>
                         {availableClasses.map(className => (
                           <option key={className} value={className}>{className}</option>
                         ))}
