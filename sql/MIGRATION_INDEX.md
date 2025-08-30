@@ -71,6 +71,60 @@ This document tracks all database schema changes and migrations applied to the p
   - `p_staff_data JSONB` - Staff data (skills, kurzung, subjects_stud)
   - `p_contacts JSONB` - Contacts array
 
+### MFA Security Hardening
+
+#### public.check_mfa_required() (Recommended)
+- **Purpose:** Official Supabase pattern for checking MFA requirements
+- **Logic:**
+  - Users without MFA factors: Allow AAL1 or AAL2
+  - Users with verified MFA factors: Require AAL2
+- **Usage:** Used in RESTRICTIVE RLS policies across critical tables
+- **Security:** Cannot be bypassed, enforced at database level
+
+#### RESTRICTIVE Policies (Recommended Implementation)
+Applied to critical tables:
+- `user_profiles` - Core user data
+- `contacts` - Sensitive contact information
+- `school_settings` - Administrative settings
+- `student_records` - Academic data
+- `attendance_records` - Attendance tracking
+
+**Benefits of RESTRICTIVE policies:**
+- Enforced **in addition to** existing policies
+- Cannot be overridden by other policies
+- Work alongside school isolation policies
+- More secure than regular policies
+
+### Authentication Methods Infrastructure
+
+#### OAuth Provider Setup (Supabase Dashboard)
+**Required Configuration:**
+- Google OAuth: Client ID/Secret, authorized domains
+- GitHub OAuth: Client ID/Secret, callback URLs
+- Microsoft OAuth: Client ID/Secret, tenant configuration
+- Redirect URLs: `${domain}/auth/callback`
+
+#### Magic Link Configuration (Supabase Dashboard)
+**Email Template Setup:**
+- Magic link template customization
+- Redirect URL configuration
+- Rate limiting settings
+- Custom email styling
+
+#### Optional: user_auth_preferences Table
+```sql
+CREATE TABLE user_auth_preferences (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  preferred_method text CHECK (preferred_method IN ('password', 'magic-link', 'oauth-google', 'oauth-github', 'oauth-microsoft')),
+  remember_choice boolean DEFAULT false,
+  created_at timestamp DEFAULT now(),
+  updated_at timestamp DEFAULT now()
+);
+```
+**Purpose:** Store user's preferred authentication method
+**Alternative:** Can use localStorage instead for simpler implementation
+
 ## Migration Best Practices
 
 1. **Always create migration files** for schema changes rather than running SQL directly
