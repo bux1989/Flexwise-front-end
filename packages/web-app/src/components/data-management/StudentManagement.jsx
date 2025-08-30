@@ -348,10 +348,15 @@ export default function StudentManagement({ onBack }) {
       phone: '+49 222 333444',
       class: '10B',
       birthDate: '2008-07-25',
-      status: 'active',
+      status: 'active', // Has FlexWise login
       address: 'Blumenstraße 987, 12345 Berlin',
       einstieg: '2023-08-01',
       ausstieg: '',
+      loginInfo: {
+        hasAccount: true,
+        registrationDate: '2024-01-25',
+        lastLogin: '2024-03-12'
+      },
       photoPermissions: [
         {
           date: '2024-01-20',
