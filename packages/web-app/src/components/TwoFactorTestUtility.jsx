@@ -187,21 +187,21 @@ export function TwoFactorTestUtility() {
             >
               Health Check
             </Button>
-            <Button 
-              onClick={runUserStatsCheck} 
+            <Button
+              onClick={runMFAFactorsCheck}
               disabled={loading}
-              variant="outline" 
+              variant="outline"
               size="sm"
             >
-              User Stats
+              MFA Factors
             </Button>
-            <Button 
-              onClick={runDeviceFingerprintTest} 
+            <Button
+              onClick={runSecurityInfoTest}
               disabled={loading}
-              variant="outline" 
+              variant="outline"
               size="sm"
             >
-              Device Test
+              Security Test
             </Button>
             <Button 
               onClick={runRoleCheck} 
