@@ -392,20 +392,12 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
   };
 
   const getStatusCount = () => {
-    switch (status) {
-      case 'ueberfaellig':
-        return '3 Überfällig';
-      case 'unentschuldigt':
-        return '1 Schüler*in';
-      case 'entschuldigt':
-        return '2 Schüler*innen';
-      case 'ausstehend':
-        return '3 Schüler*innen';
-      case 'anwesend':
-        return '4 Schüler*innen';
-      default:
-        return 'Schüler*innen';
-    }
+    // Count students matching current status after filtering
+    const currentStatusCount = filteredAndSortedStudents.filter(student =>
+      (studentUpdates[student.id] || student).status === status
+    ).length;
+
+    return `${currentStatusCount} ${currentStatusCount === 1 ? 'Schüler*in' : 'Schüler*innen'}`;
   };
 
   const getDescription = (status: string) => {
