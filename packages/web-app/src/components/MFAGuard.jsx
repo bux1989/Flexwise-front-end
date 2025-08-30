@@ -67,20 +67,26 @@ export function MFAGuard({ children, user, onMFAComplete }) {
       const verifiedFactors = factorsData.all.filter(f => f.status === 'verified')
 
       console.log('🔒 MFA Guard check:', {
-        sessionAAL: session?.aal,
+        sessionAAL: session?.aal || 'not-supported',
         verifiedFactors: verifiedFactors.length,
-        userEmail: user?.email
+        userEmail: user?.email,
+        mfaCompleted: mfaCompleted
       })
 
-      // If user has verified MFA factors but session is AAL1, require MFA
-      if (verifiedFactors.length > 0 && session && session.aal !== 'aal2') {
-        console.log('🔒 MFA verification required - user has verified factors but AAL1 session')
+      // If MFA was already completed via MFA_CHALLENGE_VERIFIED event, allow access
+      if (mfaCompleted) {
+        console.log('✅ MFA completed via MFA_CHALLENGE_VERIFIED event')
+        setMfaRequired(false)
+      }
+      // If user has verified MFA factors and MFA hasn't been completed this session, require MFA
+      else if (verifiedFactors.length > 0 && session) {
+        console.log('🔒 MFA verification required - user has verified factors but MFA not completed this session')
         setMfaRequired(true)
       } else {
         console.log('✅ MFA not required or already satisfied', {
           verifiedFactors: verifiedFactors.length,
-          sessionAAL: session?.aal,
-          hasSession: !!session
+          hasSession: !!session,
+          mfaCompleted: mfaCompleted
         })
         setMfaRequired(false)
       }
