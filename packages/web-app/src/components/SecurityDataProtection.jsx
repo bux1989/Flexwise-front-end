@@ -38,15 +38,15 @@ export default function SecurityDataProtection({ onBack }) {
   // Security settings state
   const [securitySettings, setSecuritySettings] = useState({
     twoFactorAuth: {
-      admin: { mandatory: true, enabled: true },
-      teacher: { mandatory: false, enabled: true },
-      educator: { mandatory: false, enabled: false },
-      external: { mandatory: true, enabled: true },
-      parent: { mandatory: false, enabled: false },
-      student: { mandatory: false, enabled: false },
-      hausmeister: { mandatory: false, enabled: false },
-      sekretariat: { mandatory: false, enabled: false },
-      schulsozialarbeit: { mandatory: false, enabled: false }
+      admin: { mandatory: true }, // Always mandatory for admins
+      teacher: { mandatory: false },
+      educator: { mandatory: false },
+      external: { mandatory: true }, // Keep external as mandatory
+      parent: { mandatory: false },
+      student: { mandatory: false },
+      hausmeister: { mandatory: false },
+      sekretariat: { mandatory: false },
+      schulsozialarbeit: { mandatory: false }
     },
     autoLogout: {
       admin: { value: 60, unit: 'minutes' },
