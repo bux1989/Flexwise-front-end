@@ -390,7 +390,6 @@ export default function Settings() {
           </Card>
         </TabsContent>
         </Tabs>
-      </DebugOverlay>
 
       {/* School Year Management Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
@@ -482,6 +481,7 @@ export default function Settings() {
           </a>
         </div>
       </div>
+      </DebugOverlay>
     </div>
   )
 }
