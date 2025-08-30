@@ -153,47 +153,56 @@ export default function Settings() {
             </CardHeader>
             <CardContent className="space-y-3">
               {!isEditingSchoolInfo ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                    <Building className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-foreground">{schoolInfo.name}</p>
-                      <p className="text-sm text-muted-foreground">Schulname</p>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                      <Building className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <p className="font-medium text-foreground">{schoolInfo.name}</p>
+                        <p className="text-sm text-muted-foreground">Schulname</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                      <User className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <p className="font-medium text-foreground">{schoolInfo.leadership}</p>
+                        <p className="text-sm text-muted-foreground">Schulleitung</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                      <MapPin className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <p className="font-medium text-foreground">{schoolInfo.address}</p>
+                        <p className="text-sm text-muted-foreground">Anschrift</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                      <Mail className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <p className="font-medium text-foreground">{schoolInfo.email}</p>
+                        <p className="text-sm text-muted-foreground">E-Mail</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                      <Phone className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <p className="font-medium text-foreground">{schoolInfo.phone}</p>
+                        <p className="text-sm text-muted-foreground">Telefon</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-100">
+                      <Phone className="w-5 h-5 text-gray-500" />
+                      <div>
+                        <p className="font-medium text-foreground">{schoolInfo.fax}</p>
+                        <p className="text-sm text-muted-foreground">Fax</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                    <User className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-foreground">{schoolInfo.leadership}</p>
-                      <p className="text-sm text-muted-foreground">Schulleitung</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                    <MapPin className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-foreground">{schoolInfo.address}</p>
-                      <p className="text-sm text-muted-foreground">Anschrift</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                    <Mail className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-foreground">{schoolInfo.email}</p>
-                      <p className="text-sm text-muted-foreground">E-Mail</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                    <Phone className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-foreground">{schoolInfo.phone}</p>
-                      <p className="text-sm text-muted-foreground">Telefon</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-100">
-                    <Phone className="w-5 h-5 text-gray-500" />
-                    <div>
-                      <p className="font-medium text-foreground">{schoolInfo.fax}</p>
-                      <p className="text-sm text-muted-foreground">Fax</p>
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50">
+                    <Edit className="w-5 h-5 text-blue-600 mt-1" />
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground whitespace-pre-line">{schoolInfo.signature}</p>
+                      <p className="text-sm text-muted-foreground">Signatur für Elternbriefe</p>
                     </div>
                   </div>
                 </div>
@@ -255,6 +264,16 @@ export default function Settings() {
                       className="w-full"
                       placeholder="Vollständige Adresse der Schule"
                       rows={3}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-blue-900 block mb-2">Signatur für Elternbriefe</label>
+                    <Textarea
+                      value={editedSchoolInfo.signature}
+                      onChange={(e) => setEditedSchoolInfo({...editedSchoolInfo, signature: e.target.value})}
+                      className="w-full"
+                      placeholder="Signatur, die in Elternbriefen verwendet wird"
+                      rows={4}
                     />
                   </div>
                 </div>
