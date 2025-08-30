@@ -41,7 +41,8 @@ export default function Settings() {
     address: '458 Nordstraße, 13357 Berlin, Deutschland',
     email: 'kontakt@rs-nord.berlin.de',
     phone: '+49 30 87654321',
-    fax: 'Nicht festgelegt'
+    fax: 'Nicht festgelegt',
+    signature: 'Mit freundlichen Grüßen\n\nDie Schulleitung\nRealschule Berlin-Nord'
   })
   const [editedSchoolInfo, setEditedSchoolInfo] = useState(schoolInfo)
 
