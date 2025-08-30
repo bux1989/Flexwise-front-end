@@ -94,7 +94,8 @@ export function QuickMFATest() {
       console.log('🧪 Verifying SMS code:', {
         code: smsCode,
         factorId: challengeData.factorId,
-        challengeId: challengeData.challengeId
+        challengeId: challengeData.challengeId,
+        challengeAge: challengeData.createdAt ? Date.now() - challengeData.createdAt : 'unknown'
       })
 
       // Check if factors still exist
@@ -114,6 +115,12 @@ export function QuickMFATest() {
 
       console.log('🎯 Target factor:', targetFactor)
 
+      // Check challenge age - if it's older than 5 minutes, suggest refresh
+      const challengeAge = challengeData.createdAt ? Date.now() - challengeData.createdAt : null
+      if (challengeAge && challengeAge > 5 * 60 * 1000) {
+        console.warn('⚠️ Challenge is older than 5 minutes, might be expired')
+      }
+
       // Verify the SMS code
       const { data: verification, error: verifyError } = await supabase.auth.mfa.verify({
         factorId: challengeData.factorId,
@@ -124,12 +131,27 @@ export function QuickMFATest() {
       if (verifyError) {
         console.error('❌ Verification API error:', verifyError)
 
-        // Provide better error messages
+        // Check if it's a stale challenge error and provide specific guidance
         let userMessage = verifyError.message
+        let shouldRetryChallenge = false
+
         if (verifyError.message.includes('Invalid MFA Phone code')) {
-          userMessage = 'Invalid SMS code. Please check the code and try again. The code might have expired (usually valid for 5-10 minutes).'
-        } else if (verifyError.message.includes('expired')) {
-          userMessage = 'SMS code has expired. Please request a new SMS code.'
+          // Check if challenge is old
+          if (challengeAge && challengeAge > 5 * 60 * 1000) {
+            userMessage = 'SMS code has likely expired (challenge is over 5 minutes old). Please request a new SMS code.'
+            shouldRetryChallenge = true
+          } else {
+            userMessage = 'Invalid SMS code. Please double-check the 6-digit code from your SMS. Make sure you\'re using the most recent code.'
+          }
+        } else if (verifyError.message.includes('expired') || verifyError.message.includes('challenge')) {
+          userMessage = 'SMS challenge has expired. Please request a new SMS code.'
+          shouldRetryChallenge = true
+        }
+
+        // If we should retry, clear the challenge data
+        if (shouldRetryChallenge) {
+          setChallengeData(null)
+          setSmsCode('')
         }
 
         throw new Error(userMessage)
@@ -137,18 +159,25 @@ export function QuickMFATest() {
 
       console.log('✅ SMS verification successful:', verification)
 
+      // Check session AAL after verification
+      const { data: sessionData } = await supabase.auth.getSession()
+      console.log('📋 Session AAL after verification:', sessionData.session?.aal)
+
       // Check factors again after verification
       const { data: newFactors } = await supabase.auth.mfa.listFactors()
       console.log('📋 Factors after verification:', newFactors)
 
       setResult({
         success: true,
-        message: 'SMS MFA verification successful! You now have verified MFA factors.',
+        message: `SMS MFA verification successful! Session AAL: ${sessionData.session?.aal || 'unknown'}`,
         verification: verification,
+        sessionAAL: sessionData.session?.aal,
         factorsBefore: factors.all.length,
         factorsAfter: newFactors?.all?.length || 0,
         verifiedFactors: newFactors?.all?.filter(f => f.status === 'verified')?.length || 0,
-        nextStep: 'MFA enforcement should now work - try logging out and back in!'
+        nextStep: sessionData.session?.aal === 'aal2' ?
+          'MFA verification complete! You now have AAL2 session.' :
+          'MFA verification done, but session AAL might still need elevation.'
       })
 
       // Clear the challenge and code
@@ -160,11 +189,13 @@ export function QuickMFATest() {
       setResult({
         success: false,
         error: error.message,
+        challengeAge: challengeData.createdAt ? `${Math.round((Date.now() - challengeData.createdAt) / 1000)}s` : 'unknown',
         troubleshooting: [
-          'Make sure you entered the correct 6-digit code from SMS',
-          'Check if the SMS code is still valid (usually expires in 5-10 minutes)',
-          'Try requesting a new SMS code if this one expired',
-          'Ensure your phone number is correctly configured in Supabase'
+          'Double-check the 6-digit code from your SMS',
+          'Make sure you\'re using the most recent SMS code',
+          'If code is more than 5-10 minutes old, request a new one',
+          'Try requesting a fresh SMS code if verification keeps failing',
+          'Check that your phone number is correctly configured'
         ]
       })
     } finally {
@@ -202,7 +233,8 @@ export function QuickMFATest() {
 
       setChallengeData({
         challengeId: challenge.id,
-        factorId: phoneFactor.id
+        factorId: phoneFactor.id,
+        createdAt: Date.now()
       })
 
       setResult({
@@ -251,7 +283,14 @@ export function QuickMFATest() {
 
           {challengeData && (
             <div className="space-y-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
-              <div className="text-xs font-semibold text-yellow-800">SMS Code Received?</div>
+              <div className="flex justify-between items-center">
+                <div className="text-xs font-semibold text-yellow-800">SMS Code Received?</div>
+                <div className="text-xs text-yellow-600">
+                  {challengeData.createdAt &&
+                    `${Math.round((Date.now() - challengeData.createdAt) / 1000)}s ago`
+                  }
+                </div>
+              </div>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -260,6 +299,7 @@ export function QuickMFATest() {
                   onChange={(e) => setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength="6"
                   className="flex-1 px-2 py-1 border rounded text-center font-mono text-sm"
+                  autoFocus
                 />
                 <button
                   onClick={verifySMSCode}
@@ -269,6 +309,11 @@ export function QuickMFATest() {
                   ✅ Verify
                 </button>
               </div>
+              {challengeData.createdAt && (Date.now() - challengeData.createdAt) > 4 * 60 * 1000 && (
+                <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
+                  ⚠️ Code is over 4 minutes old. If verification fails, try requesting a new code.
+                </div>
+              )}
             </div>
           )}
         </div>
