@@ -26,48 +26,59 @@ export function TwoFactorTestUtility() {
   const runHealthCheck = async () => {
     setLoading(true)
     try {
-      const health = await check2FASystemHealth()
+      const health = await checkSecureMFAHealth()
       setHealthStatus(health)
     } catch (error) {
-      console.error('Health check failed:', error)
+      console.error('Secure MFA health check failed:', error)
       setHealthStatus({ status: 'error', error: error.message })
     } finally {
       setLoading(false)
     }
   }
 
-  const runUserStatsCheck = async () => {
+  const runMFAFactorsCheck = async () => {
     setLoading(true)
     try {
-      const stats = await get2FAUsageStats()
-      setUserStats(stats)
+      const { factors, error } = await getUserMFAFactors()
+      if (error) throw new Error(error.message)
+
+      setUserStats({
+        totalFactors: factors.length,
+        totpFactors: factors.filter(f => f.factor_type === 'totp').length,
+        phoneFactors: factors.filter(f => f.factor_type === 'phone').length,
+        verifiedFactors: factors.filter(f => f.status === 'verified').length,
+        factors: factors
+      })
     } catch (error) {
-      console.error('User stats check failed:', error)
+      console.error('MFA factors check failed:', error)
       setUserStats({ error: error.message })
     } finally {
       setLoading(false)
     }
   }
 
-  const runDeviceFingerprintTest = async () => {
+  const runSecurityInfoTest = async () => {
     setLoading(true)
     try {
-      const fingerprint = generateDeviceFingerprint()
-      const deviceName = generateDeviceName()
-      
+      const userProfile = await getCurrentUserProfile()
+      const requires2FA = await userRequires2FA(userProfile)
+      const { data: { user } } = await supabase.auth.getUser()
+      const has2FA = await userHas2FAEnabled(user)
+
       setTestResults(prev => ({
         ...prev,
-        deviceFingerprint: {
+        securityInfo: {
           success: true,
-          fingerprint: fingerprint.substring(0, 50) + '...',
-          deviceName,
-          length: fingerprint.length
+          userRole: userProfile?.role,
+          requires2FA,
+          has2FA,
+          note: 'Device trust is now handled securely by Supabase MFA'
         }
       }))
     } catch (error) {
       setTestResults(prev => ({
         ...prev,
-        deviceFingerprint: {
+        securityInfo: {
           success: false,
           error: error.message
         }
