@@ -73,25 +73,53 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
     try {
       setLoading(true)
       setError('')
-      
+
       console.log('🔐 Creating MFA challenge for factor:', factor.id)
-      
+
       const challengeData = await createMFAChallenge(factor.id)
-      
+
       setChallenge({
         id: challengeData.id,
         factorId: factor.id,
         createdAt: Date.now()
       })
-      
+
       console.log('✅ MFA challenge created successfully')
-      
+
     } catch (err) {
       console.error('❌ Error creating MFA challenge:', err)
-      setError(`Failed to send verification code: ${err.message}`)
+
+      // Handle rate limiting with specific messaging
+      if (err.isRateLimit) {
+        setError(`⏱️ ${err.message}`)
+
+        // Start countdown if we have wait time
+        if (err.waitTime) {
+          startRateLimitCountdown(err.waitTime)
+        }
+      } else {
+        setError(`Failed to send verification code: ${err.message}`)
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  const [rateLimitCountdown, setRateLimitCountdown] = useState(0)
+
+  const startRateLimitCountdown = (seconds) => {
+    setRateLimitCountdown(seconds)
+
+    const interval = setInterval(() => {
+      setRateLimitCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          setError('') // Clear error when countdown ends
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
   }
 
   const handleFactorSelect = async (factor) => {
