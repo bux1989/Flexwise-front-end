@@ -5,6 +5,7 @@ import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, P
 import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner'
 import { SecureTwoFactorVerification } from '../../components/SecureTwoFactorVerification'
 import { TwoFactorDebug } from '../../components/TwoFactorDebug'
+import { SupabaseMFATest } from '../../components/SupabaseMFATest'
 
 export default function Login() {
   const [email, setEmail] = useState('')
