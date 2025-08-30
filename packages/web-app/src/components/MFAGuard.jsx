@@ -10,6 +10,7 @@ export function MFAGuard({ children, user, onMFAComplete }) {
   const [mfaRequired, setMfaRequired] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [mfaCompleted, setMfaCompleted] = useState(false) // Track completion to prevent loops
 
   useEffect(() => {
     if (user) {
