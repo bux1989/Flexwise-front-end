@@ -5,6 +5,8 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { ArrowLeft, Phone, MessageSquare, Mail, Clock, UserCheck, ChevronUp, ChevronDown, Plus, MoreHorizontal } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Textarea } from './ui/textarea';
 
 interface Contact {
   phone: string;
