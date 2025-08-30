@@ -778,51 +778,67 @@ export default function SecurityDataProtection({ onBack }) {
                   { key: 'eltern', name: 'Eltern', description: 'Elterndaten und Kommunikation verwalten' }
                 ].map((permission) => {
                   const assignedStaff = staffAssignments.permissions[permission.key] || []
-                  return (
-                    <div key={permission.key} className="p-4 border border-amber-200 rounded-lg bg-amber-50">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-amber-900">{permission.name}</h3>
-                          <p className="text-sm text-amber-700 mb-3">{permission.description}</p>
+                  const isExpanded = expandedPermissions[permission.key]
 
-                          {/* Assigned Staff */}
-                          <div>
-                            <p className="text-xs font-medium text-amber-800 mb-2">Zugewiesene Mitarbeitende:</p>
-                            <div className="flex flex-wrap gap-1 mb-3">
-                              {assignedStaff.map((staff, staffIndex) => (
-                                <Badge key={staffIndex} className="bg-amber-200 text-amber-800 text-xs px-2 py-1">
-                                  {staff}
+                  return (
+                    <div
+                      key={permission.key}
+                      className="p-4 border border-amber-200 rounded-lg bg-amber-50 cursor-pointer hover:bg-amber-100 transition-colors"
+                      onClick={() => togglePermissionExpansion(permission.key)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-amber-900">
+                            {permission.name} ({assignedStaff.length})
+                          </h3>
+
+                          {isExpanded && (
+                            <div className="mt-3">
+                              <p className="text-sm text-amber-700 mb-3">{permission.description}</p>
+
+                              {/* Assigned Staff */}
+                              <div>
+                                <p className="text-xs font-medium text-amber-800 mb-2">Zugewiesene Mitarbeitende:</p>
+                                <div className="flex flex-wrap gap-1 mb-3">
+                                  {assignedStaff.map((staff, staffIndex) => (
+                                    <Badge key={staffIndex} className="bg-amber-200 text-amber-800 text-xs px-2 py-1">
+                                      {staff}
+                                    </Badge>
+                                  ))}
+                                  {assignedStaff.length === 0 && (
+                                    <span className="text-xs text-amber-700 italic">Keine Zuweisungen</span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Permission Requirements */}
+                              <div className="flex flex-wrap gap-2">
+                                <Badge className="bg-amber-300 text-amber-900">
+                                  <Shield className="w-3 h-3 mr-1" />
+                                  2FA erforderlich
                                 </Badge>
-                              ))}
-                              {assignedStaff.length === 0 && (
-                                <span className="text-xs text-amber-700 italic">Keine Zuweisungen</span>
-                              )}
+                                <Badge className="bg-gray-300 text-gray-800">
+                                  Admin-Vergabe
+                                </Badge>
+                              </div>
                             </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {isEditing && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-amber-700 border-amber-300 hover:bg-amber-100"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Verwalten
+                            </Button>
+                          )}
+                          <div className="text-amber-600">
+                            {isExpanded ? '−' : '+'}
                           </div>
                         </div>
-                        {isEditing && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-amber-700 border-amber-300 hover:bg-amber-100 ml-4"
-                          >
-                            Verwalten
-                          </Button>
-                        )}
-                      </div>
-
-                      {/* Permission Requirements */}
-                      <div className="flex flex-wrap gap-2">
-                        <Badge className="bg-amber-300 text-amber-900">
-                          <Shield className="w-3 h-3 mr-1" />
-                          2FA erforderlich
-                        </Badge>
-                        <Badge className="bg-gray-300 text-gray-800">
-                          Admin-Vergabe
-                        </Badge>
-                        <Badge className="bg-blue-200 text-blue-800">
-                          {assignedStaff.length} Personen
-                        </Badge>
                       </div>
                     </div>
                   )
