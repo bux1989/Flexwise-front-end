@@ -185,8 +185,9 @@ export default function Login() {
 
         {/* Debug component for development */}
         {import.meta.env.DEV && (
-          <div className="mt-6">
+          <div className="mt-6 space-y-4">
             <TwoFactorDebug />
+            <SupabaseMFATest />
           </div>
         )}
 
