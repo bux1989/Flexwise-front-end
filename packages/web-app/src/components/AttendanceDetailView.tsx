@@ -537,12 +537,14 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
                     currentStudent.status === 'Unentschuldigt' ? 'bg-red-100 text-red-700' :
                     currentStudent.status === 'Entschuldigt' ? 'bg-blue-100 text-blue-700' :
                     currentStudent.status === 'Ausstehend' ? 'bg-orange-100 text-orange-700' :
+                    currentStudent.status === 'Entlassen' ? 'bg-purple-100 text-purple-700' :
                     'bg-green-100 text-green-700'
                   }`}>
                     {currentStudent.status === 'Überfällig' ? 'Über.' :
                      currentStudent.status === 'Unentschuldigt' ? 'Unent.' :
                      currentStudent.status === 'Entschuldigt' ? 'Entsch.' :
                      currentStudent.status === 'Ausstehend' ? 'Ausst.' :
+                     currentStudent.status === 'Entlassen' ? 'Entl.' :
                      'Anwes.'}
                   </Badge>
                   {currentStudent.status === 'Überfällig' && (
