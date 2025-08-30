@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { 
-  userRequires2FA, 
-  userHas2FAEnabled, 
-  isDeviceTrusted, 
-  generateDeviceFingerprint,
+import {
+  userRequires2FA,
+  userHas2FAEnabled,
   getCurrentUserProfile,
-  supabase 
+  supabase
 } from '../lib/supabase'
+import { getUserMFAFactors } from '../lib/supabase-mfa'
 
 export function TwoFactorDebug() {
   const [debugResults, setDebugResults] = useState(null)
