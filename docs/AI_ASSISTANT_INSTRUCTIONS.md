@@ -148,6 +148,46 @@ Update the tracker with:
 - **Roles:** Teacher, Admin, Parent access levels
 - **Academic year:** Semester-based system
 
+### 🚨 CRITICAL: Dual User ID Architecture
+
+**⚠️ MOST IMPORTANT PATTERN - FlexWise uses TWO different user IDs:**
+
+1. **Supabase Auth User ID**
+   - **Use:** `(auth.jwt()->>'sub')::uuid` in SQL
+   - **For:** MFA factors, auth sessions, Supabase auth operations
+   - **Example:** `b61aa963-b65a-400f-a578-818825e0ebac`
+
+2. **FlexWise Profile ID**
+   - **Use:** `auth.uid()` in SQL, `supabase.auth.getUser()` in JS
+   - **For:** Application data, RLS policies, business logic
+   - **Example:** `ea147260-0e79-48b0-a24e-89b8cd1c4ccb`
+
+**❌ #1 BUG CAUSE:** Mixing these IDs breaks MFA and auth!
+
+**✅ CORRECT Patterns:**
+```sql
+-- For auth schema (MFA, sessions):
+SELECT * FROM auth.mfa_factors
+WHERE user_id = (auth.jwt()->>'sub')::uuid;
+
+-- For app schema (user data):
+SELECT * FROM user_profiles
+WHERE id = auth.uid();
+```
+
+**❌ WRONG (BREAKS MFA):**
+```sql
+-- DON'T do this:
+SELECT * FROM auth.mfa_factors
+WHERE user_id = auth.uid(); -- BROKEN!
+```
+
+**📋 Remember:**
+- **auth.*** tables → Use `(auth.jwt()->>'sub')::uuid`
+- **public.*** tables → Use `auth.uid()`
+- **Always test MFA flows**
+- **This is the most common bug in FlexWise!**
+
 ### Builder.io Environment
 - **Dev server:** Changes reflect in real-time iframe
 - **File paths:** Always use relative paths
