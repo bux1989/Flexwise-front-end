@@ -1388,7 +1388,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <User className="h-5 w-5 text-blue-600" />
-                      Pers��nliche Informationen
+                      Persönliche Informationen
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -1765,36 +1765,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                         variant="outline"
                         size="sm"
                         className="border-gray-300 text-gray-700 hover:bg-gray-100"
-                        onClick={async () => {
-                          try {
-                            const { data: { user: authUser } } = await supabase.auth.getUser();
-
-                            if (!authUser?.email) {
-                              alert('Keine E-Mail-Adresse gefunden.');
-                              return;
-                            }
-
-                            // Get user's full name from current profile state
-                            const fullName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
-
-                            const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
-                              redirectTo: `https://flexwise.io/auth/reset-password`,
-                              data: {
-                                USER_NAME: fullName || authUser.email  // Fallback to email if no name
-                              }
-                            });
-
-                            if (error) {
-                              console.error('Reset email error:', error);
-                              alert('Fehler beim Senden des Reset-Links: ' + error.message);
-                            } else {
-                              alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
-                            }
-                          } catch (error) {
-                            console.error('Password reset error:', error);
-                            alert('Fehler beim Senden des Reset-Links: ' + error.message);
-                          }
-                        }}
+                        onClick={handlePasswordReset}
                       >
                         Link senden
                       </Button>
