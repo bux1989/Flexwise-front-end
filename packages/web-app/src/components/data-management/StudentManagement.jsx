@@ -311,10 +311,15 @@ export default function StudentManagement({ onBack }) {
       phone: '+49 333 111222',
       class: '9A',
       birthDate: '2009-04-18',
-      status: 'active',
+      status: 'inactive', // No FlexWise login yet
       address: 'Rosenweg 654, 12345 Berlin',
       einstieg: '2023-08-01',
       ausstieg: '',
+      loginInfo: {
+        hasAccount: false,
+        registrationDate: null,
+        lastLogin: null
+      },
       photoPermissions: [],
       allergies: [
         {
