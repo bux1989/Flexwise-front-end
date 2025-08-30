@@ -390,7 +390,37 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
                             <div className="text-sm text-blue-600/70 space-y-1">
                               <div>Beziehung: {parent.relationship}</div>
                               <div>Status: {parent.isPrimary ? 'Hauptkontakt' : 'Zusatzkontakt'}</div>
-                              {/* Add more parent details here as needed */}
+                              <div>
+                                FlexWise Zugang: {parent.loginInfo?.hasAccount ? (
+                                  <span className="text-green-600">
+                                    Aktiv seit {parent.loginInfo.registrationDate ? new Date(parent.loginInfo.registrationDate).toLocaleDateString('de-DE') : 'Unbekannt'}
+                                  </span>
+                                ) : (
+                                  <span className="text-orange-600">Inaktiv</span>
+                                )}
+                              </div>
+                              {parent.loginInfo?.hasAccount && parent.loginInfo?.lastLogin && (
+                                <div>
+                                  Letzter Login: {new Date(parent.loginInfo.lastLogin).toLocaleDateString('de-DE')}
+                                </div>
+                              )}
+                              {!parent.loginInfo?.hasAccount && (
+                                <div className="mt-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-orange-600 border-orange-600 hover:bg-orange-50"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      // TODO: Implement parent login creation
+                                      console.log('Create login for parent:', parent.firstName, parent.lastName)
+                                      alert('Anmeldedaten für Elternteil werden erstellt...')
+                                    }}
+                                  >
+                                    Anmeldedaten erstellen
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
