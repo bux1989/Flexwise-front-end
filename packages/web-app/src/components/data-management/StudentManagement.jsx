@@ -61,10 +61,15 @@ export default function StudentManagement({ onBack }) {
       phone: '+49 123 456789',
       class: '10A',
       birthDate: '2008-05-15',
-      status: 'active',
+      status: 'active', // Has FlexWise login
       address: 'Musterstraße 123, 12345 Berlin',
       einstieg: '2023-08-01', // Started school
       ausstieg: '', // No exit date - still active
+      loginInfo: {
+        hasAccount: true,
+        registrationDate: '2024-01-15',
+        lastLogin: '2024-03-15'
+      },
       photoPermissions: [
         {
           date: '2024-01-15',
@@ -780,7 +785,7 @@ export default function StudentManagement({ onBack }) {
         <CardHeader className="bg-blue-50 border-b border-blue-200">
           <CardTitle className="flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-600" />
-            Schülerliste
+            Sch��lerliste
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
