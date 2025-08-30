@@ -97,7 +97,6 @@ export function TwoFactorTestUtility() {
       const profile = await getCurrentUserProfile()
       const requires2FA = await userRequires2FA(profile)
       const has2FA = await userHas2FAEnabled(user)
-      const deviceTrusted = await isDeviceTrusted(profile.id)
 
       setTestResults(prev => ({
         ...prev,
@@ -107,7 +106,7 @@ export function TwoFactorTestUtility() {
           userRole: profile.role || profile.roles?.name,
           requires2FA,
           has2FA,
-          deviceTrusted
+          deviceTrustNote: 'Device trust handled by Supabase MFA system'
         }
       }))
     } catch (error) {
