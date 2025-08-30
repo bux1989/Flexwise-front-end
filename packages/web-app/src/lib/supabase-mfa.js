@@ -8,7 +8,15 @@ export async function secureLoginWithMFA(email, password) {
   try {
     console.log('🔐 Starting secure MFA login for:', email)
 
-    // Step 1: Attempt login - Supabase handles MFA enforcement server-side
+    // Step 1: Check if user has MFA factors BEFORE attempting login
+    // We need to do this to properly enforce MFA
+    const { data: preLoginFactors, error: preFactorError } = await supabase.auth.mfa.listFactors()
+
+    if (preFactorError) {
+      console.log('ℹ️ Could not check pre-login factors (user might not be logged in yet):', preFactorError.message)
+    }
+
+    // Step 2: Attempt login
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -19,45 +27,68 @@ export async function secureLoginWithMFA(email, password) {
       throw error
     }
 
-    // Step 2: Check if we have a complete session or if MFA is required
-    const { data: sessionData } = await supabase.auth.getSession()
-    
-    if (sessionData.session) {
-      console.log('✅ Login complete - no MFA required or already verified')
-      return {
-        loginComplete: true,
-        user: data.user,
-        session: sessionData.session
-      }
-    }
+    console.log('🔐 Login successful, checking MFA requirements...')
 
-    // Step 3: If no session, check for MFA factors that might need verification
+    // Step 3: Now check session and MFA factors after login
+    const { data: sessionData } = await supabase.auth.getSession()
     const { data: factors, error: factorError } = await supabase.auth.mfa.listFactors()
-    
+
     if (factorError) {
-      console.error('❌ Error checking MFA factors:', factorError)
+      console.error('❌ Error checking MFA factors after login:', factorError)
       throw factorError
     }
 
-    // Find verified factors that could be used for challenge
+    console.log('📋 Session AAL:', sessionData.session?.aal)
+    console.log('📋 MFA factors found:', factors.all.length)
+    console.log('📋 Verified factors:', factors.all.filter(f => f.status === 'verified').length)
+
+    // Find verified factors that should be enforced
     const verifiedFactors = factors.all.filter(factor => factor.status === 'verified')
-    
+
+    // Step 4: Enforce MFA if user has verified factors
+    if (verifiedFactors.length > 0) {
+      // Check if session has proper AAL level
+      const sessionAAL = sessionData.session?.aal
+
+      if (sessionAAL === 'aal1' || !sessionAAL) {
+        console.log('🔒 MFA verification required - user has verified factors but AAL1 session')
+        console.log('🔒 Verified factors:', verifiedFactors.map(f => ({ id: f.id, type: f.factor_type })))
+
+        return {
+          needsVerification: true,
+          user: data.user,
+          factors: verifiedFactors,
+          loginComplete: false,
+          currentAAL: sessionAAL
+        }
+      } else if (sessionAAL === 'aal2') {
+        console.log('✅ MFA verification already completed (AAL2 session)')
+        return {
+          loginComplete: true,
+          user: data.user,
+          session: sessionData.session,
+          mfaCompleted: true
+        }
+      }
+    }
+
+    // Step 5: No MFA factors or already verified
     if (verifiedFactors.length === 0) {
       console.log('⚠️ No verified MFA factors found')
       return {
         loginComplete: true,
         user: data.user,
+        session: sessionData.session,
         needsSetup: true
       }
     }
 
-    console.log('🔒 MFA verification required - found verified factors:', verifiedFactors.length)
-    
+    // Default: login complete
+    console.log('✅ Login complete - session established')
     return {
-      needsVerification: true,
+      loginComplete: true,
       user: data.user,
-      factors: verifiedFactors,
-      loginComplete: false
+      session: sessionData.session
     }
 
   } catch (error) {
