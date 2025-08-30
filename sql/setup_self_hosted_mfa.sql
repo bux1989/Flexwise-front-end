@@ -1,5 +1,10 @@
 -- Self-hosted Supabase MFA Setup
 -- Run this SQL in your self-hosted Supabase instance
+--
+-- IMPORTANT: Before running this, ensure these GoTrue environment variables are set:
+-- GOTRUE_MFA_ENABLED=true
+-- GOTRUE_MFA_TOTP_ENROLL_ENABLED=true
+-- GOTRUE_MFA_TOTP_VERIFY_ENABLED=true
 
 -- 1. Create MFA verification attempt hook function (since you have it enabled)
 CREATE OR REPLACE FUNCTION public.mfa_verification_attempt(event jsonb)
