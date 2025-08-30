@@ -21,6 +21,26 @@ export function MFAGuard({ children, user, onMFAComplete }) {
     }
   }, [user])
 
+  // Listen for MFA_CHALLENGE_VERIFIED event since session.aal doesn't exist in this Supabase version
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔐 MFA Guard auth event:', event)
+
+      if (event === 'MFA_CHALLENGE_VERIFIED') {
+        console.log('✅ MFA_CHALLENGE_VERIFIED event received - marking MFA as complete')
+        setMfaCompleted(true)
+        setMfaRequired(false)
+
+        // Notify parent if needed
+        if (onMFAComplete) {
+          onMFAComplete(session)
+        }
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [onMFAComplete])
+
   const checkMFARequirement = async () => {
     try {
       setLoading(true)
