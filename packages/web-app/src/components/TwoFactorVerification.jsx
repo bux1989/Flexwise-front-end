@@ -144,14 +144,25 @@ export function TwoFactorVerification({
       // Add device to trusted devices if user chose to remember
       if (rememberDevice && showRememberDevice) {
         try {
-          await addTrustedDevice(
-            profile.id, 
-            profile.role || profile.roles?.name, 
+          const deviceData = await addTrustedDevice(
+            profile.id,
+            profile.role || profile.roles?.name,
             profile.school_id
           )
           console.log('✅ Device added to trusted devices')
+
+          // Log device trust event
+          await logSecurityEvent('device_trusted', {
+            user_email: user.email,
+            device_name: deviceData?.device_name || 'Unknown Device',
+            trust_duration_days: profile.role?.includes('Admin') ? 30 : 90
+          })
         } catch (trustError) {
           console.warn('⚠️ Failed to add device to trusted devices:', trustError)
+          await logSecurityEvent('device_trust_failed', {
+            user_email: user.email,
+            error: trustError?.message || 'Unknown error'
+          })
           // Don't fail the login for this
         }
       }
