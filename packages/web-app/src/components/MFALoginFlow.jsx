@@ -383,7 +383,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
             // SMS sent or non-phone factor - show verification
             <button
               onClick={handleVerification}
-              disabled={loading || code.length !== 6 || (!challenge && selectedFactor?.factor_type === 'phone')}
+              disabled={loading || code.length !== 6 || (!smsSent && selectedFactor?.factor_type === 'phone')}
               className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Verifying...' : 'Verify & Continue'}
