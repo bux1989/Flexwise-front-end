@@ -93,6 +93,10 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   const [trustedDevices, setTrustedDevices] = useState([]);
   const [loadingDevices, setLoadingDevices] = useState(false);
 
+  // Sensitive action 2FA state
+  const [showSensitive2FA, setShowSensitive2FA] = useState(false);
+  const [pendingSensitiveAction, setPendingSensitiveAction] = useState(null);
+
   // Global contact creation tracker to prevent multiple instances from creating duplicates
   const getContactCreationKey = (profileId: string, email: string) => `creating_${profileId}_${email}`;
 
