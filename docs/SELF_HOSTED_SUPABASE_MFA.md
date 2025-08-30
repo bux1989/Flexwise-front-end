@@ -63,7 +63,12 @@ auth:
 
     # MFA Configuration (REQUIRED)
     GOTRUE_MFA_ENABLED: "true"
-    GOTRUE_MFA_MAX_ENROLLED_FACTORS: "10"
+    GOTRUE_MFA_TOTP_ENROLL_ENABLED: "true"
+    GOTRUE_MFA_TOTP_VERIFY_ENABLED: "true"
+
+    # Optional: Phone-based MFA (can be disabled)
+    GOTRUE_MFA_PHONE_ENROLL_ENABLED: "false"
+    GOTRUE_MFA_PHONE_VERIFY_ENABLED: "false"
 
     # Security Hooks (OPTIONAL - for logging)
     GOTRUE_HOOK_MFA_VERIFICATION_ATTEMPT_ENABLED: "true"
@@ -143,7 +148,7 @@ Use the test component in your app to verify MFA enforcement is working.
 ### Problem: MFA still being bypassed
 **Solution**: 
 1. Check if the trigger exists: `SELECT * FROM pg_trigger WHERE tgname = 'enforce_mfa_trigger';`
-2. Verify GOTRUE_MFA_ENABLED is set to "true"
+2. Verify GOTRUE_MFA_ENABLED and GOTRUE_MFA_TOTP_*_ENABLED are set to "true"
 3. Check logs for trigger errors
 
 ### Problem: Authentication completely broken
