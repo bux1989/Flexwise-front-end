@@ -1702,11 +1702,11 @@ export default function StudentManagement({ onBack }) {
                   if (parsedData.length === 0) return 'Importieren'
 
                   const validStudents = parsedData.filter(row => {
-                    const exampleField = row['Beispiel (NICHT ÄNDERN)'] || ''
-                    return !(exampleField.toLowerCase().includes('ja') ||
-                             exampleField.toLowerCase().includes('beispiel') ||
-                             exampleField.toLowerCase().includes('example') ||
-                             exampleField.toLowerCase().includes('yes'))
+                    // Skip example row (Max Mustermann template)
+                    return !(row['Vorname'] === 'Max' &&
+                             row['Nachname'] === 'Mustermann' &&
+                             row['Klasse'] === '10A' &&
+                             row['Rufname/Nickname'] === 'Maxi')
                   }).length
 
                   return `${validStudents} Schüler importieren`
