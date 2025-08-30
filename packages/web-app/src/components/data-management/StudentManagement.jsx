@@ -600,8 +600,11 @@ export default function StudentManagement({ onBack }) {
     const file = event.target.files[0]
     if (!file) return
 
-    if (!file.name.endsWith('.csv')) {
-      setUploadErrors(['Bitte wählen Sie eine CSV-Datei aus'])
+    const allowedExtensions = ['.csv', '.xlsx', '.xls']
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'))
+
+    if (!allowedExtensions.includes(fileExtension)) {
+      setUploadErrors(['Bitte wählen Sie eine CSV- oder Excel-Datei aus (.csv, .xlsx, .xls)'])
       return
     }
 
@@ -610,8 +613,20 @@ export default function StudentManagement({ onBack }) {
     setUploadErrors([])
 
     try {
-      const text = await file.text()
-      const { data, errors } = parseCSV(text)
+      let data, errors
+
+      if (fileExtension === '.csv') {
+        const text = await file.text()
+        const result = parseFile(file, null, text)
+        data = result.data
+        errors = result.errors
+      } else {
+        const arrayBuffer = await file.arrayBuffer()
+        const result = parseFile(file, arrayBuffer, null)
+        data = result.data
+        errors = result.errors
+      }
+
       setParsedData(data)
       setUploadErrors(errors)
     } catch (error) {
