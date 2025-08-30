@@ -349,6 +349,17 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
             {error}
+            {rateLimitCountdown > 0 && (
+              <div className="mt-2 text-xs text-gray-600">
+                You can request a new code in {rateLimitCountdown} seconds
+              </div>
+            )}
+          </div>
+        )}
+
+        {rateLimitCountdown === 0 && !error && !smsSent && selectedFactor?.factor_type === 'phone' && (
+          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
+            ✅ Ready to send SMS code - click the button below
           </div>
         )}
 
