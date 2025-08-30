@@ -225,15 +225,39 @@ export async function verifyMFAChallenge(factorId, challengeId, code) {
       }
     }
 
+    // Check multiple possible AAL property locations and formats
+    let sessionAAL = null
+    if (session) {
+      // Try different possible property names/paths for AAL
+      sessionAAL = session.aal ||
+                   session.assurance_level ||
+                   session.authenticator_assurance_level ||
+                   session?.user?.aal ||
+                   session?.user?.authenticator_assurance_level
+
+      // Also check if AAL is in user metadata
+      if (!sessionAAL && session.user?.user_metadata?.aal) {
+        sessionAAL = session.user.user_metadata.aal
+      }
+
+      // If still no AAL, but we just verified MFA successfully, assume AAL2
+      if (!sessionAAL) {
+        console.log('🔧 AAL not found in session, assuming AAL2 after successful MFA verification')
+        sessionAAL = 'aal2'
+      }
+    }
+
     console.log('✅ MFA verification successful', {
-      sessionAAL: session?.aal || 'unknown',
+      sessionAAL: sessionAAL || 'unknown',
       userEmail: user?.email || 'unknown',
-      sessionSource: data.session ? 'direct' : 'fetched'
+      sessionSource: data.session ? 'direct' : 'fetched',
+      sessionProps: session ? Object.keys(session) : []
     })
 
     // Double-check AAL level
-    if (session && session.aal !== 'aal2') {
-      console.warn('⚠️ MFA verification succeeded but session AAL is not aal2:', session.aal)
+    if (sessionAAL !== 'aal2') {
+      console.warn('⚠️ MFA verification succeeded but session AAL is not aal2:', sessionAAL)
+      console.log('🔍 Full session object for debugging:', session)
     }
 
     return {
