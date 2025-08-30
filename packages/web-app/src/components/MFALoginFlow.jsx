@@ -17,6 +17,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
   const [error, setError] = useState('')
   const [step, setStep] = useState('loading') // loading, select, verify, complete
   const [smsSent, setSmsSent] = useState(false) // Track if any SMS has been sent
+  const { isDebugMode } = useDebug()
 
   useEffect(() => {
     loadMFAFactors()
