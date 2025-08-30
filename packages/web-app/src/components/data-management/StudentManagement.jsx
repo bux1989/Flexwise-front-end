@@ -680,6 +680,10 @@ export default function StudentManagement({ onBack }) {
             <Users className="w-4 h-4 mr-2" />
             Mehrere Schüler
           </Button>
+          <Button onClick={() => setShowUploadModal(true)} variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
+            <Upload className="w-4 h-4 mr-2" />
+            Excel Import
+          </Button>
         </div>
       </div>
 
