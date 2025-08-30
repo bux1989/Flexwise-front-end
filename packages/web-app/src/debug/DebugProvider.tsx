@@ -35,13 +35,17 @@ export function DebugProvider({ children }: DebugProviderProps) {
   // Key combination listener (Ctrl+Shift+D)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      console.log('🎹 Key pressed:', { ctrl: event.ctrlKey, shift: event.shiftKey, key: event.key });
       if (event.ctrlKey && event.shiftKey && event.key === 'D') {
+        console.log('🐛 Debug shortcut triggered! Debug mode:', isDebugMode);
         event.preventDefault();
         if (isDebugMode) {
           // If already in debug mode, toggle off
+          console.log('🔄 Exiting debug mode');
           exitDebugMode();
         } else {
           // If not in debug mode, show password modal
+          console.log('🔑 Showing password modal');
           setShowPasswordModal(true);
         }
       }
