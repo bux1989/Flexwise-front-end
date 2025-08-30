@@ -447,8 +447,8 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
           </div>
         )}
 
-        {/* MFA Policy Tester - only in development */}
-        {import.meta.env.DEV && (
+        {/* MFA Policy Tester - only in debug mode */}
+        {isDebugMode && (
           <details className="mb-4 border rounded-lg bg-gray-50">
             <summary className="p-3 cursor-pointer font-medium text-gray-700 hover:text-gray-900">
               🔒 Test MFA Policy Enforcement (Debug)
