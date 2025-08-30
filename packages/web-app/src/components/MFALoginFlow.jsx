@@ -335,10 +335,12 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
           {selectedFactor?.factor_type === 'phone' && (
             <button
               onClick={handleNewCode}
-              disabled={loading}
+              disabled={loading || rateLimitCountdown > 0}
               className="w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 disabled:opacity-50"
             >
-              {loading ? 'Sending...' : 'Send New Code'}
+              {loading ? 'Sending...' :
+               rateLimitCountdown > 0 ? `Wait ${rateLimitCountdown}s` :
+               'Send New Code'}
             </button>
           )}
 
