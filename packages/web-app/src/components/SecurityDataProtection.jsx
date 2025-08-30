@@ -28,7 +28,10 @@ export default function SecurityDataProtection({ onBack }) {
     { key: 'educator', name: 'Erzieher*in', icon: User, color: 'green' },
     { key: 'external', name: 'Extern', icon: User, color: 'purple' },
     { key: 'parent', name: 'Eltern', icon: User, color: 'orange' },
-    { key: 'student', name: 'Schüler*in', icon: User, color: 'cyan' }
+    { key: 'student', name: 'Schüler*in', icon: User, color: 'cyan' },
+    { key: 'hausmeister', name: 'Hausmeister', icon: User, color: 'indigo' },
+    { key: 'sekretariat', name: 'Sekretariat', icon: User, color: 'pink' },
+    { key: 'schulsozialarbeit', name: 'Schulsozialarbeit', icon: User, color: 'teal' }
   ]
 
   // Security settings state
