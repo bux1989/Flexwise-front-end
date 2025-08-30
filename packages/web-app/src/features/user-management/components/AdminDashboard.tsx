@@ -98,32 +98,34 @@ export function AdminDashboard({ user, onShowSettings, showSettings = false, onB
     }
 
     return (
-      <main className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Widget Grid - 5 widgets in asymmetric layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Row 1 - 3 widgets */}
-          <div className="lg:col-span-1">
-            <AttendanceMatrix
-              onClassClick={handleClassClick}
-              onStatusClick={handleStatusClick}
-            />
-          </div>
-          <div className="lg:col-span-1">
-            <Infoboard />
-          </div>
-          <div className="lg:col-span-1">
-            <MissingStaff />
-          </div>
+      <DebugOverlay id="ADMIN-001" component="AdminDashboard.MainContent">
+        <main className="container mx-auto px-4 py-6 max-w-7xl">
+          {/* Widget Grid - 5 widgets in asymmetric layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Row 1 - 3 widgets */}
+            <div className="lg:col-span-1">
+              <AttendanceMatrix
+                onClassClick={handleClassClick}
+                onStatusClick={handleStatusClick}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <Infoboard />
+            </div>
+            <div className="lg:col-span-1">
+              <MissingStaff />
+            </div>
 
-          {/* Row 2 - 2 widgets, centered */}
-          <div className="lg:col-span-1 lg:col-start-1">
-            <Veranstaltungen />
+            {/* Row 2 - 2 widgets, centered */}
+            <div className="lg:col-span-1 lg:col-start-1">
+              <Veranstaltungen />
+            </div>
+            <div className="lg:col-span-1">
+              <TodosPlaceholder />
+            </div>
           </div>
-          <div className="lg:col-span-1">
-            <TodosPlaceholder />
-          </div>
-        </div>
-      </main>
+        </main>
+      </DebugOverlay>
     );
   };
 
