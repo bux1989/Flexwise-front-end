@@ -488,25 +488,40 @@ export default function StudentManagement({ onBack }) {
       const colWidths = headers.map(() => ({ wch: 18 }))
       ws['!cols'] = colWidths
 
-      // Style the header row (row 1)
+      // Initialize styles object if it doesn't exist
+      if (!ws['!styles']) ws['!styles'] = {}
+
+      // Style the header row (row 1) - Blue background
       for (let col = 0; col < headers.length; col++) {
         const cellRef = XLSX.utils.encode_cell({ r: 0, c: col })
         if (!ws[cellRef]) continue
         ws[cellRef].s = {
-          fill: { fgColor: { rgb: "366092" } }, // Blue header
-          font: { color: { rgb: "FFFFFF" }, bold: true },
-          alignment: { horizontal: "center" }
+          fill: {
+            patternType: 'solid',
+            fgColor: { rgb: 'FF366092' }  // Blue header with FF prefix
+          },
+          font: {
+            color: { rgb: 'FFFFFFFF' },
+            bold: true
+          },
+          alignment: { horizontal: 'center' }
         }
       }
 
-      // Style the example row (row 2) with green background
+      // Style the example row (row 2) with bright green background
       for (let col = 0; col < headers.length; col++) {
         const cellRef = XLSX.utils.encode_cell({ r: 1, c: col })
         if (!ws[cellRef]) continue
         ws[cellRef].s = {
-          fill: { fgColor: { rgb: "D4F6D4" } }, // Light green background
-          font: { color: { rgb: "2D5A2D" }, italic: true },
-          alignment: { horizontal: "left" }
+          fill: {
+            patternType: 'solid',
+            fgColor: { rgb: 'FF92D050' }  // Bright green background
+          },
+          font: {
+            color: { rgb: 'FF2D5A2D' },
+            italic: true
+          },
+          alignment: { horizontal: 'left' }
         }
       }
 
@@ -514,8 +529,12 @@ export default function StudentManagement({ onBack }) {
       const instructionCellRef = XLSX.utils.encode_cell({ r: 3, c: 0 })
       if (ws[instructionCellRef]) {
         ws[instructionCellRef].s = {
-          font: { color: { rgb: "FF6B35" }, bold: true, size: 11 },
-          alignment: { horizontal: "left" }
+          font: {
+            color: { rgb: 'FFFF6B35' },
+            bold: true,
+            size: 11
+          },
+          alignment: { horizontal: 'left' }
         }
       }
 
