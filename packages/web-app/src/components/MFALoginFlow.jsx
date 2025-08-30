@@ -133,14 +133,71 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
 
   const [rateLimitCountdown, setRateLimitCountdown] = useState(0)
 
+  // Helper functions for rate limit persistence
+  const getRateLimitKey = () => {
+    const { data: sessionData } = supabase.auth.getSession()
+    const userId = sessionData?.session?.user?.id
+    return userId ? `mfa_rate_limit_${userId}` : 'mfa_rate_limit_temp'
+  }
+
+  const saveRateLimitState = (waitTime) => {
+    const key = getRateLimitKey()
+    const state = {
+      timestamp: Date.now(),
+      waitTime: waitTime
+    }
+    try {
+      localStorage.setItem(key, JSON.stringify(state))
+      console.log('💾 Saved rate limit state:', state)
+    } catch (err) {
+      console.warn('Failed to save rate limit state:', err)
+    }
+  }
+
+  const checkExistingRateLimit = () => {
+    const key = getRateLimitKey()
+    try {
+      const stored = localStorage.getItem(key)
+      if (!stored) return null
+
+      const state = JSON.parse(stored)
+      const elapsed = (Date.now() - state.timestamp) / 1000
+      const remaining = Math.max(0, state.waitTime - elapsed)
+
+      if (remaining > 0) {
+        console.log('⏰ Found existing rate limit:', remaining + 's remaining')
+        return Math.ceil(remaining)
+      } else {
+        // Rate limit expired, clean up
+        localStorage.removeItem(key)
+        return null
+      }
+    } catch (err) {
+      console.warn('Failed to check rate limit state:', err)
+      return null
+    }
+  }
+
+  const clearRateLimitState = () => {
+    const key = getRateLimitKey()
+    try {
+      localStorage.removeItem(key)
+      console.log('🗑️ Cleared rate limit state')
+    } catch (err) {
+      console.warn('Failed to clear rate limit state:', err)
+    }
+  }
+
   const startRateLimitCountdown = (seconds) => {
     setRateLimitCountdown(seconds)
+    saveRateLimitState(seconds)
 
     const interval = setInterval(() => {
       setRateLimitCountdown(prev => {
         if (prev <= 1) {
           clearInterval(interval)
           setError('') // Clear error when countdown ends
+          clearRateLimitState() // Clear localStorage when countdown ends
           console.log('⏰ Rate limit countdown ended - ready for new SMS request')
           return 0
         }
