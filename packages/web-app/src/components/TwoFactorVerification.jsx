@@ -18,6 +18,9 @@ export function TwoFactorVerification({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [rememberDevice, setRememberDevice] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+  const [lastAttemptTime, setLastAttemptTime] = useState(null)
+  const [isRateLimited, setIsRateLimited] = useState(false)
 
   const handleVerification = async (e) => {
     e.preventDefault()
@@ -93,7 +96,7 @@ export function TwoFactorVerification({
         if (verificationError?.message?.includes('expired')) {
           setError('Der Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.')
         } else if (verificationError?.message?.includes('invalid') || verificationError?.message?.includes('Invalid')) {
-          setError('Ungültiger Code. Bitte überprüfen Sie den Code und versuchen Sie es erneut.')
+          setError('Ungültiger Code. Bitte überpr��fen Sie den Code und versuchen Sie es erneut.')
         } else {
           setError('Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.')
         }
