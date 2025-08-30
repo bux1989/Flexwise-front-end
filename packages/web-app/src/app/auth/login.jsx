@@ -4,6 +4,7 @@ import { handleLoginWith2FA } from '../../lib/supabase'
 import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, Palette } from 'lucide-react'
 import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner'
 import { TwoFactorVerification } from '../../components/TwoFactorVerification'
+import { TwoFactorDebug } from '../../components/TwoFactorDebug'
 
 export default function Login() {
   const [email, setEmail] = useState('')
