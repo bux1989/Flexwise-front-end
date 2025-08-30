@@ -84,6 +84,11 @@ export default function SecurityDataProtection({ onBack }) {
   }
 
   const updateTwoFactorAuth = (role, field, value) => {
+    // Prevent changes to admin role mandatory setting
+    if (role === 'admin' && field === 'mandatory') {
+      return
+    }
+
     setEditedSettings(prev => ({
       ...prev,
       twoFactorAuth: {
