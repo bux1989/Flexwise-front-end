@@ -28,7 +28,8 @@ export function MFAPolicyTester() {
         userEmail: user?.email,
         currentAAL: session.session?.aal || 'none',
         amr: session.session?.amr || [],
-        hasSession: !!session.session
+        hasSession: !!session.session,
+        effectiveAAL: session.session?.aal || (!!user ? 'aal1' : 'none') // Fallback logic
       }
 
       // Check MFA factors
