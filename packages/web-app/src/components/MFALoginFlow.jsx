@@ -362,7 +362,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
         )}
 
         <div className="space-y-3">
-          {!challenge && selectedFactor?.factor_type === 'phone' ? (
+          {!smsSent && selectedFactor?.factor_type === 'phone' ? (
             // No SMS sent yet - prioritize sending SMS
             <>
               <button
