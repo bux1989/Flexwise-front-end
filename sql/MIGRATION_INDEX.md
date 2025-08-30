@@ -21,6 +21,24 @@ This document tracks all database schema changes and migrations applied to the p
 | 2025-08-29 | `fix_jsonb_array_handling_v2.sql` | Alternative fix using CASE statements for safer JSONB array handling | `save_user_profile_complete_react()` | ❌ Superseded |
 | 2025-08-29 | `remove_subjects_stud_field.sql` | Remove subjects_stud field from function to fix profile saving | `save_user_profile_complete_react()` | ✅ Applied |
 
+### MFA & Authentication Security
+
+| Date | File | Description | Functions/Policies Affected | Status |
+|------|------|-------------|------------------------------|--------|
+| 2025-08-30 | `simple_mfa_enforcement.sql` | Initial MFA enforcement trigger (aggressive blocking) | `auth.enforce_mfa_for_verified_users()`, trigger on `auth.sessions` | 🟡 Superseded |
+| 2025-08-30 | `fix_mfa_enforcement_trigger.sql` | Less aggressive MFA monitoring (logging only) | `auth.log_mfa_status()`, `log_mfa_status_trigger` | ✅ Applied |
+| 2025-08-30 | `setup_self_hosted_mfa.sql` | Complete self-hosted MFA setup with audit hooks | `auth.enforce_mfa_for_verified_users()`, audit hooks | 🟡 Alternative |
+| 2025-08-30 | `harden_mfa_aal2_requirements.sql` | Custom RLS policies requiring AAL2 for MFA users | Multiple table policies | 🟡 Superseded |
+| 2025-08-30 | `supabase_official_mfa_hardening.sql` | **RECOMMENDED** Official Supabase MFA hardening with RESTRICTIVE policies | `public.check_mfa_required()`, RESTRICTIVE policies on critical tables | 🚀 **PENDING** |
+
+### Authentication Methods Expansion
+
+| Date | File | Description | Configuration Changes | Status |
+|------|------|-------------|----------------------|--------|
+| 2025-08-30 | N/A - Supabase Dashboard | OAuth Provider Configuration | Google, GitHub, Microsoft OAuth setup | 📋 **PLANNED** |
+| 2025-08-30 | N/A - Supabase Dashboard | Magic Link Email Templates | Email OTP configuration | 📋 **PLANNED** |
+| 2025-08-30 | `user_auth_preferences.sql` | User authentication method preferences (optional) | `user_auth_preferences` table | 📋 **OPTIONAL** |
+
 ## Migration Details
 
 ### Table Modifications
