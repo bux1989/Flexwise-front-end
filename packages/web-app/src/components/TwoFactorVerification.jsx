@@ -141,6 +141,11 @@ export function TwoFactorVerification({
       }
 
       console.log('🎉 2FA verification complete')
+
+      // Reset retry count on success
+      setRetryCount(0)
+      setIsRateLimited(false)
+
       onSuccess({
         method: verificationResult,
         deviceTrusted: rememberDevice
@@ -148,11 +153,31 @@ export function TwoFactorVerification({
 
     } catch (error) {
       console.error('💥 2FA verification error:', error)
-      setError('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.')
+      setRetryCount(prev => prev + 1)
+
+      // Check if it's a network error for retry suggestion
+      if (error?.code === 'NETWORK_ERROR' || error?.message?.includes('fetch')) {
+        setError('🌐 Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
+      } else {
+        setError(`⚠️ Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut. (Versuch ${retryCount + 1}/5)`)
+      }
     } finally {
       setLoading(false)
     }
   }
+
+  // Reset rate limiting after 5 minutes
+  React.useEffect(() => {
+    if (isRateLimited) {
+      const timer = setTimeout(() => {
+        setIsRateLimited(false)
+        setRetryCount(0)
+        setError('')
+      }, 5 * 60 * 1000) // 5 minutes
+
+      return () => clearTimeout(timer)
+    }
+  }, [isRateLimited])
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
