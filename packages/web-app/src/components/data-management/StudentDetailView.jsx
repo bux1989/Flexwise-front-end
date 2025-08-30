@@ -162,6 +162,31 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
                   </p>
                 </div>
               )}
+              {student.status === 'inactive' && !student.loginInfo?.hasAccount && (
+                <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-orange-700 font-medium">
+                        📋 FlexWise Zugang erstellen
+                      </p>
+                      <p className="text-sm text-orange-600/70 mt-1">
+                        Dieser Schüler hat noch keinen Zugang zur FlexWise Plattform.
+                        Erstellen Sie Anmeldedaten für den Schüler und die Eltern.
+                      </p>
+                    </div>
+                    <Button
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                      onClick={() => {
+                        // TODO: Implement Anmeldedaten generation
+                        console.log('Generate login credentials for:', student.firstName, student.lastName)
+                        alert('Anmeldedaten werden generiert...')
+                      }}
+                    >
+                      Anmeldedaten erstellen
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
