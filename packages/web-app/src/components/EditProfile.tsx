@@ -2072,7 +2072,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                                     }`} />
                                     <div>
                                       <p className="font-medium text-sm">
-                                        {device.device_name || 'Unbekanntes Gerät'}
+                                        {device.device_name || 'Unbekanntes Ger��t'}
                                       </p>
                                       <div className="text-xs text-gray-500 space-y-1">
                                         <p>Hinzugefügt: {formatDeviceDate(device.created_at)}</p>
@@ -2221,6 +2221,17 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
           </div>
         </div>
       </div>
+
+      {/* Sensitive Action 2FA Modal */}
+      {showSensitive2FA && pendingSensitiveAction && (
+        <SensitiveAction2FA
+          actionTitle={pendingSensitiveAction.title}
+          actionDescription={pendingSensitiveAction.description}
+          user={pendingSensitiveAction.user}
+          onSuccess={handleSensitive2FASuccess}
+          onCancel={handleSensitive2FACancel}
+        />
+      )}
     </DebugOverlay>
   );
 }
