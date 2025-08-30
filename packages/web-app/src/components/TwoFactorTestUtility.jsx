@@ -124,8 +124,8 @@ export function TwoFactorTestUtility() {
 
   const runAllTests = async () => {
     await runHealthCheck()
-    await runUserStatsCheck()
-    await runDeviceFingerprintTest()
+    await runMFAFactorsCheck()
+    await runSecurityInfoTest()
     await runRoleCheck()
   }
 
