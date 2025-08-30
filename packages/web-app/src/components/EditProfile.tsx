@@ -1083,6 +1083,115 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
     }));
   };
 
+  // Trusted devices management functions
+  const loadTrustedDevices = async () => {
+    try {
+      setLoadingDevices(true);
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      const profileId = authUser.user_metadata?.profile_id;
+      if (!profileId) return;
+
+      const { data: devices, error } = await supabase
+        .from('user_trusted_devices')
+        .select('*')
+        .eq('user_profile_id', profileId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading trusted devices:', error);
+        return;
+      }
+
+      setTrustedDevices(devices || []);
+    } catch (error) {
+      console.error('Error in loadTrustedDevices:', error);
+    } finally {
+      setLoadingDevices(false);
+    }
+  };
+
+  const removeTrustedDevice = async (deviceId) => {
+    if (!confirm('Möchten Sie dieses vertrauenswürdige Gerät wirklich entfernen?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('user_trusted_devices')
+        .update({ is_active: false })
+        .eq('id', deviceId);
+
+      if (error) {
+        console.error('Error removing trusted device:', error);
+        alert('Fehler beim Entfernen des Geräts: ' + error.message);
+        return;
+      }
+
+      // Reload devices list
+      await loadTrustedDevices();
+      alert('Gerät erfolgreich entfernt.');
+    } catch (error) {
+      console.error('Error in removeTrustedDevice:', error);
+      alert('Fehler beim Entfernen des Geräts.');
+    }
+  };
+
+  const removeAllTrustedDevices = async () => {
+    if (!confirm('Möchten Sie wirklich alle vertrauenswürdigen Geräte entfernen? Sie müssen sich dann auf allen Geräten erneut mit 2FA anmelden.')) {
+      return;
+    }
+
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      const profileId = authUser.user_metadata?.profile_id;
+      if (!profileId) return;
+
+      const { error } = await supabase
+        .from('user_trusted_devices')
+        .update({ is_active: false })
+        .eq('user_profile_id', profileId);
+
+      if (error) {
+        console.error('Error removing all trusted devices:', error);
+        alert('Fehler beim Entfernen der Geräte: ' + error.message);
+        return;
+      }
+
+      // Reload devices list
+      await loadTrustedDevices();
+      alert('Alle Geräte erfolgreich entfernt.');
+    } catch (error) {
+      console.error('Error in removeAllTrustedDevices:', error);
+      alert('Fehler beim Entfernen der Geräte.');
+    }
+  };
+
+  // Load trusted devices when component mounts and when 2FA status changes
+  useEffect(() => {
+    if (isOtpEnabled) {
+      loadTrustedDevices();
+    }
+  }, [isOtpEnabled]);
+
+  const formatDeviceDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const isDeviceExpired = (trustedUntil) => {
+    return new Date(trustedUntil) < new Date();
+  };
+
   return (
     <DebugOverlay name="EditProfile">
       <div className="p-1 lg:p-6 min-h-screen bg-gray-50">
