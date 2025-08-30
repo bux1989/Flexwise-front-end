@@ -1649,14 +1649,14 @@ export default function StudentManagement({ onBack }) {
                                             student['Rufname/Nickname'] === 'Maxi'
 
                             return (
-                              <tr key={index} className={isExample ? "bg-gray-100 hover:bg-gray-200" : "hover:bg-gray-50"}>
+                              <tr key={index} className={isExample ? "bg-green-50 hover:bg-green-100" : "hover:bg-gray-50"}>
                                 <td className="px-3 py-2 border-r border-gray-200">
                                   {isExample ? (
-                                    <Badge className="bg-gray-200 text-gray-700 text-xs">
+                                    <Badge className="bg-green-200 text-green-800 text-xs">
                                       Beispiel - wird übersprungen
                                     </Badge>
                                   ) : (
-                                    <Badge className="bg-green-100 text-green-700 text-xs">
+                                    <Badge className="bg-blue-100 text-blue-700 text-xs">
                                       Wird importiert
                                     </Badge>
                                   )}
