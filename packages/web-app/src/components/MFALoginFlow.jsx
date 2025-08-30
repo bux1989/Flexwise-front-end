@@ -51,11 +51,11 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
 
       setFactors(verifiedFactors)
       
-      // Auto-select if only one factor
+      // Auto-select if only one factor but don't send SMS immediately
       if (verifiedFactors.length === 1) {
         setSelectedFactor(verifiedFactors[0])
         setStep('verify')
-        await createChallenge(verifiedFactors[0])
+        // Don't automatically create challenge - wait for user action
       } else {
         setStep('select')
       }
