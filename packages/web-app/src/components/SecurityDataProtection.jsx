@@ -405,7 +405,7 @@ export default function SecurityDataProtection({ onBack }) {
                 <div className="space-y-4">
                   {/* PIN Length */}
                   <div className="p-4 border border-gray-200 rounded-lg">
-                    <h4 className="font-medium text-gray-900 mb-3">PIN-Länge</h4>
+                    <h4 className="font-medium text-gray-900 mb-3">PIN-L��nge</h4>
                     {isEditing ? (
                       <div className="flex items-center gap-4">
                         <label className="flex items-center gap-2">
@@ -497,7 +497,11 @@ export default function SecurityDataProtection({ onBack }) {
                     />
                     <div>
                       <span className="font-medium text-purple-900 block">Digitale Signaturen für Eltern erlauben</span>
-                      <span className="text-sm text-purple-600/70">Eltern können digitale Signaturen für Dokumente erstellen</span>
+                      <span className="text-sm text-purple-600/70">
+                        <p>
+                          Eltern können digitale Signaturen für Dokumente erstellen. Voraussetzung ist, dass sie vorher eine 2-Faktor-Authentifizierung eingerichtet haben.
+                        </p>
+                      </span>
                     </div>
                   </label>
                 ) : (
