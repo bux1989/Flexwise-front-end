@@ -141,6 +141,19 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
                     </p>
                   </div>
                 </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                  <User className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-blue-900">FlexWise Login-Status</p>
+                    <p className="text-sm text-blue-600/70">
+                      {student.status === 'active' && student.loginInfo?.hasAccount ? (
+                        <>Aktiv seit {student.loginInfo.registrationDate ? new Date(student.loginInfo.registrationDate).toLocaleDateString('de-DE') : 'Unbekannt'}</>
+                      ) : (
+                        <>Inaktiv - Kein FlexWise Zugang</>
+                      )}
+                    </p>
+                  </div>
+                </div>
               </div>
               {student.ausstieg && new Date(student.ausstieg) < new Date() && (
                 <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
