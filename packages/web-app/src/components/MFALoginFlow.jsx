@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { createMFAChallenge, verifyMFAChallenge } from '../lib/supabase-mfa'
 import { MFAPolicyTester } from './MFAPolicyTester'
+import { useDebug } from '../debug'
 
 /**
  * Component to handle MFA verification during login when user has AAL1 session
