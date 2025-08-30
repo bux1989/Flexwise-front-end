@@ -87,6 +87,20 @@ export function DebugProvider({ children }: DebugProviderProps) {
     verifyPassword,
   };
 
+  // Expose debug functions globally for testing
+  useEffect(() => {
+    (window as any).debugFlexwise = {
+      openModal: () => {
+        console.log('🔧 Manually opening debug modal');
+        setShowPasswordModal(true);
+      },
+      getPassword: () => DEBUG_PASSWORD,
+      isDebugMode,
+      enterDebugMode,
+      exitDebugMode
+    };
+  }, [isDebugMode, enterDebugMode, exitDebugMode]);
+
   return (
     <DebugContext.Provider value={value}>
       {children}
