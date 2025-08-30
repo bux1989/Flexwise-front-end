@@ -312,8 +312,8 @@ export default function SecurityDataProtection({ onBack }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {roles.map((role) => {
                   const IconComponent = role.icon
-                  const minutes = currentSettings.autoLogout[role.key]
-                  
+                  const timeoutConfig = currentSettings.autoLogout[role.key]
+
                   return (
                     <div key={role.key} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
                       <div className="flex items-center gap-3 mb-3">
@@ -322,23 +322,35 @@ export default function SecurityDataProtection({ onBack }) {
                         </div>
                         <h3 className="font-medium text-gray-900">{role.name}</h3>
                       </div>
-                      
+
                       {isEditing ? (
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="number"
-                            min="5"
-                            max="240"
-                            value={currentSettings.autoLogout[role.key]}
-                            onChange={(e) => updateAutoLogout(role.key, e.target.value)}
-                            className="w-20"
-                          />
-                          <span className="text-sm text-gray-600">Minuten</span>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              min="1"
+                              max={getMaxValue(timeoutConfig.unit)}
+                              value={timeoutConfig.value}
+                              onChange={(e) => updateAutoLogout(role.key, 'value', e.target.value)}
+                              className="w-20"
+                            />
+                            <select
+                              value={timeoutConfig.unit}
+                              onChange={(e) => updateAutoLogout(role.key, 'unit', e.target.value)}
+                              className="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="minutes">Minuten</option>
+                              <option value="days">Tage</option>
+                            </select>
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            Max: {timeoutConfig.unit === 'days' ? '30 Tage' : '43.200 Minuten (30 Tage)'}
+                          </p>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
                           <Badge className="bg-orange-100 text-orange-700">
-                            {minutes} Minuten
+                            {getTimeoutDisplay(timeoutConfig)}
                           </Badge>
                           <Clock className="w-4 h-4 text-orange-600" />
                         </div>
