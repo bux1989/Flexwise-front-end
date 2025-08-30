@@ -544,7 +544,7 @@ export default function StudentManagement({ onBack }) {
 
   const parseFile = (file, arrayBuffer = null, text = null) => {
     const expectedHeaders = [
-      'Beispiel (NICHT ÄNDERN)', 'Vorname', 'Nachname', 'Klasse', 'Rufname/Nickname', 'Geburtsdatum', 'Adresse',
+      'Vorname', 'Nachname', 'Klasse', 'Rufname/Nickname', 'Geburtsdatum', 'Adresse',
       'Einstieg', 'Telefon (Schüler)', 'Eltern 1 - Name', 'Eltern 1 - E-Mail', 'Eltern 1 - Telefon',
       'Eltern 2 - Name', 'Eltern 2 - E-Mail', 'Eltern 2 - Telefon', 'Allergien', 'BuT berechtigt',
       'BuT Typ', 'BuT Gültig bis'
