@@ -34,6 +34,7 @@ interface Student {
   lastUpdate: LastUpdate | null;
   comments: Comment[];
   hasMoreComments: boolean;
+  [key: string]: any; // Allow indexing for sorting
 }
 
 interface AttendanceDetailViewProps {
