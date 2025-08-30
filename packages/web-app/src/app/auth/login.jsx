@@ -189,6 +189,7 @@ export default function Login() {
           <div className="mt-6 space-y-4">
             <TwoFactorDebug />
             <SupabaseMFATest />
+            <MFAPolicyTester />
           </div>
         )}
 
