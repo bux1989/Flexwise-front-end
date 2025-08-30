@@ -642,18 +642,41 @@ export async function saveLessonAttendanceBulkRPC({ lessonId, schoolId, attendan
 // Generate device fingerprint for device trust
 export function generateDeviceFingerprint() {
   try {
+    // Use more stable characteristics that don't change frequently
     const data = {
       userAgent: navigator.userAgent,
       language: navigator.language,
+      languages: navigator.languages?.join(',') || navigator.language,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      screen: `${screen.width}x${screen.height}`,
       platform: navigator.platform,
-      timestamp: Date.now() // Add some uniqueness
+      hardwareConcurrency: navigator.hardwareConcurrency || 0,
+      maxTouchPoints: navigator.maxTouchPoints || 0,
+      // Use available screen dimensions (more stable than current window)
+      screenResolution: screen.availWidth && screen.availHeight
+        ? `${screen.availWidth}x${screen.availHeight}`
+        : `${screen.width}x${screen.height}`,
+      colorDepth: screen.colorDepth || 24,
+      pixelDepth: screen.pixelDepth || 24
     }
-    return btoa(JSON.stringify(data))
+
+    // Create a stable hash without timestamp
+    const fingerprint = btoa(JSON.stringify(data))
+    console.log('Device fingerprint generated:', {
+      length: fingerprint.length,
+      preview: fingerprint.substring(0, 20) + '...',
+      components: Object.keys(data).length
+    })
+
+    return fingerprint
   } catch (error) {
     console.error('Error generating device fingerprint:', error)
-    return btoa(JSON.stringify({ fallback: Date.now(), userAgent: navigator.userAgent || 'unknown' }))
+    // Fallback with minimal but stable data
+    const fallback = {
+      userAgent: navigator.userAgent || 'unknown',
+      platform: navigator.platform || 'unknown',
+      language: navigator.language || 'unknown'
+    }
+    return btoa(JSON.stringify(fallback))
   }
 }
 
