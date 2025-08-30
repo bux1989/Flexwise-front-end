@@ -639,73 +639,12 @@ export async function saveLessonAttendanceBulkRPC({ lessonId, schoolId, attendan
 
 // 2FA and Device Trust Management Functions
 
-// Generate device fingerprint for device trust
-export function generateDeviceFingerprint() {
-  try {
-    // Use more stable characteristics that don't change frequently
-    const data = {
-      userAgent: navigator.userAgent,
-      language: navigator.language,
-      languages: navigator.languages?.join(',') || navigator.language,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      platform: navigator.platform,
-      hardwareConcurrency: navigator.hardwareConcurrency || 0,
-      maxTouchPoints: navigator.maxTouchPoints || 0,
-      // Use available screen dimensions (more stable than current window)
-      screenResolution: screen.availWidth && screen.availHeight
-        ? `${screen.availWidth}x${screen.availHeight}`
-        : `${screen.width}x${screen.height}`,
-      colorDepth: screen.colorDepth || 24,
-      pixelDepth: screen.pixelDepth || 24
-    }
-
-    // Create a stable hash without timestamp
-    const fingerprint = btoa(JSON.stringify(data))
-    console.log('Device fingerprint generated:', {
-      length: fingerprint.length,
-      preview: fingerprint.substring(0, 20) + '...',
-      components: Object.keys(data).length
-    })
-
-    return fingerprint
-  } catch (error) {
-    console.error('Error generating device fingerprint:', error)
-    // Fallback with minimal but stable data
-    const fallback = {
-      userAgent: navigator.userAgent || 'unknown',
-      platform: navigator.platform || 'unknown',
-      language: navigator.language || 'unknown'
-    }
-    return btoa(JSON.stringify(fallback))
-  }
-}
-
-// Generate human-readable device name
-export function generateDeviceName() {
-  try {
-    const ua = navigator.userAgent
-    let browser = 'Unknown Browser'
-    let os = 'Unknown OS'
-
-    // Detect browser
-    if (ua.includes('Chrome')) browser = 'Chrome'
-    else if (ua.includes('Firefox')) browser = 'Firefox'
-    else if (ua.includes('Safari')) browser = 'Safari'
-    else if (ua.includes('Edge')) browser = 'Edge'
-
-    // Detect OS
-    if (ua.includes('Windows')) os = 'Windows'
-    else if (ua.includes('Mac')) os = 'macOS'
-    else if (ua.includes('Linux')) os = 'Linux'
-    else if (ua.includes('Android')) os = 'Android'
-    else if (ua.includes('iOS')) os = 'iOS'
-
-    return `${browser} on ${os}`
-  } catch (error) {
-    console.error('Error generating device name:', error)
-    return 'Unknown Device'
-  }
-}
+// NOTE: Device trust functions removed for security
+// Replaced with Supabase's built-in MFA device trust management
+// The custom implementation had security vulnerabilities:
+// - Client-side fingerprinting could be spoofed
+// - Custom trust logic bypassed server-side security
+// - No audit trail or enterprise-grade security features
 
 // Check if user requires 2FA (currently only Admins)
 export async function userRequires2FA(userProfile) {
@@ -776,89 +715,12 @@ export async function userHas2FAEnabled(user) {
   }
 }
 
-// Check if current device is trusted
-export async function isDeviceTrusted(userProfileId) {
-  try {
-    const deviceFingerprint = generateDeviceFingerprint()
-
-    const { data: trustedDevice, error } = await supabase
-      .from('user_trusted_devices')
-      .select('*')
-      .eq('user_profile_id', userProfileId)
-      .eq('device_fingerprint', deviceFingerprint)
-      .eq('is_active', true)
-      .gt('trusted_until', new Date().toISOString())
-      .single()
-
-    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-      console.error('Error checking device trust:', error)
-      return false
-    }
-
-    const isTrusted = !!trustedDevice
-    console.log('Device trust check:', {
-      userProfileId,
-      isTrusted,
-      deviceFingerprint: deviceFingerprint.substring(0, 20) + '...'
-    })
-
-    // Update last_used_at if device is trusted
-    if (isTrusted) {
-      await supabase
-        .from('user_trusted_devices')
-        .update({ last_used_at: new Date().toISOString() })
-        .eq('id', trustedDevice.id)
-    }
-
-    return isTrusted
-  } catch (error) {
-    console.error('Error in isDeviceTrusted:', error)
-    return false
-  }
-}
-
-// Add device to trusted devices
-export async function addTrustedDevice(userProfileId, userRole, schoolId) {
-  try {
-    const deviceFingerprint = generateDeviceFingerprint()
-    const deviceName = generateDeviceName()
-
-    // Determine trust duration based on role
-    const adminRoles = ['Admin', 'Super Admin']
-    const trustDays = adminRoles.includes(userRole) ? 30 : 90
-
-    const trustedUntil = new Date()
-    trustedUntil.setDate(trustedUntil.getDate() + trustDays)
-
-    const { data, error } = await supabase
-      .from('user_trusted_devices')
-      .insert({
-        user_profile_id: userProfileId,
-        device_fingerprint: deviceFingerprint,
-        device_name: deviceName,
-        trusted_until: trustedUntil.toISOString(),
-        school_id: schoolId
-      })
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error adding trusted device:', error)
-      throw error
-    }
-
-    console.log('Device added to trusted list:', {
-      deviceName,
-      trustDays,
-      trustedUntil: trustedUntil.toISOString()
-    })
-
-    return data
-  } catch (error) {
-    console.error('Error in addTrustedDevice:', error)
-    throw error
-  }
-}
+// NOTE: Device trust functions removed - replaced with Supabase MFA
+// Use Supabase's built-in device trust management:
+// - supabase.auth.mfa.challenge() for creating challenges
+// - supabase.auth.mfa.verify() for verification
+// - Built-in device trust that's server-side enforced
+// - Enterprise-grade security with proper audit trails
 
 // Security audit logging
 export async function logSecurityEvent(eventType, details = {}) {
