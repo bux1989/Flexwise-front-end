@@ -235,10 +235,15 @@ export default function StudentManagement({ onBack }) {
       phone: '+49 555 123456',
       class: '9B',
       birthDate: '2009-02-10',
-      status: 'inactive',
+      status: 'inactive', // Left school, login disabled
       address: 'Schulstraße 789, 12345 Berlin',
       einstieg: '2022-08-01',
       ausstieg: '2024-07-31', // Student left school
+      loginInfo: {
+        hasAccount: false, // Account disabled when student left
+        registrationDate: '2023-09-01',
+        lastLogin: '2024-07-30'
+      },
       photoPermissions: [
         {
           date: '2023-09-01',
