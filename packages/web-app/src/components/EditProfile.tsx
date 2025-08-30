@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { DebugOverlay } from '../debug';
 import { supabase } from '../lib/supabase';
+import { SensitiveAction2FA } from './SensitiveAction2FA';
 
 interface EditProfileProps {
   onClose: () => void;
