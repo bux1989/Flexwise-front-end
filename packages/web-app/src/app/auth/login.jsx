@@ -1,14 +1,17 @@
 // Push test comment - verifying branch sync functionality
 import { useState } from 'react'
-import { handleLogin } from '../../lib/supabase'
+import { handleLoginWith2FA } from '../../lib/supabase'
 import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, Palette } from 'lucide-react'
 import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner'
+import { TwoFactorVerification } from '../../components/TwoFactorVerification'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showTwoFactor, setShowTwoFactor] = useState(false)
+  const [loginData, setLoginData] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -16,10 +19,28 @@ export default function Login() {
     setError('')
 
     try {
-      const { user } = await handleLogin(email, password)
+      const result = await handleLoginWith2FA(email, password)
 
-      // Success - profile/role loading and navigation handled by App.jsx
-      console.log('Login successful:', { user: user.email })
+      if (result.loginComplete) {
+        // Login successful, no 2FA needed or device is trusted
+        console.log('Login successful:', {
+          user: result.user.email,
+          requires2FA: result.requires2FA,
+          deviceTrusted: result.deviceTrusted
+        })
+
+        if (result.needsSetup) {
+          // User requires 2FA but hasn't set it up yet
+          console.log('⚠️ User should set up 2FA')
+          // For now, allow login but could show a notification
+        }
+
+        // Success - profile/role loading and navigation handled by App.jsx
+      } else if (result.needsVerification) {
+        // Show 2FA verification form
+        setLoginData(result)
+        setShowTwoFactor(true)
+      }
 
     } catch (err) {
       console.error('Login error:', err)
@@ -27,6 +48,32 @@ export default function Login() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handle2FASuccess = (verificationResult) => {
+    console.log('2FA verification successful:', verificationResult)
+    setShowTwoFactor(false)
+    setLoginData(null)
+    // Login complete - App.jsx will handle navigation
+  }
+
+  const handle2FABack = () => {
+    setShowTwoFactor(false)
+    setLoginData(null)
+    setError('')
+  }
+
+  // Show 2FA verification screen if needed
+  if (showTwoFactor && loginData) {
+    return (
+      <TwoFactorVerification
+        user={loginData.user}
+        profile={loginData.profile}
+        onSuccess={handle2FASuccess}
+        onBack={handle2FABack}
+        showRememberDevice={true}
+      />
+    )
   }
 
   return (
