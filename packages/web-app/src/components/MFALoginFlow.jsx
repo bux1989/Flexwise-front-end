@@ -173,36 +173,12 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
         console.log('✅ MFA verification successful - session elevated to AAL2')
         setStep('complete')
 
-        // Verify session is properly updated before completing
-        const verifyAndComplete = async () => {
-          try {
-            // Wait a moment for session to propagate
-            await new Promise(resolve => setTimeout(resolve, 1000))
-
-            // Get fresh session to ensure it's AAL2
-            const { data: freshSession } = await supabase.auth.getSession()
-
-            if (freshSession.session?.aal === 'aal2') {
-              console.log('✅ Confirmed AAL2 session, completing MFA flow')
-              onComplete && onComplete(freshSession.session)
-            } else {
-              console.warn('⚠️ Session not yet AAL2, waiting longer...', freshSession.session?.aal)
-
-              // Wait a bit longer and try once more
-              setTimeout(async () => {
-                const { data: finalSession } = await supabase.auth.getSession()
-                console.log('🔄 Final session check:', finalSession.session?.aal)
-                onComplete && onComplete(finalSession.session || result.session)
-              }, 1000)
-            }
-          } catch (err) {
-            console.error('❌ Error verifying session after MFA:', err)
-            // Fallback to original session
-            onComplete && onComplete(result.session)
-          }
-        }
-
-        verifyAndComplete()
+        // Complete immediately since session.aal doesn't exist in this Supabase version
+        // The MFA_CHALLENGE_VERIFIED event will be fired automatically
+        setTimeout(() => {
+          console.log('✅ MFA verification complete, finishing flow')
+          onComplete && onComplete(result.session)
+        }, 500)
       }
       
     } catch (err) {
