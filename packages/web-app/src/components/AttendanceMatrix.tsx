@@ -165,11 +165,22 @@ export function AttendanceMatrix({ onClassClick, onStatusClick }: AttendanceMatr
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground">Überfällig</span>
             <button onClick={() => onStatusClick('ueberfaellig')}>
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="bg-red-100 text-red-800 hover:bg-red-200 transition-colors cursor-pointer"
               >
                 {footerStats.ueberfaellig}
+              </Badge>
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Entlassen</span>
+            <button onClick={() => onStatusClick('entlassen')}>
+              <Badge
+                variant="secondary"
+                className="bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors cursor-pointer"
+              >
+                {footerStats.entlassen}
               </Badge>
             </button>
           </div>
