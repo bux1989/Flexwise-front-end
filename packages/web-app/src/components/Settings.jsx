@@ -433,6 +433,9 @@ export default function Settings() {
                 <div className="text-center p-2 bg-blue-50 rounded mt-1">
                   <p className="font-medium text-blue-900">Ferien/Feiertage</p>
                 </div>
+                <div className="text-center p-2 bg-blue-50 rounded mt-1">
+                  <p className="font-medium text-blue-900">Unterrichtsverteilung</p>
+                </div>
               </div>
             </div>
           </CardContent>
