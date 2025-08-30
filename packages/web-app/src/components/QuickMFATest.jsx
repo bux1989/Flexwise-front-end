@@ -72,12 +72,18 @@ export function QuickMFATest() {
 
   const verifySMSCode = async () => {
     if (!smsCode || smsCode.length !== 6) {
-      alert('Please enter a 6-digit SMS code')
+      setResult({
+        success: false,
+        error: 'Please enter a 6-digit SMS code'
+      })
       return
     }
 
     if (!challengeData) {
-      alert('No active challenge - please request SMS first')
+      setResult({
+        success: false,
+        error: 'No active challenge - please request SMS first'
+      })
       return
     }
 
@@ -85,23 +91,63 @@ export function QuickMFATest() {
     setResult(null)
 
     try {
-      console.log('🧪 Verifying SMS code:', smsCode)
+      console.log('🧪 Verifying SMS code:', {
+        code: smsCode,
+        factorId: challengeData.factorId,
+        challengeId: challengeData.challengeId
+      })
+
+      // Check if factors still exist
+      const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
+      if (factorsError) {
+        console.error('❌ Error checking factors:', factorsError)
+        throw new Error(`Cannot check MFA factors: ${factorsError.message}`)
+      }
+
+      console.log('📋 Current factors before verification:', factors)
+
+      // Find the factor we're trying to verify
+      const targetFactor = factors.all.find(f => f.id === challengeData.factorId)
+      if (!targetFactor) {
+        throw new Error(`Factor ${challengeData.factorId} not found. Available factors: ${factors.all.map(f => f.id).join(', ')}`)
+      }
+
+      console.log('🎯 Target factor:', targetFactor)
 
       // Verify the SMS code
       const { data: verification, error: verifyError } = await supabase.auth.mfa.verify({
         factorId: challengeData.factorId,
         challengeId: challengeData.challengeId,
-        code: smsCode
+        code: smsCode.trim()
       })
 
-      if (verifyError) throw verifyError
+      if (verifyError) {
+        console.error('❌ Verification API error:', verifyError)
+
+        // Provide better error messages
+        let userMessage = verifyError.message
+        if (verifyError.message.includes('Invalid MFA Phone code')) {
+          userMessage = 'Invalid SMS code. Please check the code and try again. The code might have expired (usually valid for 5-10 minutes).'
+        } else if (verifyError.message.includes('expired')) {
+          userMessage = 'SMS code has expired. Please request a new SMS code.'
+        }
+
+        throw new Error(userMessage)
+      }
 
       console.log('✅ SMS verification successful:', verification)
+
+      // Check factors again after verification
+      const { data: newFactors } = await supabase.auth.mfa.listFactors()
+      console.log('📋 Factors after verification:', newFactors)
 
       setResult({
         success: true,
         message: 'SMS MFA verification successful! You now have verified MFA factors.',
         verification: verification,
+        factorsBefore: factors.all.length,
+        factorsAfter: newFactors?.all?.length || 0,
+        verifiedFactors: newFactors?.all?.filter(f => f.status === 'verified')?.length || 0,
         nextStep: 'MFA enforcement should now work - try logging out and back in!'
       })
 
@@ -114,7 +160,12 @@ export function QuickMFATest() {
       setResult({
         success: false,
         error: error.message,
-        details: error
+        troubleshooting: [
+          'Make sure you entered the correct 6-digit code from SMS',
+          'Check if the SMS code is still valid (usually expires in 5-10 minutes)',
+          'Try requesting a new SMS code if this one expired',
+          'Ensure your phone number is correctly configured in Supabase'
+        ]
       })
     } finally {
       setLoading(false)
