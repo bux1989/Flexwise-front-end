@@ -48,15 +48,15 @@ export default function SecurityDataProtection({ onBack }) {
       schulsozialarbeit: { mandatory: false, enabled: false }
     },
     autoLogout: {
-      admin: 60,      // minutes
-      teacher: 45,
-      educator: 45,
-      external: 30,
-      parent: 30,
-      student: 20,
-      hausmeister: 45,
-      sekretariat: 45,
-      schulsozialarbeit: 45
+      admin: { value: 60, unit: 'minutes' },
+      teacher: { value: 45, unit: 'minutes' },
+      educator: { value: 45, unit: 'minutes' },
+      external: { value: 30, unit: 'minutes' },
+      parent: { value: 30, unit: 'minutes' },
+      student: { value: 20, unit: 'minutes' },
+      hausmeister: { value: 45, unit: 'minutes' },
+      sekretariat: { value: 45, unit: 'minutes' },
+      schulsozialarbeit: { value: 45, unit: 'minutes' }
     },
     attendancePIN: {
       enabled: false,
@@ -95,14 +95,40 @@ export default function SecurityDataProtection({ onBack }) {
     }))
   }
 
-  const updateAutoLogout = (role, minutes) => {
+  const updateAutoLogout = (role, field, value) => {
     setEditedSettings(prev => ({
       ...prev,
       autoLogout: {
         ...prev.autoLogout,
-        [role]: parseInt(minutes) || 0
+        [role]: {
+          ...prev.autoLogout[role],
+          [field]: field === 'value' ? parseInt(value) || 0 : value
+        }
       }
     }))
+  }
+
+  // Helper function to get display text for timeout
+  const getTimeoutDisplay = (timeoutConfig) => {
+    const { value, unit } = timeoutConfig
+    if (unit === 'days') {
+      return `${value} ${value === 1 ? 'Tag' : 'Tage'}`
+    }
+    return `${value} ${value === 1 ? 'Minute' : 'Minuten'}`
+  }
+
+  // Helper function to validate timeout values
+  const validateTimeout = (value, unit) => {
+    const maxMinutes = 30 * 24 * 60 // 30 days in minutes
+    if (unit === 'days') {
+      return value >= 1 && value <= 30
+    }
+    return value >= 1 && value <= maxMinutes
+  }
+
+  // Helper function to get max value for current unit
+  const getMaxValue = (unit) => {
+    return unit === 'days' ? 30 : 30 * 24 * 60 // 30 days or 43200 minutes
   }
 
   const updateAttendancePIN = (field, value) => {
