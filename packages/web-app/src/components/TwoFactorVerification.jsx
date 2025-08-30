@@ -343,6 +343,20 @@ export function TwoFactorVerification({
                   SMS-Code
                 </span>
               </div>
+
+              {/* Development/Testing Helper */}
+              {import.meta.env.DEV && (
+                <div className="mt-4 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                  <p className="text-yellow-800 font-medium">🧪 Entwicklungsmodus</p>
+                  <p className="text-yellow-700">Verwenden Sie "123456" als Test-Code</p>
+                  <button
+                    onClick={() => setCode('123456')}
+                    className="mt-1 text-yellow-600 underline hover:text-yellow-800"
+                  >
+                    Test-Code einfügen
+                  </button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
