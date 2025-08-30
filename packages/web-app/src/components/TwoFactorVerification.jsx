@@ -239,10 +239,33 @@ export function TwoFactorVerification({
                   placeholder="123456"
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  onKeyDown={(e) => {
+                    // Submit on Enter key
+                    if (e.key === 'Enter' && code.length === 6 && !loading) {
+                      handleVerification(e)
+                    }
+                    // Allow backspace, delete, tab, escape, enter
+                    if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+                        // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                        (e.keyCode === 65 && e.ctrlKey) ||
+                        (e.keyCode === 67 && e.ctrlKey) ||
+                        (e.keyCode === 86 && e.ctrlKey) ||
+                        (e.keyCode === 88 && e.ctrlKey)) {
+                      return
+                    }
+                    // Ensure that it is a number and stop keypress if not
+                    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                      e.preventDefault()
+                    }
+                  }}
                   maxLength={6}
                   className="text-center text-lg font-mono tracking-widest"
-                  disabled={loading}
+                  disabled={loading || isRateLimited}
                   autoFocus
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  aria-describedby="code-help"
                 />
               </div>
 
