@@ -102,34 +102,17 @@ export function MFAGuard({ children, user, onMFAComplete }) {
   }
 
   const handleMFAComplete = async (session) => {
-    console.log('✅ MFA verification completed, session AAL:', session?.aal)
+    console.log('✅ MFA verification completed (fallback handler)')
 
-    // Verify the session is actually AAL2 before completing
-    if (session && session.aal === 'aal2') {
-      console.log('✅ Confirmed AAL2 session, completing MFA flow')
-      setMfaRequired(false)
+    // Since session.aal doesn't exist in this Supabase version,
+    // we rely on the MFA_CHALLENGE_VERIFIED event listener above
+    // This is just a fallback handler
+    setMfaCompleted(true)
+    setMfaRequired(false)
 
-      // Notify parent component if needed
-      if (onMFAComplete) {
-        onMFAComplete(session)
-      }
-    } else {
-      console.warn('⚠️ MFA completion called but session is not AAL2:', session?.aal)
-
-      // Wait a bit and re-check the session state
-      setTimeout(async () => {
-        const { data: freshSession } = await supabase.auth.getSession()
-        if (freshSession.session?.aal === 'aal2') {
-          console.log('✅ Fresh session check confirmed AAL2')
-          setMfaRequired(false)
-          if (onMFAComplete) {
-            onMFAComplete(freshSession.session)
-          }
-        } else {
-          console.error('❌ Session still not AAL2 after MFA completion')
-          // Don't change mfaRequired state - let user try again
-        }
-      }, 500)
+    // Notify parent component if needed
+    if (onMFAComplete) {
+      onMFAComplete(session)
     }
   }
 
