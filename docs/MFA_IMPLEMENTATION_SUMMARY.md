@@ -250,6 +250,29 @@ WHERE mf.status = 'verified'
    - Audit trail improvements
    - Enterprise security reporting
 
+## Authentication Methods Expansion 🚀
+
+**Status: PLANNED FOR NEXT 3 WEEKS**
+
+### **What's Being Added:**
+- **📧 Magic Link (Email SSO)** - Passwordless login via email
+- **🔗 OAuth Providers** - Google, GitHub, Microsoft, Apple
+- **🎯 Enhanced Login UI** - Method selector with user preferences
+- **🔄 Universal MFA** - Same MFA enforcement across all auth methods
+
+### **Key Benefits:**
+- ✅ **User Choice** - Multiple convenient authentication options
+- ✅ **Enterprise Ready** - SSO for business customers
+- ✅ **Security Consistent** - Same RLS/MFA policies for all methods
+- ✅ **Easy Implementation** - Builds on existing Supabase infrastructure
+
+### **Timeline:**
+- **Week 1**: Magic Link + Enhanced UI
+- **Week 2**: OAuth Provider Integration
+- **Week 3**: Polish + User Experience
+
+**📋 Detailed Plan**: See `docs/AUTHENTICATION_METHODS_ROADMAP.md`
+
 ## Important Notes on Trusted Devices
 
 **Status: NOT YET IMPLEMENTED** ⚠️
