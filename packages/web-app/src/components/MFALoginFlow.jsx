@@ -96,12 +96,28 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
       console.error('❌ Error creating MFA challenge:', err)
 
       // Handle rate limiting with specific messaging
-      if (err.isRateLimit) {
+      // Check multiple ways the rate limit error might be indicated
+      const isRateLimit = err.isRateLimit ||
+                         err.originalError?.isRateLimit ||
+                         err.message.includes('you can only request this after') ||
+                         err.message.includes('Please wait') ||
+                         err.message.includes('seconds before requesting')
+
+      if (isRateLimit) {
+        // Extract wait time from error message if not directly available
+        let waitTime = err.waitTime || err.originalError?.waitTime
+
+        if (!waitTime && err.message) {
+          const match = err.message.match(/(\d+)\s*seconds?/)
+          waitTime = match ? parseInt(match[1]) : 60
+        }
+
         setError(`⏱️ ${err.message}`)
 
-        // Start countdown if we have wait time
-        if (err.waitTime) {
-          startRateLimitCountdown(err.waitTime)
+        // Start countdown
+        if (waitTime) {
+          console.log('🕐 Starting rate limit countdown:', waitTime + 's')
+          startRateLimitCountdown(waitTime)
         }
       } else {
         setError(`Failed to send verification code: ${err.message}`)
