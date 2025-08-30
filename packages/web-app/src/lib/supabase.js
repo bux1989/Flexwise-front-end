@@ -849,50 +849,5 @@ export async function checkSecureMFAHealth() {
   }
 }
 
-// Get 2FA usage statistics
-export async function get2FAUsageStats() {
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return null
-
-    const profileId = user.user_metadata?.profile_id
-    if (!profileId) return null
-
-    // Get user's trusted devices
-    const { data: devices, error: devicesError } = await supabase
-      .from('user_trusted_devices')
-      .select('*')
-      .eq('user_profile_id', profileId)
-      .eq('is_active', true)
-
-    if (devicesError) {
-      console.error('Error fetching device stats:', devicesError)
-      return null
-    }
-
-    // Get MFA factors
-    const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
-
-    if (factorsError) {
-      console.error('Error fetching MFA stats:', factorsError)
-      return null
-    }
-
-    const stats = {
-      user_email: user.email,
-      has_2fa_enabled: factors?.totp?.some(f => f.status === 'verified') || false,
-      trusted_devices_count: devices?.length || 0,
-      active_devices: devices?.filter(d => new Date(d.trusted_until) > new Date()).length || 0,
-      expired_devices: devices?.filter(d => new Date(d.trusted_until) <= new Date()).length || 0,
-      totp_factors: factors?.totp?.length || 0,
-      verified_totp_factors: factors?.totp?.filter(f => f.status === 'verified').length || 0
-    }
-
-    console.log('📊 2FA Usage Stats:', stats)
-    return stats
-
-  } catch (error) {
-    console.error('Error getting 2FA stats:', error)
-    return null
-  }
-}
+// NOTE: get2FAUsageStats function removed
+// Replaced with getUserMFAFactors() in supabase-mfa.js for secure MFA management
