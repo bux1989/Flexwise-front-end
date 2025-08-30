@@ -116,6 +116,14 @@ export function TwoFactorVerification({
         console.error('❌ 2FA verification failed:', verificationError)
         setRetryCount(prev => prev + 1)
 
+        // Log the failure for security monitoring
+        await logSecurityEvent('2fa_verification_failed', {
+          user_email: user.email,
+          error_message: verificationError?.message || 'Unknown error',
+          retry_count: retryCount + 1,
+          code_length: code.length
+        })
+
         // Categorize errors for better user guidance
         const errorMessage = verificationError?.message?.toLowerCase() || ''
 
