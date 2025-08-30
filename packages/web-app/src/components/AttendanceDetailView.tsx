@@ -6,6 +6,36 @@ import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { ArrowLeft, Phone, MessageSquare, Mail, Clock, UserCheck, ChevronUp, ChevronDown, Plus, MoreHorizontal } from 'lucide-react';
 
+interface Contact {
+  phone: string;
+  name: string;
+  relation: string;
+}
+
+interface LastUpdate {
+  time: string;
+  author: string;
+  action: string;
+}
+
+interface Comment {
+  time: string;
+  author: string;
+  text: string;
+}
+
+interface Student {
+  id: string;
+  name: string;
+  klasse: string;
+  status: string;
+  time: string;
+  contact: Contact;
+  lastUpdate: LastUpdate | null;
+  comments: Comment[];
+  hasMoreComments: boolean;
+}
+
 interface AttendanceDetailViewProps {
   status: string;
   onBack: () => void;
