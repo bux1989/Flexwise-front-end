@@ -97,13 +97,18 @@ export function QuickMFATest() {
       if (challengeError) throw challengeError
       
       console.log('✅ SMS challenge created:', challenge)
-      
+
+      setChallengeData({
+        challengeId: challenge.id,
+        factorId: phoneFactor.id
+      })
+
       setResult({
         success: true,
         message: 'SMS challenge sent! Check your phone for the code.',
         challenge: challenge,
         factor: phoneFactor,
-        instructions: 'Enter the SMS code you received to complete verification'
+        instructions: 'Enter the SMS code you received below:'
       })
       
     } catch (error) {
