@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { DebugOverlay } from '../debug';
-import { supabase } from '../lib/supabase';
+import { supabase, getCurrentUserProfile, userRequires2FA, userHas2FAEnabled } from '../lib/supabase';
 import { SensitiveAction2FA } from './SensitiveAction2FA';
 
 interface EditProfileProps {
@@ -1388,7 +1388,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <User className="h-5 w-5 text-blue-600" />
-                      Persönliche Informationen
+                      Pers��nliche Informationen
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
