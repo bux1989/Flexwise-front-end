@@ -1539,7 +1539,7 @@ export default function StudentManagement({ onBack }) {
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">
                   Laden Sie die Vorlage herunter und füllen Sie sie mit den Schülerdaten aus.
-                  Die grüne Beispielzeile wird automatisch übersprungen. Erforderliche Felder: Vorname, Nachname, Klasse.
+                  Die Beispielzeile wird automatisch übersprungen. Erforderliche Felder: Vorname, Nachname, Klasse.
                 </p>
                 <div className="flex gap-2">
                   <Button
