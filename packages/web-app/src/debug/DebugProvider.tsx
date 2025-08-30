@@ -32,10 +32,10 @@ export function DebugProvider({ children }: DebugProviderProps) {
     }
   }, [isDebugMode]);
 
-  // Key combination listener (Ctrl+Shift+D)
+  // Key combination listener (Ctrl+Alt+Shift+D)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.shiftKey && event.key === 'D') {
+      if (event.ctrlKey && event.altKey && event.shiftKey && event.key === 'D') {
         event.preventDefault();
         if (isDebugMode) {
           // If already in debug mode, toggle off
