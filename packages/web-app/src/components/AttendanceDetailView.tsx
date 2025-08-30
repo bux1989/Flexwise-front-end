@@ -4,7 +4,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { ArrowLeft, Phone, MessageSquare, Mail, Clock, UserCheck, ChevronUp, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Phone, MessageSquare, Mail, Clock, UserCheck, ChevronUp, ChevronDown, Plus, MoreHorizontal } from 'lucide-react';
 
 interface AttendanceDetailViewProps {
   status: string;
@@ -21,27 +21,182 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
   const allStudents = useMemo(() => {
     const baseStudents = {
       ueberfaellig: [
-        { id: '1', name: 'Lena Müller', klasse: '3A', status: 'Überfällig', time: '15 Min', details: 'Keine Hortbetreuung', contact: '0523 (AG) Anruf bei Eltern' },
-        { id: '2', name: 'Tim Weber', klasse: '4B', status: 'Überfällig', time: '10 Min', details: 'Eltern kontaktiert', contact: '1613 (TH): Eltern erreicht' },
-        { id: '3', name: 'Emma Fischer', klasse: '5A', status: 'Überfällig', time: '35 Min', details: 'Geschwisterkind noch in der Schule', contact: '' }
+        {
+          id: '1',
+          name: 'Lena Müller',
+          klasse: '3A',
+          status: 'Überfällig',
+          time: '15 Min',
+          contact: { phone: '0152 29749821', name: 'Ella Schulz', relation: 'Mutter' },
+          lastUpdate: { time: '15:30', author: 'MW', action: 'Als anwesend markiert' },
+          comments: [
+            { time: '15:45', author: 'AG', text: 'Anruf bei Eltern - mailbox erreicht' },
+            { time: '15:30', author: 'MW', text: 'Kind wartet noch auf Abholung' }
+          ],
+          hasMoreComments: true
+        },
+        {
+          id: '2',
+          name: 'Tim Weber',
+          klasse: '4B',
+          status: 'Überfällig',
+          time: '10 Min',
+          contact: { phone: '0173 8547392', name: 'Maria Weber', relation: 'Mutter' },
+          lastUpdate: { time: '16:00', author: 'TH', action: 'Als anwesend markiert' },
+          comments: [
+            { time: '16:13', author: 'TH', text: 'Eltern erreicht - kommen in 15 Minuten' },
+            { time: '16:05', author: 'MW', text: 'Versuch Eltern zu kontaktieren' }
+          ],
+          hasMoreComments: true
+        },
+        {
+          id: '3',
+          name: 'Emma Fischer',
+          klasse: '5A',
+          status: 'Überfällig',
+          time: '35 Min',
+          contact: { phone: '0160 3729485', name: 'Stefan Fischer', relation: 'Vater' },
+          lastUpdate: { time: '15:45', author: 'AG', action: 'Als anwesend markiert' },
+          comments: [
+            { time: '16:20', author: 'AG', text: 'Geschwisterkind noch in der Schule' }
+          ],
+          hasMoreComments: false
+        }
       ],
       unentschuldigt: [
-        { id: '4', name: 'Emma Fischer', klasse: '4B', status: 'Unentschuldigt', time: '09:00', details: 'Auto', contact: '1621 (AG): Notfallkontakt erreicht' }
+        {
+          id: '4',
+          name: 'Emma Fischer',
+          klasse: '4B',
+          status: 'Unentschuldigt',
+          time: '09:00',
+          contact: { phone: '0567 890123', name: 'Sandra Fischer', relation: 'Mutter' },
+          lastUpdate: null,
+          comments: [
+            { time: '16:21', author: 'AG', text: 'Notfallkontakt erreicht - Eltern informiert' },
+            { time: '09:30', author: 'MW', text: 'Kind nicht erschienen' }
+          ],
+          hasMoreComments: true
+        }
       ],
       entschuldigt: [
-        { id: '5', name: 'Clara Weber', klasse: '3A', status: 'Entschuldigt', time: '07:45 MW', details: 'Arzttermin', contact: '' },
-        { id: '6', name: 'Hannah Bauer', klasse: '4B', status: 'Entschuldigt', time: '07:30 Eltern', details: 'Familiärer Termin', contact: '' }
+        {
+          id: '5',
+          name: 'Clara Weber',
+          klasse: '3A',
+          status: 'Entschuldigt',
+          time: '07:45',
+          contact: { phone: '0178 4562893', name: 'Anna Weber', relation: 'Mutter' },
+          lastUpdate: { time: '07:45', author: 'MW', action: 'Als entschuldigt markiert' },
+          comments: [
+            { time: '07:45', author: 'MW', text: 'Arzttermin - Eltern haben angerufen' }
+          ],
+          hasMoreComments: false
+        },
+        {
+          id: '6',
+          name: 'Hannah Bauer',
+          klasse: '4B',
+          status: 'Entschuldigt',
+          time: '07:30',
+          contact: { phone: '0151 7394852', name: 'Thomas Bauer', relation: 'Vater' },
+          lastUpdate: { time: '07:30', author: 'TH', action: 'Als entschuldigt markiert' },
+          comments: [
+            { time: '07:30', author: 'TH', text: 'Familiärer Termin - Eltern informiert' }
+          ],
+          hasMoreComments: false
+        }
       ],
       ausstehend: [
-        { id: '7', name: 'Ben Müller', klasse: '4B', status: 'Ausstehend', time: '08:00', details: 'Auto', contact: '1006 (TH): Anruf bei Eltern' },
-        { id: '8', name: 'Greta Wolf', klasse: '5A', status: 'Ausstehend', time: '08:00', details: 'Auto', contact: '' },
-        { id: '9', name: 'Igor Petrov', klasse: '3A', status: 'Ausstehend', time: '08:00', details: 'Auto', contact: '' }
+        {
+          id: '7',
+          name: 'Ben Müller',
+          klasse: '4B',
+          status: 'Ausstehend',
+          time: '08:00',
+          contact: { phone: '0234 567890', name: 'Lisa Müller', relation: 'Mutter' },
+          lastUpdate: null,
+          comments: [
+            { time: '10:06', author: 'TH', text: 'Anruf bei Eltern - mailbox besprochen' }
+          ],
+          hasMoreComments: false
+        },
+        {
+          id: '8',
+          name: 'Greta Wolf',
+          klasse: '5A',
+          status: 'Ausstehend',
+          time: '08:00',
+          contact: { phone: '0789 012345', name: 'Petra Wolf', relation: 'Mutter' },
+          lastUpdate: null,
+          comments: [],
+          hasMoreComments: false
+        },
+        {
+          id: '9',
+          name: 'Igor Petrov',
+          klasse: '3A',
+          status: 'Ausstehend',
+          time: '08:00',
+          contact: { phone: '0901 234567', name: 'Anja Petrov', relation: 'Mutter' },
+          lastUpdate: null,
+          comments: [],
+          hasMoreComments: false
+        }
       ],
       anwesend: [
-        { id: '10', name: 'Anna Schmidt', klasse: '3A', status: 'Anwesend', time: '08:15', details: 'Ankunft: 08:10', contact: 'MS' },
-        { id: '11', name: 'David Klein', klasse: '3A', status: 'Anwesend', time: '08:10', details: 'Ankunft: 08:05', contact: 'MS' },
-        { id: '12', name: 'Felix Meyer', klasse: '3A', status: 'Anwesend', time: '08:20', details: 'Ankunft: 08:15', contact: 'MS' },
-        { id: '13', name: 'Jana Hoffmann', klasse: '5A', status: 'Anwesend', time: '08:25', details: 'Ankunft: 08:20', contact: 'MS' }
+        {
+          id: '10',
+          name: 'Anna Schmidt',
+          klasse: '3A',
+          status: 'Anwesend',
+          time: '08:15',
+          contact: { phone: '0172 5849372', name: 'Julia Schmidt', relation: 'Mutter' },
+          lastUpdate: { time: '08:15', author: 'MS', action: 'Als anwesend markiert' },
+          comments: [
+            { time: '08:10', author: 'MS', text: 'Ankunft: 08:10' }
+          ],
+          hasMoreComments: false
+        },
+        {
+          id: '11',
+          name: 'David Klein',
+          klasse: '3A',
+          status: 'Anwesend',
+          time: '08:10',
+          contact: { phone: '0163 7294853', name: 'Michael Klein', relation: 'Vater' },
+          lastUpdate: { time: '08:10', author: 'MS', action: 'Als anwesend markiert' },
+          comments: [
+            { time: '08:05', author: 'MS', text: 'Ankunft: 08:05' }
+          ],
+          hasMoreComments: false
+        },
+        {
+          id: '12',
+          name: 'Felix Meyer',
+          klasse: '3A',
+          status: 'Anwesend',
+          time: '08:20',
+          contact: { phone: '0154 9384756', name: 'Sarah Meyer', relation: 'Mutter' },
+          lastUpdate: { time: '08:20', author: 'MS', action: 'Als anwesend markiert' },
+          comments: [
+            { time: '08:15', author: 'MS', text: 'Ankunft: 08:15' }
+          ],
+          hasMoreComments: false
+        },
+        {
+          id: '13',
+          name: 'Jana Hoffmann',
+          klasse: '5A',
+          status: 'Anwesend',
+          time: '08:25',
+          contact: { phone: '0179 6482573', name: 'Nina Hoffmann', relation: 'Mutter' },
+          lastUpdate: { time: '08:25', author: 'MS', action: 'Als anwesend markiert' },
+          comments: [
+            { time: '08:20', author: 'MS', text: 'Ankunft: 08:20' }
+          ],
+          hasMoreComments: false
+        }
       ]
     };
     return baseStudents[status as keyof typeof baseStudents] || [];
@@ -241,53 +396,53 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
                     <span className="text-xs text-gray-500 ml-1">(seit 15:45)</span>
                   )}
                 </div>
+                {/* Contact Information */}
                 <div className="col-span-2">
-                  <div className="text-xs">{student.time}</div>
-                  {student.contact && (
-                    <div className="text-xs text-gray-500">{student.contact}</div>
-                  )}
+                  <div className="text-xs">
+                    {student.contact.phone} {student.contact.name} ({student.contact.relation})
+                  </div>
                 </div>
+                {/* Last Update */}
                 <div className="col-span-2">
-                  <div className="text-xs">{student.details}</div>
-                  {student.status === 'Überfällig' && student.name === 'Lena Müller' && (
-                    <div className="text-xs text-red-600">Kein Hort</div>
-                  )}
-                  {student.status === 'Überfällig' && student.name === 'Tim Weber' && (
-                    <div className="text-xs text-green-600">Kein Hort</div>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  {student.status === 'Überfällig' ? (
-                    <div className="flex gap-1">
-                      <Button size="sm" variant="outline">
-                        <Phone className="w-3 h-3" />
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <MessageSquare className="w-3 h-3" />
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Mail className="w-3 h-3" />
-                      </Button>
+                  {student.lastUpdate ? (
+                    <div className="text-xs">
+                      <div>{student.lastUpdate.time} {student.lastUpdate.author}</div>
+                      <div className="text-gray-500">{student.lastUpdate.action}</div>
                     </div>
                   ) : (
-                    <Button size="sm" variant="outline">
-                      <MessageSquare className="w-3 h-3 mr-1" />
-                      Aktion
-                    </Button>
+                    <div className="text-xs text-gray-400">-</div>
                   )}
                 </div>
-                <div className="col-span-1">
-                  {student.status === 'Überfällig' ? (
-                    <Button size="sm" variant="outline">
-                      <UserCheck className="w-3 h-3 mr-1" />
-                      Auschecken
-                    </Button>
+                {/* Details/Comments */}
+                <div className="col-span-2">
+                  {student.comments.length > 0 ? (
+                    <div className="text-xs">
+                      <div>{student.comments[0].time} ({student.comments[0].author}): {student.comments[0].text}</div>
+                      {student.hasMoreComments && (
+                        <button className="text-blue-600 hover:text-blue-800 mt-1 flex items-center gap-1">
+                          <MoreHorizontal className="w-3 h-3" />
+                          +{student.comments.length - 1} weitere Notizen
+                        </button>
+                      )}
+                    </div>
                   ) : (
-                    <Button size="sm" variant="outline">
-                      <MessageSquare className="w-3 h-3 mr-1" />
-                      Aktion
-                    </Button>
+                    <div className="text-xs text-gray-400">Keine Notizen</div>
                   )}
+                </div>
+                {/* Actions */}
+                <div className="col-span-1">
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="outline" title="Neue Notiz hinzufügen">
+                      <MessageSquare className="w-3 h-3" />
+                    </Button>
+                    <select className="text-xs border rounded px-1 py-1 min-w-[60px]">
+                      <option value={student.status}>{student.status}</option>
+                      {student.status !== 'Anwesend' && <option value="Anwesend">Anwesend</option>}
+                      {student.status !== 'Entschuldigt' && <option value="Entschuldigt">Entschuldigt</option>}
+                      {student.status !== 'Unentschuldigt' && <option value="Unentschuldigt">Unentschuldigt</option>}
+                      {student.status !== 'Ausstehend' && <option value="Ausstehend">Ausstehend</option>}
+                    </select>
+                  </div>
                 </div>
               </div>
             ))}
