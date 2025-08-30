@@ -16,6 +16,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const [showTwoFactor, setShowTwoFactor] = useState(false)
   const [loginData, setLoginData] = useState(null)
+  const { isDebugMode } = useDebug()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
