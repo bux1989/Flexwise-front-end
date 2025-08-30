@@ -4,17 +4,18 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Badge } from './ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
-import { 
-  ArrowLeft, 
-  Shield, 
-  Clock, 
-  Key, 
+import {
+  ArrowLeft,
+  Shield,
+  Clock,
+  Key,
   FileSignature,
   User,
   Settings,
   CheckCircle,
   AlertTriangle,
-  Save
+  Save,
+  Users
 } from 'lucide-react'
 
 export default function SecurityDataProtection({ onBack }) {
@@ -405,7 +406,7 @@ export default function SecurityDataProtection({ onBack }) {
                 <div className="space-y-4">
                   {/* PIN Length */}
                   <div className="p-4 border border-gray-200 rounded-lg">
-                    <h4 className="font-medium text-gray-900 mb-3">PIN-L��nge</h4>
+                    <h4 className="font-medium text-gray-900 mb-3">PIN-Länge</h4>
                     {isEditing ? (
                       <div className="flex items-center gap-4">
                         <label className="flex items-center gap-2">
