@@ -3,6 +3,7 @@ import { supabase } from '../../../lib/supabase';
 import { DebugOverlay } from '../../../debug';
 import { Navigation } from '../../../components/Navigation';
 import { AttendanceMatrix } from '../../../components/AttendanceMatrix';
+import { AttendanceDetailModal } from '../../../components/AttendanceDetailModal';
 import { Infoboard } from '../../../components/Infoboard';
 import { MissingStaff } from '../../../components/MissingStaff';
 import { Veranstaltungen } from '../../../components/Veranstaltungen';
