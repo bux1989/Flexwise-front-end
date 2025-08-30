@@ -110,7 +110,8 @@ WHERE mf.status = 'verified'
 1. **`docs/MFA_RATE_LIMITING_SOLUTION.md`** - Detailed explanation of localStorage approach
 2. **`docs/SECURITY_ANALYSIS_MFA_VULNERABILITIES.md`** - Comprehensive security assessment
 3. **`docs/UPDATED_MFA_SECURITY_RECOMMENDATIONS.md`** ⭐ - Official Supabase guidance and updated recommendations
-4. **`docs/MFA_IMPLEMENTATION_SUMMARY.md`** - This summary document
+4. **`docs/AUTHENTICATION_METHODS_ROADMAP.md`** 🚀 - Detailed plan for multiple auth methods (Email SSO, OAuth)
+5. **`docs/MFA_IMPLEMENTATION_SUMMARY.md`** - This summary document
 
 ### Implementation Files:
 1. **`sql/supabase_official_mfa_hardening.sql`** ⭐ - Official Supabase-recommended hardening script (USE THIS)
