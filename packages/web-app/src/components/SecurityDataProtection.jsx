@@ -706,28 +706,44 @@ export default function SecurityDataProtection({ onBack }) {
                   }
                 ].map((role, index) => {
                   const assignedStaff = staffAssignments.roles[role.key] || []
-                  return (
-                    <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                      <div className="flex items-start gap-3">
-                        <div className={`w-3 h-3 bg-${role.color}-500 rounded-full mt-1.5 flex-shrink-0`}></div>
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-900 mb-2">{role.name}</h3>
-                          <p className="text-sm text-gray-600 mb-3">{role.description}</p>
+                  const isExpanded = expandedRoles[role.key]
 
-                          {/* Assigned Staff */}
-                          <div>
-                            <p className="text-xs font-medium text-gray-700 mb-2">Zugewiesene Mitarbeitende:</p>
-                            <div className="flex flex-wrap gap-1">
-                              {assignedStaff.map((staff, staffIndex) => (
-                                <Badge key={staffIndex} className="bg-gray-200 text-gray-700 text-xs px-2 py-1">
-                                  {staff}
-                                </Badge>
-                              ))}
-                              {assignedStaff.length === 0 && (
-                                <span className="text-xs text-gray-500 italic">Keine Zuweisungen</span>
-                              )}
+                  return (
+                    <div
+                      key={index}
+                      className="p-4 border border-gray-200 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                      onClick={() => toggleRoleExpansion(role.key)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 bg-${role.color}-500 rounded-full flex-shrink-0`}></div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900">
+                            {role.name} ({assignedStaff.length})
+                          </h3>
+
+                          {isExpanded && (
+                            <div className="mt-3">
+                              <p className="text-sm text-gray-600 mb-3">{role.description}</p>
+
+                              {/* Assigned Staff */}
+                              <div>
+                                <p className="text-xs font-medium text-gray-700 mb-2">Zugewiesene Mitarbeitende:</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {assignedStaff.map((staff, staffIndex) => (
+                                    <Badge key={staffIndex} className="bg-gray-200 text-gray-700 text-xs px-2 py-1">
+                                      {staff}
+                                    </Badge>
+                                  ))}
+                                  {assignedStaff.length === 0 && (
+                                    <span className="text-xs text-gray-500 italic">Keine Zuweisungen</span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
+                          )}
+                        </div>
+                        <div className="text-gray-400">
+                          {isExpanded ? '−' : '+'}
                         </div>
                       </div>
                     </div>
