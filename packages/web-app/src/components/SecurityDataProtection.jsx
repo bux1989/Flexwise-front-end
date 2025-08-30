@@ -587,73 +587,136 @@ export default function SecurityDataProtection({ onBack }) {
 
         {/* Roles and Permissions Tab */}
         <TabsContent value="permissions" className="space-y-6">
+          {/* Main Roles Section */}
           <Card className="border-l-4 border-l-indigo-500">
             <CardHeader className="bg-indigo-50 border-b border-indigo-200">
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-indigo-600" />
-                Rollen und Berechtigungen
+                Benutzerrollen
               </CardTitle>
-              <p className="text-indigo-600/70">Verwalten Sie spezielle Berechtigungen für verschiedene Bereiche</p>
+              <p className="text-indigo-600/70">Übersicht der verfügbaren Rollen und ihrer Berechtigungen</p>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Permission Areas */}
-              <div className="space-y-4">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {[
-                  { key: 'fehlzeiten', name: 'Fehlzeiten', description: 'Verwaltung von Abwesenheiten und Entschuldigungen' },
+                  {
+                    name: 'Super-Admin',
+                    description: 'Vollzugriff auf alle Funktionen und Daten. Vergibt Rollen und Berechtigungen.',
+                    color: 'red'
+                  },
+                  {
+                    name: 'Admin',
+                    description: 'Verwaltung des gesamten Schulbetriebs (Schüler*innen, Eltern, Anwesenheit, Klassenbuch, Vertretungen, ToDos, Info-Board, Kalender).',
+                    color: 'red'
+                  },
+                  {
+                    name: 'Lehrkraft',
+                    description: 'Lehrende mit eigenem Unterricht. Zugriff auf relevante Klassen- und Kursdaten.',
+                    color: 'blue'
+                  },
+                  {
+                    name: 'Erzieher*in (eFöB/Hort)',
+                    description: 'Betreuungspersonal mit Zugriff auf Gruppen-, Anwesenheits- und Abholdaten.',
+                    color: 'green'
+                  },
+                  {
+                    name: 'Extern (Kooperationspartner)',
+                    description: 'Sehr eingeschränkter Zugriff: Nur Daten zu eigenen Kursen (Raum, Teilnehmende, Ausfälle). Kinder nur mit Vorname + 2 Buchstaben Nachname. Notfallinfos nur, wenn erforderlich.',
+                    color: 'purple'
+                  },
+                  {
+                    name: 'Eltern',
+                    description: 'Zugriff ausschließlich auf eigene Kinder (Profile, Kurse, Mitteilungen). ⚠️ Falls Eltern zugleich Mitarbeitende sind, ist ein separater Account erforderlich.',
+                    color: 'orange'
+                  },
+                  {
+                    name: 'Schüler*in',
+                    description: 'Zugriff nur auf eigene Daten (Stundenplan, Kurse, Mitteilungen).',
+                    color: 'cyan'
+                  },
+                  {
+                    name: 'Hausmeister',
+                    description: 'Zugriff auf schulorganisatorische Infos und Aufgaben, keine Schüler*innendaten.',
+                    color: 'indigo'
+                  },
+                  {
+                    name: 'Sekretariat',
+                    description: 'Verwaltung von Schüler- und Elterndaten, organisatorische Abläufe, Kommunikation.',
+                    color: 'pink'
+                  },
+                  {
+                    name: 'Sonstige Fachkräfte',
+                    description: 'Mitarbeitende ohne eigenen Unterricht (z. B. Sozialarbeit, Schulhelfer*innen). Zugriff nach Bedarf.',
+                    color: 'teal'
+                  }
+                ].map((role, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-3 h-3 bg-${role.color}-500 rounded-full mt-1.5 flex-shrink-0`}></div>
+                      <div>
+                        <h3 className="font-medium text-gray-900 mb-2">{role.name}</h3>
+                        <p className="text-sm text-gray-600">{role.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Additional Permissions Section */}
+          <Card className="border-l-4 border-l-amber-500">
+            <CardHeader className="bg-amber-50 border-b border-amber-200">
+              <CardTitle className="flex items-center gap-2">
+                <Key className="w-5 h-5 text-amber-600" />
+                Zusatzberechtigungen
+              </CardTitle>
+              <p className="text-amber-600/70">Optional, von Admins verteilbar – nur mit 2FA</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {[
+                  { key: 'fehlzeiten', name: 'Fehlzeiten', description: 'Abwesenheiten und Entschuldigungen verwalten' },
                   { key: 'vertretungsplanung', name: 'Vertretungsplanung', description: 'Planung und Organisation von Vertretungsstunden' },
                   { key: 'stundenplanung', name: 'Stundenplanung', description: 'Erstellung und Bearbeitung von Stundenplänen' },
-                  { key: 'kursplanung', name: 'Kursplanung', description: 'Verwaltung von Kursen und Anmeldungen' },
+                  { key: 'aufsichtsplanung', name: 'Aufsichtsplanung', description: 'Erstellung und Bearbeitung von Aufsichtsplänen' },
+                  { key: 'kursplanung', name: 'Kursplanung', description: 'Verwaltung von Kursen/AGs und Anmeldungen' },
                   { key: 'ganztagsleitung', name: 'Ganztagsleitung', description: 'Koordination des Ganztagsbereichs' },
                   { key: 'termine', name: 'Termine', description: 'Verwaltung von Terminen und Veranstaltungen' },
-                  { key: 'infoboard', name: 'Info-Board', description: 'Erstellung und Verwaltung von Ank��ndigungen' },
-                  { key: 'aufgaben', name: 'Aufgaben', description: 'Verwaltung von Aufgaben und To-Do-Listen' },
-                  { key: 'schueler', name: 'Schüler*innen', description: 'Verwaltung von Schülerdaten und -profilen' },
-                  { key: 'eltern', name: 'Eltern', description: 'Verwaltung von Elterndaten und Kommunikation' }
-                ].map((area) => (
-                  <div key={area.key} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                  { key: 'infoboard', name: 'Info-Board', description: 'Ankündigungen erstellen und verwalten' },
+                  { key: 'aufgaben', name: 'Aufgaben (ToDos)', description: 'Aufgabenlisten verwalten' },
+                  { key: 'schueler', name: 'Schüler*innen', description: 'Schülerprofile und -daten verwalten' },
+                  { key: 'eltern', name: 'Eltern', description: 'Elterndaten und Kommunikation verwalten' }
+                ].map((permission) => (
+                  <div key={permission.key} className="p-4 border border-amber-200 rounded-lg bg-amber-50">
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <h3 className="font-medium text-gray-900">{area.name}</h3>
-                        <p className="text-sm text-gray-600">{area.description}</p>
+                        <h3 className="font-medium text-amber-900">{permission.name}</h3>
+                        <p className="text-sm text-amber-700">{permission.description}</p>
                       </div>
                       {isEditing && (
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-indigo-600 border-indigo-600 hover:bg-indigo-50"
+                          className="text-amber-700 border-amber-300 hover:bg-amber-100"
                         >
-                          Berechtigungen verwalten
+                          Verwalten
                         </Button>
                       )}
                     </div>
 
                     {/* Current Permissions Display */}
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-indigo-100 text-indigo-700">
-                        Admin: Vollzugriff
+                      <Badge className="bg-amber-200 text-amber-800">
+                        <Shield className="w-3 h-3 mr-1" />
+                        2FA erforderlich
                       </Badge>
-                      <Badge className="bg-blue-100 text-blue-700">
-                        2 zusätzliche Berechtigungen
+                      <Badge className="bg-gray-200 text-gray-700">
+                        Admin-Vergabe
                       </Badge>
                     </div>
                   </div>
                 ))}
-              </div>
-
-              {/* Information Box */}
-              <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center mt-0.5">
-                    <span className="text-indigo-600 text-xs">ℹ</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-indigo-900">Berechtigungshinweise</p>
-                    <p className="text-sm text-indigo-600/70 mt-1">
-                      Spezielle Berechtigungen werden zusätzlich zu den Standardrollen vergeben.
-                      Super-Admins haben automatisch Vollzugriff auf alle Bereiche.
-                    </p>
-                  </div>
-                </div>
               </div>
             </CardContent>
           </Card>
