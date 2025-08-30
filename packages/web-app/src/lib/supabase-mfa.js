@@ -108,6 +108,20 @@ export async function createMFAChallenge(factorId) {
 
     if (error) {
       console.error('❌ Error creating MFA challenge:', error)
+
+      // Handle rate limiting specifically
+      if (error.message && error.message.includes('you can only request this after')) {
+        // Extract the wait time from the error message
+        const match = error.message.match(/(\d+)\s*seconds?/)
+        const waitTime = match ? parseInt(match[1]) : 60
+
+        const enhancedError = new Error(`Please wait ${waitTime} seconds before requesting another SMS code. This is a security measure to prevent spam.`)
+        enhancedError.isRateLimit = true
+        enhancedError.waitTime = waitTime
+        enhancedError.originalError = error
+        throw enhancedError
+      }
+
       throw error
     }
 
@@ -186,26 +200,47 @@ export async function verifyMFAChallenge(factorId, challengeId, code) {
       throw enhancedError
     }
 
-    // Verify we got the expected data
-    if (!data || !data.session) {
-      throw new Error('MFA verification succeeded but session data is missing')
+    // Handle session data - sometimes not returned directly from verify
+    let session = data.session
+    let user = data.user
+
+    // If session data is missing, fetch it separately
+    if (!session) {
+      console.log('🔄 Session not returned from verify, fetching separately...')
+
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) {
+        console.warn('⚠️ Could not fetch session after MFA verification:', sessionError)
+      } else {
+        session = sessionData.session
+        console.log('✅ Session fetched separately after MFA verification')
+      }
+
+      // Also try to get user if missing
+      if (!user) {
+        const { data: userData, error: userError } = await supabase.auth.getUser()
+        if (!userError && userData.user) {
+          user = userData.user
+        }
+      }
     }
 
     console.log('✅ MFA verification successful', {
-      sessionAAL: data.session.aal,
-      userEmail: data.user?.email
+      sessionAAL: session?.aal || 'unknown',
+      userEmail: user?.email || 'unknown',
+      sessionSource: data.session ? 'direct' : 'fetched'
     })
 
     // Double-check AAL level
-    if (data.session.aal !== 'aal2') {
-      console.warn('⚠️ MFA verification succeeded but session AAL is not aal2:', data.session.aal)
+    if (session && session.aal !== 'aal2') {
+      console.warn('⚠️ MFA verification succeeded but session AAL is not aal2:', session.aal)
     }
 
     return {
       success: true,
-      user: data.user,
-      session: data.session,
-      aal: data.session.aal
+      user: user,
+      session: session,
+      aal: session?.aal || null
     }
 
   } catch (error) {
@@ -216,9 +251,16 @@ export async function verifyMFAChallenge(factorId, challengeId, code) {
       throw error
     }
 
-    // Wrap other errors with context
+    // Wrap other errors with context, preserving special properties
     const contextError = new Error(`MFA verification failed: ${error.message}`)
     contextError.originalError = error
+
+    // Preserve special error properties
+    if (error.isRateLimit) {
+      contextError.isRateLimit = error.isRateLimit
+      contextError.waitTime = error.waitTime
+    }
+
     throw contextError
   }
 }
