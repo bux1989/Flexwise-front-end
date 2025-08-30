@@ -144,24 +144,24 @@ export function TwoFactorVerification({
         return
       }
 
-      // Add device to trusted devices if user chose to remember
+      // NOTE: Device trust functionality removed for security
+      // Supabase's built-in MFA now handles device trust server-side
       if (rememberDevice && showRememberDevice) {
-        try {
-          const deviceData = await addTrustedDevice(
-            profile.id,
-            profile.role || profile.roles?.name,
-            profile.school_id
-          )
-          console.log('✅ Device added to trusted devices')
+        console.log('ℹ️ Device trust is now handled by Supabase MFA system')
 
-          // Log device trust event
-          await logSecurityEvent('device_trusted', {
-            user_email: user.email,
-            device_name: deviceData?.device_name || 'Unknown Device',
-            trust_duration_days: profile.role?.includes('Admin') ? 30 : 90
-          })
+        // Log that user requested device trust (for analytics)
+        await logSecurityEvent('device_trust_requested', {
+          user_email: user.email,
+          note: 'Device trust is now handled by Supabase MFA'
+        })
+      }
+
+      // Skip the old addTrustedDevice logic
+      if (false) {
+        try {
+          // Old code removed for security
         } catch (trustError) {
-          console.warn('⚠️ Failed to add device to trusted devices:', trustError)
+          console.warn('⚠️ Legacy device trust code removed:', trustError)
           await logSecurityEvent('device_trust_failed', {
             user_email: user.email,
             error: trustError?.message || 'Unknown error'
