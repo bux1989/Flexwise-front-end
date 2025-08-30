@@ -85,6 +85,11 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
         createdAt: Date.now()
       })
 
+      // Mark SMS as sent for phone factors
+      if (factor.factor_type === 'phone') {
+        setSmsSent(true)
+      }
+
       console.log('✅ MFA challenge created successfully')
 
     } catch (err) {
