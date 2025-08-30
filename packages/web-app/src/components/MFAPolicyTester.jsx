@@ -140,9 +140,9 @@ export function MFAPolicyTester() {
       const shouldBeBlocked = protectedTableTests
         .filter(([_, test]) => test.expected === 'BLOCKED').length
 
-      results.summary.policyEffectiveness = shouldBeBlocked > 0 ? 
-        `${correctlyBlocked}/${shouldBeBlocked} tables correctly blocked` : 
-        'No MFA enforcement expected (no MFA factors or AAL2 session)'
+      results.summary.policyEffectiveness = shouldBeBlocked > 0 ?
+        `${correctlyBlocked}/${shouldBeBlocked} tables correctly blocked` :
+        'No MFA enforcement expected (no MFA factors or already in AAL2 session)'
 
       results.summary.securityStatus =
         results.sessionInfo.mfaFactors?.hasMFA &&
