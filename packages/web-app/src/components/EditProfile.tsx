@@ -2236,14 +2236,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
       )}
 
       {/* MFA Test Components for Debugging (Development only) */}
-      {import.meta.env.DEV && (
-        <>
-          <div className="fixed bottom-4 right-4 z-50">
-            <SupabaseMFATest />
-          </div>
-          <QuickMFATest />
-        </>
-      )}
+      {/* Debug components removed - use debug overlay system instead */}
     </DebugOverlay>
   );
 }
