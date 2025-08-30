@@ -89,7 +89,7 @@ export function MFAPolicyTester() {
         try {
           const { data, error } = await supabase
             .from(tableName)
-            .select('*', { count: 'exact', head: true })
+            .select('*')
             .limit(1)
 
           const testResult = {
