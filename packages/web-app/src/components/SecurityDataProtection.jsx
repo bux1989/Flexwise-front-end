@@ -35,6 +35,35 @@ export default function SecurityDataProtection({ onBack }) {
     { key: 'schulsozialarbeit', name: 'Schulsozialarbeit', icon: User, color: 'teal' }
   ]
 
+  // Mock staff assignments for roles and permissions
+  const [staffAssignments] = useState({
+    roles: {
+      'super-admin': ['Dr. Maria Schmidt (Schulleitung)'],
+      admin: ['Thomas Weber (Stellv. Schulleitung)', 'Petra Müller (Verwaltungsleitung)'],
+      teacher: ['Anna Hoffmann', 'Michael Klein', 'Sarah Fischer', 'Daniel Braun', 'Lisa Wagner', 'Robert Lange', 'Julia Becker', 'Martin Schulz'],
+      educator: ['Nicole Richter', 'Stefan Meyer', 'Katrin Wolf', 'Oliver Neumann'],
+      external: ['Musikschule Harmony (Hr. Berger)', 'Sportverein Blau-Weiß (Fr. Krüger)'],
+      parent: ['Keine direkten Zuweisungen - Eltern erhalten automatisch Zugriff'],
+      student: ['Keine direkten Zuweisungen - Schüler*innen erhalten automatisch Zugriff'],
+      hausmeister: ['Klaus Hartmann'],
+      sekretariat: ['Brigitte Zimmermann', 'Andrea Köhler'],
+      schulsozialarbeit: ['Melanie Scholz']
+    },
+    permissions: {
+      fehlzeiten: ['Anna Hoffmann', 'Petra Müller', 'Brigitte Zimmermann'],
+      vertretungsplanung: ['Thomas Weber', 'Michael Klein', 'Sarah Fischer'],
+      stundenplanung: ['Dr. Maria Schmidt', 'Thomas Weber', 'Daniel Braun'],
+      aufsichtsplanung: ['Petra Müller', 'Lisa Wagner', 'Robert Lange'],
+      kursplanung: ['Julia Becker', 'Martin Schulz', 'Nicole Richter'],
+      ganztagsleitung: ['Stefan Meyer', 'Katrin Wolf'],
+      termine: ['Brigitte Zimmermann', 'Andrea Köhler', 'Petra Müller'],
+      infoboard: ['Dr. Maria Schmidt', 'Thomas Weber', 'Brigitte Zimmermann'],
+      aufgaben: ['Anna Hoffmann', 'Michael Klein', 'Petra Müller'],
+      schueler: ['Brigitte Zimmermann', 'Andrea Köhler', 'Melanie Scholz'],
+      eltern: ['Brigitte Zimmermann', 'Petra Müller', 'Melanie Scholz']
+    }
+  })
+
   // Security settings state
   const [securitySettings, setSecuritySettings] = useState({
     twoFactorAuth: {
