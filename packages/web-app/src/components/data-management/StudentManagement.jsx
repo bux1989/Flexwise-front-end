@@ -1456,17 +1456,27 @@ export default function StudentManagement({ onBack }) {
                   Schritt 1: Vorlage herunterladen
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  Laden Sie die CSV-Vorlage herunter und füllen Sie sie mit den Schülerdaten aus.
+                  Laden Sie die Vorlage herunter und füllen Sie sie mit den Schülerdaten aus.
                   Erforderliche Felder: Vorname, Nachname, Klasse.
                 </p>
-                <Button
-                  onClick={downloadTemplate}
-                  variant="outline"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  CSV-Vorlage herunterladen
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => downloadTemplate('excel')}
+                    variant="outline"
+                    className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Excel-Vorlage (.xlsx)
+                  </Button>
+                  <Button
+                    onClick={() => downloadTemplate('csv')}
+                    variant="outline"
+                    className="border-gray-600 text-gray-600 hover:bg-gray-50"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    CSV-Vorlage (.csv)
+                  </Button>
+                </div>
               </div>
 
               {/* Step 2: Upload File */}
