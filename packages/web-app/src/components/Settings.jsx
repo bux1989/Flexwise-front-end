@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Textarea } from './ui/textarea'
 import { DebugOverlay } from '../debug'
 import { Badge } from './ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
@@ -32,6 +34,16 @@ import GenericDataManagement from './data-management/GenericDataManagement'
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('contact')
   const [activeDataComponent, setActiveDataComponent] = useState(null)
+  const [isEditingSchoolInfo, setIsEditingSchoolInfo] = useState(false)
+  const [schoolInfo, setSchoolInfo] = useState({
+    name: 'Realschule Berlin-Nord',
+    leadership: 'Nicht festgelegt',
+    address: '458 Nordstraße, 13357 Berlin, Deutschland',
+    email: 'kontakt@rs-nord.berlin.de',
+    phone: '+49 30 87654321',
+    fax: 'Nicht festgelegt'
+  })
+  const [editedSchoolInfo, setEditedSchoolInfo] = useState(schoolInfo)
 
   // Render data management component if one is selected
   if (activeDataComponent) {
@@ -99,56 +111,153 @@ export default function Settings() {
                   </CardTitle>
                   <p className="text-blue-600/70">Grundlegende Informationen über Ihre Schule</p>
                 </div>
-                <Button variant="ghost" size="sm" className="p-2 hover:bg-blue-100">
-                  <Edit className="w-4 h-4 text-blue-600" />
-                </Button>
+                {!isEditingSchoolInfo ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-2 hover:bg-blue-100"
+                    onClick={() => {
+                      setEditedSchoolInfo(schoolInfo)
+                      setIsEditingSchoolInfo(true)
+                    }}
+                  >
+                    <Edit className="w-4 h-4 text-blue-600" />
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700"
+                      onClick={() => {
+                        setSchoolInfo(editedSchoolInfo)
+                        setIsEditingSchoolInfo(false)
+                        console.log('School info saved:', editedSchoolInfo)
+                      }}
+                    >
+                      Speichern
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditedSchoolInfo(schoolInfo)
+                        setIsEditingSchoolInfo(false)
+                      }}
+                    >
+                      Abbrechen
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                  <Building className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-foreground">Realschule Berlin-Nord</p>
-                    <p className="text-sm text-muted-foreground">Schulname</p>
+              {!isEditingSchoolInfo ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                    <Building className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium text-foreground">{schoolInfo.name}</p>
+                      <p className="text-sm text-muted-foreground">Schulname</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                    <User className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium text-foreground">{schoolInfo.leadership}</p>
+                      <p className="text-sm text-muted-foreground">Schulleitung</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium text-foreground">{schoolInfo.address}</p>
+                      <p className="text-sm text-muted-foreground">Anschrift</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                    <Mail className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium text-foreground">{schoolInfo.email}</p>
+                      <p className="text-sm text-muted-foreground">E-Mail</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                    <Phone className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium text-foreground">{schoolInfo.phone}</p>
+                      <p className="text-sm text-muted-foreground">Telefon</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-100">
+                    <Phone className="w-5 h-5 text-gray-500" />
+                    <div>
+                      <p className="font-medium text-foreground">{schoolInfo.fax}</p>
+                      <p className="text-sm text-muted-foreground">Fax</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                  <User className="w-5 h-5 text-blue-600" />
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-blue-900 block mb-2">Schulname</label>
+                      <Input
+                        value={editedSchoolInfo.name}
+                        onChange={(e) => setEditedSchoolInfo({...editedSchoolInfo, name: e.target.value})}
+                        className="w-full"
+                        placeholder="Name der Schule"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-blue-900 block mb-2">Schulleitung</label>
+                      <Input
+                        value={editedSchoolInfo.leadership}
+                        onChange={(e) => setEditedSchoolInfo({...editedSchoolInfo, leadership: e.target.value})}
+                        className="w-full"
+                        placeholder="Name der Schulleitung"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-blue-900 block mb-2">E-Mail</label>
+                      <Input
+                        type="email"
+                        value={editedSchoolInfo.email}
+                        onChange={(e) => setEditedSchoolInfo({...editedSchoolInfo, email: e.target.value})}
+                        className="w-full"
+                        placeholder="E-Mail-Adresse"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-blue-900 block mb-2">Telefon</label>
+                      <Input
+                        value={editedSchoolInfo.phone}
+                        onChange={(e) => setEditedSchoolInfo({...editedSchoolInfo, phone: e.target.value})}
+                        className="w-full"
+                        placeholder="Telefonnummer"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-blue-900 block mb-2">Fax</label>
+                      <Input
+                        value={editedSchoolInfo.fax}
+                        onChange={(e) => setEditedSchoolInfo({...editedSchoolInfo, fax: e.target.value})}
+                        className="w-full"
+                        placeholder="Faxnummer (optional)"
+                      />
+                    </div>
+                  </div>
                   <div>
-                    <p className="font-medium text-foreground">Nicht festgelegt</p>
-                    <p className="text-sm text-muted-foreground">Schulleitung</p>
+                    <label className="text-sm font-medium text-blue-900 block mb-2">Anschrift</label>
+                    <Textarea
+                      value={editedSchoolInfo.address}
+                      onChange={(e) => setEditedSchoolInfo({...editedSchoolInfo, address: e.target.value})}
+                      className="w-full"
+                      placeholder="Vollständige Adresse der Schule"
+                      rows={3}
+                    />
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                  <MapPin className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-foreground">458 Nordstraße, 13357 Berlin, Deutschland</p>
-                    <p className="text-sm text-muted-foreground">Anschrift</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                  <Mail className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-foreground">kontakt@rs-nord.berlin.de</p>
-                    <p className="text-sm text-muted-foreground">E-Mail</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                  <Phone className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-foreground">+49 30 87654321</p>
-                    <p className="text-sm text-muted-foreground">Telefon</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-100">
-                  <Phone className="w-5 h-5 text-gray-500" />
-                  <div>
-                    <p className="font-medium text-foreground">Nicht festgelegt</p>
-                    <p className="text-sm text-muted-foreground">Fax</p>
-                  </div>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
