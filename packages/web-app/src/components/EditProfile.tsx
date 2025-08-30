@@ -11,6 +11,7 @@ import { DebugOverlay } from '../debug';
 import { supabase, getCurrentUserProfile, userRequires2FA, userHas2FAEnabled } from '../lib/supabase';
 import { SensitiveAction2FA } from './SensitiveAction2FA';
 import { SupabaseMFATest } from './SupabaseMFATest';
+import { QuickMFATest } from './QuickMFATest';
 
 interface EditProfileProps {
   onClose: () => void;
