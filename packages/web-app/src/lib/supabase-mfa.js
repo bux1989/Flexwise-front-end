@@ -264,7 +264,7 @@ export async function verifyMFAChallenge(factorId, challengeId, code) {
       success: true,
       user: user,
       session: session,
-      aal: session?.aal || null
+      aal: sessionAAL || 'aal2' // Default to aal2 since MFA verification succeeded
     }
 
   } catch (error) {
