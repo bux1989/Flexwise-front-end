@@ -460,6 +460,117 @@ export default function StudentManagement({ onBack }) {
     setShowDetailView(true)
   }
 
+  const handleAddNewStudent = () => {
+    setShowAddModal(true)
+    setAddMode('single')
+  }
+
+  const handleAddMultipleStudents = () => {
+    setShowAddModal(true)
+    setAddMode('multiple')
+  }
+
+  const handleSaveNewStudent = () => {
+    if (addMode === 'single') {
+      // Create full student object with defaults
+      const newStudent = {
+        id: Date.now(),
+        firstName: newStudentData.firstName,
+        lastName: newStudentData.lastName,
+        nickname: null,
+        email: `${newStudentData.firstName.toLowerCase()}.${newStudentData.lastName.toLowerCase()}@student.de`,
+        phone: newStudentData.phone || '',
+        class: newStudentData.class,
+        birthDate: '', // Will be filled in edit view
+        status: 'active',
+        address: '',
+        einstieg: newStudentData.einstieg,
+        ausstieg: '',
+        photoPermissions: [],
+        allergies: [],
+        but: { enabled: false },
+        parents: [],
+        siblings: [],
+        pickupSchedule: {},
+        authorizedPersons: [],
+        activeCourses: [],
+        waitingList: [],
+        pastCourses: []
+      }
+
+      setStudents(prev => [...prev, newStudent])
+    } else {
+      // Add multiple students
+      const newStudentsList = multipleStudents
+        .filter(student => student.firstName && student.lastName && student.class)
+        .map(student => ({
+          id: Date.now() + Math.random(),
+          firstName: student.firstName,
+          lastName: student.lastName,
+          nickname: null,
+          email: `${student.firstName.toLowerCase()}.${student.lastName.toLowerCase()}@student.de`,
+          phone: student.phone || '',
+          class: student.class,
+          birthDate: '',
+          status: 'active',
+          address: '',
+          einstieg: student.einstieg,
+          ausstieg: '',
+          photoPermissions: [],
+          allergies: [],
+          but: { enabled: false },
+          parents: [],
+          siblings: [],
+          pickupSchedule: {},
+          authorizedPersons: [],
+          activeCourses: [],
+          waitingList: [],
+          pastCourses: []
+        }))
+
+      setStudents(prev => [...prev, ...newStudentsList])
+    }
+
+    // Reset form and close modal
+    setNewStudentData({
+      firstName: '',
+      lastName: '',
+      class: '',
+      einstieg: new Date().toISOString().split('T')[0],
+      phone: ''
+    })
+    setMultipleStudents([{
+      id: Date.now(),
+      firstName: '',
+      lastName: '',
+      class: '',
+      einstieg: new Date().toISOString().split('T')[0],
+      phone: ''
+    }])
+    setShowAddModal(false)
+  }
+
+  const addStudentRow = () => {
+    setMultipleStudents(prev => [...prev, {
+      id: Date.now() + Math.random(),
+      firstName: '',
+      lastName: '',
+      class: '',
+      einstieg: new Date().toISOString().split('T')[0],
+      phone: ''
+    }])
+  }
+
+  const removeStudentRow = (id) => {
+    setMultipleStudents(prev => prev.filter(student => student.id !== id))
+  }
+
+  const updateMultipleStudentField = (id, field, value) => {
+    setMultipleStudents(prev => prev.map(student =>
+      student.id === id ? { ...student, [field]: value } : student
+    ))
+  }
+
   // Show detailed view when student is selected for viewing
   if (selectedStudent && showDetailView && !isEditing) {
     return (
