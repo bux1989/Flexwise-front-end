@@ -376,8 +376,26 @@ export function QuickMFATest() {
                 )}
               </div>
             ) : (
-              <div>
+              <div className="space-y-2">
                 <div>Error: {result.error}</div>
+                {result.isRateLimit && result.waitTime && (
+                  <div className="mt-2 p-2 bg-orange-100 border border-orange-200 rounded">
+                    <div className="font-semibold text-orange-800">⏱️ Rate Limited</div>
+                    <div className="text-orange-700 text-xs">
+                      Wait {result.waitTime} seconds before trying again. This prevents SMS spam.
+                    </div>
+                  </div>
+                )}
+                {result.troubleshooting && (
+                  <div className="mt-2 p-2 bg-gray-100 rounded">
+                    <div className="font-semibold text-gray-800 text-xs mb-1">🔧 Troubleshooting:</div>
+                    <ul className="text-gray-700 text-xs space-y-1">
+                      {result.troubleshooting.map((tip, index) => (
+                        <li key={index}>• {tip}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
           </div>
