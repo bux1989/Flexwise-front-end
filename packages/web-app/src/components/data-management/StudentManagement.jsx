@@ -16,7 +16,12 @@ import {
   Calendar,
   Camera,
   Heart,
-  GraduationCap
+  GraduationCap,
+  Upload,
+  Download,
+  FileText,
+  AlertCircle,
+  CheckCircle
 } from 'lucide-react'
 import StudentDetailView from './StudentDetailView'
 import StudentEditView from './StudentEditView'
