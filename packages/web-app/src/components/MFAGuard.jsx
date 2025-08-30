@@ -56,7 +56,11 @@ export function MFAGuard({ children, user, onMFAComplete }) {
         console.log('🔒 MFA verification required - user has verified factors but AAL1 session')
         setMfaRequired(true)
       } else {
-        console.log('✅ MFA not required or already satisfied')
+        console.log('✅ MFA not required or already satisfied', {
+          verifiedFactors: verifiedFactors.length,
+          sessionAAL: session?.aal,
+          hasSession: !!session
+        })
         setMfaRequired(false)
       }
 
