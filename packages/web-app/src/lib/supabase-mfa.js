@@ -125,29 +125,101 @@ export async function createMFAChallenge(factorId) {
  */
 export async function verifyMFAChallenge(factorId, challengeId, code) {
   try {
-    console.log('🔐 Verifying MFA challenge')
+    console.log('🔐 Verifying MFA challenge', {
+      factorId: factorId.substring(0, 8) + '...',
+      challengeId: challengeId.substring(0, 8) + '...',
+      codeLength: code.length
+    })
+
+    // Validate inputs
+    if (!factorId || !challengeId || !code) {
+      throw new Error('Missing required parameters for MFA verification')
+    }
+
+    if (code.length !== 6) {
+      throw new Error('Verification code must be exactly 6 digits')
+    }
+
+    // Check if factors still exist before verification
+    const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
+    if (factorsError) {
+      console.error('❌ Error checking factors before verification:', factorsError)
+      throw new Error(`Cannot verify MFA factors: ${factorsError.message}`)
+    }
+
+    const targetFactor = factors.all.find(f => f.id === factorId)
+    if (!targetFactor) {
+      throw new Error('MFA factor not found or no longer available')
+    }
+
+    console.log('🎯 Verifying against factor:', {
+      id: targetFactor.id.substring(0, 8) + '...',
+      type: targetFactor.factor_type,
+      status: targetFactor.status
+    })
 
     const { data, error } = await supabase.auth.mfa.verify({
       factorId,
       challengeId,
-      code
+      code: code.trim()
     })
 
     if (error) {
       console.error('❌ MFA verification failed:', error)
-      throw error
+
+      // Enhance error messages for common issues
+      let enhancedMessage = error.message
+
+      if (error.message.includes('Invalid MFA Phone code')) {
+        enhancedMessage = 'The verification code is incorrect or has expired. Please check the code and try again.'
+      } else if (error.message.includes('expired') || error.message.includes('challenge')) {
+        enhancedMessage = 'The verification challenge has expired. Please request a new verification code.'
+      } else if (error.message.includes('not found')) {
+        enhancedMessage = 'The verification challenge is no longer valid. Please request a new verification code.'
+      }
+
+      // Create enhanced error with original for debugging
+      const enhancedError = new Error(enhancedMessage)
+      enhancedError.originalError = error
+      enhancedError.code = error.code
+
+      throw enhancedError
     }
 
-    console.log('✅ MFA verification successful - session established')
+    // Verify we got the expected data
+    if (!data || !data.session) {
+      throw new Error('MFA verification succeeded but session data is missing')
+    }
+
+    console.log('✅ MFA verification successful', {
+      sessionAAL: data.session.aal,
+      userEmail: data.user?.email
+    })
+
+    // Double-check AAL level
+    if (data.session.aal !== 'aal2') {
+      console.warn('⚠️ MFA verification succeeded but session AAL is not aal2:', data.session.aal)
+    }
+
     return {
       success: true,
       user: data.user,
-      session: data.session
+      session: data.session,
+      aal: data.session.aal
     }
 
   } catch (error) {
     console.error('💥 MFA verification error:', error)
-    throw error
+
+    // Don't double-wrap our enhanced errors
+    if (error.originalError) {
+      throw error
+    }
+
+    // Wrap other errors with context
+    const contextError = new Error(`MFA verification failed: ${error.message}`)
+    contextError.originalError = error
+    throw contextError
   }
 }
 
