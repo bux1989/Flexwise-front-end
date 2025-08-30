@@ -565,6 +565,15 @@ export default function StudentManagement({ onBack }) {
           continue
         }
 
+        // Skip example rows (protected from import)
+        const exampleField = rowData['Beispiel (NICHT ÄNDERN)'] || ''
+        if (exampleField.toLowerCase().includes('ja') ||
+            exampleField.toLowerCase().includes('beispiel') ||
+            exampleField.toLowerCase().includes('example') ||
+            exampleField.toLowerCase().includes('yes')) {
+          continue // Skip this row without counting as error
+        }
+
         // Validate required fields
         if (!rowData['Vorname']) {
           errors.push(`Zeile ${i + 1}: Vorname ist erforderlich`)
