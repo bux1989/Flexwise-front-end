@@ -89,7 +89,7 @@ export default function Settings() {
       </div>
 
       {/* Tabs */}
-      <DebugOverlay id="SET-001" component="Settings.MainTabs">
+      <DebugOverlay id="SET-001" component="Settings.TabsAndContent">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-2 bg-white border border-gray-200">
           <TabsTrigger
