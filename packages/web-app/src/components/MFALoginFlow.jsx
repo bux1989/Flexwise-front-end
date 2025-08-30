@@ -390,7 +390,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
             </button>
           )}
 
-          {challenge && selectedFactor?.factor_type === 'phone' && (
+          {smsSent && selectedFactor?.factor_type === 'phone' && (
             <button
               onClick={handleNewCode}
               disabled={loading || rateLimitCountdown > 0}
