@@ -30,10 +30,12 @@ import StudentManagement from './data-management/StudentManagement'
 import StaffManagement from './data-management/StaffManagement'
 import SubjectManagement from './data-management/SubjectManagement'
 import GenericDataManagement from './data-management/GenericDataManagement'
+import SecurityDataProtection from './SecurityDataProtection'
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('contact')
   const [activeDataComponent, setActiveDataComponent] = useState(null)
+  const [showSecurityComponent, setShowSecurityComponent] = useState(false)
   const [isEditingSchoolInfo, setIsEditingSchoolInfo] = useState(false)
   const [schoolInfo, setSchoolInfo] = useState({
     name: 'Realschule Berlin-Nord',
@@ -45,6 +47,11 @@ export default function Settings() {
     signature: 'Mit freundlichen Grüßen\n\nDie Schulleitung\nRealschule Berlin-Nord'
   })
   const [editedSchoolInfo, setEditedSchoolInfo] = useState(schoolInfo)
+
+  // Render security component if selected
+  if (showSecurityComponent) {
+    return <SecurityDataProtection onBack={() => setShowSecurityComponent(false)} />
+  }
 
   // Render data management component if one is selected
   if (activeDataComponent) {
@@ -320,7 +327,11 @@ export default function Settings() {
               </div>
               
               <div className="border-t border-blue-200 pt-6 space-y-3">
-                <Button variant="outline" className="w-full p-4 h-auto bg-blue-50 hover:bg-blue-100 border-blue-200">
+                <Button
+                  variant="outline"
+                  className="w-full p-4 h-auto bg-blue-50 hover:bg-blue-100 border-blue-200"
+                  onClick={() => setShowSecurityComponent(true)}
+                >
                   <div className="flex flex-col items-center gap-3">
                     <Shield className="w-5 h-5 text-blue-600" />
                     <div className="text-center">
