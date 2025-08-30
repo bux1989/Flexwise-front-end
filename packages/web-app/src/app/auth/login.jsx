@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { secureLoginWithMFA } from '../../lib/supabase-mfa'
 import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, Palette } from 'lucide-react'
 import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner'
-import { TwoFactorVerification } from '../../components/TwoFactorVerification'
+import { SecureTwoFactorVerification } from '../../components/SecureTwoFactorVerification'
 import { TwoFactorDebug } from '../../components/TwoFactorDebug'
 
 export default function Login() {
