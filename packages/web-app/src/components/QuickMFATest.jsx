@@ -70,6 +70,57 @@ export function QuickMFATest() {
     }
   }
 
+  const verifySMSCode = async () => {
+    if (!smsCode || smsCode.length !== 6) {
+      alert('Please enter a 6-digit SMS code')
+      return
+    }
+
+    if (!challengeData) {
+      alert('No active challenge - please request SMS first')
+      return
+    }
+
+    setLoading(true)
+    setResult(null)
+
+    try {
+      console.log('🧪 Verifying SMS code:', smsCode)
+
+      // Verify the SMS code
+      const { data: verification, error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: challengeData.factorId,
+        challengeId: challengeData.challengeId,
+        code: smsCode
+      })
+
+      if (verifyError) throw verifyError
+
+      console.log('✅ SMS verification successful:', verification)
+
+      setResult({
+        success: true,
+        message: 'SMS MFA verification successful! You now have verified MFA factors.',
+        verification: verification,
+        nextStep: 'MFA enforcement should now work - try logging out and back in!'
+      })
+
+      // Clear the challenge and code
+      setChallengeData(null)
+      setSmsCode('')
+
+    } catch (error) {
+      console.error('💥 SMS verification failed:', error)
+      setResult({
+        success: false,
+        error: error.message,
+        details: error
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const testSMSChallenge = async () => {
     setLoading(true)
     setResult(null)
