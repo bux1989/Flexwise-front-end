@@ -629,66 +629,94 @@ export default function SecurityDataProtection({ onBack }) {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {[
                   {
+                    key: 'super-admin',
                     name: 'Super-Admin',
                     description: 'Vollzugriff auf alle Funktionen und Daten. Vergibt Rollen und Berechtigungen.',
                     color: 'red'
                   },
                   {
+                    key: 'admin',
                     name: 'Admin',
                     description: 'Verwaltung des gesamten Schulbetriebs (Schüler*innen, Eltern, Anwesenheit, Klassenbuch, Vertretungen, ToDos, Info-Board, Kalender).',
                     color: 'red'
                   },
                   {
+                    key: 'teacher',
                     name: 'Lehrkraft',
                     description: 'Lehrende mit eigenem Unterricht. Zugriff auf relevante Klassen- und Kursdaten.',
                     color: 'blue'
                   },
                   {
+                    key: 'educator',
                     name: 'Erzieher*in (eFöB/Hort)',
                     description: 'Betreuungspersonal mit Zugriff auf Gruppen-, Anwesenheits- und Abholdaten.',
                     color: 'green'
                   },
                   {
+                    key: 'external',
                     name: 'Extern (Kooperationspartner)',
                     description: 'Sehr eingeschränkter Zugriff: Nur Daten zu eigenen Kursen (Raum, Teilnehmende, Ausfälle). Kinder nur mit Vorname + 2 Buchstaben Nachname. Notfallinfos nur, wenn erforderlich.',
                     color: 'purple'
                   },
                   {
+                    key: 'parent',
                     name: 'Eltern',
                     description: 'Zugriff ausschließlich auf eigene Kinder (Profile, Kurse, Mitteilungen). ⚠️ Falls Eltern zugleich Mitarbeitende sind, ist ein separater Account erforderlich.',
                     color: 'orange'
                   },
                   {
+                    key: 'student',
                     name: 'Schüler*in',
                     description: 'Zugriff nur auf eigene Daten (Stundenplan, Kurse, Mitteilungen).',
                     color: 'cyan'
                   },
                   {
+                    key: 'hausmeister',
                     name: 'Hausmeister',
                     description: 'Zugriff auf schulorganisatorische Infos und Aufgaben, keine Schüler*innendaten.',
                     color: 'indigo'
                   },
                   {
+                    key: 'sekretariat',
                     name: 'Sekretariat',
                     description: 'Verwaltung von Schüler- und Elterndaten, organisatorische Abläufe, Kommunikation.',
                     color: 'pink'
                   },
                   {
+                    key: 'schulsozialarbeit',
                     name: 'Sonstige Fachkräfte',
                     description: 'Mitarbeitende ohne eigenen Unterricht (z. B. Sozialarbeit, Schulhelfer*innen). Zugriff nach Bedarf.',
                     color: 'teal'
                   }
-                ].map((role, index) => (
-                  <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <div className="flex items-start gap-3">
-                      <div className={`w-3 h-3 bg-${role.color}-500 rounded-full mt-1.5 flex-shrink-0`}></div>
-                      <div>
-                        <h3 className="font-medium text-gray-900 mb-2">{role.name}</h3>
-                        <p className="text-sm text-gray-600">{role.description}</p>
+                ].map((role, index) => {
+                  const assignedStaff = staffAssignments.roles[role.key] || []
+                  return (
+                    <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-3 h-3 bg-${role.color}-500 rounded-full mt-1.5 flex-shrink-0`}></div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900 mb-2">{role.name}</h3>
+                          <p className="text-sm text-gray-600 mb-3">{role.description}</p>
+
+                          {/* Assigned Staff */}
+                          <div>
+                            <p className="text-xs font-medium text-gray-700 mb-2">Zugewiesene Mitarbeitende:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {assignedStaff.map((staff, staffIndex) => (
+                                <Badge key={staffIndex} className="bg-gray-200 text-gray-700 text-xs px-2 py-1">
+                                  {staff}
+                                </Badge>
+                              ))}
+                              {assignedStaff.length === 0 && (
+                                <span className="text-xs text-gray-500 italic">Keine Zuweisungen</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
@@ -700,7 +728,7 @@ export default function SecurityDataProtection({ onBack }) {
                 <Key className="w-5 h-5 text-amber-600" />
                 Zusatzberechtigungen
               </CardTitle>
-              <p className="text-amber-600/70">Optional, von Admins verteilbar – nur mit 2FA</p>
+              <p className="text-amber-600/70">Optional, von Admins verteilbar ��� nur mit 2FA</p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
