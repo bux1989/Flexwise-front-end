@@ -1,7 +1,7 @@
 # AI Assistant Instructions - FlexWise Project
 
 ## 🚀 Quick Start Guide
-
+t
 This document provides streamlined guidelines for AI assistants working on the FlexWise school management system. Focus on **speed and consistency** without bureaucracy.
 
 ---
