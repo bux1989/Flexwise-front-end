@@ -246,7 +246,8 @@ export default function SecurityDataProtection({ onBack }) {
                 {roles.map((role) => {
                   const IconComponent = role.icon
                   const settings = currentSettings.twoFactorAuth[role.key]
-                  
+                  const isAdminRole = role.key === 'admin'
+
                   return (
                     <div key={role.key} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
                       <div className="flex items-center justify-between">
@@ -257,41 +258,41 @@ export default function SecurityDataProtection({ onBack }) {
                           <div>
                             <h3 className="font-medium text-gray-900">{role.name}</h3>
                             <p className="text-sm text-gray-600">
-                              {settings.mandatory ? 'Verpflichtend' : 'Optional'} • 
-                              {settings.enabled ? ' Aktiviert' : ' Deaktiviert'}
+                              {settings.mandatory ? 'Verpflichtend' : 'Optional - Benutzer können 2FA selbst einrichten'}
+                              {isAdminRole && ' (Nicht änderbar)'}
                             </p>
                           </div>
                         </div>
-                        
+
                         {isEditing ? (
                           <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2">
-                              <input
-                                type="checkbox"
-                                checked={currentSettings.twoFactorAuth[role.key].mandatory}
-                                onChange={(e) => updateTwoFactorAuth(role.key, 'mandatory', e.target.checked)}
-                                className="w-4 h-4"
-                              />
-                              <span className="text-sm">Verpflichtend</span>
-                            </label>
-                            <label className="flex items-center gap-2">
-                              <input
-                                type="checkbox"
-                                checked={currentSettings.twoFactorAuth[role.key].enabled}
-                                onChange={(e) => updateTwoFactorAuth(role.key, 'enabled', e.target.checked)}
-                                className="w-4 h-4"
-                              />
-                              <span className="text-sm">Aktiviert</span>
-                            </label>
+                            {!isAdminRole ? (
+                              <label className="flex items-center gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={currentSettings.twoFactorAuth[role.key].mandatory}
+                                  onChange={(e) => updateTwoFactorAuth(role.key, 'mandatory', e.target.checked)}
+                                  className="w-4 h-4"
+                                />
+                                <span className="text-sm">Verpflichtend</span>
+                              </label>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <Shield className="w-4 h-4 text-red-600" />
+                                <span className="text-sm text-red-700 font-medium">Immer verpflichtend</span>
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <Badge className={settings.mandatory ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}>
+                            <Badge className={settings.mandatory ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}>
                               {settings.mandatory ? 'Verpflichtend' : 'Optional'}
                             </Badge>
-                            <Badge className={settings.enabled ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
-                              {settings.enabled ? 'Aktiviert' : 'Deaktiviert'}
-                            </Badge>
+                            {!settings.mandatory && (
+                              <Badge className="bg-green-100 text-green-700">
+                                Setup verfügbar
+                              </Badge>
+                            )}
                           </div>
                         )}
                       </div>
