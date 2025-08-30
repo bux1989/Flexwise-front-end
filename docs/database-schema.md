@@ -370,6 +370,42 @@ CREATE TABLE contacts (
 );
 ```
 
+## Security & Authentication
+
+### user_trusted_devices
+**Purpose**: Device trust management for 2FA login optimization
+
+```sql
+CREATE TABLE user_trusted_devices (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_profile_id uuid NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
+    device_fingerprint text NOT NULL,
+    device_name text, -- "Chrome on Windows", "Safari on iPhone"
+    trusted_until timestamp NOT NULL,
+    created_at timestamp DEFAULT now(),
+    last_used_at timestamp DEFAULT now(),
+    is_active boolean DEFAULT true,
+    school_id uuid NOT NULL REFERENCES structure_schools(id) ON DELETE CASCADE
+);
+```
+
+**Key Features:**
+- **Device Fingerprinting**: Browser/device identification for 2FA bypass
+- **Expiration Management**: Auto-expires after configurable period (30/90 days)
+- **Admin Oversight**: Centralized device management for security audits
+- **Multi-tenancy**: Scoped by `school_id` for data isolation
+
+**Relationships:**
+- `user_profile_id` → `user_profiles(id)` ON DELETE CASCADE
+- `school_id` → `structure_schools(id)` ON DELETE CASCADE
+
+**Indexes:**
+```sql
+CREATE INDEX idx_user_trusted_devices_profile_active ON user_trusted_devices (user_profile_id, is_active);
+CREATE INDEX idx_user_trusted_devices_fingerprint ON user_trusted_devices (device_fingerprint);
+CREATE INDEX idx_user_trusted_devices_expiry ON user_trusted_devices (trusted_until);
+```
+
 ## Stored Procedures
 
 ### save_lesson_attendance_bulk
