@@ -1,6 +1,6 @@
 // Push test comment - verifying branch sync functionality
 import { useState } from 'react'
-import { handleLoginWith2FA } from '../../lib/supabase'
+import { secureLoginWithMFA } from '../../lib/supabase-mfa'
 import { BookOpen, GraduationCap, PenTool, Backpack, Apple, Calculator, Globe, Palette } from 'lucide-react'
 import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBanner'
 import { TwoFactorVerification } from '../../components/TwoFactorVerification'
