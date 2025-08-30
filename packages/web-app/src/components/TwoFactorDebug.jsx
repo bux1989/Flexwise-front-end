@@ -201,8 +201,8 @@ export function TwoFactorDebug() {
               <div>Profile Loaded: {debugResults.steps.userProfile?.exists ? '✅' : '❌'}</div>
               <div>Requires 2FA: {debugResults.steps.requires2FA?.result ? '✅' : '❌'}</div>
               <div>Has 2FA Setup: {debugResults.steps.has2FA?.result ? '✅' : '❌'}</div>
-              <div>Device Trusted: {debugResults.steps.deviceTrust?.isTrusted ? '✅' : '❌'}</div>
-              <div>Table Access: {debugResults.steps.tableAccess?.accessible ? '✅' : '❌'}</div>
+              <div>MFA Factors: {debugResults.steps.supabaseMFAFactors?.totalFactors || 0}</div>
+              <div>Secure Device Trust: ✅ Server-side</div>
             </div>
           </div>
         </div>
