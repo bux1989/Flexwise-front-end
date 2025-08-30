@@ -5,7 +5,10 @@ import { Label } from './ui/label'
 import { Checkbox } from './ui/checkbox'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Shield, Smartphone, MessageSquare, ArrowLeft } from 'lucide-react'
-import { supabase, addTrustedDevice, logSecurityEvent } from '../lib/supabase'
+import { supabase, logSecurityEvent } from '../lib/supabase'
+
+// NOTE: This component is deprecated - use SecureTwoFactorVerification instead
+// The new component uses Supabase's built-in MFA for secure server-side enforcement
 
 export function TwoFactorVerification({ 
   user, 
