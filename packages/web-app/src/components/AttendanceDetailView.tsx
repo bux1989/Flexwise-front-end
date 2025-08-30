@@ -397,6 +397,8 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
         return 'Ausstehende Schüler*innen';
       case 'anwesend':
         return 'Anwesende Schüler*innen';
+      case 'entlassen':
+        return 'Entlassene Schüler*innen';
       default:
         return 'Schüler*innen';
     }
