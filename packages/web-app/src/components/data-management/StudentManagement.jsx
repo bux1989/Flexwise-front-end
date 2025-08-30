@@ -871,6 +871,200 @@ export default function StudentManagement({ onBack }) {
           </CardContent>
         </Card>
       )}
+
+      {/* Add New Student Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900">
+                  {addMode === 'single' ? 'Neuen Schüler hinzufügen' : 'Mehrere Schüler hinzufügen'}
+                </h2>
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowAddModal(false)}
+                  className="p-2"
+                >
+                  ×
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {addMode === 'single' ? (
+                // Single Student Form
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Vorname *
+                      </label>
+                      <Input
+                        value={newStudentData.firstName}
+                        onChange={(e) => setNewStudentData(prev => ({ ...prev, firstName: e.target.value }))}
+                        placeholder="Vorname eingeben"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nachname *
+                      </label>
+                      <Input
+                        value={newStudentData.lastName}
+                        onChange={(e) => setNewStudentData(prev => ({ ...prev, lastName: e.target.value }))}
+                        placeholder="Nachname eingeben"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Klasse *
+                      </label>
+                      <select
+                        value={newStudentData.class}
+                        onChange={(e) => setNewStudentData(prev => ({ ...prev, class: e.target.value }))}
+                        className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+                        required
+                      >
+                        <option value="">Klasse auswählen</option>
+                        {availableClasses.map(className => (
+                          <option key={className} value={className}>{className}</option>
+                        ))}
+                        <option value="9A">9A</option>
+                        <option value="9B">9B</option>
+                        <option value="10A">10A</option>
+                        <option value="10B">10B</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Einstieg
+                      </label>
+                      <Input
+                        type="date"
+                        value={newStudentData.einstieg}
+                        onChange={(e) => setNewStudentData(prev => ({ ...prev, einstieg: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Telefon (Eltern)
+                      </label>
+                      <Input
+                        value={newStudentData.phone}
+                        onChange={(e) => setNewStudentData(prev => ({ ...prev, phone: e.target.value }))}
+                        placeholder="+49 123 456789"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // Multiple Students Form
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600">
+                      Fügen Sie mehrere Schüler gleichzeitig hinzu. Nur die markierten Felder (*) sind erforderlich.
+                    </p>
+                    <Button
+                      onClick={addStudentRow}
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Zeile hinzufügen
+                    </Button>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg">
+                    <div className="grid grid-cols-6 gap-2 p-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+                      <div>Vorname *</div>
+                      <div>Nachname *</div>
+                      <div>Klasse *</div>
+                      <div>Einstieg</div>
+                      <div>Telefon (Eltern)</div>
+                      <div>Aktionen</div>
+                    </div>
+                    {multipleStudents.map((student, index) => (
+                      <div key={student.id} className="grid grid-cols-6 gap-2 p-3 border-b border-gray-100 last:border-b-0">
+                        <Input
+                          value={student.firstName}
+                          onChange={(e) => updateMultipleStudentField(student.id, 'firstName', e.target.value)}
+                          placeholder="Vorname"
+                          size="sm"
+                        />
+                        <Input
+                          value={student.lastName}
+                          onChange={(e) => updateMultipleStudentField(student.id, 'lastName', e.target.value)}
+                          placeholder="Nachname"
+                          size="sm"
+                        />
+                        <select
+                          value={student.class}
+                          onChange={(e) => updateMultipleStudentField(student.id, 'class', e.target.value)}
+                          className="px-2 py-1 border border-input bg-background rounded text-sm"
+                        >
+                          <option value="">Klasse</option>
+                          {availableClasses.map(className => (
+                            <option key={className} value={className}>{className}</option>
+                          ))}
+                          <option value="9A">9A</option>
+                          <option value="9B">9B</option>
+                          <option value="10A">10A</option>
+                          <option value="10B">10B</option>
+                        </select>
+                        <Input
+                          type="date"
+                          value={student.einstieg}
+                          onChange={(e) => updateMultipleStudentField(student.id, 'einstieg', e.target.value)}
+                          size="sm"
+                        />
+                        <Input
+                          value={student.phone}
+                          onChange={(e) => updateMultipleStudentField(student.id, 'phone', e.target.value)}
+                          placeholder="Telefon"
+                          size="sm"
+                        />
+                        <Button
+                          onClick={() => removeStudentRow(student.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="p-1 text-red-600 hover:bg-red-50"
+                          disabled={multipleStudents.length === 1}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowAddModal(false)}
+              >
+                Abbrechen
+              </Button>
+              <Button
+                onClick={handleSaveNewStudent}
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={
+                  addMode === 'single'
+                    ? !newStudentData.firstName || !newStudentData.lastName || !newStudentData.class
+                    : multipleStudents.every(s => !s.firstName || !s.lastName || !s.class)
+                }
+              >
+                {addMode === 'single' ? 'Schüler hinzufügen' : `${multipleStudents.filter(s => s.firstName && s.lastName && s.class).length} Schüler hinzufügen`}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
