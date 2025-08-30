@@ -912,22 +912,48 @@ export async function handleLoginWith2FA(email, password) {
       throw new Error('Unable to load user profile')
     }
 
-    // Step 3: Check if user requires 2FA
+    // Step 3: Check if user has 2FA enabled (ALWAYS check this first)
+    const has2FA = await userHas2FAEnabled(authData.user)
+    console.log('🔍 2FA enabled check result:', has2FA)
+
+    // Step 4: Check if user requires 2FA based on role
     const requires2FA = await userRequires2FA(userProfile)
-    if (!requires2FA) {
-      console.log('ℹ️ User does not require 2FA, login complete')
+    console.log('🔍 Role-based 2FA requirement:', requires2FA)
+
+    // Step 5: If user has 2FA enabled, ALWAYS require verification (regardless of role)
+    if (has2FA) {
+      console.log('🔒 User has 2FA enabled, checking device trust')
+
+      // Check if device is trusted
+      const deviceTrusted = await isDeviceTrusted(userProfile.id)
+      if (deviceTrusted) {
+        console.log('✅ Device is trusted, 2FA verification bypassed')
+        return {
+          user: authData.user,
+          profile: userProfile,
+          requires2FA: requires2FA,
+          has2FA: true,
+          deviceTrusted: true,
+          loginComplete: true
+        }
+      }
+
+      // Device not trusted, require 2FA verification
+      console.log('🔒 Device not trusted, 2FA verification required')
       return {
         user: authData.user,
         profile: userProfile,
-        requires2FA: false,
-        loginComplete: true
+        requires2FA: requires2FA,
+        has2FA: true,
+        deviceTrusted: false,
+        loginComplete: false,
+        needsVerification: true
       }
     }
 
-    // Step 4: Check if user has 2FA enabled
-    const has2FA = await userHas2FAEnabled(authData.user)
-    if (!has2FA) {
-      console.log('⚠️ User requires 2FA but has not set it up yet')
+    // Step 6: User doesn't have 2FA enabled - check if role requires it
+    if (requires2FA) {
+      console.log('⚠️ User role requires 2FA but has not set it up yet')
       return {
         user: authData.user,
         profile: userProfile,
@@ -938,30 +964,14 @@ export async function handleLoginWith2FA(email, password) {
       }
     }
 
-    // Step 5: Check if device is trusted
-    const deviceTrusted = await isDeviceTrusted(userProfile.id)
-    if (deviceTrusted) {
-      console.log('✅ Device is trusted, 2FA not required')
-      return {
-        user: authData.user,
-        profile: userProfile,
-        requires2FA: true,
-        has2FA: true,
-        deviceTrusted: true,
-        loginComplete: true
-      }
-    }
-
-    // Step 6: 2FA verification required
-    console.log('🔒 2FA verification required')
+    // Step 7: User doesn't have 2FA and role doesn't require it
+    console.log('ℹ️ User does not have 2FA enabled and role does not require it, login complete')
     return {
       user: authData.user,
       profile: userProfile,
-      requires2FA: true,
-      has2FA: true,
-      deviceTrusted: false,
-      loginComplete: false,
-      needsVerification: true
+      requires2FA: false,
+      has2FA: false,
+      loginComplete: true
     }
 
   } catch (error) {
