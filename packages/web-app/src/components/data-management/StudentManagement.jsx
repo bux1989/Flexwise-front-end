@@ -650,7 +650,16 @@ export default function StudentManagement({ onBack }) {
   const handleImportStudents = () => {
     if (uploadErrors.length > 0) return
 
-    const newStudents = parsedData.map(row => ({
+    // Filter out example rows as extra safety measure
+    const validRows = parsedData.filter(row => {
+      const exampleField = row['Beispiel (NICHT ÄNDERN)'] || ''
+      return !(exampleField.toLowerCase().includes('ja') ||
+               exampleField.toLowerCase().includes('beispiel') ||
+               exampleField.toLowerCase().includes('example') ||
+               exampleField.toLowerCase().includes('yes'))
+    })
+
+    const newStudents = validRows.map(row => ({
       id: Date.now() + Math.random(),
       firstName: row['Vorname'],
       lastName: row['Nachname'],
