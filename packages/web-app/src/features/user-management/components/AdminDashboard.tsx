@@ -127,6 +127,13 @@ export function AdminDashboard({ user, onShowSettings, showSettings = false, onB
       />
 
       {renderMainContent()}
+
+      <AttendanceDetailModal
+        isOpen={attendanceModal.isOpen}
+        onClose={handleCloseAttendanceModal}
+        status={attendanceModal.status}
+        students={[]} // We'll pass real data here later
+      />
     </div>
   );
 }
