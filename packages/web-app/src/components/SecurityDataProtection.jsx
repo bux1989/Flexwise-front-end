@@ -188,6 +188,20 @@ export default function SecurityDataProtection({ onBack }) {
     }))
   }
 
+  const toggleRoleExpansion = (roleKey) => {
+    setExpandedRoles(prev => ({
+      ...prev,
+      [roleKey]: !prev[roleKey]
+    }))
+  }
+
+  const togglePermissionExpansion = (permissionKey) => {
+    setExpandedPermissions(prev => ({
+      ...prev,
+      [permissionKey]: !prev[permissionKey]
+    }))
+  }
+
   const currentSettings = isEditing ? editedSettings : securitySettings
 
   return (
