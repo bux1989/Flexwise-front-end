@@ -5,7 +5,7 @@ import { Label } from './ui/label'
 import { Checkbox } from './ui/checkbox'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Shield, Smartphone, MessageSquare, ArrowLeft } from 'lucide-react'
-import { supabase, addTrustedDevice } from '../lib/supabase'
+import { supabase, addTrustedDevice, logSecurityEvent } from '../lib/supabase'
 
 export function TwoFactorVerification({ 
   user, 
@@ -118,7 +118,7 @@ export function TwoFactorVerification({
         } else if (errorMessage.includes('rate') || errorMessage.includes('limit')) {
           setError('⚠️ Zu viele Versuche. Bitte warten Sie einen Moment.')
         } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
-          setError('🌐 Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
+          setError('��� Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
         } else {
           setError(`⚠️ Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut. (Versuch ${retryCount + 1}/5)`)
         }
@@ -157,7 +157,7 @@ export function TwoFactorVerification({
 
       // Check if it's a network error for retry suggestion
       if (error?.code === 'NETWORK_ERROR' || error?.message?.includes('fetch')) {
-        setError('🌐 Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
+        setError('�� Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
       } else {
         setError(`⚠️ Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut. (Versuch ${retryCount + 1}/5)`)
       }
