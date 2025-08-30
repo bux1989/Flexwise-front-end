@@ -51,26 +51,30 @@ export function MFAPolicyTester() {
         return
       }
 
-      // Test Critical Protected Tables (should be blocked in AAL1 if user has MFA)
+      // Test ALL MFA-Protected Tables (45 total from comprehensive implementation)
       const criticalTables = [
-        'user_profiles',
-        'contacts', 
-        'profile_info_staff',
-        'profile_info_student',
-        'families',
-        'family_members',
-        'student_daily_log',
-        'staff_absences',
-        'user_roles'
+        'user_profiles', 'contacts', 'profile_info_staff', 'profile_info_student',
+        'profile_info_family_member', 'families', 'family_members', 'family_member_child_links',
+        'student_absence_notes', 'student_daily_log', 'student_emergency_information',
+        'staff_absences', 'staff_documents', 'staff_contracts', 'staff_work_contracts',
+        'user_roles', 'protected_roles', 'user_codes',
+        'student_pickup_arrangement_overrides', 'student_weekly_pickup_arrangements'
       ]
 
       // Test Operational Protected Tables
       const operationalTables = [
-        'student_attendance_logs',
-        'lesson_diary_entries',
-        'course_enrollments',
-        'bulletin_posts',
-        'change_log'
+        'student_attendance_logs', 'lesson_diary_entries', 'bulletin_posts', 'bulletin_post_users',
+        'course_notes', 'staff_absence_comments', 'staff_class_links', 'staff_subjects',
+        'staff_duty_plan', 'staff_yearly_preferences', 'student_course_wish_choices',
+        'student_course_wish_submissions', 'student_presence_events', 'change_log',
+        'user_groups', 'user_group_members'
+      ]
+
+      // Test Selected Low Priority Protected Tables
+      const selectedOperationalTables = [
+        'course_applications', 'course_enrollments', 'course_lessons', 'course_list',
+        'course_offers', 'course_possible_times', 'course_registration_windows',
+        'course_schedules', 'schedule_drafts', 'substitutions'
       ]
 
       // Test Unprotected Reference Tables (should always work)
