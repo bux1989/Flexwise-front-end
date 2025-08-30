@@ -7,6 +7,7 @@ import { SecureTwoFactorVerification } from '../../components/SecureTwoFactorVer
 import { TwoFactorDebug } from '../../components/TwoFactorDebug'
 import { SupabaseMFATest } from '../../components/SupabaseMFATest'
 import { MFAPolicyTester } from '../../components/MFAPolicyTester'
+import { useDebug } from '../../debug'
 
 export default function Login() {
   const [email, setEmail] = useState('')
