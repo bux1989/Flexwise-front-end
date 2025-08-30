@@ -235,19 +235,6 @@ export default function SecurityDataProtection({ onBack }) {
               <p className="text-red-600/70">Verwalten Sie 2FA-Verpflichtungen - Benutzer können 2FA immer selbst einrichten</p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* 2FA Policy Notice */}
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-blue-600" />
-                  <p className="font-medium text-blue-900">2-Faktor-Authentifizierung Richtlinie</p>
-                </div>
-                <div className="text-sm text-blue-600/70 mt-2 space-y-1">
-                  <p>• <strong>Administratoren:</strong> 2FA ist immer verpflichtend und kann nicht deaktiviert werden</p>
-                  <p>• <strong>Andere Rollen:</strong> Benutzer können 2FA jederzeit selbst einrichten</p>
-                  <p>• <strong>Verpflichtende Rollen:</strong> Müssen 2FA aktivieren, bevor sie sich anmelden können</p>
-                  <p>• <strong>Optionale Rollen:</strong> Können 2FA freiwillig für zusätzliche Sicherheit aktivieren</p>
-                </div>
-              </div>
 
               {/* Role Settings */}
               <div className="space-y-4">
