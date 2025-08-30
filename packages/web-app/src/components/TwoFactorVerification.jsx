@@ -24,14 +24,28 @@ export function TwoFactorVerification({
 
   const handleVerification = async (e) => {
     e.preventDefault()
-    
+
     if (!code || code.length !== 6) {
       setError('Bitte geben Sie einen gültigen 6-stelligen Code ein.')
       return
     }
 
+    // Rate limiting check
+    const now = Date.now()
+    if (lastAttemptTime && (now - lastAttemptTime) < 3000) { // 3 second cooldown
+      setError('Bitte warten Sie einen Moment bevor Sie es erneut versuchen.')
+      return
+    }
+
+    if (retryCount >= 5) {
+      setIsRateLimited(true)
+      setError('Zu viele Versuche. Bitte warten Sie 5 Minuten oder kontaktieren Sie den Support.')
+      return
+    }
+
     setLoading(true)
     setError('')
+    setLastAttemptTime(now)
 
     try {
       console.log('🔒 Verifying 2FA code for user:', user.email)
@@ -96,7 +110,7 @@ export function TwoFactorVerification({
         if (verificationError?.message?.includes('expired')) {
           setError('Der Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.')
         } else if (verificationError?.message?.includes('invalid') || verificationError?.message?.includes('Invalid')) {
-          setError('Ungültiger Code. Bitte überpr��fen Sie den Code und versuchen Sie es erneut.')
+          setError('Ungültiger Code. Bitte überprüfen Sie den Code und versuchen Sie es erneut.')
         } else {
           setError('Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.')
         }
