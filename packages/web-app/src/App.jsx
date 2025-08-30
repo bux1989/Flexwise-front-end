@@ -92,11 +92,25 @@ function App() {
       const role = extractUserRole(userRoles, rolesError)
 
       // Fetch profile details - specify school relationship explicitly
-      const { data: profile, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('*, structure_schools!profiles_school_id_fkey(name)')
-        .eq('id', profileId)
-        .single()
+      // Use secure function for database-level column security
+      const { data: profileData, error: profileError } = await supabase.rpc('get_user_profile', {
+        profile_id: profileId
+      })
+
+      // Parse JSON result and fetch school data separately if profile has school_id
+      let profile = profileData
+      if (profile?.school_id) {
+        const { data: school } = await supabase
+          .from('structure_schools')
+          .select('name')
+          .eq('id', profile.school_id)
+          .single()
+
+        // Add school name to profile to maintain compatibility
+        if (school?.name) {
+          profile.structure_schools = { name: school.name }
+        }
+      }
 
       console.log('📋 Profile query result:', { profile, profileError })
       if (profileError) {
