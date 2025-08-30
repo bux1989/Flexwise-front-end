@@ -47,6 +47,55 @@ This document tracks known issues and potential improvements that are not critic
 
 ---
 
+## Security & Authentication
+
+### ✅ Two-Factor Authentication (2FA) System - COMPLETED
+**Status:** Implemented (January 2025)
+
+**Delivered Features:**
+- Role-based 2FA requirement (Admin/Super Admin only)
+- Device trust management with 30-day expiry
+- SMS and TOTP verification support
+- Sensitive action protection (password reset, 2FA disable)
+- User-friendly device management in profile settings
+- Complete documentation and monitoring guides
+
+**Implementation Details:** See [2FA_SYSTEM.md](./2FA_SYSTEM.md)
+
+### 🔮 Future 2FA Enhancements
+**Planned Improvements:**
+
+1. **Role Expansion** (Priority: Medium)
+   - Enable 2FA for Teachers (30-day device trust)
+   - Enable 2FA for Parents/Externals/Students (90-day device trust)
+   - Configurable trust periods per role
+
+2. **Hardware Security Keys** (Priority: Low)
+   - FIDO2/WebAuthn support
+   - USB security key compatibility
+   - Backup methods for key loss
+
+3. **Risk-Based Authentication** (Priority: Low)
+   - IP geolocation analysis
+   - Unusual activity detection
+   - Adaptive trust scoring
+
+4. **Admin Dashboard** (Priority: Medium)
+   - Centralized 2FA management interface
+   - User 2FA status overview
+   - Bulk device trust management
+   - Security analytics and reporting
+
+5. **Backup & Recovery** (Priority: High)
+   - One-time backup codes generation
+   - Account recovery without 2FA device
+   - Admin emergency override procedures
+
+**Effort:** Medium to High depending on feature
+**Impact:** Enhanced security posture for all user types
+
+---
+
 ## General Code Quality
 
 ### 🧹 Code Cleanup
