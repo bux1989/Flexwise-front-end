@@ -85,7 +85,7 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground">Schuleinstellung</h2>
+        <h2 className="text-2xl font-bold text-foreground">Schuleinstellung should be on the overarching container of this</h2>
       </div>
 
       {/* Tabs */}
