@@ -475,24 +475,54 @@ export default function StudentManagement({ onBack }) {
     if (format === 'excel') {
       // Create Excel workbook
       const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.aoa_to_sheet([headers, sampleRow])
+
+      // Create data with headers, example row, and instruction
+      const instructionRow = ['⚠️ HINWEIS: Die graue Beispielzeile wird automatisch übersprungen', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+      const emptyRow = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+      const newDataRow = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+
+      const wsData = [headers, sampleRow, emptyRow, instructionRow, emptyRow, newDataRow]
+      const ws = XLSX.utils.aoa_to_sheet(wsData)
 
       // Set column widths for better readability
-      const colWidths = headers.map((header, index) => {
-        if (index === 0) return { wch: 25 } // Example column wider
-        return { wch: 20 }
-      })
+      const colWidths = headers.map(() => ({ wch: 18 }))
       ws['!cols'] = colWidths
 
-      // Add a note to explain the example column
-      const noteRow = ['⚠️ HINWEIS: Zeilen mit "JA" in der ersten Spalte werden NICHT importiert (Beispieldaten)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
-      const wsData = XLSX.utils.sheet_to_json(ws, { header: 1 })
-      wsData.splice(2, 0, noteRow) // Insert note after sample row
+      // Style the header row (row 1)
+      for (let col = 0; col < headers.length; col++) {
+        const cellRef = XLSX.utils.encode_cell({ r: 0, c: col })
+        if (!ws[cellRef]) continue
+        ws[cellRef].s = {
+          fill: { fgColor: { rgb: "366092" } }, // Blue header
+          font: { color: { rgb: "FFFFFF" }, bold: true },
+          alignment: { horizontal: "center" }
+        }
+      }
 
-      const newWs = XLSX.utils.aoa_to_sheet(wsData)
-      newWs['!cols'] = colWidths
+      // Style the example row (row 2) with gray background
+      for (let col = 0; col < headers.length; col++) {
+        const cellRef = XLSX.utils.encode_cell({ r: 1, c: col })
+        if (!ws[cellRef]) continue
+        ws[cellRef].s = {
+          fill: { fgColor: { rgb: "E5E5E5" } }, // Light gray background
+          font: { color: { rgb: "666666" }, italic: true },
+          alignment: { horizontal: "left" }
+        }
+      }
 
-      XLSX.utils.book_append_sheet(wb, newWs, 'Schüler Import')
+      // Style the instruction row
+      const instructionCellRef = XLSX.utils.encode_cell({ r: 3, c: 0 })
+      if (ws[instructionCellRef]) {
+        ws[instructionCellRef].s = {
+          font: { color: { rgb: "FF6B35" }, bold: true, size: 11 },
+          alignment: { horizontal: "left" }
+        }
+      }
+
+      // Merge cells for instruction
+      ws['!merges'] = [{ s: { r: 3, c: 0 }, e: { r: 3, c: 8 } }]
+
+      XLSX.utils.book_append_sheet(wb, ws, 'Schüler Import')
       XLSX.writeFile(wb, 'schueler_import_template.xlsx')
     } else {
       // Generate CSV with proper delimiter (semicolon for German Excel)
