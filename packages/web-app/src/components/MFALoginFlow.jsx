@@ -169,7 +169,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
               // Wait a bit longer and try once more
               setTimeout(async () => {
                 const { data: finalSession } = await supabase.auth.getSession()
-                console.log('�� Final session check:', finalSession.session?.aal)
+                console.log('🔄 Final session check:', finalSession.session?.aal)
                 onComplete && onComplete(finalSession.session || result.session)
               }, 1000)
             }
@@ -351,20 +351,40 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
 
         {isOldChallenge && (
           <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded text-amber-700 text-sm">
-            ⚠️ Code is over 4 minutes old and may have expired
+            ���️ Code is over 4 minutes old and may have expired
           </div>
         )}
 
         <div className="space-y-3">
-          <button
-            onClick={handleVerification}
-            disabled={loading || code.length !== 6}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Verifying...' : 'Verify & Continue'}
-          </button>
+          {!challenge && selectedFactor?.factor_type === 'phone' ? (
+            // No SMS sent yet - prioritize sending SMS
+            <>
+              <button
+                onClick={handleNewCode}
+                disabled={loading || rateLimitCountdown > 0}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {loading ? 'Sending SMS...' :
+                 rateLimitCountdown > 0 ? `Wait ${rateLimitCountdown}s` :
+                 '📱 Send SMS Code'}
+              </button>
 
-          {selectedFactor?.factor_type === 'phone' && (
+              <div className="text-xs text-center text-gray-500 px-4">
+                SMS charges may apply. You'll receive a 6-digit verification code.
+              </div>
+            </>
+          ) : (
+            // SMS sent or non-phone factor - show verification
+            <button
+              onClick={handleVerification}
+              disabled={loading || code.length !== 6 || (!challenge && selectedFactor?.factor_type === 'phone')}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Verifying...' : 'Verify & Continue'}
+            </button>
+          )}
+
+          {challenge && selectedFactor?.factor_type === 'phone' && (
             <button
               onClick={handleNewCode}
               disabled={loading || rateLimitCountdown > 0}
@@ -377,7 +397,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
           )}
 
           {onCancel && (
-            <button 
+            <button
               onClick={onCancel}
               disabled={loading}
               className="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
