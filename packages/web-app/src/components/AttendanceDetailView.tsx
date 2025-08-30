@@ -49,6 +49,11 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
   const [selectedClass, setSelectedClass] = useState('alle-klassen');
   const [sortField, setSortField] = useState<'name' | 'klasse' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [noteModal, setNoteModal] = useState<{ isOpen: boolean; studentId: string | null }>({
+    isOpen: false,
+    studentId: null
+  });
+  const [newNote, setNewNote] = useState('');
 
   // Sample student data based on status
   const allStudents = useMemo(() => {
