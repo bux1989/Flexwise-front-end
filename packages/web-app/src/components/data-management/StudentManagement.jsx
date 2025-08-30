@@ -480,10 +480,21 @@ export default function StudentManagement({ onBack }) {
       const ws = XLSX.utils.aoa_to_sheet([headers, sampleRow])
 
       // Set column widths for better readability
-      const colWidths = headers.map(() => ({ wch: 20 }))
+      const colWidths = headers.map((header, index) => {
+        if (index === 0) return { wch: 25 } // Example column wider
+        return { wch: 20 }
+      })
       ws['!cols'] = colWidths
 
-      XLSX.utils.book_append_sheet(wb, ws, 'Schüler Import')
+      // Add a note to explain the example column
+      const noteRow = ['⚠️ HINWEIS: Zeilen mit "JA" in der ersten Spalte werden NICHT importiert (Beispieldaten)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+      const wsData = XLSX.utils.sheet_to_json(ws, { header: 1 })
+      wsData.splice(2, 0, noteRow) // Insert note after sample row
+
+      const newWs = XLSX.utils.aoa_to_sheet(wsData)
+      newWs['!cols'] = colWidths
+
+      XLSX.utils.book_append_sheet(wb, newWs, 'Schüler Import')
       XLSX.writeFile(wb, 'schueler_import_template.xlsx')
     } else {
       // Generate CSV with proper delimiter (semicolon for German Excel)
