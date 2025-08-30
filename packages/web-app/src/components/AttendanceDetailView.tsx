@@ -238,6 +238,34 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
           ],
           hasMoreComments: false
         }
+      ],
+      entlassen: [
+        {
+          id: '14',
+          name: 'Max Schmidt',
+          klasse: '2A',
+          status: 'Entlassen',
+          time: '14:30',
+          contact: { phone: '0162 7394852', name: 'Petra Schmidt', relation: 'Mutter' },
+          lastUpdate: { time: '14:30', author: 'AG', action: 'Als entlassen markiert' },
+          comments: [
+            { time: '14:30', author: 'AG', text: 'Von Mutter abgeholt' }
+          ],
+          hasMoreComments: false
+        },
+        {
+          id: '15',
+          name: 'Sophie Klein',
+          klasse: '4A',
+          status: 'Entlassen',
+          time: '15:00',
+          contact: { phone: '0171 8529634', name: 'Thomas Klein', relation: 'Vater' },
+          lastUpdate: { time: '15:00', author: 'TH', action: 'Als entlassen markiert' },
+          comments: [
+            { time: '15:00', author: 'TH', text: 'Reguläre Entlassung nach Unterrichtsende' }
+          ],
+          hasMoreComments: false
+        }
       ]
     };
     return baseStudents[status as keyof typeof baseStudents] || [];
