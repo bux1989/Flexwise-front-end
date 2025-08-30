@@ -196,7 +196,7 @@ export default function SecurityDataProtection({ onBack }) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="2fa" className="flex items-center gap-2">
             <Shield className="w-4 h-4" />
             2-Faktor-Auth
@@ -212,6 +212,10 @@ export default function SecurityDataProtection({ onBack }) {
           <TabsTrigger value="signature" className="flex items-center gap-2">
             <FileSignature className="w-4 h-4" />
             Digitale Signatur
+          </TabsTrigger>
+          <TabsTrigger value="permissions" className="flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            Rollen & Berechtigungen
           </TabsTrigger>
         </TabsList>
 
