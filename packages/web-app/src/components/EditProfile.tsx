@@ -2233,6 +2233,13 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
           onCancel={handleSensitive2FACancel}
         />
       )}
+
+      {/* MFA Test Component for Debugging (Development only) */}
+      {import.meta.env.DEV && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <SupabaseMFATest />
+        </div>
+      )}
     </DebugOverlay>
   );
 }
