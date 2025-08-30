@@ -54,6 +54,8 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
     studentId: null
   });
   const [newNote, setNewNote] = useState('');
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  const [studentComments, setStudentComments] = useState<{ [key: string]: Comment[] }>({});
 
   // Sample student data based on status
   const allStudents = useMemo(() => {
@@ -294,7 +296,27 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
   };
 
   const handleSaveNote = () => {
-    // In a real app, this would save to backend
+    if (!noteModal.studentId || !newNote.trim()) return;
+
+    // Create new comment with current timestamp and user abbreviation
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+    const newComment: Comment = {
+      time: timeString,
+      author: 'AG', // Current user abbreviation - in a real app this would come from user context
+      text: newNote.trim()
+    };
+
+    // Add comment to student's comments
+    setStudentComments(prev => ({
+      ...prev,
+      [noteModal.studentId!]: [...(prev[noteModal.studentId!] || []), newComment]
+    }));
+
+    // Expand comments to show the new one
+    setExpandedComments(prev => new Set([...prev, noteModal.studentId!]));
+
     console.log('Saving note for student:', noteModal.studentId, 'Note:', newNote);
     handleCloseNoteModal();
   };
@@ -416,104 +438,131 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
           {/* Student List */}
           <div className="space-y-3">
             {/* Header */}
-            <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
+            <div className="grid grid-cols-12 gap-2 text-sm font-medium text-gray-600 border-b pb-2">
               <button
-                className="col-span-2 text-left hover:text-gray-900 flex items-center gap-1"
+                className="col-span-1 text-left hover:text-gray-900 flex items-center gap-1 text-xs"
                 onClick={() => handleSort('name')}
               >
                 Schüler*in {getSortIcon('name')}
               </button>
               <button
-                className="col-span-1 text-left hover:text-gray-900 flex items-center gap-1"
+                className="col-span-1 text-left hover:text-gray-900 flex items-center gap-1 text-xs"
                 onClick={() => handleSort('klasse')}
               >
                 Klasse {getSortIcon('klasse')}
               </button>
-              <div className="col-span-2">Status</div>
-              <div className="col-span-2">Kontakt</div>
-              <div className="col-span-2">Letztes Update</div>
-              <div className="col-span-2">Details</div>
-              <div className="col-span-1">Aktion</div>
+              <div className="col-span-1 text-xs">Status</div>
+              <div className="col-span-2 text-xs">Kontakt</div>
+              <div className="col-span-2 text-xs">Letztes Update</div>
+              <div className="col-span-3 text-xs">Details</div>
+              <div className="col-span-2 text-xs">Aktion</div>
             </div>
 
             {/* Dynamic Student List */}
-            {filteredAndSortedStudents.map((student) => (
-              <div key={student.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b border-gray-100">
-                <div className="col-span-2 font-medium">{student.name}</div>
-                <div className="col-span-1">{student.klasse}</div>
-                <div className="col-span-2">
-                  <Badge className={`${
-                    student.status === 'Überfällig' ? 'bg-red-100 text-red-700' :
-                    student.status === 'Unentschuldigt' ? 'bg-red-100 text-red-700' :
-                    student.status === 'Entschuldigt' ? 'bg-blue-100 text-blue-700' :
-                    student.status === 'Ausstehend' ? 'bg-orange-100 text-orange-700' :
-                    'bg-green-100 text-green-700'
-                  }`}>
-                    {student.status}
-                  </Badge>
-                  {student.status === 'Überfällig' && (
-                    <span className="text-xs text-gray-500 ml-1">(seit 15:45)</span>
-                  )}
-                </div>
-                {/* Contact Information */}
-                <div className="col-span-2">
-                  <div className="text-xs">
-                    {student.contact.phone} {student.contact.name} ({student.contact.relation})
+            {filteredAndSortedStudents.map((student) => {
+              const allComments = [...student.comments, ...(studentComments[student.id] || [])];
+              const isExpanded = expandedComments.has(student.id);
+              const displayComments = isExpanded ? allComments : allComments.slice(0, 1);
+
+              return (
+                <div key={student.id} className="grid grid-cols-12 gap-2 items-center py-3 border-b border-gray-100">
+                  <div className="col-span-1 font-medium text-sm">{student.name}</div>
+                  <div className="col-span-1 text-sm">{student.klasse}</div>
+                  <div className="col-span-1">
+                    <Badge className={`text-xs ${
+                      student.status === 'Überfällig' ? 'bg-red-100 text-red-700' :
+                      student.status === 'Unentschuldigt' ? 'bg-red-100 text-red-700' :
+                      student.status === 'Entschuldigt' ? 'bg-blue-100 text-blue-700' :
+                      student.status === 'Ausstehend' ? 'bg-orange-100 text-orange-700' :
+                      'bg-green-100 text-green-700'
+                    }`}>
+                      {student.status === 'Überfällig' ? 'Über.' :
+                       student.status === 'Unentschuldigt' ? 'Unent.' :
+                       student.status === 'Entschuldigt' ? 'Entsch.' :
+                       student.status === 'Ausstehend' ? 'Ausst.' :
+                       'Anwes.'}
+                    </Badge>
+                    {student.status === 'Überfällig' && (
+                      <div className="text-xs text-gray-500">15:45</div>
+                    )}
+                  </div>
+                  {/* Contact Information */}
+                  <div className="col-span-2">
+                    <div className="text-xs">
+                      <div>{student.contact.phone}</div>
+                      <div className="text-gray-600">{student.contact.name} ({student.contact.relation})</div>
+                    </div>
+                  </div>
+                  {/* Last Update */}
+                  <div className="col-span-2">
+                    {student.lastUpdate ? (
+                      <div className="text-xs">
+                        <div>{student.lastUpdate.time} {student.lastUpdate.author}</div>
+                        <div className="text-gray-500">{student.lastUpdate.action}</div>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-400">-</div>
+                    )}
+                  </div>
+                  {/* Details/Comments */}
+                  <div className="col-span-3">
+                    {allComments.length > 0 ? (
+                      <div className="text-xs space-y-1">
+                        {displayComments.map((comment, index) => (
+                          <div key={index} className={index === 0 ? '' : 'text-gray-600'}>
+                            {comment.time} ({comment.author}): {comment.text}
+                          </div>
+                        ))}
+                        {allComments.length > 1 && (
+                          <button
+                            className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                            onClick={() => {
+                              const newExpanded = new Set(expandedComments);
+                              if (isExpanded) {
+                                newExpanded.delete(student.id);
+                              } else {
+                                newExpanded.add(student.id);
+                              }
+                              setExpandedComments(newExpanded);
+                            }}
+                          >
+                            <MoreHorizontal className="w-3 h-3" />
+                            {isExpanded ? 'Weniger anzeigen' : `+${allComments.length - 1} weitere Notizen`}
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-400">Keine Notizen</div>
+                    )}
+                  </div>
+                  {/* Actions */}
+                  <div className="col-span-2">
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        title="Neue Notiz hinzufügen"
+                        onClick={() => handleOpenNoteModal(student.id)}
+                        className="px-2 py-1 h-8"
+                      >
+                        <MessageSquare className="w-3 h-3" />
+                      </Button>
+                      <select
+                        className="text-xs border rounded px-1 py-1 h-8 min-w-[70px]"
+                        value={student.status}
+                        onChange={(e) => handleStatusChange(student.id, e.target.value)}
+                      >
+                        <option value={student.status}>{student.status}</option>
+                        {student.status !== 'Anwesend' && <option value="Anwesend">Anwesend</option>}
+                        {student.status !== 'Entschuldigt' && <option value="Entschuldigt">Entschuldigt</option>}
+                        {student.status !== 'Unentschuldigt' && <option value="Unentschuldigt">Unentschuldigt</option>}
+                        {student.status !== 'Ausstehend' && <option value="Ausstehend">Ausstehend</option>}
+                      </select>
+                    </div>
                   </div>
                 </div>
-                {/* Last Update */}
-                <div className="col-span-2">
-                  {student.lastUpdate ? (
-                    <div className="text-xs">
-                      <div>{student.lastUpdate.time} {student.lastUpdate.author}</div>
-                      <div className="text-gray-500">{student.lastUpdate.action}</div>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-gray-400">-</div>
-                  )}
-                </div>
-                {/* Details/Comments */}
-                <div className="col-span-2">
-                  {student.comments.length > 0 ? (
-                    <div className="text-xs">
-                      <div>{student.comments[0].time} ({student.comments[0].author}): {student.comments[0].text}</div>
-                      {student.hasMoreComments && (
-                        <button className="text-blue-600 hover:text-blue-800 mt-1 flex items-center gap-1">
-                          <MoreHorizontal className="w-3 h-3" />
-                          +{student.comments.length - 1} weitere Notizen
-                        </button>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-xs text-gray-400">Keine Notizen</div>
-                  )}
-                </div>
-                {/* Actions */}
-                <div className="col-span-1">
-                  <div className="flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      title="Neue Notiz hinzufügen"
-                      onClick={() => handleOpenNoteModal(student.id)}
-                    >
-                      <MessageSquare className="w-3 h-3" />
-                    </Button>
-                    <select
-                      className="text-xs border rounded px-1 py-1 min-w-[60px]"
-                      value={student.status}
-                      onChange={(e) => handleStatusChange(student.id, e.target.value)}
-                    >
-                      <option value={student.status}>{student.status}</option>
-                      {student.status !== 'Anwesend' && <option value="Anwesend">Anwesend</option>}
-                      {student.status !== 'Entschuldigt' && <option value="Entschuldigt">Entschuldigt</option>}
-                      {student.status !== 'Unentschuldigt' && <option value="Unentschuldigt">Unentschuldigt</option>}
-                      {student.status !== 'Ausstehend' && <option value="Ausstehend">Ausstehend</option>}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* No results message */}
             {filteredAndSortedStudents.length === 0 && (
