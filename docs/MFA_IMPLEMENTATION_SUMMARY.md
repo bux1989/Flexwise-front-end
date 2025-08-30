@@ -130,11 +130,24 @@ WHERE mf.status = 'verified'
 - **No backend changes**: Simple client-side solution
 - **Immediate fix**: Solves the immediate frustration
 
-### Security Hardening:
-- **Layered protection**: Database-level + client-side + monitoring
-- **Granular control**: Per-table RLS policies
-- **Audit trail**: All access attempts logged
-- **Production-ready**: Based on Supabase best practices
+### Security Hardening (Updated Approach):
+- **Official Supabase patterns**: Based on their blog post and documentation
+- **RESTRICTIVE policies**: More secure than regular policies, cannot be bypassed
+- **Proper permission handling**: Grants required access to `auth.mfa_factors`
+- **Helper function pattern**: Reusable logic following official recommendations
+- **Additive security**: Works alongside existing school isolation policies
+
+### Evolution of Implementation:
+
+1. **Initial custom approach** (`sql/harden_mfa_aal2_requirements.sql`):
+   - Used regular RLS policies with custom USING clauses
+   - Worked but wasn't following official patterns
+
+2. **Official Supabase approach** (`sql/supabase_official_mfa_hardening.sql`):
+   - Uses RESTRICTIVE policies (enforced in addition to existing policies)
+   - Follows documented patterns from Supabase blog
+   - More secure and future-proof
+   - **Recommended implementation** ⭐
 
 ## Testing Your Implementation
 
