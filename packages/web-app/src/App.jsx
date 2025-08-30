@@ -271,15 +271,23 @@ function App() {
               <Route path="*" element={<Navigate to="/auth/login" replace />} />
             </Routes>
           ) : (
-            <Routes>
-              <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
-              <Route path="/dashboard/admin" element={renderDashboard()} />
-              <Route path="/dashboard/teacher" element={renderDashboard()} />
-              <Route path="/dashboard/parent" element={renderDashboard()} />
-              <Route path="/dashboard/external" element={renderDashboard()} />
-              <Route path="/" element={<Navigate to={getDashboardPath()} replace />} />
-              <Route path="*" element={<Navigate to={getDashboardPath()} replace />} />
-            </Routes>
+            <MFAGuard
+              user={session?.user}
+              onMFAComplete={(newSession) => {
+                console.log('🔐 MFA completed in main app, session AAL:', newSession?.aal)
+                // Session should be automatically updated by Supabase
+              }}
+            >
+              <Routes>
+                <Route path="/login" element={<Navigate to={getDashboardPath()} replace />} />
+                <Route path="/dashboard/admin" element={renderDashboard()} />
+                <Route path="/dashboard/teacher" element={renderDashboard()} />
+                <Route path="/dashboard/parent" element={renderDashboard()} />
+                <Route path="/dashboard/external" element={renderDashboard()} />
+                <Route path="/" element={<Navigate to={getDashboardPath()} replace />} />
+                <Route path="*" element={<Navigate to={getDashboardPath()} replace />} />
+              </Routes>
+            </MFAGuard>
           )}
         </div>
         <DebugModal />
