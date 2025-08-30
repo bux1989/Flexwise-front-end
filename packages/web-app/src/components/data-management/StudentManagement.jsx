@@ -98,7 +98,12 @@ export default function StudentManagement({ onBack }) {
           email: 'maria.mustermann@email.de',
           phone: '+49 123 456789',
           address: 'Musterstraße 123, 12345 Berlin',
-          isPrimary: true
+          isPrimary: true,
+          loginInfo: {
+            hasAccount: true,
+            registrationDate: '2024-01-20',
+            lastLogin: '2024-03-14'
+          }
         },
         {
           firstName: 'Peter',
@@ -107,7 +112,12 @@ export default function StudentManagement({ onBack }) {
           email: 'peter.mustermann@email.de',
           phone: '+49 123 456788',
           address: 'Musterstraße 123, 12345 Berlin',
-          isPrimary: false
+          isPrimary: false,
+          loginInfo: {
+            hasAccount: false,
+            registrationDate: null,
+            lastLogin: null
+          }
         }
       ],
       siblings: [
@@ -765,7 +775,7 @@ export default function StudentManagement({ onBack }) {
                   onClick={() => setSelectedButStatus('all')}
                   className="ml-1 hover:text-red-600"
                 >
-                  ��
+                  ×
                 </button>
               </Badge>
             )}
@@ -973,7 +983,7 @@ export default function StudentManagement({ onBack }) {
                         className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
                         required
                       >
-                        <option value="">Klasse ausw��hlen</option>
+                        <option value="">Klasse auswählen</option>
                         {availableClasses.map(className => (
                           <option key={className} value={className}>{className}</option>
                         ))}
