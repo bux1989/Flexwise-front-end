@@ -1795,7 +1795,7 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                             size="sm"
                             variant="outline"
                             className="border-gray-300 text-gray-700 hover:bg-gray-100"
-                            onClick={disableOtp}
+                            onClick={handleDisable2FA}
                           >
                             <X className="h-4 w-4 mr-2" />
                             Deaktivieren
