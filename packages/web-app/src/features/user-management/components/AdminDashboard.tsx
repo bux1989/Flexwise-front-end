@@ -71,7 +71,11 @@ export function AdminDashboard({ user, onShowSettings, showSettings = false, onB
 
   const handleStatusClick = (status: string) => {
     console.log('Status clicked:', status);
-    // Future: Navigate to status detail view
+    setAttendanceModal({ isOpen: true, status });
+  };
+
+  const handleCloseAttendanceModal = () => {
+    setAttendanceModal({ isOpen: false, status: '' });
   };
 
   const renderMainContent = () => {
