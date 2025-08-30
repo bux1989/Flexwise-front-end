@@ -92,8 +92,9 @@ export function MFAPolicyTester() {
             accessible: !error,
             error: error?.message,
             category,
-            expected: category === 'reference' ? 'ALLOWED' : 
-                     (results.sessionInfo.mfaFactors?.hasMFA && results.sessionInfo.currentAAL === 'aal1') ? 'BLOCKED' : 'ALLOWED'
+            expected: category === 'reference' ? 'ALLOWED' :
+                     (results.sessionInfo.mfaFactors?.hasMFA &&
+                      (results.sessionInfo.currentAAL === 'aal1' || results.sessionInfo.effectiveAAL === 'aal1')) ? 'BLOCKED' : 'ALLOWED'
           }
 
           testResult.status = testResult.accessible ? 'ALLOWED' : 'BLOCKED'
