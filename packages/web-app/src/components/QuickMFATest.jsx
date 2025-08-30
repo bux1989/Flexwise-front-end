@@ -251,6 +251,12 @@ export function QuickMFATest() {
                     {result.instructions}
                   </div>
                 )}
+                {result.nextStep && (
+                  <div className="mt-2 p-2 bg-green-100 border border-green-200 rounded">
+                    <div className="font-semibold text-green-800">🎯 Next Step:</div>
+                    <div className="text-green-700">{result.nextStep}</div>
+                  </div>
+                )}
               </div>
             ) : (
               <div>
