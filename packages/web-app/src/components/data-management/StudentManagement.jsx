@@ -501,11 +501,7 @@ export default function StudentManagement({ onBack }) {
     }
   }
 
-  const parseCSV = (text) => {
-    const lines = text.split('\n').filter(line => line.trim())
-    if (lines.length < 2) return { data: [], errors: ['Datei ist leer oder enthält nur Überschriften'] }
-
-    const headers = lines[0].split(',').map(header => header.replace(/"/g, '').trim())
+  const parseFile = (file, arrayBuffer = null, text = null) => {
     const expectedHeaders = [
       'Vorname', 'Nachname', 'Klasse', 'Rufname/Nickname', 'Geburtsdatum', 'Adresse',
       'Einstieg', 'Telefon (Schüler)', 'Eltern 1 - Name', 'Eltern 1 - E-Mail', 'Eltern 1 - Telefon',
@@ -513,51 +509,91 @@ export default function StudentManagement({ onBack }) {
       'BuT Typ', 'BuT Gültig bis'
     ]
 
-    const data = []
+    let rows = []
     const errors = []
 
-    // Check headers
-    if (!expectedHeaders.every(header => headers.includes(header))) {
-      errors.push('CSV-Datei enthält nicht alle erforderlichen Spalten. Bitte verwenden Sie die Vorlage.')
-      return { data: [], errors }
+    try {
+      if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+        // Parse Excel file
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
+        rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+      } else {
+        // Parse CSV file - try both comma and semicolon delimiters
+        const lines = text.split('\n').filter(line => line.trim())
+
+        if (lines.length === 0) {
+          return { data: [], errors: ['Datei ist leer'] }
+        }
+
+        // Detect delimiter by checking first line
+        const firstLine = lines[0]
+        const delimiter = firstLine.includes(';') ? ';' : ','
+
+        rows = lines.map(line =>
+          line.split(delimiter).map(value => value.replace(/"/g, '').trim())
+        )
+      }
+
+      if (rows.length < 2) {
+        return { data: [], errors: ['Datei ist leer oder enthält nur Überschriften'] }
+      }
+
+      const headers = rows[0]
+      const data = []
+
+      // Check headers
+      if (!expectedHeaders.every(header => headers.includes(header))) {
+        errors.push('Datei enthält nicht alle erforderlichen Spalten. Bitte verwenden Sie die Vorlage.')
+        return { data: [], errors }
+      }
+
+      // Process data rows
+      for (let i = 1; i < rows.length; i++) {
+        const values = rows[i]
+        const rowData = {}
+
+        headers.forEach((header, index) => {
+          rowData[header] = (values[index] || '').toString().trim()
+        })
+
+        // Skip empty rows
+        if (!rowData['Vorname'] && !rowData['Nachname'] && !rowData['Klasse']) {
+          continue
+        }
+
+        // Validate required fields
+        if (!rowData['Vorname']) {
+          errors.push(`Zeile ${i + 1}: Vorname ist erforderlich`)
+          continue
+        }
+        if (!rowData['Nachname']) {
+          errors.push(`Zeile ${i + 1}: Nachname ist erforderlich`)
+          continue
+        }
+        if (!rowData['Klasse']) {
+          errors.push(`Zeile ${i + 1}: Klasse ist erforderlich`)
+          continue
+        }
+
+        // Validate BuT Type if provided
+        if (rowData['BuT Typ'] && !['B1', 'B2', 'L', ''].includes(rowData['BuT Typ'])) {
+          errors.push(`Zeile ${i + 1}: BuT Typ muss B1, B2 oder L sein`)
+        }
+
+        // Validate BuT berechtigt
+        if (rowData['BuT berechtigt'] && !['Ja', 'Nein', 'ja', 'nein', 'Yes', 'No', ''].includes(rowData['BuT berechtigt'])) {
+          errors.push(`Zeile ${i + 1}: BuT berechtigt muss "Ja" oder "Nein" sein`)
+        }
+
+        data.push({ ...rowData, rowNumber: i + 1 })
+      }
+
+      return { data, errors }
+    } catch (error) {
+      return { data: [], errors: ['Fehler beim Lesen der Datei: ' + error.message] }
     }
-
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',').map(value => value.replace(/"/g, '').trim())
-      const rowData = {}
-
-      headers.forEach((header, index) => {
-        rowData[header] = values[index] || ''
-      })
-
-      // Validate required fields
-      if (!rowData['Vorname']) {
-        errors.push(`Zeile ${i + 1}: Vorname ist erforderlich`)
-        continue
-      }
-      if (!rowData['Nachname']) {
-        errors.push(`Zeile ${i + 1}: Nachname ist erforderlich`)
-        continue
-      }
-      if (!rowData['Klasse']) {
-        errors.push(`Zeile ${i + 1}: Klasse ist erforderlich`)
-        continue
-      }
-
-      // Validate BuT Type if provided
-      if (rowData['BuT Typ'] && !['B1', 'B2', 'L', ''].includes(rowData['BuT Typ'])) {
-        errors.push(`Zeile ${i + 1}: BuT Typ muss B1, B2 oder L sein`)
-      }
-
-      // Validate BuT berechtigt
-      if (rowData['BuT berechtigt'] && !['Ja', 'Nein', 'ja', 'nein', 'Yes', 'No', ''].includes(rowData['BuT berechtigt'])) {
-        errors.push(`Zeile ${i + 1}: BuT berechtigt muss "Ja" oder "Nein" sein`)
-      }
-
-      data.push({ ...rowData, rowNumber: i + 1 })
-    }
-
-    return { data, errors }
   }
 
   const handleFileUpload = async (event) => {
