@@ -141,6 +141,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
         if (prev <= 1) {
           clearInterval(interval)
           setError('') // Clear error when countdown ends
+          console.log('⏰ Rate limit countdown ended - ready for new SMS request')
           return 0
         }
         return prev - 1
