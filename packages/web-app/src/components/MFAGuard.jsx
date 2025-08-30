@@ -18,6 +18,7 @@ export function MFAGuard({ children, user, onMFAComplete }) {
     } else {
       setLoading(false)
       setMfaRequired(false)
+      setMfaCompleted(false) // Reset when no user
     }
   }, [user])
 
