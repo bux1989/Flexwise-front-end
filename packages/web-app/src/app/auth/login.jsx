@@ -6,6 +6,7 @@ import { PWAInstallBannerWithInstructions } from '../../components/PWAInstallBan
 import { SecureTwoFactorVerification } from '../../components/SecureTwoFactorVerification'
 import { TwoFactorDebug } from '../../components/TwoFactorDebug'
 import { SupabaseMFATest } from '../../components/SupabaseMFATest'
+import { MFAPolicyTester } from '../../components/MFAPolicyTester'
 
 export default function Login() {
   const [email, setEmail] = useState('')
