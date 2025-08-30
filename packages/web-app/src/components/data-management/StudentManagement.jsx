@@ -1560,10 +1560,27 @@ export default function StudentManagement({ onBack }) {
               {/* Success and Preview */}
               {parsedData.length > 0 && uploadErrors.length === 0 && (
                 <div className="border border-green-200 rounded-lg p-4 bg-green-50">
-                  <h3 className="font-medium text-green-800 mb-2 flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" />
-                    Daten erfolgreich verarbeitet ({parsedData.length} Schüler)
-                  </h3>
+                  {(() => {
+                    const validStudents = parsedData.filter(row => {
+                      const exampleField = row['Beispiel (NICHT ÄNDERN)'] || ''
+                      return !(exampleField.toLowerCase().includes('ja') ||
+                               exampleField.toLowerCase().includes('beispiel') ||
+                               exampleField.toLowerCase().includes('example') ||
+                               exampleField.toLowerCase().includes('yes'))
+                    }).length
+
+                    return (
+                      <h3 className="font-medium text-green-800 mb-2 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        Daten erfolgreich verarbeitet ({validStudents} Schüler werden importiert)
+                        {parsedData.length > validStudents && (
+                          <span className="text-xs text-gray-600 ml-2">
+                            ({parsedData.length - validStudents} Beispielzeile übersprungen)
+                          </span>
+                        )}
+                      </h3>
+                    )
+                  })()}
 
                   {/* Preview Table */}
                   <div className="mt-4 border border-gray-200 rounded-lg overflow-hidden">
