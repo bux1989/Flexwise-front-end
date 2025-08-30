@@ -65,6 +65,10 @@ export function TwoFactorVerification({
           
           if (!smsError) {
             console.log('✅ SMS 2FA verification successful')
+            await logSecurityEvent('2fa_verification_success', {
+              method: 'sms',
+              user_email: user.email
+            })
             verificationResult = 'sms'
           } else {
             verificationError = smsError
@@ -118,7 +122,7 @@ export function TwoFactorVerification({
         } else if (errorMessage.includes('rate') || errorMessage.includes('limit')) {
           setError('⚠️ Zu viele Versuche. Bitte warten Sie einen Moment.')
         } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
-          setError('��� Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
+          setError('🌐 Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
         } else {
           setError(`⚠️ Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut. (Versuch ${retryCount + 1}/5)`)
         }
@@ -157,7 +161,7 @@ export function TwoFactorVerification({
 
       // Check if it's a network error for retry suggestion
       if (error?.code === 'NETWORK_ERROR' || error?.message?.includes('fetch')) {
-        setError('�� Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
+        setError('🌐 Netzwerkfehler. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.')
       } else {
         setError(`⚠️ Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut. (Versuch ${retryCount + 1}/5)`)
       }
