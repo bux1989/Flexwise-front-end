@@ -604,10 +604,16 @@ export default function StudentManagement({ onBack }) {
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <h2 className="text-2xl font-bold text-foreground">Schüler*innen verwalten</h2>
-        <Button className="ml-auto bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Neuer Schüler
-        </Button>
+        <div className="ml-auto flex gap-2">
+          <Button onClick={handleAddNewStudent} className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" />
+            Neuer Schüler
+          </Button>
+          <Button onClick={handleAddMultipleStudents} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+            <Users className="w-4 h-4 mr-2" />
+            Mehrere Schüler
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filters */}
