@@ -588,6 +588,80 @@ export default function SecurityDataProtection({ onBack }) {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Roles and Permissions Tab */}
+        <TabsContent value="permissions" className="space-y-6">
+          <Card className="border-l-4 border-l-indigo-500">
+            <CardHeader className="bg-indigo-50 border-b border-indigo-200">
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-indigo-600" />
+                Rollen und Berechtigungen
+              </CardTitle>
+              <p className="text-indigo-600/70">Verwalten Sie spezielle Berechtigungen für verschiedene Bereiche</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Permission Areas */}
+              <div className="space-y-4">
+                {[
+                  { key: 'fehlzeiten', name: 'Fehlzeiten', description: 'Verwaltung von Abwesenheiten und Entschuldigungen' },
+                  { key: 'vertretungsplanung', name: 'Vertretungsplanung', description: 'Planung und Organisation von Vertretungsstunden' },
+                  { key: 'stundenplanung', name: 'Stundenplanung', description: 'Erstellung und Bearbeitung von Stundenplänen' },
+                  { key: 'kursplanung', name: 'Kursplanung', description: 'Verwaltung von Kursen und Anmeldungen' },
+                  { key: 'ganztagsleitung', name: 'Ganztagsleitung', description: 'Koordination des Ganztagsbereichs' },
+                  { key: 'termine', name: 'Termine', description: 'Verwaltung von Terminen und Veranstaltungen' },
+                  { key: 'infoboard', name: 'Info-Board', description: 'Erstellung und Verwaltung von Ank��ndigungen' },
+                  { key: 'aufgaben', name: 'Aufgaben', description: 'Verwaltung von Aufgaben und To-Do-Listen' },
+                  { key: 'schueler', name: 'Schüler*innen', description: 'Verwaltung von Schülerdaten und -profilen' },
+                  { key: 'eltern', name: 'Eltern', description: 'Verwaltung von Elterndaten und Kommunikation' }
+                ].map((area) => (
+                  <div key={area.key} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <h3 className="font-medium text-gray-900">{area.name}</h3>
+                        <p className="text-sm text-gray-600">{area.description}</p>
+                      </div>
+                      {isEditing && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-indigo-600 border-indigo-600 hover:bg-indigo-50"
+                        >
+                          Berechtigungen verwalten
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Current Permissions Display */}
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className="bg-indigo-100 text-indigo-700">
+                        Admin: Vollzugriff
+                      </Badge>
+                      <Badge className="bg-blue-100 text-blue-700">
+                        2 zusätzliche Berechtigungen
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Information Box */}
+              <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center mt-0.5">
+                    <span className="text-indigo-600 text-xs">ℹ</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-indigo-900">Berechtigungshinweise</p>
+                    <p className="text-sm text-indigo-600/70 mt-1">
+                      Spezielle Berechtigungen werden zusätzlich zu den Standardrollen vergeben.
+                      Super-Admins haben automatisch Vollzugriff auf alle Bereiche.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   )
