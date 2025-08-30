@@ -84,12 +84,12 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground">Schuleinstellung should be on the overarching container of this</h2>
-      </div>
+      <DebugOverlay id="SET-001" component="Settings.EntireModule">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-foreground">Schuleinstellung should be on the overarching container of this</h2>
+        </div>
 
-      {/* Tabs */}
-      <DebugOverlay id="SET-001" component="Settings.TabsAndContent">
+        {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-2 bg-white border border-gray-200">
           <TabsTrigger
