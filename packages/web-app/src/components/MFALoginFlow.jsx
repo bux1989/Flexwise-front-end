@@ -18,6 +18,13 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
 
   useEffect(() => {
     loadMFAFactors()
+
+    // Check for existing rate limit from previous session
+    const existingRateLimit = checkExistingRateLimit()
+    if (existingRateLimit) {
+      setError('⏱️ Please wait before requesting another SMS code. This is a security measure to prevent spam.')
+      startRateLimitCountdown(existingRateLimit)
+    }
   }, [])
 
   const loadMFAFactors = async () => {
