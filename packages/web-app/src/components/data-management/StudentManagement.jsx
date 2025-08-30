@@ -55,6 +55,13 @@ export default function StudentManagement({ onBack }) {
     }
   ])
 
+  // Excel Upload States
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [uploadFile, setUploadFile] = useState(null)
+  const [parsedData, setParsedData] = useState([])
+  const [uploadErrors, setUploadErrors] = useState([])
+  const [isProcessingFile, setIsProcessingFile] = useState(false)
+
   // Mock student data - replace with real data from Supabase
   const [students, setStudents] = useState([
     {
