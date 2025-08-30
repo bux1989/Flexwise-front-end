@@ -1655,7 +1655,19 @@ export default function StudentManagement({ onBack }) {
                 className="bg-green-600 hover:bg-green-700"
                 disabled={parsedData.length === 0 || uploadErrors.length > 0}
               >
-                {parsedData.length > 0 ? `${parsedData.length} Schüler importieren` : 'Importieren'}
+                {(() => {
+                  if (parsedData.length === 0) return 'Importieren'
+
+                  const validStudents = parsedData.filter(row => {
+                    const exampleField = row['Beispiel (NICHT ÄNDERN)'] || ''
+                    return !(exampleField.toLowerCase().includes('ja') ||
+                             exampleField.toLowerCase().includes('beispiel') ||
+                             exampleField.toLowerCase().includes('example') ||
+                             exampleField.toLowerCase().includes('yes'))
+                  }).length
+
+                  return `${validStudents} Schüler importieren`
+                })()}
               </Button>
             </div>
           </div>
