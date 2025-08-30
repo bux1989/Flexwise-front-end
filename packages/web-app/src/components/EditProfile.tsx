@@ -88,6 +88,10 @@ export function EditProfile({ onClose, user }: EditProfileProps) {
   // Track if we're currently creating contact to prevent race conditions
   const [isCreatingContact, setIsCreatingContact] = useState(false);
 
+  // Trusted devices state
+  const [trustedDevices, setTrustedDevices] = useState([]);
+  const [loadingDevices, setLoadingDevices] = useState(false);
+
   // Global contact creation tracker to prevent multiple instances from creating duplicates
   const getContactCreationKey = (profileId: string, email: string) => `creating_${profileId}_${email}`;
 
