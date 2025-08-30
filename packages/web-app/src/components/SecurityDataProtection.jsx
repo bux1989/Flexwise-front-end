@@ -246,7 +246,7 @@ export default function SecurityDataProtection({ onBack }) {
       </div>
 
       {/* Tabs */}
-      <DebugOverlay id="SEC-001" component="SecurityDataProtection.MainContent">
+      <DebugOverlay id="SEC-001" component="SecurityDataProtection.EntireModule">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="2fa" className="flex items-center gap-2">
