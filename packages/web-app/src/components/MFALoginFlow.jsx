@@ -169,7 +169,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
               // Wait a bit longer and try once more
               setTimeout(async () => {
                 const { data: finalSession } = await supabase.auth.getSession()
-                console.log('🔄 Final session check:', finalSession.session?.aal)
+                console.log('�� Final session check:', finalSession.session?.aal)
                 onComplete && onComplete(finalSession.session || result.session)
               }, 1000)
             }
@@ -309,16 +309,22 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
               {selectedFactor?.factor_type === 'phone' ? '📱' : '🔐'}
             </div>
             <span className="text-sm text-gray-600">
-              {selectedFactor?.factor_type === 'phone' 
-                ? 'SMS sent to your phone' 
+              {selectedFactor?.factor_type === 'phone'
+                ? (challenge ? 'SMS sent to your phone' : 'Ready to send SMS to your phone')
                 : 'Use your authenticator app'
               }
             </span>
           </div>
-          
-          {challengeAge && (
+
+          {challenge && challengeAge && (
             <div className="text-xs text-gray-500">
               Code sent {Math.round(challengeAge / 1000)}s ago
+            </div>
+          )}
+
+          {!challenge && selectedFactor?.factor_type === 'phone' && (
+            <div className="text-xs text-blue-600">
+              Click "Send SMS Code" below to receive your verification code
             </div>
           )}
         </div>
