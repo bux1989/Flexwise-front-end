@@ -415,9 +415,14 @@ export default function SecurityDataProtection({ onBack }) {
             <CardHeader className="bg-blue-50 border-b border-blue-200">
               <CardTitle className="flex items-center gap-2">
                 <Key className="w-5 h-5 text-blue-600" />
-                Schnelle Anmeldung für Anwesenheit
+                Schnell-Login für Smartboards
               </CardTitle>
-              <p className="text-blue-600/70">PIN-basierte Anmeldung für laufende Unterrichtsstunden</p>
+              <div className="text-blue-600/70 space-y-2">
+                <p>Smartboards und ähnliche Geräte können mit einem schulweiten Passwort für die Anwesenheitserfassung eingerichtet werden.</p>
+                <p>Lehrkräfte und Erzieher*innen melden sich dort per persönlicher PIN (4–6 Ziffern) schnell an.</p>
+                <p>Nach dem Login ist nur das Anwesenheitsmodul der gerade laufenden Stunde sichtbar. Dort können Anwesenheiten direkt am Board – auf Wunsch auch gemeinsam mit den Schüler*innen – eingetragen werden.</p>
+                <p>Aus Datenschutzgründen werden die Namen der Kinder gekürzt angezeigt (Vorname + die ersten 2 Buchstaben des Nachnamens).</p>
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Enable/Disable */}
