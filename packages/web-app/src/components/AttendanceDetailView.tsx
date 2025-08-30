@@ -491,10 +491,19 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
                 {/* Actions */}
                 <div className="col-span-1">
                   <div className="flex gap-1">
-                    <Button size="sm" variant="outline" title="Neue Notiz hinzufügen">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      title="Neue Notiz hinzufügen"
+                      onClick={() => handleOpenNoteModal(student.id)}
+                    >
                       <MessageSquare className="w-3 h-3" />
                     </Button>
-                    <select className="text-xs border rounded px-1 py-1 min-w-[60px]">
+                    <select
+                      className="text-xs border rounded px-1 py-1 min-w-[60px]"
+                      value={student.status}
+                      onChange={(e) => handleStatusChange(student.id, e.target.value)}
+                    >
                       <option value={student.status}>{student.status}</option>
                       {student.status !== 'Anwesend' && <option value="Anwesend">Anwesend</option>}
                       {student.status !== 'Entschuldigt' && <option value="Entschuldigt">Entschuldigt</option>}
