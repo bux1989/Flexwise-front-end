@@ -3,7 +3,7 @@ import { supabase } from '../../../lib/supabase';
 import { DebugOverlay } from '../../../debug';
 import { Navigation } from '../../../components/Navigation';
 import { AttendanceMatrix } from '../../../components/AttendanceMatrix';
-import { AttendanceDetailModal } from '../../../components/AttendanceDetailModal';
+import { AttendanceDetailView } from '../../../components/AttendanceDetailView';
 import { Infoboard } from '../../../components/Infoboard';
 import { MissingStaff } from '../../../components/MissingStaff';
 import { Veranstaltungen } from '../../../components/Veranstaltungen';
@@ -19,10 +19,7 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ user, onShowSettings, showSettings = false, onBackToDashboard }: AdminDashboardProps) {
   const [currentView, setCurrentView] = useState(showSettings ? 'einstellungen' : 'home');
-  const [attendanceModal, setAttendanceModal] = useState<{ isOpen: boolean; status: string }>({
-    isOpen: false,
-    status: ''
-  });
+  const [attendanceDetailStatus, setAttendanceDetailStatus] = useState<string | null>(null);
 
   // Update currentView when showSettings changes
   React.useEffect(() => {
@@ -71,11 +68,13 @@ export function AdminDashboard({ user, onShowSettings, showSettings = false, onB
 
   const handleStatusClick = (status: string) => {
     console.log('Status clicked:', status);
-    setAttendanceModal({ isOpen: true, status });
+    setCurrentView('attendance-detail');
+    setAttendanceDetailStatus(status);
   };
 
-  const handleCloseAttendanceModal = () => {
-    setAttendanceModal({ isOpen: false, status: '' });
+  const handleBackFromAttendanceDetail = () => {
+    setCurrentView('home');
+    setAttendanceDetailStatus(null);
   };
 
   const renderMainContent = () => {
@@ -83,6 +82,17 @@ export function AdminDashboard({ user, onShowSettings, showSettings = false, onB
       return (
         <main className="container mx-auto px-4 py-6 max-w-7xl">
           <Settings />
+        </main>
+      );
+    }
+
+    if (currentView === 'attendance-detail' && attendanceDetailStatus) {
+      return (
+        <main className="container mx-auto px-4 py-6 max-w-7xl">
+          <AttendanceDetailView
+            status={attendanceDetailStatus}
+            onBack={handleBackFromAttendanceDetail}
+          />
         </main>
       );
     }
@@ -127,13 +137,6 @@ export function AdminDashboard({ user, onShowSettings, showSettings = false, onB
       />
 
       {renderMainContent()}
-
-      <AttendanceDetailModal
-        isOpen={attendanceModal.isOpen}
-        onClose={handleCloseAttendanceModal}
-        status={attendanceModal.status}
-        students={[]} // We'll pass real data here later
-      />
     </div>
   );
 }
