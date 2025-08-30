@@ -19,6 +19,10 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ user, onShowSettings, showSettings = false, onBackToDashboard }: AdminDashboardProps) {
   const [currentView, setCurrentView] = useState(showSettings ? 'einstellungen' : 'home');
+  const [attendanceModal, setAttendanceModal] = useState<{ isOpen: boolean; status: string }>({
+    isOpen: false,
+    status: ''
+  });
 
   // Update currentView when showSettings changes
   React.useEffect(() => {
