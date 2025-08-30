@@ -316,19 +316,19 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
             </div>
             <span className="text-sm text-gray-600">
               {selectedFactor?.factor_type === 'phone'
-                ? (challenge ? 'SMS sent to your phone' : 'Ready to send SMS to your phone')
+                ? (smsSent ? 'SMS sent to your phone' : 'Ready to send SMS to your phone')
                 : 'Use your authenticator app'
               }
             </span>
           </div>
 
-          {challenge && challengeAge && (
+          {smsSent && challengeAge && (
             <div className="text-xs text-gray-500">
               Code sent {Math.round(challengeAge / 1000)}s ago
             </div>
           )}
 
-          {!challenge && selectedFactor?.factor_type === 'phone' && (
+          {!smsSent && selectedFactor?.factor_type === 'phone' && (
             <div className="text-xs text-blue-600">
               Click "Send SMS Code" below to receive your verification code
             </div>
