@@ -97,6 +97,10 @@ export function TwoFactorVerification({
 
             if (!totpError) {
               console.log('✅ TOTP 2FA verification successful')
+              await logSecurityEvent('2fa_verification_success', {
+                method: 'totp',
+                user_email: user.email
+              })
               verificationResult = 'totp'
             } else {
               verificationError = totpError
