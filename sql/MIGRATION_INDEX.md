@@ -19,7 +19,7 @@ This document tracks all database schema changes and migrations applied to the p
 | 2025-08-29 | `save_user_profile_complete_react.sql` | Complete user profile saving function with surgical contact updates | `save_user_profile_complete_react()` | ✅ Applied |
 | 2025-08-29 | `fix_jsonb_array_casting_save_user_profile.sql` | Fix JSONB array casting for skills and subjects_stud fields | `save_user_profile_complete_react()` | ❌ Failed |
 | 2025-08-29 | `fix_jsonb_array_handling_v2.sql` | Alternative fix using CASE statements for safer JSONB array handling | `save_user_profile_complete_react()` | ❌ Superseded |
-| 2025-08-29 | `remove_subjects_stud_field.sql` | Remove subjects_stud field from function to fix profile saving | `save_user_profile_complete_react()` | ✅ Applied |
+| 2025-08-29 | `remove_subjects_stud_field.sql` | Remove subjects_stud field from function to fix profile saving | `save_user_profile_complete_react()` | ✅ Applied | 
 
 ### MFA & Authentication Security
 
@@ -157,96 +157,3 @@ For critical changes, create corresponding rollback scripts:
 - `rollback_YYYY-MM-DD_description.sql`
 
 Store rollback scripts in `sql/rollbacks/` directory.
-
-## Upcoming Migration Priorities
-
-### **IMMEDIATE (This Week)**
-1. **🚀 CRITICAL: Apply Official MFA Hardening**
-   ```sql
-   -- Run in Supabase SQL Editor:
-   \i sql/supabase_official_mfa_hardening.sql
-   ```
-   - **Impact:** Enforces AAL2 requirement for MFA users at database level
-   - **Tables:** `user_profiles`, `contacts`, `school_settings`, etc.
-   - **Security:** Prevents data access with AAL1 sessions for MFA users
-   - **Risk:** Low - RESTRICTIVE policies are additive, won't break existing functionality
-
-### **SHORT TERM (1-3 Weeks) - Authentication Methods Expansion**
-
-#### Week 1: Magic Link Foundation
-- **Supabase Dashboard:** Configure email templates and magic link settings
-- **Frontend:** Update login UI with method selector
-- **Testing:** Verify Magic Link → MFA flow integration
-
-#### Week 2: OAuth Provider Integration
-- **Supabase Dashboard:** Configure OAuth providers (Google, GitHub, Microsoft)
-- **Frontend:** Add OAuth button components and handlers
-- **Testing:** Test OAuth → MFA flow for each provider
-
-#### Week 3: User Preferences (Optional Database Change)
-- **Consider:** `user_auth_preferences` table vs localStorage approach
-- **Recommendation:** Start with localStorage, migrate to DB later if needed
-
-### **MEDIUM TERM (1-3 Months)**
-1. **Trusted Device Management**
-   ```sql
-   -- Future migration for device tracking
-   CREATE TABLE user_trusted_devices (
-     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-     user_id uuid REFERENCES auth.users(id),
-     device_fingerprint text NOT NULL,
-     device_name text,
-     trusted_until timestamp,
-     created_at timestamp DEFAULT now()
-   );
-   ```
-
-2. **Enhanced Security Monitoring**
-   ```sql
-   -- Security events tracking
-   CREATE TABLE security_events (
-     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-     user_id uuid REFERENCES auth.users(id),
-     event_type text NOT NULL,
-     details jsonb,
-     severity text CHECK (severity IN ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')),
-     created_at timestamp DEFAULT now()
-   );
-   ```
-
-### **CONFIGURATION CHANGES (No SQL Required)**
-
-#### Supabase Dashboard Configuration Checklist:
-- [ ] **Authentication → Providers → OAuth:**
-  - [ ] Google OAuth (Client ID/Secret)
-  - [ ] GitHub OAuth (Client ID/Secret)
-  - [ ] Microsoft OAuth (Client ID/Secret)
-  - [ ] Apple OAuth (Future mobile support)
-
-- [ ] **Authentication → Email Templates:**
-  - [ ] Magic Link template customization
-  - [ ] Redirect URL: `${your-domain}/auth/callback`
-  - [ ] Rate limiting settings (prevent abuse)
-
-- [ ] **Authentication → URL Configuration:**
-  - [ ] Site URL: Your production domain
-  - [ ] Redirect URLs: Include all callback URLs
-  - [ ] Additional allowed origins if needed
-
-#### Environment Variables (Frontend):
-```bash
-# Existing (already configured)
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# No additional variables needed for OAuth/Magic Links
-# All configuration handled in Supabase Dashboard
-```
-
-### **MIGRATION EXECUTION ORDER**
-
-1. **FIRST:** Apply MFA hardening (security critical)
-2. **THEN:** Configure authentication methods (UX improvement)
-3. **LATER:** Add optional features (trusted devices, preferences)
-
-This approach ensures security is hardened before expanding authentication options.
