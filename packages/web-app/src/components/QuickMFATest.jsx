@@ -247,10 +247,22 @@ export function QuickMFATest() {
       
     } catch (error) {
       console.error('💥 SMS challenge failed:', error)
+
+      let errorMessage = error.message
+      let additionalInfo = {}
+
+      // Handle rate limiting specifically
+      if (error.isRateLimit) {
+        errorMessage = `⏱️ ${error.message}`
+        additionalInfo.isRateLimit = true
+        additionalInfo.waitTime = error.waitTime
+      }
+
       setResult({
         success: false,
-        error: error.message,
-        details: error
+        error: errorMessage,
+        details: error,
+        ...additionalInfo
       })
     } finally {
       setLoading(false)
