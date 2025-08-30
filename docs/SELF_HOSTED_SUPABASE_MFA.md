@@ -8,7 +8,12 @@ This guide explains how to properly configure MFA enforcement on self-hosted Sup
 ```env
 # Essential for MFA functionality
 GOTRUE_MFA_ENABLED=true
-GOTRUE_MFA_MAX_ENROLLED_FACTORS=10
+GOTRUE_MFA_TOTP_ENROLL_ENABLED=true
+GOTRUE_MFA_TOTP_VERIFY_ENABLED=true
+
+# Optional: Phone-based MFA (disabled by default)
+GOTRUE_MFA_PHONE_ENROLL_ENABLED=false
+GOTRUE_MFA_PHONE_VERIFY_ENABLED=false
 ```
 
 ### 🔍 **OPTIONAL BUT RECOMMENDED (Security Logging)**
