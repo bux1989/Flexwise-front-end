@@ -3,16 +3,18 @@ import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { Shield, CheckCircle, XCircle, AlertCircle, Refresh, Monitor } from 'lucide-react'
-import { 
-  check2FASystemHealth, 
-  get2FAUsageStats, 
-  generateDeviceFingerprint,
-  generateDeviceName,
+import {
+  checkSecureMFAHealth,
   userRequires2FA,
   userHas2FAEnabled,
-  isDeviceTrusted,
   getCurrentUserProfile
 } from '../lib/supabase'
+import {
+  getUserMFAFactors,
+  enrollTOTPFactor,
+  verifyTOTPEnrollment,
+  unenrollMFAFactor
+} from '../lib/supabase-mfa'
 import { supabase } from '../lib/supabase'
 
 export function TwoFactorTestUtility() {
