@@ -56,6 +56,7 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
   const [newNote, setNewNote] = useState('');
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
   const [studentComments, setStudentComments] = useState<{ [key: string]: Comment[] }>({});
+  const [studentUpdates, setStudentUpdates] = useState<{ [key: string]: Student }>({});
 
   // Sample student data based on status
   const allStudents = useMemo(() => {
@@ -322,7 +323,33 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
   };
 
   const handleStatusChange = (studentId: string, newStatus: string) => {
-    // In a real app, this would update the backend
+    const student = allStudents.find(s => s.id === studentId);
+    if (!student || student.status === newStatus) return;
+
+    // Create timestamp and user info for the update
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    const userAbbreviation = 'AG'; // Current user abbreviation
+
+    // Create new last update
+    const newLastUpdate: LastUpdate = {
+      time: timeString,
+      author: userAbbreviation,
+      action: `Als ${newStatus.toLowerCase()} markiert`
+    };
+
+    // Update the student's status and last update
+    const updatedStudent = {
+      ...student,
+      status: newStatus,
+      lastUpdate: newLastUpdate
+    };
+
+    setStudentUpdates(prev => ({
+      ...prev,
+      [studentId]: updatedStudent
+    }));
+
     console.log('Changing status for student:', studentId, 'to:', newStatus);
   };
   const getStatusTitle = (status: string) => {
@@ -460,50 +487,63 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
 
             {/* Dynamic Student List */}
             {filteredAndSortedStudents.map((student) => {
-              const allComments = [...student.comments, ...(studentComments[student.id] || [])];
+              // Get updated student data if it exists
+              const currentStudent = studentUpdates[student.id] || student;
+
+              // Combine and sort comments by timestamp (newest first)
+              const allComments = [...student.comments, ...(studentComments[student.id] || [])]
+                .sort((a, b) => {
+                  // Parse time strings for comparison (assuming HH:MM format)
+                  const timeA = a.time.split(':').map(n => parseInt(n));
+                  const timeB = b.time.split(':').map(n => parseInt(n));
+                  const minutesA = timeA[0] * 60 + timeA[1];
+                  const minutesB = timeB[0] * 60 + timeB[1];
+                  return minutesB - minutesA; // Newest first
+                });
+
               const isExpanded = expandedComments.has(student.id);
               const displayComments = isExpanded ? allComments : allComments.slice(0, 1);
 
               return (
                 <div key={student.id} className="grid grid-cols-12 gap-2 items-center py-3 border-b border-gray-100">
-                  <div className="col-span-1 font-medium text-sm">{student.name}</div>
-                  <div className="col-span-1 text-sm">{student.klasse}</div>
-                  <div className="col-span-1">
-                    <Badge className={`text-xs ${
-                      student.status === 'Überfällig' ? 'bg-red-100 text-red-700' :
-                      student.status === 'Unentschuldigt' ? 'bg-red-100 text-red-700' :
-                      student.status === 'Entschuldigt' ? 'bg-blue-100 text-blue-700' :
-                      student.status === 'Ausstehend' ? 'bg-orange-100 text-orange-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
-                      {student.status === 'Überfällig' ? 'Über.' :
-                       student.status === 'Unentschuldigt' ? 'Unent.' :
-                       student.status === 'Entschuldigt' ? 'Entsch.' :
-                       student.status === 'Ausstehend' ? 'Ausst.' :
-                       'Anwes.'}
-                    </Badge>
-                    {student.status === 'Überfällig' && (
-                      <div className="text-xs text-gray-500">15:45</div>
-                    )}
-                  </div>
+                  <div className="col-span-1 font-medium text-sm">{currentStudent.name}</div>
+                <div className="col-span-1 text-sm">{currentStudent.klasse}</div>
+                <div className="col-span-1">
+                  <Badge className={`text-xs ${
+                    currentStudent.status === 'Überfällig' ? 'bg-red-100 text-red-700' :
+                    currentStudent.status === 'Unentschuldigt' ? 'bg-red-100 text-red-700' :
+                    currentStudent.status === 'Entschuldigt' ? 'bg-blue-100 text-blue-700' :
+                    currentStudent.status === 'Ausstehend' ? 'bg-orange-100 text-orange-700' :
+                    'bg-green-100 text-green-700'
+                  }`}>
+                    {currentStudent.status === 'Überfällig' ? 'Über.' :
+                     currentStudent.status === 'Unentschuldigt' ? 'Unent.' :
+                     currentStudent.status === 'Entschuldigt' ? 'Entsch.' :
+                     currentStudent.status === 'Ausstehend' ? 'Ausst.' :
+                     'Anwes.'}
+                  </Badge>
+                  {currentStudent.status === 'Überfällig' && (
+                    <div className="text-xs text-gray-500">15:45</div>
+                  )}
+                </div>
                   {/* Contact Information */}
-                  <div className="col-span-2">
+                <div className="col-span-2">
+                  <div className="text-xs">
+                    <div>{currentStudent.contact.phone}</div>
+                    <div className="text-gray-600">{currentStudent.contact.name} ({currentStudent.contact.relation})</div>
+                  </div>
+                </div>
+                {/* Last Update */}
+                <div className="col-span-2">
+                  {currentStudent.lastUpdate ? (
                     <div className="text-xs">
-                      <div>{student.contact.phone}</div>
-                      <div className="text-gray-600">{student.contact.name} ({student.contact.relation})</div>
+                      <div>{currentStudent.lastUpdate.time} {currentStudent.lastUpdate.author}</div>
+                      <div className="text-gray-500">{currentStudent.lastUpdate.action}</div>
                     </div>
-                  </div>
-                  {/* Last Update */}
-                  <div className="col-span-2">
-                    {student.lastUpdate ? (
-                      <div className="text-xs">
-                        <div>{student.lastUpdate.time} {student.lastUpdate.author}</div>
-                        <div className="text-gray-500">{student.lastUpdate.action}</div>
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-400">-</div>
-                    )}
-                  </div>
+                  ) : (
+                    <div className="text-xs text-gray-400">-</div>
+                  )}
+                </div>
                   {/* Details/Comments */}
                   <div className="col-span-3">
                     {allComments.length > 0 ? (
@@ -549,14 +589,14 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
                       </Button>
                       <select
                         className="text-xs border rounded px-1 py-1 h-8 min-w-[70px]"
-                        value={student.status}
+                        value={currentStudent.status}
                         onChange={(e) => handleStatusChange(student.id, e.target.value)}
                       >
-                        <option value={student.status}>{student.status}</option>
-                        {student.status !== 'Anwesend' && <option value="Anwesend">Anwesend</option>}
-                        {student.status !== 'Entschuldigt' && <option value="Entschuldigt">Entschuldigt</option>}
-                        {student.status !== 'Unentschuldigt' && <option value="Unentschuldigt">Unentschuldigt</option>}
-                        {student.status !== 'Ausstehend' && <option value="Ausstehend">Ausstehend</option>}
+                        <option value={currentStudent.status}>{currentStudent.status}</option>
+                        {currentStudent.status !== 'Anwesend' && <option value="Anwesend">Anwesend</option>}
+                        {currentStudent.status !== 'Entschuldigt' && <option value="Entschuldigt">Entschuldigt</option>}
+                        {currentStudent.status !== 'Unentschuldigt' && <option value="Unentschuldigt">Unentschuldigt</option>}
+                        {currentStudent.status !== 'Ausstehend' && <option value="Ausstehend">Ausstehend</option>}
                       </select>
                     </div>
                   </div>
