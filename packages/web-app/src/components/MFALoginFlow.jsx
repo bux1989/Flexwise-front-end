@@ -105,6 +105,9 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
         setSmsSent(true)
       }
 
+      // Clear any existing rate limit state since this request succeeded
+      clearRateLimitState()
+
       console.log('✅ MFA challenge created successfully')
 
     } catch (err) {
