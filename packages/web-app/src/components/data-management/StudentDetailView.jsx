@@ -348,6 +348,13 @@ export default function StudentDetailView({ student, onBack, onEdit }) {
                           <Badge className={parent.isPrimary ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
                             {parent.isPrimary ? 'Hauptkontakt' : 'Zusatzkontakt'}
                           </Badge>
+                          <Badge className={
+                            parent.loginInfo?.hasAccount
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-orange-100 text-orange-700'
+                          }>
+                            {parent.loginInfo?.hasAccount ? 'FlexWise Aktiv' : 'FlexWise Inaktiv'}
+                          </Badge>
                           <div className="text-blue-600 text-sm">
                             {expandedParent === index ? '▲' : '▼'}
                           </div>
