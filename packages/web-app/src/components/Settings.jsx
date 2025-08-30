@@ -298,7 +298,7 @@ export default function Settings() {
               <p className="text-blue-600/70">Allgemeine Schuldaten bearbeiten und importieren</p>
             </CardHeader>
             <CardContent>
-              <DebugOverlay id="SET-001" name="Settings.GeneralData">
+              <DebugOverlay id="SET-002" name="Settings.GeneralData">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 {[
                   { name: 'Schüler*innen', icon: Users, key: 'students' },
