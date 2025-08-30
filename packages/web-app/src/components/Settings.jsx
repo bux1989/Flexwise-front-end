@@ -89,7 +89,8 @@ export default function Settings() {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <DebugOverlay id="SET-001" component="Settings.MainTabs">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-2 bg-white border border-gray-200">
           <TabsTrigger
             value="contact"
@@ -388,7 +389,8 @@ export default function Settings() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </DebugOverlay>
 
       {/* School Year Management Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
