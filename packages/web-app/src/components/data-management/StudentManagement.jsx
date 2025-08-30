@@ -1642,17 +1642,17 @@ export default function StudentManagement({ onBack }) {
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                           {parsedData.map((student, index) => {
-                            const exampleField = student['Beispiel (NICHT ÄNDERN)'] || ''
-                            const isExample = exampleField.toLowerCase().includes('ja') ||
-                                            exampleField.toLowerCase().includes('beispiel') ||
-                                            exampleField.toLowerCase().includes('example') ||
-                                            exampleField.toLowerCase().includes('yes')
+                            // Check if this is the example row (Max Mustermann template)
+                            const isExample = student['Vorname'] === 'Max' &&
+                                            student['Nachname'] === 'Mustermann' &&
+                                            student['Klasse'] === '10A' &&
+                                            student['Rufname/Nickname'] === 'Maxi'
 
                             return (
-                              <tr key={index} className={isExample ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"}>
+                              <tr key={index} className={isExample ? "bg-gray-100 hover:bg-gray-200" : "hover:bg-gray-50"}>
                                 <td className="px-3 py-2 border-r border-gray-200">
                                   {isExample ? (
-                                    <Badge className="bg-red-100 text-red-700 text-xs">
+                                    <Badge className="bg-gray-200 text-gray-700 text-xs">
                                       Beispiel - wird übersprungen
                                     </Badge>
                                   ) : (
