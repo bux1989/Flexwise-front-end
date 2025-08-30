@@ -279,6 +279,7 @@ export function QuickMFATest() {
           }`}>
             <div className="font-semibold mb-2">
               {result.success ? '✅ Success' : '❌ Error'}
+              <span className="text-xs ml-2">({new Date().toLocaleTimeString()})</span>
             </div>
             
             {result.success ? (
