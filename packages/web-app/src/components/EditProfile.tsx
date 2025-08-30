@@ -1924,6 +1924,107 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
                           )}
                         </div>
                       )}
+
+                      {/* Trusted Devices Section - Only show if 2FA is enabled */}
+                      {isOtpEnabled && (
+                        <div className="space-y-3 mt-4 pt-4 border-t border-gray-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-gray-800 flex items-center gap-2">
+                                <Monitor className="h-4 w-4" />
+                                Vertrauenswürdige Geräte
+                              </h4>
+                              <p className="text-sm text-gray-600 mt-1">
+                                Geräte, auf denen Sie 2FA für 30 Tage umgehen können
+                              </p>
+                            </div>
+                            {trustedDevices.length > 0 && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={removeAllTrustedDevices}
+                                className="text-red-600 border-red-200 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Alle entfernen
+                              </Button>
+                            )}
+                          </div>
+
+                          {loadingDevices ? (
+                            <div className="p-4 text-center text-gray-500">
+                              Lade vertrauenswürdige Geräte...
+                            </div>
+                          ) : trustedDevices.length === 0 ? (
+                            <div className="p-4 text-center text-gray-500 bg-gray-50 rounded-lg">
+                              <Monitor className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                              <p className="text-sm">Keine vertrauenswürdigen Geräte</p>
+                              <p className="text-xs mt-1">
+                                Aktivieren Sie "Gerät vertrauen" beim nächsten Login, um Geräte hier zu sehen
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              {trustedDevices.map((device) => (
+                                <div
+                                  key={device.id}
+                                  className={`flex items-center justify-between p-3 rounded-lg border ${
+                                    isDeviceExpired(device.trusted_until)
+                                      ? 'bg-red-50 border-red-200'
+                                      : 'bg-gray-50 border-gray-200'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <Monitor className={`h-5 w-5 ${
+                                      isDeviceExpired(device.trusted_until)
+                                        ? 'text-red-500'
+                                        : 'text-green-600'
+                                    }`} />
+                                    <div>
+                                      <p className="font-medium text-sm">
+                                        {device.device_name || 'Unbekanntes Gerät'}
+                                      </p>
+                                      <div className="text-xs text-gray-500 space-y-1">
+                                        <p>Hinzugefügt: {formatDeviceDate(device.created_at)}</p>
+                                        <p>Zuletzt verwendet: {formatDeviceDate(device.last_used_at)}</p>
+                                        <p className={
+                                          isDeviceExpired(device.trusted_until)
+                                            ? 'text-red-600 font-medium'
+                                            : 'text-gray-500'
+                                        }>
+                                          {isDeviceExpired(device.trusted_until)
+                                            ? 'Abgelaufen'
+                                            : `Gültig bis: ${formatDeviceDate(device.trusted_until)}`
+                                          }
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeTrustedDevice(device.id)}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="text-xs text-gray-500 bg-blue-50 p-3 rounded-lg">
+                            <p className="flex items-start gap-2">
+                              <Shield className="h-4 w-4 mt-0.5 text-blue-600" />
+                              <span>
+                                <strong>Sicherheitshinweis:</strong> Vertrauenswürdige Geräte umgehen die
+                                Zwei-Faktor-Authentifizierung für den angegebenen Zeitraum. Entfernen Sie
+                                Geräte, die Sie nicht mehr verwenden oder die möglicherweise kompromittiert wurden.
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
