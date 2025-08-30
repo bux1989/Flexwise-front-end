@@ -636,3 +636,285 @@ export async function saveLessonAttendanceBulkRPC({ lessonId, schoolId, attendan
   if (error) throw error
   return data
 }
+
+// 2FA and Device Trust Management Functions
+
+// Generate device fingerprint for device trust
+export function generateDeviceFingerprint() {
+  try {
+    const data = {
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      screen: `${screen.width}x${screen.height}`,
+      platform: navigator.platform,
+      timestamp: Date.now() // Add some uniqueness
+    }
+    return btoa(JSON.stringify(data))
+  } catch (error) {
+    console.error('Error generating device fingerprint:', error)
+    return btoa(JSON.stringify({ fallback: Date.now(), userAgent: navigator.userAgent || 'unknown' }))
+  }
+}
+
+// Generate human-readable device name
+export function generateDeviceName() {
+  try {
+    const ua = navigator.userAgent
+    let browser = 'Unknown Browser'
+    let os = 'Unknown OS'
+
+    // Detect browser
+    if (ua.includes('Chrome')) browser = 'Chrome'
+    else if (ua.includes('Firefox')) browser = 'Firefox'
+    else if (ua.includes('Safari')) browser = 'Safari'
+    else if (ua.includes('Edge')) browser = 'Edge'
+
+    // Detect OS
+    if (ua.includes('Windows')) os = 'Windows'
+    else if (ua.includes('Mac')) os = 'macOS'
+    else if (ua.includes('Linux')) os = 'Linux'
+    else if (ua.includes('Android')) os = 'Android'
+    else if (ua.includes('iOS')) os = 'iOS'
+
+    return `${browser} on ${os}`
+  } catch (error) {
+    console.error('Error generating device name:', error)
+    return 'Unknown Device'
+  }
+}
+
+// Check if user requires 2FA (currently only Admins)
+export async function userRequires2FA(userProfile) {
+  try {
+    if (!userProfile) return false
+
+    // Currently only require 2FA for Admin roles
+    const adminRoles = ['Admin', 'Super Admin']
+
+    // Check direct role
+    if (userProfile.roles?.name && adminRoles.includes(userProfile.roles.name)) {
+      return true
+    }
+
+    // Check multiple roles (user_roles table)
+    const { data: userRoles, error } = await supabase
+      .from('user_roles')
+      .select('*, roles(name)')
+      .eq('user_profile_id', userProfile.id)
+
+    if (error) {
+      console.error('Error checking user roles for 2FA:', error)
+      return false // Default to not requiring 2FA on error
+    }
+
+    const hasAdminRole = userRoles?.some(ur =>
+      ur.roles?.name && adminRoles.includes(ur.roles.name)
+    )
+
+    console.log('2FA check for user:', {
+      email: userProfile.email,
+      hasAdminRole,
+      roles: userRoles?.map(ur => ur.roles?.name)
+    })
+
+    return hasAdminRole
+  } catch (error) {
+    console.error('Error in userRequires2FA:', error)
+    return false
+  }
+}
+
+// Check if user has 2FA enabled
+export async function userHas2FAEnabled(user) {
+  try {
+    const { data: factors, error } = await supabase.auth.mfa.listFactors()
+    if (error) {
+      console.error('Error checking 2FA status:', error)
+      return false
+    }
+
+    // Check for verified factors (TOTP or phone/SMS)
+    const hasVerifiedFactors = factors.totp.some(factor => factor.status === 'verified') ||
+                               factors.phone?.some(factor => factor.status === 'verified') ||
+                               (user.phone_confirmed_at && user.phone)
+
+    console.log('2FA status check:', {
+      email: user.email,
+      hasVerifiedFactors,
+      totpFactors: factors.totp.length,
+      phoneFactors: factors.phone?.length || 0
+    })
+
+    return hasVerifiedFactors
+  } catch (error) {
+    console.error('Error checking 2FA enabled status:', error)
+    return false
+  }
+}
+
+// Check if current device is trusted
+export async function isDeviceTrusted(userProfileId) {
+  try {
+    const deviceFingerprint = generateDeviceFingerprint()
+
+    const { data: trustedDevice, error } = await supabase
+      .from('user_trusted_devices')
+      .select('*')
+      .eq('user_profile_id', userProfileId)
+      .eq('device_fingerprint', deviceFingerprint)
+      .eq('is_active', true)
+      .gt('trusted_until', new Date().toISOString())
+      .single()
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      console.error('Error checking device trust:', error)
+      return false
+    }
+
+    const isTrusted = !!trustedDevice
+    console.log('Device trust check:', {
+      userProfileId,
+      isTrusted,
+      deviceFingerprint: deviceFingerprint.substring(0, 20) + '...'
+    })
+
+    // Update last_used_at if device is trusted
+    if (isTrusted) {
+      await supabase
+        .from('user_trusted_devices')
+        .update({ last_used_at: new Date().toISOString() })
+        .eq('id', trustedDevice.id)
+    }
+
+    return isTrusted
+  } catch (error) {
+    console.error('Error in isDeviceTrusted:', error)
+    return false
+  }
+}
+
+// Add device to trusted devices
+export async function addTrustedDevice(userProfileId, userRole, schoolId) {
+  try {
+    const deviceFingerprint = generateDeviceFingerprint()
+    const deviceName = generateDeviceName()
+
+    // Determine trust duration based on role
+    const adminRoles = ['Admin', 'Super Admin']
+    const trustDays = adminRoles.includes(userRole) ? 30 : 90
+
+    const trustedUntil = new Date()
+    trustedUntil.setDate(trustedUntil.getDate() + trustDays)
+
+    const { data, error } = await supabase
+      .from('user_trusted_devices')
+      .insert({
+        user_profile_id: userProfileId,
+        device_fingerprint: deviceFingerprint,
+        device_name: deviceName,
+        trusted_until: trustedUntil.toISOString(),
+        school_id: schoolId
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error adding trusted device:', error)
+      throw error
+    }
+
+    console.log('Device added to trusted list:', {
+      deviceName,
+      trustDays,
+      trustedUntil: trustedUntil.toISOString()
+    })
+
+    return data
+  } catch (error) {
+    console.error('Error in addTrustedDevice:', error)
+    throw error
+  }
+}
+
+// Enhanced login function with 2FA check
+export async function handleLoginWith2FA(email, password) {
+  try {
+    console.log('🔐 Attempting login with 2FA check for:', email)
+
+    // Step 1: Authenticate with email/password
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    })
+
+    if (error) {
+      console.error('❌ Auth error:', error)
+      throw error
+    }
+
+    console.log('✅ Email/Password authentication successful for:', authData.user.email)
+
+    // Step 2: Get user profile to check role
+    const userProfile = await getCurrentUserProfile()
+    if (!userProfile) {
+      throw new Error('Unable to load user profile')
+    }
+
+    // Step 3: Check if user requires 2FA
+    const requires2FA = await userRequires2FA(userProfile)
+    if (!requires2FA) {
+      console.log('ℹ️ User does not require 2FA, login complete')
+      return {
+        user: authData.user,
+        profile: userProfile,
+        requires2FA: false,
+        loginComplete: true
+      }
+    }
+
+    // Step 4: Check if user has 2FA enabled
+    const has2FA = await userHas2FAEnabled(authData.user)
+    if (!has2FA) {
+      console.log('⚠️ User requires 2FA but has not set it up yet')
+      return {
+        user: authData.user,
+        profile: userProfile,
+        requires2FA: true,
+        has2FA: false,
+        needsSetup: true,
+        loginComplete: true // Allow login but prompt for 2FA setup
+      }
+    }
+
+    // Step 5: Check if device is trusted
+    const deviceTrusted = await isDeviceTrusted(userProfile.id)
+    if (deviceTrusted) {
+      console.log('✅ Device is trusted, 2FA not required')
+      return {
+        user: authData.user,
+        profile: userProfile,
+        requires2FA: true,
+        has2FA: true,
+        deviceTrusted: true,
+        loginComplete: true
+      }
+    }
+
+    // Step 6: 2FA verification required
+    console.log('🔒 2FA verification required')
+    return {
+      user: authData.user,
+      profile: userProfile,
+      requires2FA: true,
+      has2FA: true,
+      deviceTrusted: false,
+      loginComplete: false,
+      needsVerification: true
+    }
+
+  } catch (error) {
+    console.error('💥 Login error:', error)
+    throw error
+  }
+}
