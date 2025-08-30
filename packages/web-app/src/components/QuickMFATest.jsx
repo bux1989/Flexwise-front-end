@@ -189,7 +189,7 @@ export function QuickMFATest() {
           >
             {loading ? 'Testing...' : '📱 Test SMS Enrollment'}
           </button>
-          
+
           <button
             onClick={testSMSChallenge}
             disabled={loading}
@@ -197,6 +197,29 @@ export function QuickMFATest() {
           >
             {loading ? 'Testing...' : '💬 Test SMS Challenge'}
           </button>
+
+          {challengeData && (
+            <div className="space-y-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
+              <div className="text-xs font-semibold text-yellow-800">SMS Code Received?</div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="123456"
+                  value={smsCode}
+                  onChange={(e) => setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  maxLength="6"
+                  className="flex-1 px-2 py-1 border rounded text-center font-mono text-sm"
+                />
+                <button
+                  onClick={verifySMSCode}
+                  disabled={loading || smsCode.length !== 6}
+                  className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 disabled:opacity-50"
+                >
+                  ✅ Verify
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {result && (
