@@ -599,17 +599,21 @@ export default function StudentManagement({ onBack }) {
           rowData[header] = (values[index] || '').toString().trim()
         })
 
-        // Skip empty rows
+        // Skip empty rows and instruction rows
         if (!rowData['Vorname'] && !rowData['Nachname'] && !rowData['Klasse']) {
           continue
         }
 
-        // Skip example rows (protected from import)
-        const exampleField = rowData['Beispiel (NICHT ÄNDERN)'] || ''
-        if (exampleField.toLowerCase().includes('ja') ||
-            exampleField.toLowerCase().includes('beispiel') ||
-            exampleField.toLowerCase().includes('example') ||
-            exampleField.toLowerCase().includes('yes')) {
+        // Skip rows that start with warning symbols or instructions
+        if (rowData['Vorname'] && rowData['Vorname'].toString().includes('⚠️')) {
+          continue
+        }
+
+        // Skip example rows (Max Mustermann template data)
+        if (rowData['Vorname'] === 'Max' &&
+            rowData['Nachname'] === 'Mustermann' &&
+            rowData['Klasse'] === '10A' &&
+            rowData['Rufname/Nickname'] === 'Maxi') {
           continue // Skip this row without counting as error
         }
 
