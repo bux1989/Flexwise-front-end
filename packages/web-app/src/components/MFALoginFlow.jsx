@@ -82,6 +82,14 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
       setLoading(true)
       setError('')
 
+      // Check for existing rate limit before making request
+      const existingRateLimit = checkExistingRateLimit()
+      if (existingRateLimit) {
+        setError('⏱️ Please wait before requesting another SMS code. This is a security measure to prevent spam.')
+        startRateLimitCountdown(existingRateLimit)
+        return
+      }
+
       console.log('🔐 Creating MFA challenge for factor:', factor.id)
 
       const challengeData = await createMFAChallenge(factor.id)
