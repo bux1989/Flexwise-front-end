@@ -144,8 +144,9 @@ export function MFAPolicyTester() {
         `${correctlyBlocked}/${shouldBeBlocked} tables correctly blocked` : 
         'No MFA enforcement expected (no MFA factors or AAL2 session)'
 
-      results.summary.securityStatus = 
-        results.sessionInfo.mfaFactors?.hasMFA && results.sessionInfo.currentAAL === 'aal1' ?
+      results.summary.securityStatus =
+        results.sessionInfo.mfaFactors?.hasMFA &&
+        (results.sessionInfo.currentAAL === 'aal1' || results.sessionInfo.effectiveAAL === 'aal1') ?
           (correctlyBlocked === shouldBeBlocked ? 'SECURE' : 'VULNERABLE') :
           'NO_MFA_REQUIRED'
 
