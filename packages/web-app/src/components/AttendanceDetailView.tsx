@@ -248,8 +248,8 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
 
     if (sortField) {
       filtered.sort((a, b) => {
-        const aValue = a[sortField].toLowerCase();
-        const bValue = b[sortField].toLowerCase();
+        const aValue = (a[sortField] as string).toLowerCase();
+        const bValue = (b[sortField] as string).toLowerCase();
         if (sortDirection === 'asc') {
           return aValue.localeCompare(bValue);
         } else {
