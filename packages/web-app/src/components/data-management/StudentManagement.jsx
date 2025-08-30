@@ -1488,21 +1488,21 @@ export default function StudentManagement({ onBack }) {
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <input
                     type="file"
-                    accept=".csv"
+                    accept=".csv,.xlsx,.xls"
                     onChange={handleFileUpload}
                     className="hidden"
-                    id="csvFileInput"
+                    id="fileInput"
                   />
                   <label
-                    htmlFor="csvFileInput"
+                    htmlFor="fileInput"
                     className="cursor-pointer flex flex-col items-center gap-2"
                   >
                     <Upload className="w-8 h-8 text-gray-400" />
                     <span className="text-sm font-medium text-gray-700">
-                      CSV-Datei auswählen oder hierhin ziehen
+                      Excel- oder CSV-Datei auswählen oder hierhin ziehen
                     </span>
                     <span className="text-xs text-gray-500">
-                      Nur .csv Dateien werden unterstützt
+                      Unterstützte Formate: .xlsx, .xls, .csv
                     </span>
                   </label>
                 </div>
