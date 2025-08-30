@@ -416,6 +416,8 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
         return '⏳';
       case 'anwesend':
         return '✅';
+      case 'entlassen':
+        return '🏠';
       default:
         return '📊';
     }
@@ -535,7 +537,7 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
                     currentStudent.status === 'Ausstehend' ? 'bg-orange-100 text-orange-700' :
                     'bg-green-100 text-green-700'
                   }`}>
-                    {currentStudent.status === 'Überfällig' ? 'Über.' :
+                    {currentStudent.status === '��berfällig' ? 'Über.' :
                      currentStudent.status === 'Unentschuldigt' ? 'Unent.' :
                      currentStudent.status === 'Entschuldigt' ? 'Entsch.' :
                      currentStudent.status === 'Ausstehend' ? 'Ausst.' :
