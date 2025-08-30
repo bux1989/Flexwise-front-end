@@ -445,6 +445,18 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
           </div>
         )}
 
+        {/* MFA Policy Tester - only in development */}
+        {import.meta.env.DEV && (
+          <details className="mb-4 border rounded-lg bg-gray-50">
+            <summary className="p-3 cursor-pointer font-medium text-gray-700 hover:text-gray-900">
+              🔒 Test MFA Policy Enforcement (Debug)
+            </summary>
+            <div className="border-t bg-white">
+              <MFAPolicyTester />
+            </div>
+          </details>
+        )}
+
         <div className="space-y-3">
           {!smsSent && selectedFactor?.factor_type === 'phone' ? (
             // No SMS sent yet - prioritize sending SMS
