@@ -30,6 +30,25 @@ export default function StudentManagement({ onBack }) {
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const [showDetailView, setShowDetailView] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [addMode, setAddMode] = useState('single') // 'single' or 'multiple'
+  const [newStudentData, setNewStudentData] = useState({
+    firstName: '',
+    lastName: '',
+    class: '',
+    einstieg: new Date().toISOString().split('T')[0], // Today's date
+    phone: ''
+  })
+  const [multipleStudents, setMultipleStudents] = useState([
+    {
+      id: Date.now(),
+      firstName: '',
+      lastName: '',
+      class: '',
+      einstieg: new Date().toISOString().split('T')[0],
+      phone: ''
+    }
+  ])
 
   // Mock student data - replace with real data from Supabase
   const [students, setStudents] = useState([
