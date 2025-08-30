@@ -469,21 +469,36 @@ export default function StudentManagement({ onBack }) {
     return [headers, sampleRow]
   }
 
-  const downloadTemplate = () => {
+  const downloadTemplate = (format = 'csv') => {
     const [headers, sampleRow] = generateCSVTemplate()
-    const csvContent = [headers, sampleRow]
-      .map(row => row.map(field => `"${field}"`).join(','))
-      .join('\n')
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'schueler_import_template.csv')
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    if (format === 'excel') {
+      // Create Excel workbook
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.aoa_to_sheet([headers, sampleRow])
+
+      // Set column widths for better readability
+      const colWidths = headers.map(() => ({ wch: 20 }))
+      ws['!cols'] = colWidths
+
+      XLSX.utils.book_append_sheet(wb, ws, 'Schüler Import')
+      XLSX.writeFile(wb, 'schueler_import_template.xlsx')
+    } else {
+      // Generate CSV with proper delimiter (semicolon for German Excel)
+      const csvContent = [headers, sampleRow]
+        .map(row => row.map(field => `"${field}"`).join(';'))
+        .join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', 'schueler_import_template.csv')
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
   }
 
   const parseCSV = (text) => {
