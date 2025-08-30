@@ -482,10 +482,15 @@ export default function StudentManagement({ onBack }) {
         phone: newStudentData.phone || '',
         class: newStudentData.class,
         birthDate: '', // Will be filled in edit view
-        status: 'active',
+        status: 'inactive', // Default for new students is inactive (no FlexWise login yet)
         address: '',
         einstieg: newStudentData.einstieg,
         ausstieg: '',
+        loginInfo: {
+          hasAccount: false,
+          registrationDate: null,
+          lastLogin: null
+        },
         photoPermissions: [],
         allergies: [],
         but: { enabled: false },
