@@ -860,6 +860,34 @@ export async function addTrustedDevice(userProfileId, userRole, schoolId) {
   }
 }
 
+// Security audit logging
+export async function logSecurityEvent(eventType, details = {}) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const logEntry = {
+      event_type: eventType,
+      user_id: user?.id || null,
+      user_email: user?.email || null,
+      details: {
+        ...details,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        deviceFingerprint: generateDeviceFingerprint().substring(0, 20) + '...'
+      }
+    }
+
+    console.log('🔒 Security Event:', logEntry)
+
+    // In a production environment, you might want to send this to a logging service
+    // For now, we'll log to console and could store in a security_logs table
+
+    return logEntry
+  } catch (error) {
+    console.error('Error logging security event:', error)
+  }
+}
+
 // Enhanced login function with 2FA check
 export async function handleLoginWith2FA(email, password) {
   try {
