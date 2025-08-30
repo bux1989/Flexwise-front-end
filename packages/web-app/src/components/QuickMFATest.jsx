@@ -263,6 +263,14 @@ export function QuickMFATest() {
     <div className="fixed bottom-20 right-4 z-50 w-80">
       <div className="bg-white border rounded-lg p-4 shadow-lg">
         <h3 className="font-semibold mb-3 text-sm">🧪 Quick SMS MFA Test</h3>
+
+        <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+          <div className="font-semibold text-blue-800 mb-1">ℹ️ MFA Integration Active</div>
+          <div className="text-blue-700">
+            MFA Guard is now integrated into the main app. When you log in with verified MFA factors,
+            you'll be prompted for verification automatically if needed.
+          </div>
+        </div>
         
         <div className="space-y-2 mb-4">
           <button
