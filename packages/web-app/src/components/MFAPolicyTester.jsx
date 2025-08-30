@@ -124,8 +124,13 @@ export function MFAPolicyTester() {
         results.policyTests[table] = await testTable(table, 'critical')
       }
 
-      // Run tests on operational tables  
+      // Run tests on operational tables
       for (const table of operationalTables) {
+        results.policyTests[table] = await testTable(table, 'operational')
+      }
+
+      // Run tests on selected operational tables
+      for (const table of selectedOperationalTables) {
         results.policyTests[table] = await testTable(table, 'operational')
       }
 
