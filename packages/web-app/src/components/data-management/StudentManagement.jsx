@@ -425,6 +425,7 @@ export default function StudentManagement({ onBack }) {
   // CSV Template and Processing Functions
   const generateCSVTemplate = () => {
     const headers = [
+      'Beispiel (NICHT ÄNDERN)',
       'Vorname',
       'Nachname',
       'Klasse',
@@ -446,6 +447,7 @@ export default function StudentManagement({ onBack }) {
     ]
 
     const sampleRow = [
+      'JA - BEISPIEL ZEILE',
       'Max',
       'Mustermann',
       '10A',
