@@ -537,6 +537,40 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
           </div>
         </CardContent>
       </Card>
+
+      {/* New Note Modal */}
+      <Dialog open={noteModal.isOpen} onOpenChange={handleCloseNoteModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Neue Notiz hinzufügen</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Notiz für {filteredAndSortedStudents.find(s => s.id === noteModal.studentId)?.name}
+              </label>
+              <Textarea
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+                placeholder="Geben Sie hier Ihre Notiz ein..."
+                rows={4}
+                className="w-full"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={handleCloseNoteModal}>
+                Abbrechen
+              </Button>
+              <Button
+                onClick={handleSaveNote}
+                disabled={!newNote.trim()}
+              >
+                Speichern
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
