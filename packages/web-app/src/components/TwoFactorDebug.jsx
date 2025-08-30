@@ -92,37 +92,32 @@ export function TwoFactorDebug() {
           results.steps.mfaFactors = { error: mfaErr.message }
         }
 
-        // Step 5: Check device trust (if they have 2FA)
+        // Step 5: Check Supabase MFA factors (replaces custom device trust)
         if (has2FA) {
-          const deviceTrusted = await isDeviceTrusted(userProfile.id)
-          const fingerprint = generateDeviceFingerprint()
-          results.steps.deviceTrust = {
-            isTrusted: deviceTrusted,
-            fingerprint: fingerprint.substring(0, 20) + '...',
-            fullFingerprintLength: fingerprint.length
-          }
-
-          // Check database for existing trusted devices
           try {
-            const { data: trustedDevices, error: dbError } = await supabase
-              .from('user_trusted_devices')
-              .select('*')
-              .eq('user_profile_id', userProfile.id)
-              .eq('is_active', true)
-
-            results.steps.trustedDevicesQuery = {
-              error: dbError?.message,
-              count: trustedDevices?.length || 0,
-              devices: trustedDevices?.map(d => ({
-                id: d.id,
-                deviceName: d.device_name,
-                trustedUntil: d.trusted_until,
-                lastUsed: d.last_used_at,
-                fingerprintMatch: d.device_fingerprint === fingerprint
+            const { factors, error: factorsError } = await getUserMFAFactors()
+            results.steps.supabaseMFAFactors = {
+              error: factorsError?.message,
+              totalFactors: factors?.length || 0,
+              totpFactors: factors?.filter(f => f.factor_type === 'totp')?.length || 0,
+              phoneFactors: factors?.filter(f => f.factor_type === 'phone')?.length || 0,
+              verifiedFactors: factors?.filter(f => f.status === 'verified')?.length || 0,
+              factorDetails: factors?.map(f => ({
+                id: f.id,
+                type: f.factor_type,
+                status: f.status,
+                friendlyName: f.friendly_name,
+                phone: f.phone
               }))
             }
-          } catch (dbErr) {
-            results.steps.trustedDevicesQuery = { error: dbErr.message }
+          } catch (factorsErr) {
+            results.steps.supabaseMFAFactors = { error: factorsErr.message }
+          }
+
+          // Note: Device trust is now handled server-side by Supabase
+          results.steps.deviceTrustNote = {
+            message: "Device trust is now handled securely by Supabase's built-in MFA system",
+            security: "Server-side enforcement prevents client-side bypass"
           }
         }
       }
