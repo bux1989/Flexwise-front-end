@@ -64,15 +64,14 @@ export default function Login() {
     setError('')
   }
 
-  // Show 2FA verification screen if needed
+  // Show secure 2FA verification screen if needed
   if (showTwoFactor && loginData) {
     return (
-      <TwoFactorVerification
+      <SecureTwoFactorVerification
         user={loginData.user}
-        profile={loginData.profile}
+        factors={loginData.factors}
         onSuccess={handle2FASuccess}
         onBack={handle2FABack}
-        showRememberDevice={true}
       />
     )
   }
