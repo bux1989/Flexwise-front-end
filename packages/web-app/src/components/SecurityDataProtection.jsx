@@ -21,6 +21,8 @@ import {
 export default function SecurityDataProtection({ onBack }) {
   const [activeTab, setActiveTab] = useState('2fa')
   const [isEditing, setIsEditing] = useState(false)
+  const [expandedRoles, setExpandedRoles] = useState({})
+  const [expandedPermissions, setExpandedPermissions] = useState({})
   
   // Role definitions
   const roles = [
