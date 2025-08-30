@@ -1197,6 +1197,120 @@ Aktuelle Config zeigt: MESSAGE_SERVICE_SID ist leer`);
     return new Date(trustedUntil) < new Date();
   };
 
+  // Helper function to handle sensitive actions with 2FA
+  const handleSensitiveAction = async (actionTitle, actionDescription, actionFunction) => {
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      // Check if user has 2FA enabled and requires verification
+      const userProfile = await getCurrentUserProfile();
+      const requires2FA = await userRequires2FA(userProfile);
+      const has2FA = await userHas2FAEnabled(authUser);
+
+      if (requires2FA && has2FA) {
+        // Show 2FA verification for sensitive action
+        setPendingSensitiveAction({
+          title: actionTitle,
+          description: actionDescription,
+          action: actionFunction,
+          user: authUser
+        });
+        setShowSensitive2FA(true);
+      } else {
+        // Execute action directly if no 2FA required
+        await actionFunction();
+      }
+    } catch (error) {
+      console.error('Error in handleSensitiveAction:', error);
+      alert('Fehler beim Überprüfen der Sicherheitsanforderungen.');
+    }
+  };
+
+  const handleSensitive2FASuccess = async () => {
+    setShowSensitive2FA(false);
+    if (pendingSensitiveAction?.action) {
+      try {
+        await pendingSensitiveAction.action();
+      } catch (error) {
+        console.error('Error executing sensitive action:', error);
+        alert('Fehler beim Ausführen der Aktion.');
+      }
+    }
+    setPendingSensitiveAction(null);
+  };
+
+  const handleSensitive2FACancel = () => {
+    setShowSensitive2FA(false);
+    setPendingSensitiveAction(null);
+  };
+
+  // Modified password reset function with 2FA protection
+  const handlePasswordReset = async () => {
+    await handleSensitiveAction(
+      'Passwort zurücksetzen',
+      'Sie sind dabei, einen Passwort-Reset-Link anzufordern. Diese Aktion kann Ihr Konto betreffen.',
+      async () => {
+        try {
+          const { data: { user: authUser } } = await supabase.auth.getUser();
+
+          if (!authUser?.email) {
+            alert('Keine E-Mail-Adresse gefunden.');
+            return;
+          }
+
+          // Get user's full name from current profile state
+          const fullName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
+
+          const { error } = await supabase.auth.resetPasswordForEmail(authUser.email, {
+            redirectTo: `https://flexwise.io/auth/reset-password`,
+            data: {
+              USER_NAME: fullName || authUser.email  // Fallback to email if no name
+            }
+          });
+
+          if (error) {
+            console.error('Reset email error:', error);
+            alert('Fehler beim Senden des Reset-Links: ' + error.message);
+          } else {
+            alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet!');
+          }
+        } catch (error) {
+          console.error('Password reset error:', error);
+          alert('Fehler beim Senden des Reset-Links: ' + error.message);
+        }
+      }
+    );
+  };
+
+  // Modified 2FA disable function with additional 2FA protection
+  const handleDisable2FA = async () => {
+    await handleSensitiveAction(
+      'Zwei-Faktor-Authentifizierung deaktivieren',
+      'Sie sind dabei, die Zwei-Faktor-Authentifizierung zu deaktivieren. Dies reduziert die Sicherheit Ihres Kontos erheblich.',
+      async () => {
+        try {
+          // List and unenroll all MFA factors
+          const { data: factors, error: listError } = await supabase.auth.mfa.listFactors();
+          if (listError) throw listError;
+
+          for (const factor of factors.totp) {
+            const { error } = await supabase.auth.mfa.unenroll({
+              factorId: factor.id
+            });
+            if (error) throw error;
+          }
+
+          setIsOtpEnabled(false);
+          alert('Zwei-Faktor-Authentifizierung wurde deaktiviert.');
+        } catch (error) {
+          console.error('Error disabling OTP:', error);
+          alert('Fehler beim Deaktivieren: ' + error.message);
+        }
+      }
+    );
+  };
+
   return (
     <DebugOverlay name="EditProfile">
       <div className="p-1 lg:p-6 min-h-screen bg-gray-50">
