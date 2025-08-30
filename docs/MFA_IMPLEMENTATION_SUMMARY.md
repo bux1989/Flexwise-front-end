@@ -108,12 +108,14 @@ WHERE mf.status = 'verified'
 
 ### Technical Documentation:
 1. **`docs/MFA_RATE_LIMITING_SOLUTION.md`** - Detailed explanation of localStorage approach
-2. **`docs/SECURITY_ANALYSIS_MFA_VULNERABILITIES.md`** - Comprehensive security assessment  
-3. **`docs/MFA_IMPLEMENTATION_SUMMARY.md`** - This summary document
+2. **`docs/SECURITY_ANALYSIS_MFA_VULNERABILITIES.md`** - Comprehensive security assessment
+3. **`docs/UPDATED_MFA_SECURITY_RECOMMENDATIONS.md`** ⭐ - Official Supabase guidance and updated recommendations
+4. **`docs/MFA_IMPLEMENTATION_SUMMARY.md`** - This summary document
 
 ### Implementation Files:
-1. **`sql/harden_mfa_aal2_requirements.sql`** - Security hardening script
-2. **`packages/web-app/src/components/SecurityMFATest.jsx`** - Security testing component
+1. **`sql/supabase_official_mfa_hardening.sql`** ⭐ - Official Supabase-recommended hardening script (USE THIS)
+2. **`sql/harden_mfa_aal2_requirements.sql`** - Previous custom approach (superseded)
+3. **`packages/web-app/src/components/SecurityMFATest.jsx`** - Security testing component
 
 ### Existing Documentation Referenced:
 - `docs/SUPABASE_MFA_SETUP.md` - Original MFA setup guide
