@@ -267,6 +267,9 @@ export function TwoFactorVerification({
                   pattern="[0-9]*"
                   aria-describedby="code-help"
                 />
+                <p id="code-help" className="text-xs text-gray-500 text-center mt-1">
+                  Drücken Sie Enter zum Bestätigen oder geben Sie nur Zahlen ein
+                </p>
               </div>
 
               {showRememberDevice && (
