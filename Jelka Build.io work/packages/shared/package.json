@@ -1,0 +1,60 @@
+{
+  "name": "@flexwise/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for Flexwise applications",
+  "type": "module",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    },
+    "./supabase": {
+      "import": "./dist/lib/supabaseClient.js",
+      "types": "./dist/lib/supabaseClient.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/supabase-types.js",
+      "types": "./dist/supabase-types.d.ts"
+    },
+    "./domains/academic": {
+      "import": "./dist/domains/academic/index.js",
+      "types": "./dist/domains/academic/index.d.ts"
+    },
+    "./domains/attendance": {
+      "import": "./dist/domains/attendance/index.js",
+      "types": "./dist/domains/attendance/index.d.ts"
+    },
+    "./domains/scheduling": {
+      "import": "./dist/domains/scheduling/index.js",
+      "types": "./dist/domains/scheduling/index.d.ts"
+    },
+    "./domains/management": {
+      "import": "./dist/domains/management/index.js",
+      "types": "./dist/domains/management/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
