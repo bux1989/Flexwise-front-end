@@ -969,3 +969,134 @@ export async function handleLoginWith2FA(email, password) {
     throw error
   }
 }
+
+// 2FA System Health Check and Monitoring
+export async function check2FASystemHealth() {
+  const health = {
+    timestamp: new Date().toISOString(),
+    status: 'healthy',
+    issues: [],
+    components: {}
+  }
+
+  try {
+    // Check database connection
+    const { data: testQuery, error: dbError } = await supabase
+      .from('user_trusted_devices')
+      .select('count(*)')
+      .limit(1)
+
+    health.components.database = {
+      status: dbError ? 'error' : 'healthy',
+      error: dbError?.message
+    }
+
+    if (dbError) {
+      health.issues.push('Database connection failed')
+      health.status = 'degraded'
+    }
+
+    // Check MFA service availability
+    try {
+      const { data: factors, error: mfaError } = await supabase.auth.mfa.listFactors()
+      health.components.mfa_service = {
+        status: mfaError ? 'error' : 'healthy',
+        error: mfaError?.message,
+        factors_count: factors?.totp?.length || 0
+      }
+
+      if (mfaError) {
+        health.issues.push('MFA service unavailable')
+        health.status = 'degraded'
+      }
+    } catch (mfaError) {
+      health.components.mfa_service = {
+        status: 'error',
+        error: mfaError.message
+      }
+      health.issues.push('MFA service error')
+      health.status = 'degraded'
+    }
+
+    // Check device fingerprinting
+    try {
+      const fingerprint = generateDeviceFingerprint()
+      health.components.device_fingerprinting = {
+        status: fingerprint ? 'healthy' : 'error',
+        fingerprint_length: fingerprint?.length || 0
+      }
+
+      if (!fingerprint || fingerprint.length < 10) {
+        health.issues.push('Device fingerprinting failed')
+        health.status = 'degraded'
+      }
+    } catch (fpError) {
+      health.components.device_fingerprinting = {
+        status: 'error',
+        error: fpError.message
+      }
+      health.issues.push('Device fingerprinting error')
+      health.status = 'degraded'
+    }
+
+    console.log('🏥 2FA Health Check:', health)
+    return health
+
+  } catch (error) {
+    console.error('💥 Health check failed:', error)
+    return {
+      ...health,
+      status: 'error',
+      error: error.message,
+      issues: [...health.issues, 'Health check system failure']
+    }
+  }
+}
+
+// Get 2FA usage statistics
+export async function get2FAUsageStats() {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const profileId = user.user_metadata?.profile_id
+    if (!profileId) return null
+
+    // Get user's trusted devices
+    const { data: devices, error: devicesError } = await supabase
+      .from('user_trusted_devices')
+      .select('*')
+      .eq('user_profile_id', profileId)
+      .eq('is_active', true)
+
+    if (devicesError) {
+      console.error('Error fetching device stats:', devicesError)
+      return null
+    }
+
+    // Get MFA factors
+    const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
+
+    if (factorsError) {
+      console.error('Error fetching MFA stats:', factorsError)
+      return null
+    }
+
+    const stats = {
+      user_email: user.email,
+      has_2fa_enabled: factors?.totp?.some(f => f.status === 'verified') || false,
+      trusted_devices_count: devices?.length || 0,
+      active_devices: devices?.filter(d => new Date(d.trusted_until) > new Date()).length || 0,
+      expired_devices: devices?.filter(d => new Date(d.trusted_until) <= new Date()).length || 0,
+      totp_factors: factors?.totp?.length || 0,
+      verified_totp_factors: factors?.totp?.filter(f => f.status === 'verified').length || 0
+    }
+
+    console.log('📊 2FA Usage Stats:', stats)
+    return stats
+
+  } catch (error) {
+    console.error('Error getting 2FA stats:', error)
+    return null
+  }
+}
