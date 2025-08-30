@@ -251,7 +251,12 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
 
   // Filter and sort students
   const filteredAndSortedStudents = useMemo(() => {
-    let filtered = allStudents.filter(student => {
+    // Merge original students with any updates
+    const studentsWithUpdates = allStudents.map(student =>
+      studentUpdates[student.id] || student
+    );
+
+    let filtered = studentsWithUpdates.filter(student => {
       const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesClass = selectedClass === 'alle-klassen' || student.klasse === selectedClass;
       return matchesSearch && matchesClass;
