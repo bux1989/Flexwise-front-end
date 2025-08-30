@@ -14,6 +14,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [step, setStep] = useState('loading') // loading, select, verify, complete
+  const [smsSent, setSmsSent] = useState(false) // Track if any SMS has been sent
 
   useEffect(() => {
     loadMFAFactors()
@@ -351,7 +352,7 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
 
         {isOldChallenge && (
           <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded text-amber-700 text-sm">
-            ���️ Code is over 4 minutes old and may have expired
+            ⚠️ Code is over 4 minutes old and may have expired
           </div>
         )}
 
