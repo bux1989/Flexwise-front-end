@@ -232,7 +232,7 @@ export default function SecurityDataProtection({ onBack }) {
                 <Shield className="w-5 h-5 text-red-600" />
                 2-Faktor-Authentifizierung
               </CardTitle>
-              <p className="text-red-600/70">Konfigurieren Sie 2FA-Regeln für verschiedene Benutzerrollen</p>
+              <p className="text-red-600/70">Verwalten Sie 2FA-Verpflichtungen - Benutzer können 2FA immer selbst einrichten</p>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* 2FA Policy Notice */}
