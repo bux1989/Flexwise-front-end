@@ -51,6 +51,7 @@ CREATE POLICY "School members can read public posts" ON bulletin_posts
 3. **Rate limiting** on auth endpoints
 4. **Session timeout** configured
 5. **Password requirements** enforced
+6. **Two-Factor Authentication** for admin users ✅ (Implemented)
 
 ### Recommended Auth Settings:
 ```sql
@@ -61,9 +62,39 @@ CREATE POLICY "School members can read public posts" ON bulletin_posts
   "REFRESH_TOKEN_ROTATION_ENABLED": true,
   "SECURITY_REFRESH_TOKEN_REUSE_INTERVAL": 10,
   "PASSWORD_MIN_LENGTH": 8,
-  "EMAIL_CONFIRM_REQUIRED": true
+  "EMAIL_CONFIRM_REQUIRED": true,
+  "MFA_ENABLED": true,
+  "SMS_PROVIDER": "twilio"
 }
 ```
+
+### Multi-Factor Authentication (2FA/MFA)
+✅ **Implemented** - See [2FA System Documentation](./2FA_SYSTEM.md) for details
+
+**Current Coverage:**
+- Admin and Super Admin roles require 2FA
+- Device trust management (30-day trust for admins)
+- SMS and TOTP (Authenticator app) support
+- Sensitive action protection (password reset, 2FA disable)
+- User-managed trusted device removal
+
+**Configuration Required:**
+```bash
+# SMS Provider (Twilio)
+GOTRUE_SMS_TWILIO_ACCOUNT_SID=your_twilio_sid
+GOTRUE_SMS_TWILIO_AUTH_TOKEN=your_twilio_token
+GOTRUE_SMS_TWILIO_MESSAGE_SERVICE_SID=your_message_service_sid
+```
+
+**Database Tables:**
+- `user_trusted_devices` - Device trust management
+- `auth.mfa_factors` - Supabase MFA enrollment (auto-managed)
+
+**Security Benefits:**
+- Protection against credential theft
+- Device-based access control
+- Audit trail for security events
+- Gradual rollout capability (currently admin-only)
 
 ## ✅ Network Security
 
