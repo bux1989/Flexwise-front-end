@@ -622,6 +622,7 @@ export function AttendanceDetailView({ status, onBack }: AttendanceDetailViewPro
                         {currentStudent.status !== 'Entschuldigt' && <option value="Entschuldigt">Entschuldigt</option>}
                         {currentStudent.status !== 'Unentschuldigt' && <option value="Unentschuldigt">Unentschuldigt</option>}
                         {currentStudent.status !== 'Ausstehend' && <option value="Ausstehend">Ausstehend</option>}
+                        {currentStudent.status !== 'Entlassen' && <option value="Entlassen">Entlassen</option>}
                       </select>
                     </div>
                   </div>
