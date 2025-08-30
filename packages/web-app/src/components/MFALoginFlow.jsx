@@ -114,6 +114,10 @@ export function MFALoginFlow({ onComplete, onCancel, requireMFA = false }) {
 
         setError(`⏱️ ${err.message}`)
 
+        // Clear failed challenge state since the request was rate limited
+        setChallenge(null)
+        setSmsSent(false)
+
         // Start countdown
         if (waitTime) {
           console.log('🕐 Starting rate limit countdown:', waitTime + 's')
