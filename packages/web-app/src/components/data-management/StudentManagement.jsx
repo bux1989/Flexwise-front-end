@@ -1355,6 +1355,180 @@ export default function StudentManagement({ onBack }) {
           </div>
         </div>
       )}
+
+      {/* Excel Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <Upload className="w-5 h-5 text-green-600" />
+                  Excel Import - Schüler hochladen
+                </h2>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setShowUploadModal(false)
+                    setUploadFile(null)
+                    setParsedData([])
+                    setUploadErrors([])
+                  }}
+                  className="p-2"
+                >
+                  ×
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Step 1: Download Template */}
+              <div className="border rounded-lg p-4 bg-blue-50">
+                <h3 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-blue-600" />
+                  Schritt 1: Vorlage herunterladen
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Laden Sie die CSV-Vorlage herunter und füllen Sie sie mit den Schülerdaten aus.
+                  Erforderliche Felder: Vorname, Nachname, Klasse.
+                </p>
+                <Button
+                  onClick={downloadTemplate}
+                  variant="outline"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  CSV-Vorlage herunterladen
+                </Button>
+              </div>
+
+              {/* Step 2: Upload File */}
+              <div className="border rounded-lg p-4">
+                <h3 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                  <Upload className="w-4 h-4 text-green-600" />
+                  Schritt 2: Ausgefüllte Datei hochladen
+                </h3>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="csvFileInput"
+                  />
+                  <label
+                    htmlFor="csvFileInput"
+                    className="cursor-pointer flex flex-col items-center gap-2"
+                  >
+                    <Upload className="w-8 h-8 text-gray-400" />
+                    <span className="text-sm font-medium text-gray-700">
+                      CSV-Datei auswählen oder hierhin ziehen
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      Nur .csv Dateien werden unterstützt
+                    </span>
+                  </label>
+                </div>
+
+                {uploadFile && (
+                  <div className="mt-3 p-2 bg-gray-50 rounded text-sm">
+                    <strong>Ausgewählte Datei:</strong> {uploadFile.name}
+                  </div>
+                )}
+              </div>
+
+              {/* Processing Indicator */}
+              {isProcessingFile && (
+                <div className="flex items-center gap-2 text-blue-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  <span className="text-sm">Datei wird verarbeitet...</span>
+                </div>
+              )}
+
+              {/* Errors */}
+              {uploadErrors.length > 0 && (
+                <div className="border border-red-200 rounded-lg p-4 bg-red-50">
+                  <h3 className="font-medium text-red-800 mb-2 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    Fehler gefunden ({uploadErrors.length})
+                  </h3>
+                  <ul className="text-sm text-red-700 space-y-1">
+                    {uploadErrors.map((error, index) => (
+                      <li key={index}>• {error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Success and Preview */}
+              {parsedData.length > 0 && uploadErrors.length === 0 && (
+                <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                  <h3 className="font-medium text-green-800 mb-2 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    Daten erfolgreich verarbeitet ({parsedData.length} Schüler)
+                  </h3>
+
+                  {/* Preview Table */}
+                  <div className="mt-4 border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="max-h-60 overflow-y-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-50 sticky top-0">
+                          <tr>
+                            <th className="px-3 py-2 text-left border-r border-gray-200">Vorname</th>
+                            <th className="px-3 py-2 text-left border-r border-gray-200">Nachname</th>
+                            <th className="px-3 py-2 text-left border-r border-gray-200">Klasse</th>
+                            <th className="px-3 py-2 text-left border-r border-gray-200">Nickname</th>
+                            <th className="px-3 py-2 text-left border-r border-gray-200">Geburtsdatum</th>
+                            <th className="px-3 py-2 text-left border-r border-gray-200">BuT</th>
+                            <th className="px-3 py-2 text-left">Eltern 1</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {parsedData.map((student, index) => (
+                            <tr key={index} className="hover:bg-gray-50">
+                              <td className="px-3 py-2 border-r border-gray-200">{student['Vorname']}</td>
+                              <td className="px-3 py-2 border-r border-gray-200">{student['Nachname']}</td>
+                              <td className="px-3 py-2 border-r border-gray-200">{student['Klasse']}</td>
+                              <td className="px-3 py-2 border-r border-gray-200">{student['Rufname/Nickname'] || '-'}</td>
+                              <td className="px-3 py-2 border-r border-gray-200">{student['Geburtsdatum'] || '-'}</td>
+                              <td className="px-3 py-2 border-r border-gray-200">
+                                {student['BuT berechtigt'] === 'Ja' ? `${student['BuT Typ'] || 'Ja'}` : 'Nein'}
+                              </td>
+                              <td className="px-3 py-2">{student['Eltern 1 - Name'] || '-'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowUploadModal(false)
+                  setUploadFile(null)
+                  setParsedData([])
+                  setUploadErrors([])
+                }}
+              >
+                Abbrechen
+              </Button>
+              <Button
+                onClick={handleImportStudents}
+                className="bg-green-600 hover:bg-green-700"
+                disabled={parsedData.length === 0 || uploadErrors.length > 0}
+              >
+                {parsedData.length > 0 ? `${parsedData.length} Schüler importieren` : 'Importieren'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
