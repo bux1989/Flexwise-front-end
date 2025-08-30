@@ -295,10 +295,25 @@ export function TwoFactorVerification({
               <div className="space-y-3">
                 <Button
                   type="submit"
-                  disabled={loading || code.length !== 6}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={loading || code.length !== 6 || isRateLimited}
+                  className={`w-full transition-all duration-200 ${
+                    code.length === 6 && !loading && !isRateLimited
+                      ? 'bg-blue-600 hover:bg-blue-700 shadow-md'
+                      : 'bg-gray-400 cursor-not-allowed'
+                  }`}
                 >
-                  {loading ? 'Verifizieren...' : 'Verifizieren'}
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Verifizieren...
+                    </div>
+                  ) : isRateLimited ? (
+                    'Zu viele Versuche'
+                  ) : code.length === 6 ? (
+                    '✓ Verifizieren'
+                  ) : (
+                    `Code eingeben (${code.length}/6)`
+                  )}
                 </Button>
 
                 <Button
