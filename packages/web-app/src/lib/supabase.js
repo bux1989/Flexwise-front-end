@@ -734,8 +734,8 @@ export async function logSecurityEvent(eventType, details = {}) {
       details: {
         ...details,
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        deviceFingerprint: generateDeviceFingerprint().substring(0, 20) + '...'
+        userAgent: navigator.userAgent
+        // NOTE: Device fingerprinting removed - use Supabase's built-in device tracking
       }
     }
 
