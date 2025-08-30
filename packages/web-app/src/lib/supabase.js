@@ -754,8 +754,8 @@ export async function logSecurityEvent(eventType, details = {}) {
 // Replaced with secure Supabase MFA implementation in supabase-mfa.js
 // The old function had a critical security flaw: it created a session BEFORE 2FA verification
 
-// 2FA System Health Check and Monitoring
-export async function check2FASystemHealth() {
+// Secure MFA System Health Check (using Supabase built-in MFA)
+export async function checkSecureMFAHealth() {
   const health = {
     timestamp: new Date().toISOString(),
     status: 'healthy',
@@ -764,66 +764,78 @@ export async function check2FASystemHealth() {
   }
 
   try {
-    // Check database connection
-    const { data: testQuery, error: dbError } = await supabase
-      .from('user_trusted_devices')
-      .select('count(*)')
-      .limit(1)
-
-    health.components.database = {
-      status: dbError ? 'error' : 'healthy',
-      error: dbError?.message
-    }
-
-    if (dbError) {
-      health.issues.push('Database connection failed')
-      health.status = 'degraded'
-    }
-
-    // Check MFA service availability
+    // Check Supabase MFA service availability
     try {
       const { data: factors, error: mfaError } = await supabase.auth.mfa.listFactors()
-      health.components.mfa_service = {
+      health.components.supabase_mfa = {
         status: mfaError ? 'error' : 'healthy',
         error: mfaError?.message,
-        factors_count: factors?.totp?.length || 0
+        total_factors: factors?.all?.length || 0,
+        totp_factors: factors?.totp?.length || 0,
+        phone_factors: factors?.phone?.length || 0
       }
 
       if (mfaError) {
-        health.issues.push('MFA service unavailable')
+        health.issues.push('Supabase MFA service unavailable')
         health.status = 'degraded'
       }
     } catch (mfaError) {
-      health.components.mfa_service = {
+      health.components.supabase_mfa = {
         status: 'error',
         error: mfaError.message
       }
-      health.issues.push('MFA service error')
+      health.issues.push('Supabase MFA service error')
       health.status = 'degraded'
     }
 
-    // Check device fingerprinting
+    // Check authentication service
     try {
-      const fingerprint = generateDeviceFingerprint()
-      health.components.device_fingerprinting = {
-        status: fingerprint ? 'healthy' : 'error',
-        fingerprint_length: fingerprint?.length || 0
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      health.components.auth_service = {
+        status: authError ? 'error' : 'healthy',
+        error: authError?.message,
+        user_authenticated: !!user
       }
 
-      if (!fingerprint || fingerprint.length < 10) {
-        health.issues.push('Device fingerprinting failed')
+      if (authError) {
+        health.issues.push('Authentication service error')
         health.status = 'degraded'
       }
-    } catch (fpError) {
-      health.components.device_fingerprinting = {
+    } catch (authError) {
+      health.components.auth_service = {
         status: 'error',
-        error: fpError.message
+        error: authError.message
       }
-      health.issues.push('Device fingerprinting error')
+      health.issues.push('Authentication service failure')
       health.status = 'degraded'
     }
 
-    console.log('🏥 2FA Health Check:', health)
+    // Check database connection (basic test)
+    try {
+      const { data: dbTest, error: dbError } = await supabase
+        .from('user_profiles')
+        .select('count(*)')
+        .limit(1)
+
+      health.components.database = {
+        status: dbError ? 'error' : 'healthy',
+        error: dbError?.message
+      }
+
+      if (dbError) {
+        health.issues.push('Database connection failed')
+        health.status = 'degraded'
+      }
+    } catch (dbError) {
+      health.components.database = {
+        status: 'error',
+        error: dbError.message
+      }
+      health.issues.push('Database connection error')
+      health.status = 'degraded'
+    }
+
+    console.log('🏥 Secure MFA Health Check:', health)
     return health
 
   } catch (error) {
