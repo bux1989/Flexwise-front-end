@@ -132,31 +132,29 @@ export default function Settings() {
                     <Edit className="w-4 h-4 text-blue-600" />
                   </Button>
                 ) : (
-                  <DebugOverlay id="SET-002" component="Settings.EditButtons">
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700"
-                        onClick={() => {
-                          setSchoolInfo(editedSchoolInfo)
-                          setIsEditingSchoolInfo(false)
-                          console.log('School info saved:', editedSchoolInfo)
-                        }}
-                      >
-                        Speichern
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setEditedSchoolInfo(schoolInfo)
-                          setIsEditingSchoolInfo(false)
-                        }}
-                      >
-                        Abbrechen
-                      </Button>
-                    </div>
-                  </DebugOverlay>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700"
+                      onClick={() => {
+                        setSchoolInfo(editedSchoolInfo)
+                        setIsEditingSchoolInfo(false)
+                        console.log('School info saved:', editedSchoolInfo)
+                      }}
+                    >
+                      Speichern
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditedSchoolInfo(schoolInfo)
+                        setIsEditingSchoolInfo(false)
+                      }}
+                    >
+                      Abbrechen
+                    </Button>
+                  </div>
                 )}
               </div>
             </CardHeader>
