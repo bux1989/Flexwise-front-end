@@ -246,7 +246,8 @@ export default function SecurityDataProtection({ onBack }) {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <DebugOverlay id="SEC-001" component="SecurityDataProtection.MainContent">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="2fa" className="flex items-center gap-2">
             <Shield className="w-4 h-4" />
@@ -853,7 +854,8 @@ export default function SecurityDataProtection({ onBack }) {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </DebugOverlay>
     </div>
   )
 }
