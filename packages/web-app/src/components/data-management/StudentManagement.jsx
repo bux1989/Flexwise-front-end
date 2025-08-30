@@ -499,13 +499,13 @@ export default function StudentManagement({ onBack }) {
         }
       }
 
-      // Style the example row (row 2) with gray background
+      // Style the example row (row 2) with green background
       for (let col = 0; col < headers.length; col++) {
         const cellRef = XLSX.utils.encode_cell({ r: 1, c: col })
         if (!ws[cellRef]) continue
         ws[cellRef].s = {
-          fill: { fgColor: { rgb: "E5E5E5" } }, // Light gray background
-          font: { color: { rgb: "666666" }, italic: true },
+          fill: { fgColor: { rgb: "D4F6D4" } }, // Light green background
+          font: { color: { rgb: "2D5A2D" }, italic: true },
           alignment: { horizontal: "left" }
         }
       }
